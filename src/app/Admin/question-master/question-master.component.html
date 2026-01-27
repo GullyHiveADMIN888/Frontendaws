@@ -1,0 +1,724 @@
+
+<div class="min-h-screen bg-gray-50">
+  <app-admin-header></app-admin-header>
+  <div class="max-w-7xl mx-auto my-12">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+            Question Master
+          </h1>
+          <p class="text-gray-600">
+            Manage all survey questions and their options
+          </p>
+        </div>
+        <button (click)="openAddModal()"
+          class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md flex items-center gap-2 w-full sm:w-auto justify-center">
+          <i class="text-lg">+</i>
+          <span>Add New Question</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-blue-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Total Questions</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{totalQuestions}}</h3>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
+            <i class="text-blue-600 text-xl">❓</i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-green-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Active Questions</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{activeQuestions}}</h3>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center">
+            <i class="text-green-600 text-xl">✅</i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-purple-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Mandatory Questions</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{mandatoryQuestions}}</h3>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
+            <i class="text-purple-600 text-xl">⭐</i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-orange-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Single Select</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{singleSelectQuestions}}</h3>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-orange-50 flex items-center justify-center">
+            <i class="text-orange-600 text-xl">☑️</i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Container -->
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+      <!-- Table Header -->
+      <div
+        class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <h2 class="text-lg font-semibold text-gray-800">
+            Survey Questions
+          </h2>
+          <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+            {{filteredQuestions.length}} Items
+          </span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <input type="text" [(ngModel)]="searchTerm" (input)="filterQuestions()" placeholder="Search questions..."
+              class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64">
+            <i class="absolute left-3 top-2.5 text-gray-400">🔍</i>
+          </div>
+          <button (click)="refreshData()"
+            class="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            <i class="text-gray-600">🔄</i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="loading" class="p-8 text-center">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+        <p class="text-gray-600">Loading questions...</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error" class="p-8 text-center">
+        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="text-red-600 text-2xl">⚠️</i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Error Loading Data</h3>
+        <p class="text-gray-600 mb-4">{{error}}</p>
+        <button (click)="refreshData()"
+          class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+          Try Again
+        </button>
+      </div>
+
+      <!-- Table -->
+      <div *ngIf="!loading && !error && filteredQuestions.length > 0" class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                ID
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Question Text
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Category
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Type & Properties
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Display Order
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let question of filteredQuestions" class="hover:bg-gray-50 transition-colors">
+              <!-- ID -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="text-sm font-medium text-gray-900">#{{question.id}}</span>
+              </td>
+
+              <!-- Question Text -->
+              <td class="px-6 py-4">
+                <div>
+                  <h4 class="text-sm font-semibold text-gray-900 mb-1">{{question.questionText}}</h4>
+                  <div class="flex flex-wrap gap-1">
+                    <span *ngIf="question.isMandatory" class="px-2 py-0.5 bg-red-100 text-red-800 text-xs rounded-full">
+                      Mandatory
+                    </span>
+                    <span *ngIf="question.options && question.options.length > 0"
+                      class="px-2 py-0.5 bg-indigo-100 text-indigo-800 text-xs rounded-full">
+                      {{question.options.length}} Options
+                    </span>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Category -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="text-sm text-gray-900">{{getCategoryName(question.categoryId)}}</span>
+              </td>
+
+              <!-- Type & Properties -->
+              <td class="px-6 py-4">
+                <div class="flex flex-wrap gap-2">
+                  <span [class]="getQuestionTypeColor(question.questionType)"
+                    class="px-2 py-1 rounded text-xs font-medium">
+                    {{getQuestionTypeLabel(question.questionType)}}
+                  </span>
+                  <span [class]="question.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                    class="px-2 py-1 rounded text-xs font-medium">
+                    {{question.isActive ? 'Active' : 'Inactive'}}
+                  </span>
+                </div>
+              </td>
+
+              <!-- Display Order -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <span class="text-sm font-medium text-gray-900 mr-2">{{question.displayOrder}}</span>
+                  <div class="flex flex-col">
+                    <button (click)="changeDisplayOrder(question.id, 'up')" class="text-gray-400 hover:text-blue-600">
+                      <i>↑</i>
+                    </button>
+                    <button (click)="changeDisplayOrder(question.id, 'down')" class="text-gray-400 hover:text-blue-600">
+                      <i>↓</i>
+                    </button>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Actions -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center gap-2">
+                  <button (click)="editQuestion(question)"
+                    class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors">
+                    <i class="text-lg">✏️</i>
+                  </button>
+                  <button (click)="toggleActive(question)" [disabled]="question.updating"
+                    [class]="question.isActive ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900'"
+                    class="p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 min-w-[40px] min-h-[40px] flex items-center justify-center">
+                    <span *ngIf="!question.updating">
+                      <i class="text-lg">{{question.isActive ? '⏸️' : '▶️'}}</i>
+                    </span>
+                    <span *ngIf="question.updating" class="flex">
+                      <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                      </svg>
+                    </span>
+                  </button>
+                  <button (click)="openOptionModal(question)"
+                    class="text-indigo-600 hover:text-indigo-900 p-2 rounded-lg hover:bg-indigo-50 transition-colors">
+                    <i class="text-lg">➕</i>
+                  </button>
+                  <button (click)="viewOptions(question)"
+                    [disabled]="!question.options || question.options.length === 0"
+                    class="text-purple-600 hover:text-purple-900 p-2 rounded-lg hover:bg-purple-50 transition-colors disabled:opacity-50">
+                    <i class="text-lg">👁️</i>
+                  </button>
+                  <button (click)="confirmDelete(question)" [disabled]="question.deleting"
+                    class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50 min-w-[40px] min-h-[40px] flex items-center justify-center">
+                    <span *ngIf="!question.deleting">
+                      <i class="text-lg">🗑️</i>
+                    </span>
+                    <span *ngIf="question.deleting" class="flex">
+                      <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                      </svg>
+                    </span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!loading && !error && filteredQuestions.length === 0" class="p-12 text-center">
+        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="text-gray-400 text-3xl">❓</i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">No Questions Found</h3>
+        <p class="text-gray-600 mb-6">No questions match your search or no questions have been created yet.</p>
+        <button (click)="openAddModal()"
+          class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
+          <i class="mr-2">+</i>
+          Add Your First Question
+        </button>
+      </div>
+
+      <!-- Pagination -->
+      <div *ngIf="!loading && !error && filteredQuestions.length > 0"
+        class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+        <div class="text-sm text-gray-500">
+          Showing <span class="font-medium">{{filteredQuestions.length}}</span> of <span
+            class="font-medium">{{questions.length}}</span> questions
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50">
+            Previous
+          </button>
+          <button class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
+            1
+          </button>
+          <button class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50">
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <app-admin-footer></app-admin-footer>
+</div>
+
+<!-- Question Modal -->
+<div *ngIf="showQuestionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <!-- Modal Header -->
+    <div class="sticky top-0 bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+      <h3 class="text-xl font-bold text-gray-800">
+        {{isEditMode ? 'Edit Question' : 'Add New Question'}}
+      </h3>
+      <button (click)="closeQuestionModal()" [disabled]="modalLoading"
+        class="text-gray-400 hover:text-gray-600 disabled:opacity-50">
+        <i class="text-2xl">×</i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-6">
+      <form (ngSubmit)="saveQuestion()" #questionForm="ngForm" class="space-y-6">
+        <!-- Question Text -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Question Text *
+          </label>
+          <textarea [(ngModel)]="currentQuestion.questionText" name="questionText" required minlength="3"
+            maxlength="500" rows="3" [disabled]="modalLoading" #questionTextInput="ngModel"
+            [class]="questionTextInput.invalid && questionTextInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+            class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50"
+            placeholder="Enter your question here..."></textarea>
+
+          <div *ngIf="questionTextInput.invalid && questionTextInput.touched" class="mt-1 text-sm text-red-600">
+            <div *ngIf="questionTextInput.errors?.['required']">Question text is required</div>
+            <div *ngIf="questionTextInput.errors?.['minlength']">Question must be at least 3 characters long</div>
+            <div *ngIf="questionTextInput.errors?.['maxlength']">Question cannot exceed 500 characters</div>
+          </div>
+        </div>
+
+        <!-- Category -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Category *
+          </label>
+          <div *ngIf="categoriesLoading" class="mb-2">
+            <div class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+            <span class="text-sm text-gray-500">Loading categories...</span>
+          </div>
+
+          <select [(ngModel)]="currentQuestion.categoryId" name="categoryId" required
+            [disabled]="modalLoading || categoriesLoading" #categoryInput="ngModel"
+            [class]="categoryInput.invalid && categoryInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+            class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50">
+            <option value="">-- Select Category --</option>
+            <option *ngFor="let category of categories" [value]="category.id">
+              {{category.name}}
+            </option>
+          </select>
+
+          <div *ngIf="categoryInput.invalid && categoryInput.touched" class="mt-1 text-sm text-red-600">
+            <div *ngIf="categoryInput.errors?.['required']">Please select a category</div>
+          </div>
+
+          <div *ngIf="categories.length === 0 && !categoriesLoading" class="mt-2">
+            <p class="text-sm text-yellow-600">No active categories found. Please create categories first.</p>
+          </div>
+        </div>
+
+        <!-- Question Type -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Question Type *
+          </label>
+          <select [(ngModel)]="currentQuestion.questionType" name="questionType" required [disabled]="modalLoading"
+            #questionTypeInput="ngModel"
+            [class]="questionTypeInput.invalid && questionTypeInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+            class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50">
+            <option value="">-- Select Question Type --</option>
+            <option *ngFor="let type of questionTypes" [value]="type.value">
+              {{type.label}}
+            </option>
+          </select>
+
+          <div *ngIf="questionTypeInput.invalid && questionTypeInput.touched" class="mt-1 text-sm text-red-600">
+            <div *ngIf="questionTypeInput.errors?.['required']">Please select a question type</div>
+          </div>
+        </div>
+
+        <!-- Display Order -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Display Order *
+          </label>
+          <input type="number" [(ngModel)]="currentQuestion.displayOrder" name="displayOrder" required min="1"
+            max="1000" [disabled]="modalLoading" #displayOrderInput="ngModel"
+            [class]="displayOrderInput.invalid && displayOrderInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+            class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50"
+            placeholder="Enter display order">
+
+          <div *ngIf="displayOrderInput.invalid && displayOrderInput.touched" class="mt-1 text-sm text-red-600">
+            <div *ngIf="displayOrderInput.errors?.['required']">Display order is required</div>
+            <div *ngIf="displayOrderInput.errors?.['min']">Display order must be at least 1</div>
+            <div *ngIf="displayOrderInput.errors?.['max']">Display order cannot exceed 1000</div>
+          </div>
+        </div>
+
+        <!-- Status Options -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Is Mandatory -->
+          <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+            <div>
+              <h4 class="font-medium text-gray-800">Mandatory Question</h4>
+              <p class="text-sm text-gray-500">User must answer this question</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" [(ngModel)]="currentQuestion.isMandatory" name="isMandatory"
+                [disabled]="modalLoading" class="sr-only peer">
+              <div [class]="modalLoading ? 'opacity-50' : ''"
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+              </div>
+            </label>
+          </div>
+
+          <!-- Is Active -->
+          <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+            <div>
+              <h4 class="font-medium text-gray-800">Active Status</h4>
+              <p class="text-sm text-gray-500">Question will be visible in surveys</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" [(ngModel)]="currentQuestion.isActive" name="isActive" [disabled]="modalLoading"
+                class="sr-only peer">
+              <div [class]="modalLoading ? 'opacity-50' : ''"
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
+          <button type="button" (click)="closeQuestionModal()" [disabled]="modalLoading"
+            class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50">
+            Cancel
+          </button>
+          <button type="submit" [disabled]="!questionForm.form.valid || modalLoading || categoriesLoading"
+            class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]">
+            <span *ngIf="!modalLoading">
+              {{isEditMode ? 'Update Question' : 'Create Question'}}
+            </span>
+            <span *ngIf="modalLoading" class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+              </svg>
+              {{isEditMode ? 'Updating...' : 'Creating...'}}
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Option Modal -->
+<div *ngIf="showOptionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+    <!-- Modal Header -->
+    <div class="sticky top-0 bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+      <h3 class="text-xl font-bold text-gray-800">
+        Add Option for Question #{{selectedQuestionForOptions?.id}}
+      </h3>
+      <button (click)="closeOptionModal()" [disabled]="modalLoading"
+        class="text-gray-400 hover:text-gray-600 disabled:opacity-50">
+        <i class="text-2xl">×</i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-6">
+      <form (ngSubmit)="saveOption()" #optionForm="ngForm" class="space-y-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Option Text *
+          </label>
+          <input type="text" [(ngModel)]="currentOption.optionText" name="optionText" required minlength="1"
+            maxlength="200" [disabled]="modalLoading" #optionTextInput="ngModel"
+            [class]="optionTextInput.invalid && optionTextInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+            class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50" placeholder="Enter option text">
+
+          <div *ngIf="optionTextInput.invalid && optionTextInput.touched" class="mt-1 text-sm text-red-600">
+            <div *ngIf="optionTextInput.errors?.['required']">Option text is required</div>
+            <div *ngIf="optionTextInput.errors?.['minlength']">Option text must be at least 1 character</div>
+            <div *ngIf="optionTextInput.errors?.['maxlength']">Option text cannot exceed 200 characters</div>
+          </div>
+        </div>
+
+        <!-- <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Display Order *
+          </label>
+          <input type="number" [(ngModel)]="currentOption.displayOrder" name="displayOrder" required min="0" max="100"
+            [disabled]="modalLoading" #optionDisplayOrderInput="ngModel"
+            [class]="optionDisplayOrderInput.invalid && optionDisplayOrderInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+            class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50">
+
+          <div *ngIf="optionDisplayOrderInput.invalid && optionDisplayOrderInput.touched"
+            class="mt-1 text-sm text-red-600">
+            <div *ngIf="optionDisplayOrderInput.errors?.['required']">Display order is required</div>
+            <div *ngIf="optionDisplayOrderInput.errors?.['min']">Display order must be at least 0</div>
+            <div *ngIf="optionDisplayOrderInput.errors?.['max']">Display order cannot exceed 100</div>
+          </div>
+        </div> -->
+
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+          <div>
+            <h4 class="font-medium text-gray-800">Active Status</h4>
+            <p class="text-sm text-gray-500">Option will be visible</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" [(ngModel)]="currentOption.isActive" name="isActive" [disabled]="modalLoading"
+              class="sr-only peer">
+            <div [class]="modalLoading ? 'opacity-50' : ''"
+              class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+            </div>
+          </label>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
+          <button type="button" (click)="closeOptionModal()" [disabled]="modalLoading"
+            class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50">
+            Cancel
+          </button>
+          <button type="submit" [disabled]="!optionForm.form.valid || modalLoading"
+            class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]">
+            <span *ngIf="!modalLoading">
+              Add Option
+            </span>
+            <span *ngIf="modalLoading" class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+              </svg>
+              Adding...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Options View Modal -->
+<div *ngIf="showOptionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+    <!-- Modal Header -->
+    <div class="sticky top-0 bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+      <div>
+        <h3 class="text-xl font-bold text-gray-800">
+          Options for Question #{{selectedQuestionForOptions?.id}}
+        </h3>
+        <p class="text-sm text-gray-500 mt-1">{{selectedQuestionForOptions?.questionText}}</p>
+      </div>
+      <button (click)="closeOptionsModal()" class="text-gray-400 hover:text-gray-600">
+        <i class="text-2xl">×</i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-6">
+      <div *ngIf="questionOptions.length === 0" class="text-center py-8">
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="text-gray-400 text-2xl">📝</i>
+        </div>
+        <h4 class="text-lg font-semibold text-gray-800 mb-2">No Options Found</h4>
+        <p class="text-gray-600">This question doesn't have any options yet.</p>
+        <button (click)="addAnotherOption()"
+          class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+          Add First Option
+        </button>
+      </div>
+
+      <!-- Inside Options View Modal -->
+      <div *ngIf="questionOptions.length > 0" class="space-y-4">
+        <div *ngFor="let option of questionOptions" class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <h4 class="font-medium text-gray-800">{{option.optionText}}</h4>
+              <div class="flex items-center gap-4 mt-2">
+                <span class="text-sm text-gray-500">Order: {{option.displayOrder}}</span>
+                <span [class]="option.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                  class="px-2 py-0.5 rounded text-xs">
+                  {{option.isActive ? 'Active' : 'Inactive'}}
+                </span>
+                <span *ngIf="option.deleting" class="flex items-center">
+                  <svg class="animate-spin h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                  </svg>
+                  <span class="ml-2 text-xs text-gray-500">Deleting...</span>
+                </span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button (click)="editOption(option)" [disabled]="option.deleting"
+                class="text-blue-600 hover:text-blue-900 p-1 disabled:opacity-50 disabled:cursor-not-allowed">
+                <i>✏️</i>
+              </button>
+              <button (click)="deleteOption(option)" [disabled]="option.deleting"
+                class="text-red-600 hover:text-red-900 p-1 disabled:opacity-50 disabled:cursor-not-allowed">
+                <i>🗑️</i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
+        <button type="button" (click)="closeOptionsModal()"
+          class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+          Close
+        </button>
+        <button (click)="addAnotherOption()"
+          class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity">
+          Add Another Option
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Option Update Modal -->
+<div *ngIf="showOptionUpdateModal"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+    <!-- Modal Header -->
+    <div class="sticky top-0 bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+      <h3 class="text-xl font-bold text-gray-800">
+        Update Option
+      </h3>
+      <button (click)="closeOptionUpdateModal()" [disabled]="modalLoading"
+        class="text-gray-400 hover:text-gray-600 disabled:opacity-50">
+        <i class="text-2xl">×</i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-6">
+      <form (ngSubmit)="updateOption()" #optionUpdateForm="ngForm" class="space-y-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Option Text *
+          </label>
+          <input type="text" [(ngModel)]="currentOption.optionText" name="optionText" required minlength="1"
+            maxlength="200" [disabled]="modalLoading" #optionTextInput="ngModel"
+            [class]="optionTextInput.invalid && optionTextInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+            class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50" placeholder="Enter option text">
+
+          <div *ngIf="optionTextInput.invalid && optionTextInput.touched" class="mt-1 text-sm text-red-600">
+            <div *ngIf="optionTextInput.errors?.['required']">Option text is required</div>
+            <div *ngIf="optionTextInput.errors?.['minlength']">Option text must be at least 1 character</div>
+            <div *ngIf="optionTextInput.errors?.['maxlength']">Option text cannot exceed 200 characters</div>
+          </div>
+        </div>
+
+        <!-- <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Display Order *
+          </label>
+          <input type="number" [(ngModel)]="currentOption.displayOrder" name="displayOrder" required min="0" max="100"
+            [disabled]="modalLoading" #optionDisplayOrderInput="ngModel"
+            [class]="optionDisplayOrderInput.invalid && optionDisplayOrderInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+            class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50">
+
+          <div *ngIf="optionDisplayOrderInput.invalid && optionDisplayOrderInput.touched"
+            class="mt-1 text-sm text-red-600">
+            <div *ngIf="optionDisplayOrderInput.errors?.['required']">Display order is required</div>
+            <div *ngIf="optionDisplayOrderInput.errors?.['min']">Display order must be at least 0</div>
+            <div *ngIf="optionDisplayOrderInput.errors?.['max']">Display order cannot exceed 100</div>
+          </div>
+        </div> -->
+
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+          <div>
+            <h4 class="font-medium text-gray-800">Active Status</h4>
+            <p class="text-sm text-gray-500">Option will be visible</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" [(ngModel)]="currentOption.isActive" name="isActive" [disabled]="modalLoading"
+              class="sr-only peer">
+            <div [class]="modalLoading ? 'opacity-50' : ''"
+              class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+            </div>
+          </label>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
+          <button type="button" (click)="closeOptionUpdateModal()" [disabled]="modalLoading"
+            class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50">
+            Cancel
+          </button>
+          <button type="submit" [disabled]="!optionUpdateForm.form.valid || modalLoading"
+            class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]">
+            <span *ngIf="!modalLoading">
+              Update Option
+            </span>
+            <span *ngIf="modalLoading" class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+              </svg>
+              Updating...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
