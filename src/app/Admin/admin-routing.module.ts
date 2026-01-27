@@ -13,6 +13,10 @@ import { CategoryMasterComponent } from './category-master/category-master.compo
 // import { UserRolesComponent } from './user-roles/user-roles.component';
 import { UserManagementComponent } from './user-management/user-management.component';
 import { SubCategoryMasterComponent } from './sub-category-master/sub-category-master.component';
+import { QuestionMasterComponent } from './question-master/question-master.component';
+import { CityMasterComponent } from './city-master/city-master.component';
+import { LeadStatusMasterComponent } from './lead-status-master/lead-status-master.component';
+import { ServicePackageMasterComponent } from './service-package-master/service-package-master.component';
 
 const routes: Routes = [
   { 
@@ -28,26 +32,26 @@ const routes: Routes = [
     path: 'category-master',
     component: CategoryMasterComponent
   },
-  // {
-  //   path: 'city-master',
-  //   component: CityMasterComponent
-  // },
+  {
+    path: 'city-master',
+    component: CityMasterComponent
+  },
   // {
   //   path: 'job-status-master',
   //   component: JobStatusMasterComponent
   // },
-  // {
-  //   path: 'lead-status-master',
-  //   component: LeadStatusMasterComponent
-  // },
+  {
+    path: 'lead-status-master',
+    component: LeadStatusMasterComponent
+  },
   // {
   //   path: 'provider-status-master',
   //   component: ProviderStatusMasterComponent
   // },
-  // {
-  //   path: 'question-master',
-  //   component: QuestionMasterComponent
-  // },
+  {
+    path: 'question-master',
+    component: QuestionMasterComponent
+  },
   // {
   //   path: 'role-master',
   //   component: RoleMasterComponent
@@ -63,6 +67,10 @@ const routes: Routes = [
   {
     path: 'user-management',
     component: UserManagementComponent
+  },
+  {
+    path: 'service-package',
+    component: ServicePackageMasterComponent
   },
   { 
     path: '**', 
