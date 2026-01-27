@@ -24,6 +24,10 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { CategoryMasterComponent } from './category-master/category-master.component';
 import { UserManagementComponent } from './user-management/user-management.component';
 import { SubCategoryMasterComponent } from './sub-category-master/sub-category-master.component';
+import { QuestionMasterComponent } from './question-master/question-master.component';
+import { CityMasterComponent } from './city-master/city-master.component';
+import { LeadStatusMasterComponent } from './lead-status-master/lead-status-master.component';
+import { ServicePackageMasterComponent } from './service-package-master/service-package-master.component';
 
 @NgModule({
   declarations: [
@@ -37,14 +41,15 @@ import { SubCategoryMasterComponent } from './sub-category-master/sub-category-m
     //Master Components
     CategoryMasterComponent,
     UserManagementComponent,
-    // CityMasterComponent,
+    CityMasterComponent,
     // JobStatusMasterComponent,
-    // LeadStatusMasterComponent,
+    LeadStatusMasterComponent,
     // ProviderStatusMasterComponent,
-    // QuestionMasterComponent,
+    QuestionMasterComponent,
     // RoleMasterComponent,
     SubCategoryMasterComponent,
     // UserRolesComponent
+    ServicePackageMasterComponent
   ],
   imports: [
     CommonModule,
