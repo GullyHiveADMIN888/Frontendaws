@@ -53,14 +53,32 @@ export class RegisterComponent {
     password: '',
     registrationDocument: File,
     addressProof: File,
+
+
+
+  
+  // Step 2 - Business Address
+  line1: '',
+  line2: '',
+ 
+  locality: '',
+  landmark: '',
+                 // eg. Seller/Admin
+
+ 
+  // Step 3 - Service Areas
+  areaType: '',                 // city/radius/pincode
+  cityId: null as number | null,
+  radiusKm: null as number | null,
+  pincodes: '',                 // comma-separated string
+
+  // Optional: more backend fields if needed
+
+
+
   };
 
   errors: any = {};
-
-  /* 🔹 FIELD UPDATE */
-  // onInputChange(event: { field: string; value: any }) {
-  //   this.formData[event.field] = event.value;
-  // }
 
   onInputChange(event: { field: string; value: any }) {
     this.formData[event.field] = event.value;
@@ -119,7 +137,7 @@ export class RegisterComponent {
     formData.append('FullName', this.formData.fullName || '');
     formData.append('Email', this.formData.email || '');
     formData.append('Mobile', this.formData.mobile || '');
-    formData.append('CoverageArea', this.formData.coverageArea || '');
+    // formData.append('CoverageArea', this.formData.coverageArea || '');
     formData.append('ProfessionalType', this.formData.professionalType || '');
     formData.append('ServiceCategory', JSON.stringify(this.formData.serviceCategory || []));
 
@@ -137,15 +155,38 @@ export class RegisterComponent {
     formData.append('BusinessName', this.formData.businessName || '');
     formData.append('RegistrationType', this.formData.registrationType || '');
     formData.append('RegistrationNumber', this.formData.registrationNumber || '');
-    formData.append('BusinessAddress', this.formData.businessAddress || '');
-    formData.append('State', this.formData.state || '');
-    formData.append('City', this.formData.city || '');
+   // formData.append('BusinessAddress', this.formData.businessAddress || '');
+    // formData.append('State', this.formData.state || '');
+    // formData.append('City', this.formData.city || '');
+    // Instead of sending state name:
+formData.append('State', this.formData.stateId?.toString() || '');
+formData.append('City', this.formData.cityId?.toString() || '');
+
     formData.append('PlotNumber', this.formData.plotNumber || '');
     formData.append('PinCode', this.formData.pinCode || '');
-    formData.append('Role', this.formData.role || '');
+    formData.append('Role', 'Seller');
     formData.append('Password', this.formData.password || '');
     if (this.formData.registrationDocument) formData.append('RegistrationDocument', this.formData.registrationDocument);
     if (this.formData.addressProof) formData.append('AddressProof', this.formData.addressProof);
+
+
+
+
+formData.append('Line1', this.formData.line1 || '');
+formData.append('Line2', this.formData.line2 || '');
+formData.append('Locality', this.formData.locality || '');
+formData.append('Landmark', this.formData.landmark || '');
+
+formData.append('StateId', this.formData.stateId?.toString() || '');
+formData.append('CityId', this.formData.cityId?.toString() || '');
+formData.append('PinCode', this.formData.pinCode || '');
+
+formData.append('AreaType', this.formData.areaType || '');
+formData.append('ServiceCityId', this.formData.cityId?.toString() || '');
+formData.append('RadiusKm', this.formData.radiusKm?.toString() || '');
+formData.append('Pincodes', this.formData.pincodes || '');
+
+
 
     // Step 3
     formData.append('SelfOverview', this.formData.selfOverview || '');
@@ -210,9 +251,6 @@ export class RegisterComponent {
       this.errors.mobile = 'Enter valid 10-digit mobile';
     }
 
-    // if (!this.formData.serviceCategory?.length) {
-    //   this.errors.serviceCategory = 'Select at least one service category';
-    // }
     if (!this.formData.serviceCategoryId) {
       this.errors.serviceCategoryId = 'Select a service category';
     }
@@ -220,8 +258,11 @@ export class RegisterComponent {
       this.errors.subCategoryIds = 'Select at least one service subCategoory';
     }
 
-    if (!this.formData.coverageArea?.trim()) {
-      this.errors.coverageArea = 'Coverage area is required';
+    // if (!this.formData.coverageArea?.trim()) {
+    //   this.errors.coverageArea = 'Coverage area is required';
+    // }
+     if (!this.formData.password?.trim()) {
+      this.errors.password = 'password is required';
     }
 
     if (!this.formData.professionalType?.trim()) {
@@ -255,6 +296,9 @@ export class RegisterComponent {
     }
     if (!this.formData.addressProof) {
       this.errors.addressProof = 'Upload address proof';
+    }
+    if (!this.formData.line1?.trim()) {
+      this.errors.line1 = 'Line 1 is required';
     }
     return Object.keys(this.errors).length === 0;
   }

@@ -3,7 +3,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map,BehaviorSubject  } from 'rxjs';
- //import { environment } from '../../environments/environment';
+//import { environment } from '../../environments/environment';
 import { environment } from '../../environments/environment.prod';
 
 // --- Dashboard & Stats ---
@@ -66,6 +66,7 @@ export interface PublicProfile {
   addressLine1?: string;
   addressLine2?: string;
   locality?: string;
+  landmark?: string;
   addressCity?: string;
   state?: string;
   pincode?: string;
@@ -75,7 +76,12 @@ export interface PublicProfile {
   services?: string[];
   portfolioImages?: string[];
   reviews?: Review[];
-
+ addressState?: string;
+  website?: string;
+  linkedin?: string;
+  addressCityId?: number;
+addressStateId?: number;
+ 
 }
 
 
@@ -138,7 +144,7 @@ export interface ProviderService {
 export interface ProviderServicesResponse {
   providerServices: ProviderService[];
   serviceArea: {
-    type: 'city' | 'radius' | 'pincode';
+    type: 'city_radius' | 'polygon' | 'pincode_list';
     cityId?: number;
     radiusKm?: number;
     pincodes: string[];
@@ -234,6 +240,24 @@ getPublicProfile(sellerId: number) {
     );
 }
 
+sharableProfile(sellerId: number) {
+  return this.http
+    .get<{ success: boolean; data: PublicProfile }>(
+      `${this.apiUrl}/sharableeProfile/${sellerId}`
+    )
+    .pipe(
+      map(res => {
+        const profile = res.data;
+
+        if (profile.profilePictureUrl) {
+          profile.profilePictureUrl = environment.assetUrl  + profile.profilePictureUrl;
+        }
+
+        return profile;
+      })
+    );
+}
+
 updateProfile(sellerId: number, payload: FormData) {
   return this.http.post(`${this.apiUrl}/updateProfile/${sellerId}`, payload, {
     headers: this.getHeaders() // Do NOT set Content-Type; browser handles multipart
@@ -314,6 +338,26 @@ getProviderServices(providerId: number): Observable<ProviderServicesResponse> {
     );
   }
 
+getStates(): Observable<any[]> {
+  return this.http.get<any[]>(`${environment.apiBaseUrl}/auth/states`);
+}
+
+getCitiess(stateId: number): Observable<any[]> {
+  return this.http.get<any[]>(`${environment.apiBaseUrl}/auth/cities/${stateId}`);
+}
+
+
+// changePassword(data: any) {
+//   return this.http.post('/api/auth/change-password', data);
+  
+// }
+
+changePassword(sellerId: number, data: any) {
+  return this.http.post(
+    `${this.apiUrl}/change-password/${sellerId}`,
+    data
+  );
+}
 
 }
 

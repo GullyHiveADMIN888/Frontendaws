@@ -37,15 +37,32 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    // Subscribe to sellerId from SellerService
-    this.sellerService.sellerId$.subscribe(id => {
-      if (id) {
-        this.sellerId = id;
-        this.buildSettingsMenu(); // build menu after sellerId is available
-      }
-    });
-  }
+  showCurrent = false;
+  showNew = false;
+  showConfirm = false;
+  passwordMismatch = false;
+  sameAsCurrent = false;
+
+  // ngOnInit(): void {
+  //   // Subscribe to sellerId from SellerService
+  //   this.sellerService.sellerId$.subscribe(id => {
+  //     if (id) {
+  //       this.sellerId = id;
+  //       this.buildSettingsMenu(); // build menu after sellerId is available
+  //     }
+  //   });
+  // }
+
+
+ngOnInit(): void {
+  this.sellerService.sellerId$.subscribe(id => {
+    if (id) {
+      this.sellerId = id;
+      this.buildSettingsMenu();
+    }
+  });
+}
+
 
   buildSettingsMenu() {
     this.settingsCategories = [ // ✅ assign to component property
@@ -97,4 +114,100 @@ export class SettingsComponent implements OnInit {
       this.router.navigateByUrl(link);
     }
   }
+
+
+
+
+  showChangePasswordModal = false;
+
+passwordData = {
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: ''
+};
+
+openChangePassword() {
+  this.showChangePasswordModal = true;
+}
+
+closeChangePassword() {
+  this.showChangePasswordModal = false;
+  this.passwordData = {
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  };
+}
+
+// changePassword() {
+//    this.validatePasswords();
+//   if (this.passwordMismatch || this.sameAsCurrent) {
+//     alert('Passwords do not match');
+//     return;
+//   }
+
+//   // 🔥 Call API here
+//   this.sellerService.changePassword(this.passwordData).subscribe({
+//     next: () => {
+//       alert('Password updated successfully');
+//       this.closeChangePassword();
+//     },
+//     error: () => {
+//       alert('Failed to update password');
+//     }
+//   });
+// }
+changePassword() {
+  this.validatePasswords();
+
+  if (this.passwordMismatch || this.sameAsCurrent) {
+    return;
+  }
+
+  if (!this.sellerId) {
+    alert('Seller not logged in');
+    return;
+  }
+
+  const payload = {
+    // currentPassword: this.passwordData.currentPassword,
+    // newPassword: this.passwordData.newPassword
+    oldPassword: this.passwordData.currentPassword, // ✅ map correctly
+    newPassword: this.passwordData.newPassword
+  };
+
+  this.sellerService
+    .changePassword(this.sellerId, payload)
+    .subscribe({
+      next: () => {
+        alert('Password updated successfully');
+        this.closeChangePassword();
+      },
+      error: (err) => {
+        alert(err?.error?.message || 'Failed to update password');
+      }
+    });
+}
+
+onSettingClick(item: SettingItem) {
+  if (item.title === 'Password & Security') {
+    this.openChangePassword();   // 🔐 popup
+  } else {
+    this.navigateTo(item.link);  // ➡️ normal navigation
+  }
+}
+validatePasswords() {
+  const { currentPassword, newPassword, confirmPassword } = this.passwordData;
+
+  this.passwordMismatch =
+    !!newPassword &&
+    !!confirmPassword &&
+    newPassword !== confirmPassword;
+
+  this.sameAsCurrent =
+    !!currentPassword &&
+    !!newPassword &&
+    currentPassword === newPassword;
+}
+
 }

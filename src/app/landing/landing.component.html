@@ -40,92 +40,6 @@
   <!-- Login Modal -->
 
 
-
-  <!-- <div *ngIf="showLoginModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
-      <button
-        (click)="closeLoginModal()"
-        class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
-      >
-        <i class="ri-close-line text-2xl text-gray-600"></i>
-      </button>
-
-      <div class="text-center mb-8">
-        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <i class="ri-user-line text-3xl text-orange-600"></i>
-        </div>
-        <h2 class="text-3xl font-bold text-gray-900 font-poppins">Welcome Back</h2>
-        <p class="text-gray-600 font-inter mt-2">Login to your account</p>
-      </div>
-
-      <div *ngIf="loginError" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-        <p class="text-red-800 font-inter text-sm">{{ loginError }}</p>
-      </div>
-
-      <form (submit)="onLoginSubmit($event)" class="space-y-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
-            Email Address
-          </label>
-          <input
-            type="email"
-            name="email"
-            [value]="loginData.email"
-            (input)="onLoginInputChange('email', $event)"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-            placeholder="your.email@example.com"
-            required
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
-            Password
-          </label>
-          <input
-            type="password"
-            name="password"
-            [value]="loginData.password"
-            (input)="onLoginInputChange('password', $event)"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-            placeholder="Enter your password"
-            required
-          />
-        </div>
-
-        <div class="flex items-center justify-between">
-          <label class="flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              class="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500 cursor-pointer"
-            />
-            <span class="ml-2 text-sm text-gray-600 font-inter">Remember me</span>
-          </label>
-          <a href="#" class="text-sm text-orange-600 hover:text-orange-700 font-inter cursor-pointer">
-            Forgot password?
-          </a>
-        </div>
-
-        <button
-          type="submit"
-          [disabled]="isLoggingIn"
-          class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap cursor-pointer font-inter"
-        >
-          {{ isLoggingIn ? 'Logging in...' : 'Login' }}
-        </button>
-      </form>
-
-      <div class="mt-6 text-center">
-        <p class="text-sm text-gray-600 font-inter">
-          Don't have an account?{{' '}}
-          <a routerLink="/auth/register" class="text-orange-600 hover:text-orange-700 font-semibold cursor-pointer">
-            Register as Provider
-          </a>
-        </p>
-      </div>
-    </div>
-  </div> -->
-
   <div *ngIf="showLoginModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
       <button (click)="closeLoginModal()"
@@ -198,7 +112,7 @@
       <div class="mt-6 text-center">
         <p class="text-sm text-gray-600 font-inter">
           Don't have an account?{{' '}}
-          <a routerLink="/auth/register" class="text-orange-600 hover:text-orange-700 font-semibold cursor-pointer">
+          <a routerLink="/register" class="text-orange-600 hover:text-orange-700 font-semibold cursor-pointer">
             Register as Provider
           </a>
         </p>
@@ -592,22 +506,22 @@
               <div>
                 <input placeholder="Your Full Name" required
                   class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-                  name="name" [value]="formData.name" (input)="onInputChange('name', $event)" />
+                  name="name" [value]="formData.name" (input)="onInputChanges('name', $event)" />
               </div>
               <div>
                 <input placeholder="Email Address" required
                   class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-                  type="email" name="email" [value]="formData.email" (input)="onInputChange('email', $event)" />
+                  type="email" name="email" [value]="formData.email" (input)="onInputChanges('email', $event)" />
               </div>
               <div>
                 <input placeholder="Phone Number" required
                   class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-                  type="tel" name="phone" [value]="formData.phone" (input)="onInputChange('phone', $event)" />
+                  type="tel" name="phone" [value]="formData.phone" (input)="onInputChanges('phone', $event)" />
               </div>
               <div>
                 <select name="service" required
                   class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter appearance-none cursor-pointer"
-                  [value]="formData.service" (change)="onInputChange('service', $event)">
+                  [value]="formData.service" (change)="onInputChanges('service', $event)">
                   <option value="">Select Service Category</option>
                   <option *ngFor="let cat of serviceCategories" [value]="cat.title">{{ cat.title }}</option>
                 </select>
@@ -615,13 +529,13 @@
               <div>
                 <input placeholder="Your Location (City/Area)" required
                   class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-                  name="location" [value]="formData.location" (input)="onInputChange('location', $event)" />
+                  name="location" [value]="formData.location" (input)="onInputChanges('location', $event)" />
               </div>
               <div>
                 <textarea name="message" placeholder="Describe your service requirements (max 500 characters)"
                   maxlength="500" rows="4"
                   class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none font-inter"
-                  [value]="formData.message" (input)="onInputChange('message', $event)"></textarea>
+                  [value]="formData.message" (input)="onInputChanges('message', $event)"></textarea>
                 <div class="text-sm text-gray-500 mt-1 font-inter">{{ charCount }}/500 characters</div>
               </div>
               <button type="submit" [disabled]="isSubmitting || formData.message.length > 500"
@@ -752,4 +666,92 @@
       </div>
     </div>
   </footer>
+<!-- Forgot Password Modal -->
+<div *ngIf="showForgotPasswordModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
+  <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
+    <button (click)="closeForgotPasswordModal()"
+      class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
+      <i class="ri-close-line text-2xl text-gray-600"></i>
+    </button>
+
+    <div class="text-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-900 font-poppins">Reset Password</h2>
+      <p class="text-gray-600 font-inter mt-2">Enter your mobile number to receive an OTP</p>
+    </div>
+
+    <form [formGroup]="forgotPasswordForm" (ngSubmit)="sendOtp()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">Mobile Number</label>
+        <input type="tel" formControlName="mobile"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+          placeholder="Enter your mobile number"
+          [class.border-red-500]="forgotPasswordForm.get('mobile')?.invalid && forgotPasswordForm.get('mobile')?.touched"/>
+        <div *ngIf="forgotPasswordForm.get('mobile')?.invalid && forgotPasswordForm.get('mobile')?.touched"
+          class="mt-1 text-sm text-red-600">
+          <span *ngIf="forgotPasswordForm.get('mobile')?.errors?.['required']">Mobile number is required</span>
+          <span *ngIf="forgotPasswordForm.get('mobile')?.errors?.['pattern']">Invalid mobile number</span>
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="forgotPasswordForm.invalid || isSendingOtp"
+        class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-inter">
+        {{ isSendingOtp ? 'Sending OTP...' : 'Send OTP' }}
+      </button>
+    </form>
+      <!-- <div #recaptchaContainer></div> -->
+  </div>
 </div>
+
+</div>
+
+<!-- OTP Modal -->
+<div *ngIf="showOtpModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
+  <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
+    <button (click)="showOtpModal = false"
+      class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
+      <i class="ri-close-line text-2xl text-gray-600"></i>
+    </button>
+
+    <div class="text-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-900 font-poppins">Verify Mobile Number</h2>
+      <p class="text-gray-600 font-inter mt-2">We've sent a 6-digit OTP to <span class="font-semibold text-gray-900">{{ otpMobile }}</span></p>
+    </div>
+
+ <div class="flex justify-center gap-3" (paste)="onPaste($event)">
+        <input
+  #otpInput
+  *ngFor="let digit of otp; let i = index; trackBy: trackByIndex"
+  type="text"
+  inputmode="numeric"
+  maxlength="1"
+  [value]="otp[i]"
+  (input)="onInputChange($event, i)"
+  (keydown)="onKeyDown($event, i)"
+  class="w-14 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+/>
+
+      </div>
+
+ 
+    <p *ngIf="error" class="text-red-600 text-sm mb-4 text-center font-inter">
+      {{ error }}
+    </p>
+
+    <div class="text-center mb-4">
+      <ng-container *ngIf="canResend; else timerTemplate">
+        <button type="button" (click)="onResend()" class="text-orange-600 hover:text-orange-700 font-medium text-sm font-inter">Resend OTP</button>
+      </ng-container>
+      <ng-template #timerTemplate>
+        <p class="text-gray-600 text-sm font-inter">Resend OTP in <span class="font-semibold text-orange-600">{{ timer }}s</span></p>
+      </ng-template>
+    </div>
+
+    <button (click)="onVerify()" [disabled]="isVerifying || otp.join('').length !== 6"
+      class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-inter">
+      {{ isVerifying ? 'Verifying...' : 'Verify & Continue' }}
+    </button>
+  </div>
+
+</div>
+
+<div id="recaptcha-container"></div>
