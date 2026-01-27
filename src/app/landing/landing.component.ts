@@ -720,17 +720,6 @@ onVerify() {
 }
 
 
-// onResend() {
-//     this.timer = 60;
-//     this.canResend = false;
-//     this.otp = Array(6).fill('');
-//     this.error = '';
-
-//     this.stopTimer();
-//     this.startTimer();
-
-//     setTimeout(() => this.focusInput(0), 0);
-//   }
 async onResend() {
   if (!this.otpMobile) return; // make sure phone number exists
 
