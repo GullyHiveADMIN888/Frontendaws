@@ -15,6 +15,7 @@ import { LeadsComponent } from './leads/leads.component';
 import { ResponsesComponent } from './responses/responses.component';
 import { HelpComponent } from './help/help.component';
 import { ReferEarnComponent } from './refer-earn/refer-earn.component';
+import {  SharableProfileComponent} from './sharable-profile/sharable-profile.component';
 // const routes: Routes = [
 //   { path: '', component: DashboardComponent },          // /seller -> dashboard
 //   { path: 'recentLeads', component: RecentLeadsComponent },  // /seller/leads -> all leads
@@ -71,6 +72,7 @@ const routes: Routes = [
 
       // Profile
       { path: 'completeProfile/:id', component: PublicProfileComponent },
+       { path: 'sharableProfile/:id', component: SharableProfileComponent },
 
       { path: 'refer/:sellerId', component: ReferEarnComponent }, // 👈 ADD THIS
 
