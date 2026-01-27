@@ -69,11 +69,11 @@ ngOnInit() {
 
   // Service area
   serviceArea: {
-    type: 'city' | 'radius' | 'pincode' | '';
+    type: 'city_radius' | 'polygon' | 'pincode_list' | '';
     cityId?: number;
     radiusKm?: number;
     pincodes: string[];
-  } = { type: 'city', pincodes: [] };
+  } = { type: 'city_radius', pincodes: [] };
 
   pincodeInput = '';
   showServicesModal = false;
@@ -135,14 +135,25 @@ loadProviderServices(providerId: number) {
       }));
 
       // ✅ service area
+      // if (data.serviceArea) {
+      //   this.serviceArea = {
+      //     type: data.serviceArea.type,
+      //     cityId: data.serviceArea.cityId,
+      //     radiusKm: data.serviceArea.radiusKm,
+      //     pincodes: data.serviceArea.pincodes || []
+      //   };
+      // }
       if (data.serviceArea) {
-        this.serviceArea = {
-          type: data.serviceArea.type,
-          cityId: data.serviceArea.cityId,
-          radiusKm: data.serviceArea.radiusKm,
-          pincodes: data.serviceArea.pincodes || []
-        };
-      }
+  this.serviceArea = {
+    type: data.serviceArea.type,
+    cityId: data.serviceArea.cityId,
+    radiusKm: data.serviceArea.radiusKm,
+    pincodes: Array.isArray(data.serviceArea.pincodes)
+      ? [...data.serviceArea.pincodes]
+      : []
+  };
+}
+
 
       // ✅ load dropdown reference data
       this.parentCategories = data.categories;
@@ -188,7 +199,15 @@ openEditServices() {
       this.services = data.providerServices ?? [];
       this.parentCategories = data.categories ?? [];
       this.cities = data.cities ?? [];
-      this.serviceArea = data.serviceArea ?? { type: '', pincodes: [] };
+     // this.serviceArea = data.serviceArea ?? { type: '', pincodes: [] };
+     this.serviceArea = {
+  type: data.serviceArea?.type ?? '',
+  cityId: data.serviceArea?.cityId,
+  radiusKm: data.serviceArea?.radiusKm,
+  pincodes: Array.isArray(data.serviceArea?.pincodes)
+    ? [...data.serviceArea.pincodes]
+    : []
+};
 
       if (this.services.length > 0) {
         const firstService = this.services[0];

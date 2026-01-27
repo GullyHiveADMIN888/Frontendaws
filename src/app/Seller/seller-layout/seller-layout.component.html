@@ -62,7 +62,7 @@
             <p class="text-sm font-semibold text-gray-900">{{ user?.name || 'Seller' }}</p>
             <p class="text-xs text-gray-500">{{ user?.email || 'seller@gmail.com' }}</p>
           </div>
-          <a [routerLink]="['/seller/completeProfile', sellerId]"
+          <a [routerLink]="['/seller/sharableProfile', sellerId]"
             class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
             <i class="ri-user-line mr-3 text-gray-400"></i> View Public Profile
           </a>

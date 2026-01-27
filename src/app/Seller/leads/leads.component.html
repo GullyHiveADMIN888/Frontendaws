@@ -1,10 +1,10 @@
 <!-- PAGE CONTENT -->
 <div class="max-w-7xl mx-auto px-4 py-8">
 
-  <h1 class="text-3xl font-bold mb-6">Leads</h1>
+  <!-- <h1 class="text-3xl font-bold mb-6">Leads</h1> -->
 
   <!-- FILTERS -->
-  <div class="flex gap-3 mb-6">
+  <!-- <div class="flex gap-3 mb-6">
     <button
       *ngFor="let s of ['all','new','responded','viewed']"
       (click)="setFilter(s)"
@@ -13,10 +13,10 @@
     >
       {{ s | titlecase }}
     </button>
-  </div>
+  </div> -->
 
   <!-- LEADS LIST -->
-  <div class="space-y-4">
+   <!-- <div class="space-y-4">
     <div *ngFor="let lead of filteredLeads"
       class="bg-white border rounded-lg p-6 hover:shadow-lg transition">
 
@@ -40,5 +40,154 @@
       </div>
 
     </div>
+  </div>  -->
+
+
+
+  <!-- LEADS LIST -->
+<!-- <div class="space-y-4">
+  <div *ngFor="let lead of paginatedLeads"
+    class="bg-white border rounded-lg p-6 hover:shadow-lg transition">
+
+    <div class="flex justify-between">
+      <div>
+        <h3 class="text-lg font-semibold">{{ lead.serviceName }}</h3>
+        <p class="text-orange-600 font-medium">{{ lead.status }}</p>
+        <p class="text-gray-600 text-sm mt-2">{{ lead.description }}</p>
+
+        <div class="flex gap-4 text-sm text-gray-500 mt-3">
+          <span><i class="ri-map-pin-line"></i> {{ lead.location }}</span>
+          <span><i class="ri-time-line"></i>  {{ lead.time }}</span>
+          <span><i class="ri-money-dollar-circle-line"></i> {{ lead.budget }}</span>
+        </div> 
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <button class="px-4 py-2 bg-orange-600 text-white rounded-lg">Send Quote</button>
+        <button class="px-4 py-2 border rounded-lg">View Details</button>
+      </div>
+    </div>
+
   </div>
+</div>
+
+<div class="flex justify-center items-center gap-2 mt-6">
+  <button (click)="prevPage()" [disabled]="currentPage === 1" class="px-3 py-1 border rounded-lg">
+    Prev
+  </button>
+
+  <button *ngFor="let page of pages"
+          (click)="goToPage(page)"
+          [ngClass]="page === currentPage ? 'bg-orange-600 text-white px-3 py-1 rounded-lg' : 'px-3 py-1 border rounded-lg'">
+    {{ page }}
+  </button>
+
+  <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="px-3 py-1 border rounded-lg">
+    Next
+  </button>
+</div>  -->
+
+<!-- PAGE CONTENT -->
+<div class="max-w-7xl mx-auto px-4 py-8">
+
+  <!-- TITLE -->
+  <h1 class="text-3xl font-bold mb-4">Leads</h1>
+
+  <!-- FILTERS -->
+  <div class="flex gap-3 mb-4">
+    <button
+      *ngFor="let s of ['all','new','responded','viewed']"
+      (click)="setFilter(s)"
+      class="px-4 py-2 rounded-lg font-medium"
+      [ngClass]="filterStatus === s ? 'bg-orange-600 text-white' : 'bg-gray-100'">
+      {{ s | titlecase }}
+    </button>
+  </div>
+
+  <!-- TOP BAR -->
+  <div class="flex justify-between items-center mb-6">
+
+    <!-- LEFT: COUNT -->
+    <div class="text-sm text-gray-600">
+      Showing
+      <span class="font-semibold">{{ startIndex }}</span>
+      –
+      <span class="font-semibold">{{ endIndex }}</span>
+      of
+      <span class="font-semibold">{{ totalLeads }}</span>
+      leads
+    </div>
+
+  
+
+  </div>
+
+  <!-- LEADS LIST -->
+  <div class="space-y-4">
+    <div *ngFor="let lead of paginatedLeads"
+         class="bg-white border rounded-lg p-6 hover:shadow-lg transition">
+
+      <div class="flex justify-between">
+        <div>
+          <h3 class="text-lg font-semibold">{{ lead.serviceName }}</h3>
+          <p class="text-orange-600 font-medium">{{ lead.status }}</p>
+          <p class="text-gray-600 text-sm mt-2">{{ lead.description }}</p>
+
+          <div class="flex gap-4 text-sm text-gray-500 mt-3">
+            <span><i class="ri-map-pin-line"></i> {{ lead.location }}</span>
+            <span><i class="ri-time-line"></i> {{ lead.time }}</span>
+            <span><i class="ri-money-dollar-circle-line"></i> {{ lead.budget }}</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <button class="px-4 py-2 bg-orange-600 text-white rounded-lg">
+            Send Quote
+          </button>
+          <button class="px-4 py-2 border rounded-lg">
+            View Details
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+
+  <!-- RIGHT: PAGINATION -->
+   <!-- PAGINATION (BOTTOM RIGHT) -->
+<div class="flex justify-end mt-8">
+  <div class="flex items-center gap-1">
+
+    <button
+      (click)="prevPage()"
+      [disabled]="currentPage === 1"
+      class="px-3 py-1 border rounded-lg text-sm disabled:opacity-50">
+      Prev
+    </button>
+
+    <button
+      *ngFor="let page of pages"
+      (click)="goToPage(page)"
+      class="px-3 py-1 text-sm rounded-lg"
+      [ngClass]="page === currentPage
+        ? 'bg-orange-600 text-white'
+        : 'border hover:bg-gray-100'">
+      {{ page }}
+    </button>
+
+    <button
+      (click)="nextPage()"
+      [disabled]="currentPage === totalPages"
+      class="px-3 py-1 border rounded-lg text-sm disabled:opacity-50">
+      Next
+    </button>
+
+  </div>
+</div>
+
+
+</div>
+
 </div>

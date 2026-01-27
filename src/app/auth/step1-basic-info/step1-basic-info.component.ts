@@ -18,6 +18,10 @@ export class Step1BasicInfoComponent {
   @Output() next = new EventEmitter<void>();
   @Output() sendOTP = new EventEmitter<void>();
 
+   togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+  showPassword: boolean = false; // new property
   profilePreview: string = '';
   fileInputId = 'profile-upload-' + Math.random().toString(36).substring(2);
 
@@ -74,17 +78,7 @@ export class Step1BasicInfoComponent {
     this.inputChange.emit({ field: 'subCategoryIds', value: this.formData.subCategoryIds });
   }
 
-  // // Profile picture & input helpers
-  // onProfilePictureChange(event: Event) {
-  //   const input = event.target as HTMLInputElement;
-  //   if (input.files && input.files[0]) {
-  //     const file = input.files[0];
-  //     this.generatePreview(file);
-  //     this.inputChange.emit({ field: 'profilePicture', value: file });
-  //   } else {
-  //     this.removeProfilePicture();
-  //   }
-  // }
+
   onProfilePictureChange(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
@@ -128,11 +122,53 @@ export class Step1BasicInfoComponent {
     reader.readAsDataURL(file);
   }
 
-  onInputFieldChange(field: string, value: any) {
-    this.inputChange.emit({ field, value });
-    if (this.errors[field]) delete this.errors[field];
+
+onInputFieldChange(field: string, value: any, event?: Event) {
+
+  if (field === 'mobile') {
+    const input = event?.target as HTMLInputElement;
+
+    // 🔥 digits only
+    value = value.replace(/\D/g, '').slice(0, 10);
+
+    // 🔥 update DOM input value
+    if (input) {
+      input.value = value;
+    }
   }
 
-  onSendOTP() { this.sendOTP.emit(); }
+  this.inputChange.emit({ field, value });
+
+  if (this.errors?.[field]) {
+    delete this.errors[field];
+  }
+}
+
+
+  // onSendOTP() { this.sendOTP.emit(); }
+  onSendOTP() {
+
+  const mobile = this.formData?.mobile;
+
+  // 🔴 Required check
+  if (!mobile) {
+    this.errors.mobile = 'Mobile number is required';
+    return;
+  }
+
+  // 🔴 10-digit validation
+  if (!/^\d{10}$/.test(mobile)) {
+    this.errors.mobile = 'Mobile number must be 10 digits';
+    return;
+  }
+
+  // ✅ Valid → proceed
+  this.sendOTP.emit();
+}
+
   onNextClick() { this.next.emit(); }
+
+
+ 
+
 }

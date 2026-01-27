@@ -1,9 +1,28 @@
+
+// import {
+//   Auth,
+//   signInWithPhoneNumber,
+//   RecaptchaVerifier,
+//   ConfirmationResult
+// } from '@angular/fire/auth';
+
+import { Auth, signInWithPhoneNumber, ConfirmationResult } from '@angular/fire/auth';
+import { RecaptchaVerifier } from 'firebase/auth';
+
+import {
+  Input,
+  Output,
+  EventEmitter,
+  ViewChildren,
+  QueryList,
+  ElementRef,
+}  from '@angular/core';
 import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Subscription } from 'rxjs';
+import { interval,Subscription } from 'rxjs';
 // import { environment } from '../../environments/environment';
 import { environment } from '../../environments/environment.prod';
 
@@ -16,6 +35,7 @@ import { AuthService } from '../auth/auth.service';
 
 import {  HttpErrorResponse } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
+//import { OTPVerificationComponent } from '../auth/otp-verification/otp-verification.component';
 
 @Component({
   selector: 'app-landing',
@@ -33,7 +53,31 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   isSubmitting = false;
   submitStatus: 'idle' | 'success' | 'error' = 'idle';
   charCount = 0;
+
+
+// Forgot Pass....
+showForgotPasswordModal = false;
+forgotPasswordForm: FormGroup;
+isSendingOtp = false;
+showOtpModal = false;
+otpMobile = '';
  
+// OTP Modal state
+
+otp: string[] = Array(6).fill('');
+timer = 60;
+canResend = false;
+isVerifying = false;
+  error = '';
+// private otpTimerSubscription: Subscription | null = null;
+ private timerSubscription: Subscription | null = null;
+  @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
+  
+  // Firebase...
+confirmationResult!: ConfirmationResult;
+recaptchaVerifier!: RecaptchaVerifier;
+//....
+
  loginForm: FormGroup;
   loginData = {
     email: '',
@@ -255,29 +299,60 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   private subscription?: Subscription;
 
 
- constructor(
-    private http: HttpClient,
-    private fb: FormBuilder,
-    private authService: AuthService,
-    @Inject(PLATFORM_ID) private platformId: any
-  ) {
-    // Initialize login form
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      rememberMe: [false]
-    });
-  }
+//  constructor(
+//     private http: HttpClient,
+//     private fb: FormBuilder,
+//     private authService: AuthService,
+//     @Inject(PLATFORM_ID) private platformId: any
+//   ) {
+//     // Initialize login form
+//     this.loginForm = this.fb.group({
+//       email: ['', [Validators.required, Validators.email]],
+//       password: ['', [Validators.required, Validators.minLength(6)]],
+//       rememberMe: [false]
+//     });
+//   }
 
-  ngOnInit(): void {
+  constructor(private fb: FormBuilder, private http: HttpClient, private authService: AuthService, private auth: Auth, @Inject(PLATFORM_ID) private platformId: any) {
+  this.loginForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    rememberMe: [false]
+  });
+
+
+  // Forgot password form
+  this.forgotPasswordForm = this.fb.group({
+    mobile: ['', [Validators.required, Validators.pattern('^[6-9]\\d{9}$')]] // Indian 10-digit mobile number
+  });
+}
+  //   @Input() mobile = '';
+  // @Output() onVerified = new EventEmitter<void>();
+  // @Output() onBack = new EventEmitter<void>();
+  
+
+  // ngOnInit(): void {
+  //   this.setupScrollListener();
+  //   this.loadRememberedEmail();
+  // }
+
+  // ngOnDestroy(): void {
+  //   this.subscription?.unsubscribe();
+  // }
+
+    ngOnInit(): void {
     this.setupScrollListener();
     this.loadRememberedEmail();
+    //  if (isPlatformBrowser(this.platformId)) {
+    //   this.startTimer();
+    //   setTimeout(() => this.focusInput(0), 0);
+    // }
   }
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
+      this.stopTimer();
   }
-
   private loadRememberedEmail(): void {
     if (isPlatformBrowser(this.platformId)) {
       const savedEmail = localStorage.getItem('rememberedEmail');
@@ -299,7 +374,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     // Already handled by @HostListener
   }
 
-  onInputChange(field: keyof typeof this.formData, event: Event): void {
+  onInputChanges(field: keyof typeof this.formData, event: Event): void {
     const input = event.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
     this.formData[field] = input.value;
     
@@ -372,47 +447,6 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
   // ========== .NET CORE 8 API LOGIN INTEGRATION ==========
 
-  // onLoginSubmit(event: Event): void {
-  //   event.preventDefault();
-  //   this.loginError = '';
-    
-  //   // Basic validation
-  //   if (!this.loginData.email || !this.loginData.password) {
-  //     this.loginError = 'Please fill in all fields';
-  //     return;
-  //   }
-
-  //   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.loginData.email)) {
-  //     this.loginError = 'Please enter a valid email address';
-  //     return;
-  //   }
-
-  //   this.isLoggingIn = true;
-
-  //   // Prepare login payload for .NET Core API
-  //   const loginPayload = {
-  //     email: this.loginData.email,
-  //     password: this.loginData.password
-  //   };
-
-  //   // Make API call to .NET Core 8 backend
-  //   this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
-  //     .pipe(
-  //       catchError((error: HttpErrorResponse) => {
-  //         this.isLoggingIn = false;
-  //         this.handleLoginError(error);
-  //         return throwError(() => error);
-  //       })
-  //     )
-  //     .subscribe({
-  //       next: (response: any) => {
-  //         this.handleLoginSuccess(response);
-  //       },
-  //       error: () => {
-  //         // Error already handled in catchError
-  //       }
-  //     });
-  // }
 onLoginSubmit(event: Event): void {
   event.preventDefault();
   this.loginError = '';
@@ -453,7 +487,7 @@ this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
     error: err => this.handleLoginError(err)
   });
 
-  // Also update loginData for consistency
+ 
   
 
   // Handle remember me functionality
@@ -559,38 +593,299 @@ this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
     this.isLoggingIn = false;
   }
 
+
+  
   // ========== FORGOT PASSWORD ==========
 
-  forgotPassword(event: Event): void {
-    event.preventDefault();
-    
-    const email = this.loginData.email || prompt('Please enter your email to reset password:');
-    if (email) {
-      this.sendResetPasswordEmail(email);
-    }
+ forgotPassword(event: Event) {
+  event.preventDefault();
+  this.showForgotPasswordModal = true;
+}
+
+closeForgotPasswordModal() {
+  this.showForgotPasswordModal = false;
+}
+// sendOtp() {
+//   if (this.forgotPasswordForm.invalid) return;
+
+//   this.isSendingOtp = true;
+//   const mobile = this.forgotPasswordForm.value.mobile;
+
+//   this.http.post(`${this.apiUrl}/auth/send-otp`, { mobile })
+//     .subscribe({
+//       next: (res: any) => {
+//         this.isSendingOtp = false;
+//         if (res.success) {
+//           alert('OTP sent successfully!');
+
+//           // Set mobile & show OTP modal
+//           this.otpMobile = mobile;
+//           this.showOtpModal = true;
+
+//           // Close forgot password modal
+//           this.showForgotPasswordModal = false;
+
+//           this.startTimer();
+//         } else {
+//           alert(res.message || 'Failed to send OTP');
+//         }
+//       },
+//       error: (err) => {
+//         this.isSendingOtp = false;
+//         alert(err.error?.message || 'Something went wrong');
+//       }
+//     });
+// }
+
+
+async sendOtp() {
+  if (this.forgotPasswordForm.invalid) return;
+
+  this.isSendingOtp = true;
+  const mobile = this.forgotPasswordForm.value.mobile;
+  const phoneNumber = `+91${mobile}`;
+
+  try {
+    await this.initRecaptcha(); // wait for recaptcha to render
+
+    this.confirmationResult = await signInWithPhoneNumber(this.auth, phoneNumber, this.recaptchaVerifier);
+
+    this.isSendingOtp = false;
+    this.otpMobile = phoneNumber;
+    this.showOtpModal = true;
+    this.showForgotPasswordModal = false;
+
+    this.timer = 60;
+    this.canResend = false;
+    this.startTimer();
+    setTimeout(() => this.focusInput(0), 0);
+
+  } catch (error: any) {
+    this.isSendingOtp = false;
+    console.error('Firebase OTP error:', error);
+    alert(`OTP sending failed: ${error.message}`);
+  }
+}
+
+
+
+startTimer() {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    this.timerSubscription = interval(1000).subscribe(() => {
+      if (this.timer > 0) {
+        this.timer--;
+      } else {
+        this.canResend = true;
+        this.stopTimer();
+      }
+    });
   }
 
-  private sendResetPasswordEmail(email: string): void {
-    this.http.post(`${this.apiUrl}/auth/forgot-password`, { email })
-      .pipe(
-        catchError((error: HttpErrorResponse) => {
-          console.error('Password reset error:', error);
-          return throwError(() => error);
-        })
-      )
-      .subscribe({
-        next: () => {
-          alert(`Password reset link has been sent to ${email}. Please check your inbox.`);
-        },
-        error: (error) => {
-          if (error.status === 404) {
-            alert('Email not found. Please check your email address.');
-          } else {
-            alert('Failed to send reset email. Please try again later.');
-          }
-        }
-      });
+stopTimer() {
+    this.timerSubscription?.unsubscribe();
   }
+
+focusNext(index: number) {
+  const input = this.otpInputs?.toArray()[index];
+  if (input) {
+    // Remove non-digits from input
+    input.nativeElement.value = input.nativeElement.value.replace(/\D/g, '').slice(-1);
+    this.otp[index] = input.nativeElement.value; // optional if you want
+  }
+
+  // Move to next box
+  if (this.otp[index] && index < this.otp.length - 1) {
+    this.focusInput(index + 1);
+  }
+}
+
+//  onVerify() {
+//   const otpValue = this.otp.join('');
+
+//   if (otpValue.length !== 6) {
+//     this.error = 'Please enter complete OTP';
+//     return;
+//   }
+
+//   this.isVerifying = true;
+//   this.error = '';
+
+//   setTimeout(() => {
+//     this.isVerifying = false;
+//     this.onVerified.emit();
+//   }, 1500);
+// }
+onVerify() {
+  const otpValue = this.otp.join('');
+
+  if (otpValue.length !== 6) {
+    this.error = 'Please enter complete OTP';
+    return;
+  }
+
+  this.isVerifying = true;
+  this.error = '';
+
+  this.confirmationResult.confirm(otpValue)
+    .then(async (result) => {
+      this.isVerifying = false;
+      this.showOtpModal = false;
+
+      // ✅ Firebase user verified
+      const user = result.user;
+
+      // 🔑 OPTIONAL: get Firebase ID token
+      const firebaseToken = await user.getIdToken();
+
+      console.log('Firebase UID:', user.uid);
+      console.log('Firebase Token:', firebaseToken);
+
+      alert('OTP verified successfully!');
+
+      // 👉 NEXT STEP:
+      // send firebaseToken to backend to allow password reset
+    })
+    .catch(() => {
+      this.isVerifying = false;
+      this.error = 'Invalid OTP. Please try again';
+    });
+}
+
+
+onResend() {
+    this.timer = 60;
+    this.canResend = false;
+    this.otp = Array(6).fill('');
+    this.error = '';
+
+    this.stopTimer();
+    this.startTimer();
+
+    setTimeout(() => this.focusInput(0), 0);
+  }
+  
+trackByIndex(index: number) {
+  return index;
+}
+
+
+// handleOtpVerified() {
+//   this.showOtpModal = false;
+//   alert('OTP verified successfully! You can now reset your password.');
+//   // You can open reset password modal here if you have one
+// }
+
+
+
+focusInput(index: number) {
+    const input = this.otpInputs?.toArray()[index];
+    if (input) input.nativeElement.focus();
+  }
+
+
+onInputChange(event: Event, index: number) {
+  const input = event.target as HTMLInputElement;
+  const value = input.value.replace(/\D/g, '').slice(-1);
+
+  // ✅ STORE the digit
+  this.otp[index] = value;
+  this.error = '';
+
+  // Move forward
+  if (value && index < 5) {
+    this.focusInput(index + 1);
+  }
+}
+
+ onKeyDown(event: KeyboardEvent, index: number) {
+
+
+  // ⬅️ Move left
+  if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    if (index > 0) {
+      this.focusInput(index - 1);
+    }
+    return;
+  }
+
+  // ➡️ Move right
+  if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    if (index < 5) {
+      this.focusInput(index + 1);
+    }
+    return;
+  }
+
+  if (event.key === 'Backspace') {
+    if (this.otp[index]) {
+      // Clear current box
+      this.otp[index] = '';
+    } else if (index > 0) {
+      // Go to previous box
+      this.focusInput(index - 1);
+      this.otp[index - 1] = '';
+    }
+  }
+}
+
+
+onPaste(event: ClipboardEvent) {
+    event.preventDefault();
+    const clipboardData = event.clipboardData;
+    if (!clipboardData) return;
+
+    const pastedData = clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    pastedData.split('').forEach((char, i) => {
+      this.otp[i] = char;
+    });
+
+    setTimeout(() => this.focusInput(Math.min(pastedData.length, 5)), 0);
+  }
+
+//  initRecaptcha() {
+//   if (!isPlatformBrowser(this.platformId)) return;
+
+//   if (!this.recaptchaVerifier) {
+//     this.recaptchaVerifier = new RecaptchaVerifier(
+//       this.auth,
+//       'recaptcha-container',
+//       {
+//         size: 'invisible',
+//         callback: () => {
+//           console.log('reCAPTCHA solved');
+//         }
+//       }
+//     );
+
+//     this.recaptchaVerifier.render(); // 🔥 IMPORTANT
+//   }
+// }
+
+async initRecaptcha(): Promise<void> {
+  if (!isPlatformBrowser(this.platformId)) return;
+
+  if (!this.recaptchaVerifier) {
+   this.recaptchaVerifier = new RecaptchaVerifier(
+  this.auth,                 // ✅ Auth FIRST
+  'recaptcha-container',     // ✅ container ID SECOND
+  {
+    size: 'invisible',
+    callback: () => {
+      console.log('reCAPTCHA solved');
+    }
+  }
+);
+
+await this.recaptchaVerifier.render();
+
+  }
+}
+
+
+ 
 }
 
 // Helper function for RxJS
