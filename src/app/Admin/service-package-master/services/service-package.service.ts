@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ServicePackage, ServicePackageCreateDto, ServicePackageUpdateDto } from '../models/service-package.model';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../../environments/environment.prod';
 
 // Add new interfaces for dropdown data
 export interface City {
