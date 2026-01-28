@@ -1,14 +1,6 @@
 // src/environments/environment.prod.ts
 export const environment = {
   production: true,
-<<<<<<< HEAD
-  // apiBaseUrl: 'https://gullyhivebackend-optn.onrender.com/api',
-  // assetUrl: 'https://gullyhivebackend-optn.onrender.com'
-  apiBaseUrl: 'https://localhost:7252/api',
-  assetUrl: 'https://localhost:7252'
-=======
-
- 
   firebase: {
   
     apiKey: "AIzaSyDYuk9b8BkHNsCkuCraUyP2sTdSxfFEQq8",
@@ -24,5 +16,5 @@ export const environment = {
   assetUrl: 'https://gullyhivebackend-optn.onrender.com'
   // apiBaseUrl: 'https://localhost:7252/api',
   // assetUrl: 'https://localhost:7252'
->>>>>>> 29559fe30d7b4d672792e0ce5f70d17d580644ce
+
 };
