@@ -65,7 +65,7 @@ otpMobile = '';
 // OTP Modal state
 
 otp: string[] = Array(6).fill('');
-timer = 60;
+timer = 30;
 canResend = false;
 isVerifying = false;
   error = '';
@@ -609,45 +609,33 @@ this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
   this.error = '';
 }
 
+// closeForgotPasswordModal() {
+//   this.showForgotPasswordModal = false;
+//    this.showOtpModal = false;
+//   this.otp = Array(6).fill('');
+//   this.timer = 60;
+//   this.canResend = false;
+//   this.error = '';
+//   this.otpMobile = '';
+//   this.stopTimer();
+// }
 closeForgotPasswordModal() {
   this.showForgotPasswordModal = false;
-   this.showOtpModal = false;
+  this.showOtpModal = false;
+
   this.otp = Array(6).fill('');
   this.timer = 60;
   this.canResend = false;
   this.error = '';
   this.otpMobile = '';
+ // this.resendCount = 0;
+
   this.stopTimer();
+
+  // ✅ NOW it's safe
+  this.authService.clearRecaptcha();
 }
 
-// async sendOtp() {
-//   if (this.forgotPasswordForm.invalid) return;
-
-//   this.isSendingOtp = true;
-//   const mobile = this.forgotPasswordForm.value.mobile;
-//   const phoneNumber = `+91${mobile}`;
-
-//   try {
-//     await this.initRecaptcha(); // wait for recaptcha to render
-
-//     this.confirmationResult = await signInWithPhoneNumber(this.auth, phoneNumber, this.recaptchaVerifier);
-
-//     this.isSendingOtp = false;
-//     this.otpMobile = phoneNumber;
-//     this.showOtpModal = true;
-//     this.showForgotPasswordModal = false;
-
-//     this.timer = 60;
-//     this.canResend = false;
-//     this.startTimer();
-//     setTimeout(() => this.focusInput(0), 0);
-
-//   } catch (error: any) {
-//     this.isSendingOtp = false;
-//     console.error('Firebase OTP error:', error);
-//     alert(`OTP sending failed: ${error.message}`);
-//   }
-// }
 async sendOtp() {
   if (this.forgotPasswordForm.invalid) return;
 
@@ -670,6 +658,34 @@ async sendOtp() {
   }
 }
 
+
+async onVerify() {
+  const otpValue = this.otp.join('');
+  if (otpValue.length !== 6) return;
+
+  try {
+    await this.authService.verifyOtp(otpValue);
+    alert('OTP verified!');
+  } catch {
+    this.error = 'Invalid OTP';
+  }
+}
+
+
+async onResend() {
+  if (!this.canResend) return;
+
+  this.canResend = false;
+  this.timer = 60;
+  this.stopTimer();
+  this.startTimer();
+
+  try {
+    await this.authService.resendOtp(this.otpMobile.replace('+91', ''));
+  } catch (e: any) {
+    alert(e.message);
+  }
+}
 
 
 
@@ -704,62 +720,6 @@ focusNext(index: number) {
   }
 }
 
-
-async onVerify() {
-  const otpValue = this.otp.join('');
-  if (otpValue.length !== 6) return;
-
-  try {
-    await this.authService.verifyOtp(otpValue);
-    alert('OTP verified!');
-  } catch {
-    this.error = 'Invalid OTP';
-  }
-}
-
-
-// async onResend() {
-//   if (!this.otpMobile) return; // make sure phone number exists
-
-//   this.timer = 60;
-//   this.canResend = false;
-//   this.otp = Array(6).fill('');
-//   this.error = '';
-
-//   // Stop previous timer and start a new one
-//   this.stopTimer();
-//   this.startTimer();
-
-//   try {
-//     // Re-init recaptcha just in case
-//     await this.initRecaptcha();
-
-//     // Send OTP again
-//     this.confirmationResult = await signInWithPhoneNumber(this.auth, this.otpMobile, this.recaptchaVerifier);
-
-//     alert('OTP resent successfully!');
-//     setTimeout(() => this.focusInput(0), 0);
-
-//   } catch (error: any) {
-//     console.error('Firebase resend OTP error:', error);
-//     alert(`Resend OTP failed: ${error.message}`);
-//   }
-// }
-
-async onResend() {
-  if (!this.canResend) return;
-
-  this.canResend = false;
-  this.timer = 60;
-  this.stopTimer();
-  this.startTimer();
-
-  try {
-    await this.authService.resendOtp(this.otpMobile.replace('+91', ''));
-  } catch (e: any) {
-    alert(e.message);
-  }
-}
 
 
 trackByIndex(index: number) {
@@ -835,27 +795,6 @@ onPaste(event: ClipboardEvent) {
 
     setTimeout(() => this.focusInput(Math.min(pastedData.length, 5)), 0);
   }
-
-
-// async initRecaptcha(): Promise<void> {
-//   if (!isPlatformBrowser(this.platformId)) return;
-
-//   if (!this.recaptchaVerifier) {
-//    this.recaptchaVerifier = new RecaptchaVerifier(
-//   this.auth,                 // ✅ Auth FIRST
-//   'recaptcha-container',     // ✅ container ID SECOND
-//   {
-//     size: 'invisible',
-//     callback: () => {
-//       console.log('reCAPTCHA solved');
-//     }
-//   }
-// );
-
-// await this.recaptchaVerifier.render();
-
-//   }
-// }
 
 
  
