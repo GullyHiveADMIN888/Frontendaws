@@ -13,11 +13,6 @@ import { Auth, signInWithPhoneNumber, ConfirmationResult, RecaptchaVerifier } fr
 
 @Injectable({ providedIn: 'root' })
 
- 
-
-  
-
-
 
 
 export class AuthService {
@@ -115,15 +110,60 @@ getCities(stateId: number): Observable<any[]> {
   }
 
   /** 🔹 Send OTP */
-  async sendOtp(mobile: string): Promise<void> {
+  // async sendOtp(mobile: string): Promise<void> {
+  //   await this.initRecaptcha();
+  //   const phone = `+91${mobile}`;
+  //   this.confirmationResult = await signInWithPhoneNumber(
+  //     this.auth,
+  //     phone,
+  //     this.recaptchaVerifier!
+  //   );
+  // }
+
+
+
+// async sendOtp() {
+//   if (this.forgotPasswordForm.invalid) return;
+
+//   this.isSendingOtp = true;
+//   const mobile = this.forgotPasswordForm.value.mobile;
+//   const phoneNumber = `+91${mobile}`;
+
+//   try {
+//     await this.initRecaptcha(); // wait for recaptcha to render
+
+//     this.confirmationResult = await signInWithPhoneNumber(this.auth, phoneNumber, this.recaptchaVerifier);
+
+//     this.isSendingOtp = false;
+//     this.otpMobile = phoneNumber;
+//     this.showOtpModal = true;
+//     this.showForgotPasswordModal = false;
+
+//     this.timer = 60;
+//     this.canResend = false;
+//     this.startTimer();
+//     setTimeout(() => this.focusInput(0), 0);
+
+//   } catch (error: any) {
+//     this.isSendingOtp = false;
+//     console.error('Firebase OTP error:', error);
+//     alert(`OTP sending failed: ${error.message}`);
+//   }
+// }
+ /** 🔹 Send OTP */
+  async sendOtp(mobile: string): Promise<ConfirmationResult> {
     await this.initRecaptcha();
-    const phone = `+91${mobile}`;
+    const phoneNumber = `+91${mobile}`;
+
     this.confirmationResult = await signInWithPhoneNumber(
       this.auth,
-      phone,
+      phoneNumber,
       this.recaptchaVerifier!
     );
+
+    return this.confirmationResult;
   }
+
 
   /** 🔹 Verify OTP */
   async verifyOtp(otp: string) {
