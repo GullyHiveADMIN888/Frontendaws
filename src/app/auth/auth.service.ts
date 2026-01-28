@@ -99,76 +99,24 @@ getCities(stateId: number): Observable<any[]> {
 
 
 
-//   /** 🔹 Init reCAPTCHA ONCE */
-//   async initRecaptcha(): Promise<void> {
-//     if (!isPlatformBrowser(this.platformId)) return;
-
-//     if (!this.recaptchaVerifier) {
-//       this.recaptchaVerifier = new RecaptchaVerifier(
-//         this.auth,
-//         'recaptcha-container',
-//         { size: 'invisible' }
-//       );
-//       await this.recaptchaVerifier.render();
-//     }
-//   }
-
-
-//  /** 🔹 Send OTP */
-//   async sendOtp(mobile: string): Promise<ConfirmationResult> {
-//     await this.initRecaptcha();
-//     const phoneNumber = `+91${mobile}`;
-
-//     this.confirmationResult = await signInWithPhoneNumber(
-//       this.auth,
-//       phoneNumber,
-//       this.recaptchaVerifier!
-//     );
-
-//     return this.confirmationResult;
-//   }
-
-
-//   /** 🔹 Verify OTP */
-//   async verifyOtp(otp: string) {
-//     if (!this.confirmationResult) {
-//       throw new Error('OTP not requested');
-//     }
-//     return this.confirmationResult.confirm(otp);
-//   }
-
-//   /** 🔹 Resend OTP */
-//   async resendOtp(mobile: string) {
-//     this.recaptchaVerifier?.clear();
-//     this.recaptchaVerifier = undefined;
-//     await this.sendOtp(mobile);
-//   }
-
-
-
-
-
   /** 🔹 Init reCAPTCHA ONCE */
-  private async initRecaptcha(): Promise<void> {
+  async initRecaptcha(): Promise<void> {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    if (this.recaptchaVerifier) {
-      return; // ✅ already created
+    if (!this.recaptchaVerifier) {
+      this.recaptchaVerifier = new RecaptchaVerifier(
+        this.auth,
+        'recaptcha-container',
+        { size: 'invisible' }
+      );
+      await this.recaptchaVerifier.render();
     }
-
-    this.recaptchaVerifier = new RecaptchaVerifier(
-      this.auth,
-      'recaptcha-container',
-      { size: 'invisible' }
-    );
-
-    await this.recaptchaVerifier.render();
   }
 
-  /** 🔹 Send OTP */
-  async sendOtp(mobile: string): Promise<void> {
-    await this.initRecaptcha();
 
+ /** 🔹 Send OTP */
+  async sendOtp(mobile: string): Promise<ConfirmationResult> {
+    await this.initRecaptcha();
     const phoneNumber = `+91${mobile}`;
 
     this.confirmationResult = await signInWithPhoneNumber(
@@ -176,7 +124,10 @@ getCities(stateId: number): Observable<any[]> {
       phoneNumber,
       this.recaptchaVerifier!
     );
+
+    return this.confirmationResult;
   }
+
 
   /** 🔹 Verify OTP */
   async verifyOtp(otp: string) {
@@ -185,6 +136,55 @@ getCities(stateId: number): Observable<any[]> {
     }
     return this.confirmationResult.confirm(otp);
   }
+
+  /** 🔹 Resend OTP */
+  async resendOtp(mobile: string) {
+    this.recaptchaVerifier?.clear();
+    this.recaptchaVerifier = undefined;
+    await this.sendOtp(mobile);
+  }
+
+
+
+
+
+  // /** 🔹 Init reCAPTCHA ONCE */
+  // private async initRecaptcha(): Promise<void> {
+  //   if (!isPlatformBrowser(this.platformId)) return;
+
+  //   if (this.recaptchaVerifier) {
+  //     return; // ✅ already created
+  //   }
+
+  //   this.recaptchaVerifier = new RecaptchaVerifier(
+  //     this.auth,
+  //     'recaptcha-container',
+  //     { size: 'invisible' }
+  //   );
+
+  //   await this.recaptchaVerifier.render();
+  // }
+
+  // /** 🔹 Send OTP */
+  // async sendOtp(mobile: string): Promise<void> {
+  //   await this.initRecaptcha();
+
+  //   const phoneNumber = `+91${mobile}`;
+
+  //   this.confirmationResult = await signInWithPhoneNumber(
+  //     this.auth,
+  //     phoneNumber,
+  //     this.recaptchaVerifier!
+  //   );
+  // }
+
+  // /** 🔹 Verify OTP */
+  // async verifyOtp(otp: string) {
+  //   if (!this.confirmationResult) {
+  //     throw new Error('OTP not requested');
+  //   }
+  //   return this.confirmationResult.confirm(otp);
+  // }
 
   // /** 🔹 Resend OTP (SAFE WAY) */
   // async resendOtp(mobile: string) {
@@ -195,19 +195,7 @@ getCities(stateId: number): Observable<any[]> {
   //   await this.sendOtp(mobile);
   // }
   /** 🔹 Resend OTP (NO re-render) */
-async resendOtp(mobile: string): Promise<void> {
-  if (!this.recaptchaVerifier) {
-    await this.initRecaptcha(); // safety
-  }
 
-  const phoneNumber = `+91${mobile}`;
-
-  this.confirmationResult = await signInWithPhoneNumber(
-    this.auth,
-    phoneNumber,
-    this.recaptchaVerifier!
-  );
-}
 
 
   /** 🔹 Cleanup (optional but good) */
