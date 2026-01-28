@@ -75,7 +75,7 @@ isVerifying = false;
   
   // Firebase...
 confirmationResult!: ConfirmationResult;
- recaptchaVerifier!: RecaptchaVerifier;
+recaptchaVerifier!: RecaptchaVerifier;
 //....
 
  loginForm: FormGroup;
@@ -619,12 +619,6 @@ closeForgotPasswordModal() {
   this.otpMobile = '';
   this.stopTimer();
 }
-// closeForgotPasswordModal() {
-//   this.showForgotPasswordModal = false;
-//   this.showOtpModal = false;
-//   this.authService.clearRecaptcha(); // 🔥 important
-// }
-
 
 async sendOtp() {
   if (this.forgotPasswordForm.invalid) return;
@@ -654,27 +648,6 @@ async sendOtp() {
     alert(`OTP sending failed: ${error.message}`);
   }
 }
-// async sendOtp() {
-//   if (this.forgotPasswordForm.invalid) return;
-
-//   this.isSendingOtp = true;
-
-//   try {
-//     await this.authService.sendOtp(this.forgotPasswordForm.value.mobile);
-
-//     this.otpMobile = `+91${this.forgotPasswordForm.value.mobile}`;
-//     this.showOtpModal = true;
-//     this.showForgotPasswordModal = false;
-
-//     this.timer = 60;
-//     this.canResend = false;
-//     this.startTimer();
-//   } catch (e: any) {
-//     alert(e.message);
-//   } finally {
-//     this.isSendingOtp = false;
-//   }
-// }
 
 
 
@@ -710,42 +683,7 @@ focusNext(index: number) {
 }
 
 
-// onVerify() {
-//   const otpValue = this.otp.join('');
-
-//   if (otpValue.length !== 6) {
-//     this.error = 'Please enter complete OTP';
-//     return;
-//   }
-
-//   this.isVerifying = true;
-//   this.error = '';
-
-//   this.confirmationResult.confirm(otpValue)
-//     .then(async (result) => {
-//       this.isVerifying = false;
-//       this.showOtpModal = false;
-
-//       // ✅ Firebase user verified
-//       const user = result.user;
-
-//       // 🔑 OPTIONAL: get Firebase ID token
-//       const firebaseToken = await user.getIdToken();
-
-//       console.log('Firebase UID:', user.uid);
-//       console.log('Firebase Token:', firebaseToken);
-
-//       alert('OTP verified successfully!');
-
-//       // 👉 NEXT STEP:
-//       // send firebaseToken to backend to allow password reset
-//     })
-//     .catch(() => {
-//       this.isVerifying = false;
-//       this.error = 'Invalid OTP. Please try again';
-//     });
-// }
-async onVerify() {
+onVerify() {
   const otpValue = this.otp.join('');
 
   if (otpValue.length !== 6) {
@@ -756,78 +694,61 @@ async onVerify() {
   this.isVerifying = true;
   this.error = '';
 
-  try {
-    // ✅ verify OTP via service
-    const result = await this.authService.verifyOtp(otpValue);
+  this.confirmationResult.confirm(otpValue)
+    .then(async (result) => {
+      this.isVerifying = false;
+      this.showOtpModal = false;
 
-    // ✅ Firebase user verified
-    const user = result.user;
+      // ✅ Firebase user verified
+      const user = result.user;
 
-    // 🔑 Optional: Firebase ID token (send to backend)
-    const firebaseToken = await user.getIdToken();
+      // 🔑 OPTIONAL: get Firebase ID token
+      const firebaseToken = await user.getIdToken();
 
-    console.log('Firebase UID:', user.uid);
-    console.log('Firebase Token:', firebaseToken);
+      console.log('Firebase UID:', user.uid);
+      console.log('Firebase Token:', firebaseToken);
 
-    this.showOtpModal = false;
-    alert('OTP verified successfully!');
+      alert('OTP verified successfully!');
 
-    // 👉 NEXT STEP:
-    // call backend API for password reset
-    // this.authService.verifyForgotPassword(firebaseToken)
-
-  } catch (err) {
-    this.error = 'Invalid OTP. Please try again';
-  } finally {
-    this.isVerifying = false;
-  }
+      // 👉 NEXT STEP:
+      // send firebaseToken to backend to allow password reset
+    })
+    .catch(() => {
+      this.isVerifying = false;
+      this.error = 'Invalid OTP. Please try again';
+    });
 }
 
 
-// async onResend() {
-//   if (!this.otpMobile) return; // make sure phone number exists
+async onResend() {
+  if (!this.otpMobile) return; // make sure phone number exists
 
-//   this.timer = 60;
-//   this.canResend = false;
-//   this.otp = Array(6).fill('');
-//   this.error = '';
-
-//   // Stop previous timer and start a new one
-//   this.stopTimer();
-//   this.startTimer();
-
-//   try {
-//     // Re-init recaptcha just in case
-//     await this.initRecaptcha();
-
-//     // Send OTP again
-//     this.confirmationResult = await signInWithPhoneNumber(this.auth, this.otpMobile, this.recaptchaVerifier);
-
-//     alert('OTP resent successfully!');
-//     setTimeout(() => this.focusInput(0), 0);
-
-//   } catch (error: any) {
-//     console.error('Firebase resend OTP error:', error);
-//     alert(`Resend OTP failed: ${error.message}`);
-//   }
-// }
-
-  async onResend() {
   this.timer = 60;
   this.canResend = false;
   this.otp = Array(6).fill('');
   this.error = '';
 
+  // Stop previous timer and start a new one
   this.stopTimer();
   this.startTimer();
 
   try {
-    await this.authService.resendOtp(this.otpMobile.replace('+91', ''));
-  } catch (e: any) {
-    alert(e.message);
+    // Re-init recaptcha just in case
+    await this.initRecaptcha();
+
+    // Send OTP again
+    this.confirmationResult = await signInWithPhoneNumber(this.auth, this.otpMobile, this.recaptchaVerifier);
+
+    alert('OTP resent successfully!');
+    setTimeout(() => this.focusInput(0), 0);
+
+  } catch (error: any) {
+    console.error('Firebase resend OTP error:', error);
+    alert(`Resend OTP failed: ${error.message}`);
   }
 }
 
+  
 trackByIndex(index: number) {
   return index;
 }
