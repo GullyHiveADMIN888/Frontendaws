@@ -652,29 +652,24 @@ async sendOtp() {
   if (this.forgotPasswordForm.invalid) return;
 
   this.isSendingOtp = true;
-  const phoneNumber = `+91${this.forgotPasswordForm.value.mobile}`;
+  const mobile = this.forgotPasswordForm.value.mobile;
 
   try {
-    await this.initRecaptcha(); // ✅ only once per session
+    await this.authService.sendOtp(mobile);
 
-    this.confirmationResult = await signInWithPhoneNumber(
-      this.auth,
-      phoneNumber,
-      this.recaptchaVerifier!
-    );
-
-    this.isSendingOtp = false;
+    this.otpMobile = `+91${mobile}`;
     this.showOtpModal = true;
     this.showForgotPasswordModal = false;
 
     this.startTimer();
     setTimeout(() => this.focusInput(0), 0);
-
-  } catch (error: any) {
+  } catch (e: any) {
+    alert(e.message);
+  } finally {
     this.isSendingOtp = false;
-    alert(error.message);
   }
 }
+
 
 
 
@@ -710,40 +705,16 @@ focusNext(index: number) {
 }
 
 
-onVerify() {
+async onVerify() {
   const otpValue = this.otp.join('');
+  if (otpValue.length !== 6) return;
 
-  if (otpValue.length !== 6) {
-    this.error = 'Please enter complete OTP';
-    return;
+  try {
+    await this.authService.verifyOtp(otpValue);
+    alert('OTP verified!');
+  } catch {
+    this.error = 'Invalid OTP';
   }
-
-  this.isVerifying = true;
-  this.error = '';
-
-  this.confirmationResult.confirm(otpValue)
-    .then(async (result) => {
-      this.isVerifying = false;
-      this.showOtpModal = false;
-
-      // ✅ Firebase user verified
-      const user = result.user;
-
-      // 🔑 OPTIONAL: get Firebase ID token
-      const firebaseToken = await user.getIdToken();
-
-      console.log('Firebase UID:', user.uid);
-      console.log('Firebase Token:', firebaseToken);
-
-      alert('OTP verified successfully!');
-
-      // 👉 NEXT STEP:
-      // send firebaseToken to backend to allow password reset
-    })
-    .catch(() => {
-      this.isVerifying = false;
-      this.error = 'Invalid OTP. Please try again';
-    });
 }
 
 
@@ -775,31 +746,21 @@ onVerify() {
 //   }
 // }
 
-  async onResend() {
-  if (!this.otpMobile || !this.canResend) return;
+async onResend() {
+  if (!this.canResend) return;
 
-  this.timer = 60;
   this.canResend = false;
-  this.otp = Array(6).fill('');
-  this.error = '';
-
+  this.timer = 60;
   this.stopTimer();
   this.startTimer();
 
   try {
-    // 🚫 DO NOT call initRecaptcha again
-    this.confirmationResult = await signInWithPhoneNumber(
-      this.auth,
-      this.otpMobile,
-      this.recaptchaVerifier!
-    );
-
-    setTimeout(() => this.focusInput(0), 0);
-  } catch (error: any) {
-    console.error(error);
-    alert(error.message);
+    await this.authService.resendOtp(this.otpMobile.replace('+91', ''));
+  } catch (e: any) {
+    alert(e.message);
   }
 }
+
 
 trackByIndex(index: number) {
   return index;
@@ -896,24 +857,6 @@ onPaste(event: ClipboardEvent) {
 //   }
 // }
 
-async initRecaptcha(): Promise<void> {
-  if (!isPlatformBrowser(this.platformId)) return;
-
-  if (this.recaptchaVerifier) {
-    return; // 🚫 already created — DO NOTHING
-  }
-
-  this.recaptchaVerifier = new RecaptchaVerifier(
-    this.auth,
-    'recaptcha-container',
-    {
-      size: 'invisible',
-      callback: () => console.log('reCAPTCHA solved')
-    }
-  );
-
-  await this.recaptchaVerifier.render();
-}
 
  
 }
