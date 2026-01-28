@@ -31,6 +31,11 @@ export class Step1BasicInfoComponent {
   parentCategories: any[] = [];
   subCategories: any[] = [];
 
+  //..otp
+isMobileVerified = false;
+showOtpModal = false;
+//..
+
   professionalTypes = [
     { label: 'Independent Professional', value: 'individual' },
     { label: 'MSME / Agency', value: 'msme' },
@@ -192,7 +197,11 @@ async onSendOTP() {
   }
 }
 
-
+  // This is the method!
+  handleOtpVerified() {
+    this.isMobileVerified = true; // enable the Continue button
+    this.showOtpModal = false;    // hide OTP modal
+  }
 
   onNextClick() { this.next.emit(); }
 
