@@ -8,13 +8,13 @@ import { Subscription } from 'rxjs';
 import { environment } from '../../environments/environment.prod';
 
 
-import {  Inject, PLATFORM_ID } from '@angular/core';
+import { Inject, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import {  isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { AuthService } from '../auth/auth.service';
 
 
-import {  HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 
 @Component({
@@ -33,8 +33,8 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   isSubmitting = false;
   submitStatus: 'idle' | 'success' | 'error' = 'idle';
   charCount = 0;
- 
- loginForm: FormGroup;
+
+  loginForm: FormGroup;
   loginData = {
     email: '',
     password: ''
@@ -51,40 +51,40 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
 
   // API Configuration
-  private readonly apiUrl = `${environment.apiBaseUrl}`; 
+  private readonly apiUrl = `${environment.apiBaseUrl}`;
   // Common .NET Core ports: 7045, 5000, 5001, 7245
 
 
 
 
   popularServices = [
-    { 
-      name: 'Home Cleaning', 
+    {
+      name: 'Home Cleaning',
       icon: 'ri-home-smile-line',
       image: 'https://readdy.ai/api/search-image?query=professional%20home%20cleaning%20service%20with%20modern%20equipment%20and%20cleaning%20supplies%20in%20bright%20clean%20interior%2C%20simple%20minimalist%20background%20with%20natural%20lighting%20and%20organized%20workspace%20aesthetic&width=120&height=120&seq=pop-home-cleaning-001&orientation=squarish'
     },
-    { 
-      name: 'AC Repair', 
+    {
+      name: 'AC Repair',
       icon: 'ri-temp-cold-line',
       image: 'https://readdy.ai/api/search-image?query=air%20conditioner%20repair%20technician%20with%20professional%20tools%20working%20on%20AC%20unit%2C%20simple%20clean%20background%20with%20modern%20equipment%20and%20technical%20workspace%20aesthetic&width=120&height=120&seq=pop-ac-repair-002&orientation=squarish'
     },
-    { 
-      name: 'Electrician', 
+    {
+      name: 'Electrician',
       icon: 'ri-flashlight-line',
       image: 'https://readdy.ai/api/search-image?query=professional%20electrician%20with%20electrical%20tools%20and%20wiring%20equipment%20in%20modern%20workspace%2C%20simple%20clean%20background%20with%20safety%20gear%20and%20organized%20technical%20setup%20aesthetic&width=120&height=120&seq=pop-electrician-003&orientation=squarish'
     },
-    { 
-      name: 'Plumber', 
+    {
+      name: 'Plumber',
       icon: 'ri-drop-line',
       image: 'https://readdy.ai/api/search-image?query=professional%20plumber%20with%20plumbing%20tools%20and%20pipes%20in%20clean%20workspace%2C%20simple%20minimalist%20background%20with%20modern%20equipment%20and%20organized%20technical%20aesthetic&width=120&height=120&seq=pop-plumber-004&orientation=squarish'
     },
-    { 
-      name: 'Pest Control', 
+    {
+      name: 'Pest Control',
       icon: 'ri-bug-line',
       image: 'https://readdy.ai/api/search-image?query=pest%20control%20specialist%20in%20protective%20gear%20with%20professional%20equipment%20and%20safety%20tools%2C%20simple%20clean%20background%20with%20modern%20workspace%20and%20organized%20setup%20aesthetic&width=120&height=120&seq=pop-pest-control-005&orientation=squarish'
     },
-    { 
-      name: 'Painting', 
+    {
+      name: 'Painting',
       icon: 'ri-paint-brush-line',
       image: 'https://readdy.ai/api/search-image?query=professional%20painter%20with%20painting%20tools%20brushes%20and%20color%20palette%20in%20clean%20workspace%2C%20simple%20minimalist%20background%20with%20modern%20equipment%20and%20artistic%20setup%20aesthetic&width=120&height=120&seq=pop-painting-006&orientation=squarish'
     }
@@ -255,7 +255,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   private subscription?: Subscription;
 
 
- constructor(
+  constructor(
     private http: HttpClient,
     private fb: FormBuilder,
     private authService: AuthService,
@@ -302,7 +302,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   onInputChange(field: keyof typeof this.formData, event: Event): void {
     const input = event.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
     this.formData[field] = input.value;
-    
+
     if (field === 'message') {
       this.charCount = input.value.length;
     }
@@ -317,7 +317,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
   onSubmit(event: Event): void {
     event.preventDefault();
-    
+
     if (this.formData.message.length > 500) {
       return;
     }
@@ -375,7 +375,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   // onLoginSubmit(event: Event): void {
   //   event.preventDefault();
   //   this.loginError = '';
-    
+
   //   // Basic validation
   //   if (!this.loginData.email || !this.loginData.password) {
   //     this.loginError = 'Please fill in all fields';
@@ -413,7 +413,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   //       }
   //     });
   // }
-onLoginSubmit(event: Event): void {
+  onLoginSubmit(event: Event): void {
   event.preventDefault();
   this.loginError = '';
   
@@ -442,19 +442,12 @@ onLoginSubmit(event: Event): void {
 
   // Get values from reactive form
   const formValue = this.loginForm.value;
- const loginPayload = {
-  username: this.loginForm.value.email,
-  password: this.loginForm.value.password
-};
-
-this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
-  .subscribe({
-    next: res => this.handleLoginSuccess(res),
-    error: err => this.handleLoginError(err)
-  });
-
-  // Also update loginData for consistency
   
+  // Prepare login payload
+  const loginPayload = {
+    username: formValue.email,
+    password: formValue.password
+  };
 
   // Handle remember me functionality
   if (isPlatformBrowser(this.platformId)) {
@@ -483,24 +476,31 @@ this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
       }
     });
 }
+
   private handleLoginSuccess(response: any): void {
     this.isLoggingIn = false;
-    
+
     if (response.token) {
       // Store authentication data using your AuthService
       if (this.authService) {
-        this.authService.saveAuth(response.token, response.role, response.name);
+        // Pass ALL fields from response including userId
+        this.authService.saveAuth(
+          response.token,
+          response.role,
+          response.name,
+          response.userId 
+        );
       } else {
-        // Fallback: Store directly in localStorage
+        // Store directly in localStorage
         localStorage.setItem('token', response.token);
-        if (response.user) {
-          localStorage.setItem('user', JSON.stringify(response.user));
-        }
+        localStorage.setItem('role', response.role);
+        localStorage.setItem('userId', response.userId); // Store userId
+        if (response.name) localStorage.setItem('name', response.name);
       }
-      
+
       // Close modal
       this.closeLoginModal();
-      
+
       // Redirect user based on role
       if (this.authService) {
         this.authService.redirectByRole(response.role);
@@ -515,7 +515,7 @@ this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
 
   private handleLoginError(error: HttpErrorResponse): void {
     this.isLoggingIn = false;
-    
+
     switch (error.status) {
       case 401:
         this.loginError = 'Invalid email or password';
@@ -539,7 +539,7 @@ this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
         this.loginError = error.error?.message || 'Login failed. Please try again';
         break;
     }
-    
+
     // Log error for debugging
     console.error('Login error:', error);
   }
@@ -563,7 +563,7 @@ this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
 
   forgotPassword(event: Event): void {
     event.preventDefault();
-    
+
     const email = this.loginData.email || prompt('Please enter your email to reset password:');
     if (email) {
       this.sendResetPasswordEmail(email);
@@ -602,7 +602,7 @@ function throwError(errorFactory: () => any): any {
 
 
 
- 
+
 
 
 

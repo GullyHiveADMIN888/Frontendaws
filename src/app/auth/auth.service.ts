@@ -68,7 +68,6 @@ export class AuthService {
 //   }
 submitRegistration(formData: FormData) {
   return this.http.post(`${this.apiUrl}/register`, formData);
-  // DO NOT set Content-Type: let Angular handle multipart/form-data
 }
 
 
@@ -76,11 +75,15 @@ submitRegistration(formData: FormData) {
 
 
 
-  saveAuth(token: string, role: string, name?: string) {
-    localStorage.setItem('token', token);
-    localStorage.setItem('role', role);
-    if (name) localStorage.setItem('name', name);
-  }
+  // auth.service.ts
+saveAuth(token: string, role: string, name?: string, userId?: string) {
+  localStorage.setItem('token', token);
+  localStorage.setItem('role', role);
+  localStorage.setItem('userId', userId || ''); // Store ID
+  if (name) localStorage.setItem('name', name);
+}
+
+
 
   redirectByRole(role: string) {
     const routes: Record<string, string> = {
@@ -101,6 +104,10 @@ submitRegistration(formData: FormData) {
   getRole() {
     return localStorage.getItem('role');
   }
+  // getter for userId
+getUserId(): string | null {
+  return localStorage.getItem('userId');
+}
 
   isLoggedIn() {
     return !!localStorage.getItem('token');

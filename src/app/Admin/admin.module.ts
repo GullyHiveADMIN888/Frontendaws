@@ -28,6 +28,7 @@ import { QuestionMasterComponent } from './question-master/question-master.compo
 import { CityMasterComponent } from './city-master/city-master.component';
 import { LeadStatusMasterComponent } from './lead-status-master/lead-status-master.component';
 import { ServicePackageMasterComponent } from './service-package-master/service-package-master.component';
+import { AuditLogComponent } from './audit-log/audit-log.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,8 @@ import { ServicePackageMasterComponent } from './service-package-master/service-
     // RoleMasterComponent,
     SubCategoryMasterComponent,
     // UserRolesComponent
-    ServicePackageMasterComponent
+    ServicePackageMasterComponent,
+    AuditLogComponent
   ],
   imports: [
     CommonModule,

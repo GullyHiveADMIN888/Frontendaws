@@ -1,0 +1,412 @@
+<div class="min-h-screen bg-gray-50">
+  <app-admin-header></app-admin-header>
+  <div class="max-w-7xl mx-auto my-12">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+        Audit Logs
+      </h1>
+      <p class="text-gray-600">
+        Track all system activities, changes, and user actions
+      </p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-blue-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Total Logs</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{totalCount}}</h3>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
+            <i class="text-blue-600 text-xl">📊</i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-green-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Today's Logs</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{todaysLogs}}</h3>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center">
+            <i class="text-green-600 text-xl">📅</i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-purple-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Unique Users</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{uniqueUsers}}</h3>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
+            <i class="text-purple-600 text-xl">👥</i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-orange-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Active Filters</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{getActiveFilters()}}</h3>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-orange-50 flex items-center justify-center">
+            <i class="text-orange-600 text-xl">🔍</i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="bg-white rounded-xl shadow mb-6 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-800">Filters</h3>
+      </div>
+      
+      <div class="p-6">
+        <!-- Quick Date Range Buttons -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-3">
+            Quick Date Range
+          </label>
+          <div class="flex flex-wrap gap-2">
+            <button (click)="setDateRange('today')" 
+                    class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              Today
+            </button>
+            <button (click)="setDateRange('yesterday')" 
+                    class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              Yesterday
+            </button>
+            <button (click)="setDateRange('last7days')" 
+                    class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              Last 7 Days
+            </button>
+            <button (click)="setDateRange('last30days')" 
+                    class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              Last 30 Days
+            </button>
+            <button (click)="setDateRange('thismonth')" 
+                    class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              This Month
+            </button>
+            <button (click)="setDateRange('lastmonth')" 
+                    class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              Last Month
+            </button>
+          </div>
+        </div>
+
+        <!-- First Row: Basic Filters -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <!-- Entity Type -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Entity Type
+            </label>
+            <input
+              type="text"
+              placeholder="e.g., lead_status_master"
+              [(ngModel)]="entityType"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <!-- Action -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Action Type
+            </label>
+            <select [(ngModel)]="action" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <option value="">All Actions</option>
+              <option value="INSERT">INSERT</option>
+              <option value="UPDATE">UPDATE</option>
+              <option value="DELETE">DELETE</option>
+            </select>
+          </div>
+
+          <!-- User ID -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              User ID
+            </label>
+            <input
+              type="number"
+              placeholder="Enter User ID"
+              [(ngModel)]="actorUserId"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+
+        <!-- Second Row: Date-Time Filters -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Start Date & Time -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              From Date & Time
+            </label>
+            <div class="flex flex-col md:flex-row gap-2">
+              <div class="flex-1">
+                <input
+                  type="date"
+                  [(ngModel)]="startDate"
+                  (change)="onStartDateChange($event)"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div class="w-full md:w-40">
+                <input
+                  type="time"
+                  [(ngModel)]="startTime"
+                  (change)="onStartTimeChange($event)"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- End Date & Time -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              To Date & Time
+            </label>
+            <div class="flex flex-col md:flex-row gap-2">
+              <div class="flex-1">
+                <input
+                  type="date"
+                  [(ngModel)]="endDate"
+                  (change)="onEndDateChange($event)"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div class="w-full md:w-40">
+                <input
+                  type="time"
+                  [(ngModel)]="endTime"
+                  (change)="onEndTimeChange($event)"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-gray-200">
+          <button (click)="resetFilters()" 
+                  class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg font-medium hover:bg-gray-200 transition-colors border border-gray-300">
+            <i class="mr-2">🔄</i> Reset All Filters
+          </button>
+          <button (click)="applyFilters()" 
+                  class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
+            Apply Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <h2 class="text-lg font-semibold text-gray-800">
+            Audit Logs
+          </h2>
+          <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+            {{logs.length}} Records
+          </span>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="loading" class="p-8 text-center">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+        <p class="text-gray-600">Loading audit logs...</p>
+      </div>
+
+      <!-- Table -->
+      <div *ngIf="!loading && logs.length > 0" class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                User
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Entity
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Action
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Date & Time
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                IP Address
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Changes
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <ng-container *ngFor="let log of logs">
+              <tr class="hover:bg-gray-50 transition-colors">
+                <!-- User -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div>
+                    <div class="text-sm font-semibold text-gray-900">
+                      {{ log.userName || 'System' }}
+                    </div>
+                    <div class="text-xs text-gray-500">
+                      ID: {{ log.actorUserId }}
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Entity -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">{{ log.entityType }}</div>
+                  <div class="text-xs text-gray-500">ID: {{ log.entityId }}</div>
+                </td>
+
+                <!-- Action -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span [class]="getActionBadgeClass(log.action)" 
+                        class="px-2 py-1 rounded text-xs font-medium">
+                    {{ log.action }}
+                  </span>
+                </td>
+
+                <!-- Date -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ log.createdAt | date:'dd MMM yyyy' }}
+                  <div class="text-xs text-gray-500">
+                    {{ log.createdAt | date:'hh:mm a' }}
+                  </div>
+                </td>
+
+                <!-- IP Address -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <code class="text-sm bg-gray-100 text-gray-800 px-2 py-1 rounded font-mono">
+                    {{ log.ipAddress || 'N/A' }}
+                  </code>
+                </td>
+
+                <!-- Changes -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <button (click)="toggleRow(log.id)" 
+                          class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors">
+                    <i class="text-lg">{{ expandedRowId === log.id ? '📖' : '👁️' }}</i>
+                    <span class="ml-1 text-sm">{{ expandedRowId === log.id ? 'Hide' : 'View' }}</span>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Expanded Row -->
+              <tr *ngIf="expandedRowId === log.id">
+                <td colspan="6" class="bg-gray-50 p-6">
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Old Values -->
+                    <div>
+                      <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-semibold text-gray-800 flex items-center">
+                          <i class="mr-2">📄</i> Old Values
+                        </h4>
+                        <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded">
+                          Previous State
+                        </span>
+                      </div>
+                      <div class="bg-white rounded-lg border border-gray-200 p-4 max-h-96 overflow-y-auto">
+                        <pre class="text-sm text-gray-700 whitespace-pre-wrap">{{ formatJson(log.oldValues) }}</pre>
+                      </div>
+                    </div>
+
+                    <!-- New Values -->
+                    <div>
+                      <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-semibold text-gray-800 flex items-center">
+                          <i class="mr-2">✨</i> New Values
+                        </h4>
+                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                          Current State
+                        </span>
+                      </div>
+                      <div class="bg-white rounded-lg border border-gray-200 p-4 max-h-96 overflow-y-auto">
+                        <pre class="text-sm text-gray-700 whitespace-pre-wrap">{{ formatJson(log.newValues) }}</pre>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Close Button -->
+                  <div class="mt-4 text-right">
+                    <button (click)="toggleRow(log.id)" 
+                            class="text-gray-600 hover:text-gray-800 text-sm font-medium flex items-center ml-auto">
+                      <i class="mr-1">↑</i> Collapse Details
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!loading && logs.length === 0" class="p-12 text-center">
+        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="text-gray-400 text-3xl">📋</i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">No Audit Logs Found</h3>
+        <p class="text-gray-600 mb-6">
+          No audit logs match your current filters or no logs have been recorded yet.
+        </p>
+        <button (click)="resetFilters()" 
+                class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
+          <i class="mr-2">🔄</i>
+          Reset Filters
+        </button>
+      </div>
+
+      <!-- Pagination -->
+      <div *ngIf="!loading && logs.length > 0" 
+           class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+        <div class="text-sm text-gray-500">
+          Showing <span class="font-medium">{{getStartIndex()}}</span> to 
+          <span class="font-medium">{{getEndIndex()}}</span> of 
+          <span class="font-medium">{{totalCount}}</span> logs
+        </div>
+        <div class="flex items-center gap-2">
+          <button (click)="changePage(-1)"
+                  [disabled]="pageNumber === 1"
+                  class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            <i class="mr-1">←</i> Previous
+          </button>
+          
+          <div class="flex items-center gap-1">
+            <button *ngFor="let page of getPageNumbers()" 
+                    (click)="goToPage(page)"
+                    [class]="page === pageNumber ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'"
+                    class="px-3 py-1 rounded text-sm">
+              {{page}}
+            </button>
+          </div>
+          
+          <button (click)="changePage(1)"
+                  [disabled]="pageNumber * pageSize >= totalCount"
+                  class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            Next <i class="ml-1">→</i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <app-admin-footer></app-admin-footer>
+</div>

@@ -17,6 +17,7 @@ import { QuestionMasterComponent } from './question-master/question-master.compo
 import { CityMasterComponent } from './city-master/city-master.component';
 import { LeadStatusMasterComponent } from './lead-status-master/lead-status-master.component';
 import { ServicePackageMasterComponent } from './service-package-master/service-package-master.component';
+import { AuditLogComponent } from './audit-log/audit-log.component';
 
 const routes: Routes = [
   { 
@@ -71,6 +72,10 @@ const routes: Routes = [
   {
     path: 'service-package',
     component: ServicePackageMasterComponent
+  },
+  {
+    path: 'audit-log',
+    component: AuditLogComponent
   },
   { 
     path: '**', 
