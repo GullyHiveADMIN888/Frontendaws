@@ -50,6 +50,7 @@ export class OTPVerificationComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stopTimer();
+     this.authService.clearRecaptcha();
   }
 
   startTimer() {
@@ -188,6 +189,7 @@ async onVerify() {
     this.isVerifying = false;
   }
 }
+
 
 async onResend() {
   this.timer = 60;

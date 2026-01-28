@@ -186,14 +186,29 @@ getCities(stateId: number): Observable<any[]> {
     return this.confirmationResult.confirm(otp);
   }
 
-  /** 🔹 Resend OTP (SAFE WAY) */
-  async resendOtp(mobile: string) {
-    // 🔥 Firebase requires reset before reuse
-    this.recaptchaVerifier?.clear();
-    this.recaptchaVerifier = undefined;
+  // /** 🔹 Resend OTP (SAFE WAY) */
+  // async resendOtp(mobile: string) {
+  //   // 🔥 Firebase requires reset before reuse
+  //   this.recaptchaVerifier?.clear();
+  //   this.recaptchaVerifier = undefined;
 
-    await this.sendOtp(mobile);
+  //   await this.sendOtp(mobile);
+  // }
+  /** 🔹 Resend OTP (NO re-render) */
+async resendOtp(mobile: string): Promise<void> {
+  if (!this.recaptchaVerifier) {
+    await this.initRecaptcha(); // safety
   }
+
+  const phoneNumber = `+91${mobile}`;
+
+  this.confirmationResult = await signInWithPhoneNumber(
+    this.auth,
+    phoneNumber,
+    this.recaptchaVerifier!
+  );
+}
+
 
   /** 🔹 Cleanup (optional but good) */
   clearRecaptcha() {
