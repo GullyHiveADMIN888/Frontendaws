@@ -6,7 +6,7 @@ import { PLATFORM_ID } from '@angular/core';
 import { AuthService } from '../auth.service';
 
 import { Auth, signInWithPhoneNumber, ConfirmationResult } from '@angular/fire/auth';
-import { RecaptchaVerifier } from 'firebase/auth';
+// import { RecaptchaVerifier } from 'firebase/auth';
 
 @Component({
   selector: 'app-step1-basic-info',

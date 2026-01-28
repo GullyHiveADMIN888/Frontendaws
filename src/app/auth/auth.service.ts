@@ -11,6 +11,10 @@ import { Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Auth, signInWithPhoneNumber, ConfirmationResult, RecaptchaVerifier } from '@angular/fire/auth';
 
+  
+
+
+
 @Injectable({ providedIn: 'root' })
 
 
@@ -95,64 +99,76 @@ getCities(stateId: number): Observable<any[]> {
 
 
 
+//   /** 🔹 Init reCAPTCHA ONCE */
+//   async initRecaptcha(): Promise<void> {
+//     if (!isPlatformBrowser(this.platformId)) return;
+
+//     if (!this.recaptchaVerifier) {
+//       this.recaptchaVerifier = new RecaptchaVerifier(
+//         this.auth,
+//         'recaptcha-container',
+//         { size: 'invisible' }
+//       );
+//       await this.recaptchaVerifier.render();
+//     }
+//   }
+
+
+//  /** 🔹 Send OTP */
+//   async sendOtp(mobile: string): Promise<ConfirmationResult> {
+//     await this.initRecaptcha();
+//     const phoneNumber = `+91${mobile}`;
+
+//     this.confirmationResult = await signInWithPhoneNumber(
+//       this.auth,
+//       phoneNumber,
+//       this.recaptchaVerifier!
+//     );
+
+//     return this.confirmationResult;
+//   }
+
+
+//   /** 🔹 Verify OTP */
+//   async verifyOtp(otp: string) {
+//     if (!this.confirmationResult) {
+//       throw new Error('OTP not requested');
+//     }
+//     return this.confirmationResult.confirm(otp);
+//   }
+
+//   /** 🔹 Resend OTP */
+//   async resendOtp(mobile: string) {
+//     this.recaptchaVerifier?.clear();
+//     this.recaptchaVerifier = undefined;
+//     await this.sendOtp(mobile);
+//   }
+
+
+
+
+
   /** 🔹 Init reCAPTCHA ONCE */
-  async initRecaptcha(): Promise<void> {
+  private async initRecaptcha(): Promise<void> {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    if (!this.recaptchaVerifier) {
-      this.recaptchaVerifier = new RecaptchaVerifier(
-        this.auth,
-        'recaptcha-container',
-        { size: 'invisible' }
-      );
-      await this.recaptchaVerifier.render();
+    if (this.recaptchaVerifier) {
+      return; // ✅ already created
     }
+
+    this.recaptchaVerifier = new RecaptchaVerifier(
+      this.auth,
+      'recaptcha-container',
+      { size: 'invisible' }
+    );
+
+    await this.recaptchaVerifier.render();
   }
 
   /** 🔹 Send OTP */
-  // async sendOtp(mobile: string): Promise<void> {
-  //   await this.initRecaptcha();
-  //   const phone = `+91${mobile}`;
-  //   this.confirmationResult = await signInWithPhoneNumber(
-  //     this.auth,
-  //     phone,
-  //     this.recaptchaVerifier!
-  //   );
-  // }
-
-
-
-// async sendOtp() {
-//   if (this.forgotPasswordForm.invalid) return;
-
-//   this.isSendingOtp = true;
-//   const mobile = this.forgotPasswordForm.value.mobile;
-//   const phoneNumber = `+91${mobile}`;
-
-//   try {
-//     await this.initRecaptcha(); // wait for recaptcha to render
-
-//     this.confirmationResult = await signInWithPhoneNumber(this.auth, phoneNumber, this.recaptchaVerifier);
-
-//     this.isSendingOtp = false;
-//     this.otpMobile = phoneNumber;
-//     this.showOtpModal = true;
-//     this.showForgotPasswordModal = false;
-
-//     this.timer = 60;
-//     this.canResend = false;
-//     this.startTimer();
-//     setTimeout(() => this.focusInput(0), 0);
-
-//   } catch (error: any) {
-//     this.isSendingOtp = false;
-//     console.error('Firebase OTP error:', error);
-//     alert(`OTP sending failed: ${error.message}`);
-//   }
-// }
- /** 🔹 Send OTP */
-  async sendOtp(mobile: string): Promise<ConfirmationResult> {
+  async sendOtp(mobile: string): Promise<void> {
     await this.initRecaptcha();
+
     const phoneNumber = `+91${mobile}`;
 
     this.confirmationResult = await signInWithPhoneNumber(
@@ -160,10 +176,7 @@ getCities(stateId: number): Observable<any[]> {
       phoneNumber,
       this.recaptchaVerifier!
     );
-
-    return this.confirmationResult;
   }
-
 
   /** 🔹 Verify OTP */
   async verifyOtp(otp: string) {
@@ -173,11 +186,20 @@ getCities(stateId: number): Observable<any[]> {
     return this.confirmationResult.confirm(otp);
   }
 
-  /** 🔹 Resend OTP */
+  /** 🔹 Resend OTP (SAFE WAY) */
   async resendOtp(mobile: string) {
+    // 🔥 Firebase requires reset before reuse
     this.recaptchaVerifier?.clear();
     this.recaptchaVerifier = undefined;
+
     await this.sendOtp(mobile);
+  }
+
+  /** 🔹 Cleanup (optional but good) */
+  clearRecaptcha() {
+    this.recaptchaVerifier?.clear();
+    this.recaptchaVerifier = undefined;
+    this.confirmationResult = undefined;
   }
 
 
