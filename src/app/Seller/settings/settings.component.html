@@ -15,8 +15,8 @@
       <!-- Settings categories -->
       <div *ngFor="let category of settingsCategories" class="mb-8">
         <h2 class="text-xl font-bold text-gray-900 mb-4">{{ category.title }}</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <a *ngFor="let item of category.items" [routerLink]="item.link" class="bg-white rounded-lg p-6 border border-gray-200 hover:shadow-lg">
+        <!-- <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+           <a *ngFor="let item of category.items" (click)="openChangePassword()" [routerLink]="item.link" class="bg-white rounded-lg p-6 border border-gray-200 hover:shadow-lg">
             <div class="flex items-start justify-between mb-4">
               <div class="w-12 h-12 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center">
                 <i [class]="item.icon + ' text-2xl'"></i>
@@ -25,10 +25,156 @@
             </div>
             <h3 class="font-semibold text-gray-900 mb-2">{{ item.title }}</h3>
             <p class="text-sm text-gray-600">{{ item.description }}</p>
-          </a>
-        </div>
+          </a> 
+ 
+
+        </div> -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+  <a
+    *ngFor="let item of category.items"
+    (click)="onSettingClick(item)"
+    class="cursor-pointer bg-white rounded-lg p-6 border border-gray-200 hover:shadow-lg"
+  >
+    <div class="flex items-start justify-between mb-4">
+      <div class="w-12 h-12 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center">
+        <i [class]="item.icon + ' text-2xl'"></i>
+      </div>
+      <i class="ri-arrow-right-line text-gray-400"></i>
+    </div>
+
+    <h3 class="font-semibold text-gray-900 mb-2">{{ item.title }}</h3>
+    <p class="text-sm text-gray-600">{{ item.description }}</p>
+  </a>
+
+</div>
+
       </div>
     </ng-container>
  <router-outlet></router-outlet>
+  </div>
+</div>
+
+
+
+<!-- CHANGE PASSWORD MODAL -->
+<div
+  *ngIf="showChangePasswordModal"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div class="bg-white w-full max-w-md rounded-xl shadow-xl p-6 relative">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold text-gray-900">Change Password</h2>
+      <button (click)="closeChangePassword()" class="text-gray-400 hover:text-gray-700">
+        <i class="ri-close-line text-2xl"></i>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="changePassword()" #passwordForm="ngForm" class="space-y-4">
+
+  <div>
+  <label class="block text-sm font-medium mb-1">Current Password</label>
+
+  <div class="relative">
+    <input
+      [type]="showCurrent ? 'text' : 'password'"
+      [(ngModel)]="passwordData.currentPassword"
+      name="currentPassword"
+      required
+      class="w-full border rounded-lg px-3 py-2 pr-10"
+    />
+
+    <button
+      type="button"
+      (click)="showCurrent = !showCurrent"
+      class="absolute inset-y-0 right-3 flex items-center text-gray-500"
+    >
+      <i [class]="showCurrent ? 'ri-eye-off-line' : 'ri-eye-line'"></i>
+    </button>
+  </div>
+</div>
+
+
+ <div>
+  <label class="block text-sm font-medium mb-1">New Password</label>
+
+  <div class="relative">
+    <input
+      [type]="showNew ? 'text' : 'password'"
+      [(ngModel)]="passwordData.newPassword"
+      name="newPassword"
+      required
+      minlength="3"
+      class="w-full border rounded-lg px-3 py-2 pr-10"
+      (ngModelChange)="validatePasswords()"
+    />
+
+    <button
+      type="button"
+      (click)="showNew = !showNew"
+      class="absolute inset-y-0 right-3 flex items-center text-gray-500"
+    >
+      <i [class]="showNew ? 'ri-eye-off-line' : 'ri-eye-line'"></i>
+    </button>
+  </div>
+
+  <p *ngIf="sameAsCurrent" class="text-sm text-red-500 mt-1">
+    New password must be different from current password
+  </p>
+</div>
+
+
+
+<div>
+  <label class="block text-sm font-medium mb-1">Confirm Password</label>
+
+  <div class="relative">
+    <input
+      [type]="showConfirm ? 'text' : 'password'"
+      [(ngModel)]="passwordData.confirmPassword"
+      name="confirmPassword"
+      required
+      class="w-full border rounded-lg px-3 py-2 pr-10"
+      (ngModelChange)="validatePasswords()"
+    />
+
+    <button
+      type="button"
+      (click)="showConfirm = !showConfirm"
+      class="absolute inset-y-0 right-3 flex items-center text-gray-500"
+    >
+      <i [class]="showConfirm ? 'ri-eye-off-line' : 'ri-eye-line'"></i>
+    </button>
+  </div>
+
+  <p *ngIf="passwordMismatch" class="text-sm text-red-500 mt-1">
+    New password and confirm password must match
+  </p>
+</div>
+
+
+
+      <!-- Actions -->
+      <div class="flex justify-end gap-2 pt-4">
+        <button
+          type="button"
+          (click)="closeChangePassword()"
+          class="px-4 py-2 border rounded-lg"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          [disabled]="passwordForm.invalid"
+          class="px-4 py-2 bg-orange-600 text-white rounded-lg"
+        >
+          Update Password
+        </button>
+      </div>
+
+    </form>
   </div>
 </div>

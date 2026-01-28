@@ -85,44 +85,96 @@
 
   <!-- Address -->
   <div class="border-t pt-6 mt-6">
-    <h3 class="text-xl font-bold mb-4">Business Address</h3>
-
-<label class="block text-sm font-medium mb-2">Complete Address *</label>
-
-    <textarea
-      rows="3"
-      [value]="formData.businessAddress"
-      (input)="onInput('businessAddress', $any($event.target).value)"
-      class="w-full px-4 py-3 border rounded-lg"></textarea>
-  </div>
-      
-    <div class="grid md:grid-cols-2 gap-6 mt-6">
-      <div>
-      <label class="block text-sm font-medium mb-2">State *</label>
-         <select
-        [value]="formData.state"
-        (change)="onInput('state', $any($event.target).value)"
-        class="w-full px-4 py-3 border rounded-lg bg-white">
-        <option value="">Select</option>
-        <option *ngFor="let t of states" [value]="t">{{ t }}</option>
-      </select>
-        </div>
-
-      <div>
-      <label class="block text-sm font-medium mb-2">City *</label>
-      <input placeholder="City" [value]="formData.city"
-        (input)="onInput('city', $any($event.target).value)"
-        class="w-full px-4 py-3 border rounded-lg" />
-        </div>
+     <div class="flex items-center mb-8">
+    <div class="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center mr-4">
+      <i class="ri-home-line text-2xl text-white"></i>
     </div>
+    <div>
+      <h2 class="text-3xl font-bold text-gray-900">Business Address</h2>
+      <p class="text-gray-600 mt-1">Provide your business address</p>
+    </div>
+  </div>
+
+
+  </div>
+   
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+  <label class="block text-sm font-medium mb-2">
+    Line 1 <span class="text-orange-600">*</span>
+  </label>
+  <input
+    type="text"
+     placeholder="Line 1"
+    [value]="formData.line1 || ''"
+    (input)="onInput('line1', $any($event.target).value)"
+    class="w-full px-4 py-3 border rounded-lg"
+  />
+  <p *ngIf="errors.line1" class="text-red-500 text-sm mt-1">{{ errors.line1 }}</p>
+  </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-2">Line 2</label>
+      <input type="text"
+       placeholder="Line 2"
+        [value]="formData.line2 || ''"
+        (input)="onInput('line2', $any($event.target).value)"
+        class="w-full px-4 py-3 border rounded-lg" />
+    </div>
+  </div>   
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+  <!-- State -->
+ <div>
+    <label class="block text-sm font-medium mb-2">State *</label>
+    <select [value]="formData.stateId || ''" (change)="onInput('stateId', $any($event.target).value)"
+      class="w-full px-4 py-3 border rounded-lg bg-white">
+      <option value="">Select State</option>
+      <option *ngFor="let s of states" [value]="s.id">{{ s.name }}</option>
+    </select>
+    <p *ngIf="errors?.stateId" class="text-red-500 text-sm mt-1">{{ errors.stateId }}</p>
+  </div>
+
+  <!-- City -->
+  <div>
+    <label class="block text-sm font-medium mb-2">City *</label>
+   <select [value]="formData.cityId || ''" [disabled]="!cities.length" (change)="onInput('city', $any($event.target).value)" class="w-full px-4 py-3 border rounded-lg bg-white">
+  <option value="">Select City</option>
+  <option *ngFor="let c of cities" [value]="c.id">{{ c.name }}</option>
+</select>
+    <p *ngIf="errors?.city" class="text-red-500 text-sm mt-1">{{ errors.city }}</p>
+  </div>
+</div>
+
     
-    <div class="grid md:grid-cols-2 gap-6 mt-6">
-      <div>
+  <div class="grid md:grid-cols-2 gap-6 mt-6">
+  <div>
+    <label class="block text-sm font-medium mb-2">Locality</label>
+    <input
+      placeholder="Locality"
+      [value]="formData.locality || ''"
+      (input)="onInput('locality', $any($event.target).value)"
+      class="w-full px-4 py-3 border rounded-lg"
+    />
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-2">Landmark</label>
+    <input
+      placeholder="Landmark"
+      [value]="formData.landmark || ''"
+      (input)="onInput('landmark', $any($event.target).value)"
+      class="w-full px-4 py-3 border rounded-lg"
+    />
+  </div>
+</div>
+
+     <div class="grid md:grid-cols-2 gap-6 mt-6">
+      <!-- <div>
       <label class="block text-sm font-medium mb-2">Plot/House Number *</label>
       <input placeholder="Plot/House Number" [value]="formData.plotNumber"
         (input)="onInput('plotNumber', $any($event.target).value)"
         class="w-full px-4 py-3 border rounded-lg" />
-        </div>
+        </div> -->
 
        <div>
          <label class="block text-sm font-medium mb-2">PIN Code *</label> 
@@ -133,27 +185,64 @@
         </div>
     </div>
 
-       <div class="grid md:grid-cols-2 gap-6 mt-6">
-      <div>
-      <label class="block text-sm font-medium mb-2">Role *</label>
-         <select
-        [value]="formData.role"
-        (change)="onInput('role', $any($event.target).value)"
-        class="w-full px-4 py-3 border rounded-lg bg-white">
-        <option value="">Select</option>
-        <option *ngFor="let t of role" [value]="t">{{ t }}</option>
-      </select>
-        </div>
-
-      <div>
-      <label class="block text-sm font-medium mb-2">Password *</label>
-      <input placeholder="Password" [value]="formData.password"
-        (input)="onInput('password', $any($event.target).value)"
-        class="w-full px-4 py-3 border rounded-lg" />
-        </div>
+<!-- Provider Service Area -->
+<div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12 border border-gray-100 mt-8">
+  <div class="flex items-center mb-8">
+    <div class="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center mr-4">
+      <i class="ri-map-pin-line text-2xl text-white"></i>
     </div>
-    
+    <div>
+      <h2 class="text-3xl font-bold text-gray-900">Service Areas</h2>
+      <p class="text-gray-600 mt-1">Define the areas you serve</p>
+    </div>
+  </div>
 
+  <!-- Area Type -->
+  <div class="mb-4">
+    <label class="block text-sm font-medium text-gray-700 mb-2">Area Type</label>
+    <select
+      [value]="formData.areaType || ''"
+      (change)="onInput('areaType', $any($event.target).value)"
+      class="w-full px-4 py-3 border rounded-lg">
+      <option value="">Select Type</option>
+      <option value="city_radius">City</option>
+      <option value="polygon">Radius</option>
+      <option value="pincode_list">Pincode</option>
+    </select>
+  </div>
+
+  <!-- City Dropdown -->
+  <div *ngIf="formData.areaType === 'city_radius'" class="mb-4">
+    <label class="block text-sm font-medium text-gray-700 mb-2">Select City</label>
+    <select
+      [value]="formData.cityId || ''"
+      (change)="onInput('cityId', $any($event.target).value)"
+      class="w-full px-4 py-3 border rounded-lg">
+      <option value="">Select City</option>
+      <option *ngFor="let city of cities" [value]="city.id">{{ city.name }}</option>
+    </select>
+  </div> 
+
+  <!-- Radius Input -->
+  <div *ngIf="formData.areaType === 'polygon'" class="mb-4">
+    <label class="block text-sm font-medium text-gray-700 mb-2">Radius (km)</label>
+    <input type="number"
+      [value]="formData.radiusKm || ''"
+      (input)="onInput('radiusKm', $any($event.target).value)"
+      class="w-full px-4 py-3 border rounded-lg"
+      placeholder="Enter radius in km" />
+  </div>
+
+  <!-- Pincodes -->
+  <div *ngIf="formData.areaType === 'pincode_list'" class="mb-4">
+    <label class="block text-sm font-medium text-gray-700 mb-2">Pincodes</label>
+    <input type="text"
+      [value]="formData.pincodes || ''"
+      (input)="onInput('pincodes', $any($event.target).value)"
+      class="w-full px-4 py-3 border rounded-lg"
+      placeholder="Comma separated pincodes" />
+  </div>
+</div>
 
   <!-- Navigation -->
   <div class="flex justify-between mt-8">
