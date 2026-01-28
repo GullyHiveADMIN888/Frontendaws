@@ -100,33 +100,33 @@ getCities(stateId: number): Observable<any[]> {
 
 
   /** 🔹 Init reCAPTCHA ONCE */
-  async initRecaptcha(): Promise<void> {
-    if (!isPlatformBrowser(this.platformId)) return;
+  // async initRecaptcha(): Promise<void> {
+  //   if (!isPlatformBrowser(this.platformId)) return;
 
-    if (!this.recaptchaVerifier) {
-      this.recaptchaVerifier = new RecaptchaVerifier(
-        this.auth,
-        'recaptcha-container',
-        { size: 'invisible' }
-      );
-      await this.recaptchaVerifier.render();
-    }
-  }
+  //   if (!this.recaptchaVerifier) {
+  //     this.recaptchaVerifier = new RecaptchaVerifier(
+  //       this.auth,
+  //       'recaptcha-container',
+  //       { size: 'invisible' }
+  //     );
+  //     await this.recaptchaVerifier.render();
+  //   }
+  // }
 
 
  /** 🔹 Send OTP */
-  async sendOtp(mobile: string): Promise<ConfirmationResult> {
-    await this.initRecaptcha();
-    const phoneNumber = `+91${mobile}`;
+  // async sendOtp(mobile: string): Promise<ConfirmationResult> {
+  //   await this.initRecaptcha();
+  //   const phoneNumber = `+91${mobile}`;
 
-    this.confirmationResult = await signInWithPhoneNumber(
-      this.auth,
-      phoneNumber,
-      this.recaptchaVerifier!
-    );
+  //   this.confirmationResult = await signInWithPhoneNumber(
+  //     this.auth,
+  //     phoneNumber,
+  //     this.recaptchaVerifier!
+  //   );
 
-    return this.confirmationResult;
-  }
+  //   return this.confirmationResult;
+  // }
 
 
   /** 🔹 Verify OTP */
@@ -137,12 +137,64 @@ getCities(stateId: number): Observable<any[]> {
     return this.confirmationResult.confirm(otp);
   }
 
+  // clearRecaptcha() {
+  //   this.recaptchaVerifier?.clear();
+  //   this.recaptchaVerifier = undefined;
+  //   this.confirmationResult = undefined;
+  // }
+ 
   /** 🔹 Resend OTP */
-  async resendOtp(mobile: string) {
-    this.recaptchaVerifier?.clear();
-    this.recaptchaVerifier = undefined;
-    await this.sendOtp(mobile);
+  // async resendOtp(mobile: string) {
+  //   this.recaptchaVerifier?.clear();
+  //   this.recaptchaVerifier = undefined;
+  //   await this.sendOtp(mobile);
+  // }
+
+
+private async initRecaptcha(): Promise<void> {
+  if (!isPlatformBrowser(this.platformId)) return;
+
+  if (this.recaptchaVerifier) {
+    return; // ✅ already rendered
   }
+
+  this.recaptchaVerifier = new RecaptchaVerifier(
+    this.auth,
+    'recaptcha-container',
+    { size: 'invisible' }
+  );
+
+  await this.recaptchaVerifier.render();
+}
+async sendOtp(mobile: string): Promise<void> {
+  await this.initRecaptcha();
+
+  const phoneNumber = `+91${mobile}`;
+  this.confirmationResult = await signInWithPhoneNumber(
+    this.auth,
+    phoneNumber,
+    this.recaptchaVerifier!
+  );
+}
+async resendOtp(mobile: string): Promise<void> {
+  if (!this.recaptchaVerifier) {
+    throw new Error('reCAPTCHA not initialized');
+  }
+
+  const phoneNumber = `+91${mobile}`;
+  this.confirmationResult = await signInWithPhoneNumber(
+    this.auth,
+    phoneNumber,
+    this.recaptchaVerifier!
+  );
+}
+clearRecaptcha() {
+  this.recaptchaVerifier?.clear();
+  this.recaptchaVerifier = undefined;
+  this.confirmationResult = undefined;
+}
+
+
 
 
 
@@ -199,12 +251,7 @@ getCities(stateId: number): Observable<any[]> {
 
 
   /** 🔹 Cleanup (optional but good) */
-  clearRecaptcha() {
-    this.recaptchaVerifier?.clear();
-    this.recaptchaVerifier = undefined;
-    this.confirmationResult = undefined;
-  }
-
+ 
 
 
 
