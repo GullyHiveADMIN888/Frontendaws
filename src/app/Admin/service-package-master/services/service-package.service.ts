@@ -29,6 +29,13 @@ export interface ServiceCategory {
   displayOrder: number;
 }
 
+export interface ServiceSubCategory {
+  id: number;
+  categoryId: number;
+  name: string;
+  isActive: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -36,6 +43,7 @@ export class ServicePackageService {
   private apiUrl = `${environment.apiBaseUrl}/admin/service-packages`;
   private citiesUrl = `${environment.apiBaseUrl}/admin/cities`;
   private categoriesUrl = `${environment.apiBaseUrl}/admin/service-category-master`;
+  private subCategoriesUrl = `${environment.apiBaseUrl}/admin/sub-category-master`; 
 
   constructor(private http: HttpClient) {}
 
@@ -69,4 +77,9 @@ export class ServicePackageService {
   getServiceCategories(): Observable<ServiceCategory[]> {
     return this.http.get<ServiceCategory[]>(this.categoriesUrl);
   }
+
+  // Get subcategories by category ID
+getServiceSubCategoriesByCategoryId(categoryId: number): Observable<ServiceSubCategory[]> {
+  return this.http.get<ServiceSubCategory[]>(`${this.subCategoriesUrl}/by-category/${categoryId}`);
+}
 }

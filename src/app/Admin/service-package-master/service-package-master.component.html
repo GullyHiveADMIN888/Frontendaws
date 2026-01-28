@@ -269,21 +269,65 @@
     <div class="p-6">
       <form (ngSubmit)="savePackage()" #packageForm="ngForm" class="space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Name -->
+          <!-- Subcategory Selection -->
           <div class="md:col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Package Name *
+              Name *
             </label>
-            <input type="text" [(ngModel)]="currentPackage.name" name="name" required minlength="3" maxlength="255"
-              [disabled]="modalLoading" #nameInput="ngModel"
-              [class]="nameInput.invalid && nameInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
-              class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50"
-              placeholder="Enter package name">
-            <div *ngIf="nameInput.invalid && nameInput.touched" class="mt-1 text-sm text-red-600">
-              <div *ngIf="nameInput.errors?.['required']">Package name is required</div>
-              <div *ngIf="nameInput.errors?.['minlength']">Package name must be at least 3 characters</div>
-              <div *ngIf="nameInput.errors?.['maxlength']">Package name cannot exceed 255 characters</div>
+
+            <div *ngIf="modalLoading && !currentPackage.categoryId" class="mb-4">
+              <div class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+              <span class="text-sm text-gray-500">Please select a category first...</span>
             </div>
+
+            <!-- In your modal template -->
+            <select [(ngModel)]="currentPackage.name" name="name" required
+              [disabled]="modalLoading || groupedSubCategories.length === 0 || !currentPackage.categoryId"
+              (ngModelChange)="onSubCategoryChange()" #nameInput="ngModel"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50">
+
+              <option [ngValue]="''" [selected]="!currentPackage.name">-- Select Subcategory --</option>
+
+              <ng-container *ngFor="let group of groupedSubCategories">
+                <option *ngFor="let subcat of group.subcategories" [value]="subcat.id"
+                  [selected]="isEditMode && (currentPackage.name === subcat.id.toString() || currentPackage.name === subcat.name)">
+                  {{subcat.name}}
+                </option>
+              </ng-container>
+
+            </select>
+
+            <div *ngIf="nameInput.invalid && nameInput.touched" class="mt-1 text-sm text-red-600">
+              <div *ngIf="nameInput.errors?.['required']">Subcategory selection is required</div>
+            </div>
+
+            <div *ngIf="!currentPackage.categoryId" class="mt-2 p-2 bg-amber-50 border border-amber-200 rounded">
+              <p class="text-xs text-amber-700">
+                <strong>Note:</strong> Please select a category first to see available subcategories.
+              </p>
+            </div>
+
+            <div *ngIf="modalLoading && currentPackage.categoryId"
+              class="mt-2 p-2 bg-blue-50 border border-blue-200 rounded">
+              <div class="inline-block animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 mr-2"></div>
+              <span class="text-xs text-blue-700">Loading subcategories...</span>
+            </div>
+
+            <p *ngIf="currentPackage.categoryId && groupedSubCategories.length > 0 && !modalLoading"
+              class="text-xs text-gray-500 mt-1">
+              <ng-container *ngIf="currentPackage.name">
+                Selected: {{getSelectedSubCategoryDisplayName()}}
+              </ng-container>
+              <ng-container *ngIf="!currentPackage.name">
+                Available subcategories for {{getCategoryName(currentPackage.categoryId)}}
+              </ng-container>
+            </p>
+
+            <p *ngIf="currentPackage.categoryId && groupedSubCategories.length === 0 && !modalLoading"
+              class="text-xs text-amber-600 mt-1">
+              No active subcategories found for this category. Please create subcategories first in the Subcategory
+              Master.
+            </p>
           </div>
 
           <!-- City Dropdown -->
@@ -317,12 +361,13 @@
             </div>
 
             <select [(ngModel)]="currentPackage.categoryId" name="categoryId" required
-              [disabled]="modalLoading || serviceCategories.length === 0" #categoryInput="ngModel"
+              [disabled]="modalLoading || serviceCategories.length === 0" (ngModelChange)="onCategoryChange()"
+              #categoryInput="ngModel"
               [class]="categoryInput.invalid && categoryInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
               class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50">
               <option [ngValue]="0">-- Select Category --</option>
               <option *ngFor="let category of serviceCategories" [value]="category.id">
-                {{category.name}} {{category.parentId ? '(Subcategory)' : ''}}
+                {{category.name}}
               </option>
             </select>
             <div *ngIf="categoryInput.invalid && categoryInput.touched" class="mt-1 text-sm text-red-600">
@@ -338,7 +383,6 @@
           </div>
 
           <!-- Base Price -->
-
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
               Base Price *
@@ -410,12 +454,12 @@
           <h4 class="text-sm font-medium text-blue-800 mb-2">Package Examples:</h4>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
             <div class="bg-white p-3 rounded border border-blue-200">
-              <div class="font-medium text-blue-700">Basic Cleaning</div>
+              <div class="font-medium text-blue-700">Cooler Repair</div>
               <div class="text-blue-600">Category: Home Services, Price: ₹999</div>
             </div>
             <div class="bg-white p-3 rounded border border-blue-200">
-              <div class="font-medium text-blue-700">Premium Service</div>
-              <div class="text-blue-600">Category: Car Services, Price: ₹1999</div>
+              <div class="font-medium text-blue-700">AC Installation</div>
+              <div class="text-blue-600">Category: Home Services, Price: ₹1999</div>
             </div>
           </div>
         </div>

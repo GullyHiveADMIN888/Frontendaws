@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ServicePackageService, City, ServiceCategory } from './services/service-package.service';
+import { ServicePackageService, City, ServiceCategory, ServiceSubCategory } from './services/service-package.service';
 import { ServicePackage, ServicePackageCreateDto, ServicePackageUpdateDto } from './models/service-package.model';
 
 @Component({
@@ -15,6 +15,10 @@ export class ServicePackageMasterComponent implements OnInit {
   // Dropdown data properties
   cities: City[] = [];
   serviceCategories: ServiceCategory[] = [];
+  serviceSubCategories: ServiceSubCategory[] = [];
+  
+  // Grouped subcategories for UI display
+  groupedSubCategories: {categoryId: number, categoryName: string, subcategories: ServiceSubCategory[]}[] = [];
 
   // UI state properties
   loading: boolean = true;
@@ -65,7 +69,7 @@ export class ServicePackageMasterComponent implements OnInit {
     };
   }
 
-  // Fetch dropdown data (cities and categories)
+  // Fetch dropdown data (cities, categories, and subcategories)
   fetchDropdownData(): void {
     // Load cities
     this.servicePackageService.getCities().subscribe({
@@ -88,34 +92,139 @@ export class ServicePackageMasterComponent implements OnInit {
     });
   }
 
-  // Helper methods to get names for display
-  getCityName(cityId: number | null): string {
-    if (!cityId) return 'No City';
-    const city = this.cities.find(c => c.id === cityId);
-    return city ? city.name : `City #${cityId}`;
-  }
+  // Fetch subcategories by category ID
+  // fetchSubCategoriesByCategory(categoryId: number): void {
+  //   if (!categoryId) {
+  //     this.groupedSubCategories = [];
+  //     return;
+  //   }
 
+  //   this.servicePackageService.getServiceSubCategoriesByCategoryId(categoryId)
+  //     .subscribe({
+  //       next: (data) => {
+  //         const category = this.serviceCategories.find(c => c.id === categoryId);
+  //         this.groupedSubCategories = [{
+  //           categoryId,
+  //           categoryName: category ? category.name : `Category #${categoryId}`,
+  //           subcategories: data.sort((a, b) => a.name.localeCompare(b.name))
+  //         }];
+  //       },
+  //       error: (err) => {
+  //         console.error('Failed to load subcategories:', err);
+  //         this.groupedSubCategories = [];
+  //       }
+  //     });
+  // }
+
+  // Get category name for display
   getCategoryName(categoryId: number): string {
     const category = this.serviceCategories.find(c => c.id === categoryId);
     return category ? category.name : `Category #${categoryId}`;
+  }
+
+  // Get subcategory name for display
+  getSubCategoryName(subCategoryId: number | string): string {
+    if (!subCategoryId) return '';
+    
+    if (typeof subCategoryId === 'string') {
+      // Try to parse string to number
+      const id = parseInt(subCategoryId, 10);
+      if (isNaN(id)) {
+        // If it's not a number, return the string itself
+        return subCategoryId;
+      }
+      subCategoryId = id;
+    }
+    
+    const subCategory = this.serviceSubCategories.find(s => s.id === subCategoryId);
+    return subCategory ? subCategory.name : `Subcategory #${subCategoryId}`;
+  }
+
+  // When category changes in modal
+  onCategoryChange(): void {
+    // Reset name when category changes
+    this.currentPackage.name = '';
+    
+    if (this.currentPackage.categoryId) {
+      // Fetch subcategories for the selected category
+      this.fetchSubCategoriesByCategory(this.currentPackage.categoryId);
+    } else {
+      this.groupedSubCategories = [];
+    }
+  }
+
+  // When subcategory changes in modal
+  onSubCategoryChange(): void {
+    // This method can be used for additional logic when subcategory changes
+  }
+
+  // Helper method to get selected subcategory display name
+  getSelectedSubCategoryDisplayName(): string {
+    if (!this.currentPackage.name) return '';
+    
+    // Try to parse as number first
+    const id = parseInt(this.currentPackage.name, 10);
+    if (!isNaN(id)) {
+      // Find subcategory in the current grouped list
+      for (const group of this.groupedSubCategories) {
+        const subCategory = group.subcategories.find(s => s.id === id);
+        if (subCategory) {
+          return subCategory.name;
+        }
+      }
+      return `Subcategory #${id}`;
+    }
+    
+    // If not a number, return the string itself
+    return this.currentPackage.name;
   }
 
   // Modal Methods
   openAddModal(): void {
     this.isEditMode = false;
     this.currentPackage = this.getEmptyPackage();
+    this.groupedSubCategories = [];
     this.showModal = true;
   }
 
-  editPackage(pkg: ServicePackage): void {
-    this.isEditMode = true;
-    this.currentPackage = { ...pkg };
-    this.showModal = true;
+  // editPackage(pkg: ServicePackage): void {
+  //   this.isEditMode = true;
+  //   this.currentPackage = { ...pkg };
+  //   this.groupedSubCategories = [];
+    
+  //   // Set the category ID and fetch subcategories for that category
+  //   if (this.currentPackage.categoryId) {
+  //     this.fetchSubCategoriesByCategory(this.currentPackage.categoryId);
+      
+  //     // Try to find matching subcategory
+  //     setTimeout(() => {
+  //       const matchingSubCat = this.findSubCategoryByName(pkg.name, pkg.categoryId);
+  //       if (matchingSubCat) {
+  //         this.currentPackage.name = matchingSubCat.id.toString();
+  //       } else {
+  //         this.currentPackage.name = pkg.name;
+  //       }
+  //     }, 100);
+  //   }
+    
+  //   this.showModal = true;
+  // }
+
+  // Helper to find subcategory by name and category
+  findSubCategoryByName(name: string, categoryId: number): ServiceSubCategory | null {
+    for (const group of this.groupedSubCategories) {
+      if (group.categoryId === categoryId) {
+        const subCat = group.subcategories.find(s => s.name === name);
+        if (subCat) return subCat;
+      }
+    }
+    return null;
   }
 
   closeModal(): void {
     this.showModal = false;
     this.currentPackage = this.getEmptyPackage();
+    this.groupedSubCategories = [];
     this.modalLoading = false;
   }
 
@@ -129,8 +238,8 @@ export class ServicePackageMasterComponent implements OnInit {
 
   createPackage(): void {
     // Validate required fields
-    if (!this.currentPackage.name.trim()) {
-      alert('Package name is required!');
+    if (!this.currentPackage.name) {
+      alert('Subcategory selection is required!');
       return;
     }
     if (!this.currentPackage.categoryId) {
@@ -149,10 +258,25 @@ export class ServicePackageMasterComponent implements OnInit {
       return;
     }
 
+    // Get subcategory name from the selected ID
+    let subCategoryName = this.currentPackage.name;
+    const subCategoryId = parseInt(this.currentPackage.name, 10);
+    
+    if (!isNaN(subCategoryId)) {
+      // Find subcategory in current grouped list
+      for (const group of this.groupedSubCategories) {
+        const subCategory = group.subcategories.find(s => s.id === subCategoryId);
+        if (subCategory) {
+          subCategoryName = subCategory.name;
+          break;
+        }
+      }
+    }
+
     const createDto: ServicePackageCreateDto = {
       cityId: this.currentPackage.cityId,
       categoryId: this.currentPackage.categoryId,
-      name: this.currentPackage.name.trim(),
+      name: subCategoryName.trim(),
       description: this.currentPackage.description?.trim() || null,
       basePrice: basePrice,
       currency: this.currentPackage.currency,
@@ -186,8 +310,8 @@ export class ServicePackageMasterComponent implements OnInit {
 
   updatePackage(): void {
     // Validate required fields
-    if (!this.currentPackage.name.trim()) {
-      alert('Package name is required!');
+    if (!this.currentPackage.name) {
+      alert('Subcategory selection is required!');
       return;
     }
     if (!this.currentPackage.categoryId) {
@@ -206,10 +330,25 @@ export class ServicePackageMasterComponent implements OnInit {
       return;
     }
 
+    // Get subcategory name from the selected ID
+    let subCategoryName = this.currentPackage.name;
+    const subCategoryId = parseInt(this.currentPackage.name, 10);
+    
+    if (!isNaN(subCategoryId)) {
+      // Find subcategory in current grouped list
+      for (const group of this.groupedSubCategories) {
+        const subCategory = group.subcategories.find(s => s.id === subCategoryId);
+        if (subCategory) {
+          subCategoryName = subCategory.name;
+          break;
+        }
+      }
+    }
+
     const updateData: ServicePackageUpdateDto = {
       cityId: this.currentPackage.cityId,
       categoryId: this.currentPackage.categoryId,
-      name: this.currentPackage.name.trim(),
+      name: subCategoryName.trim(),
       description: this.currentPackage.description?.trim() || null,
       basePrice: basePrice,
       currency: this.currentPackage.currency,
@@ -282,7 +421,7 @@ export class ServicePackageMasterComponent implements OnInit {
 
   refreshData(): void {
     this.fetchServicePackages();
-    this.fetchDropdownData(); // Also refresh dropdown data
+    this.fetchDropdownData();
     this.searchTerm = '';
   }
 
@@ -359,4 +498,88 @@ export class ServicePackageMasterComponent implements OnInit {
       day: 'numeric'
     });
   }
+
+  // Helper to get city name
+  getCityName(cityId: number | null): string {
+    if (!cityId) return 'No City';
+    const city = this.cities.find(c => c.id === cityId);
+    return city ? city.name : `City #${cityId}`;
+  }
+
+  editPackage(pkg: ServicePackage): void {
+  this.isEditMode = true;
+  this.currentPackage = { ...pkg };
+  this.groupedSubCategories = [];
+  
+  // Set the category ID and fetch subcategories for that category
+  if (this.currentPackage.categoryId) {
+    this.fetchSubCategoriesByCategoryForEdit(this.currentPackage.categoryId, pkg.name);
+  }
+  
+  this.showModal = true;
+}
+
+// New method for fetching subcategories in edit mode
+fetchSubCategoriesByCategoryForEdit(categoryId: number, packageName: string): void {
+  if (!categoryId) {
+    this.groupedSubCategories = [];
+    return;
+  }
+
+  this.servicePackageService.getServiceSubCategoriesByCategoryId(categoryId)
+    .subscribe({
+      next: (data) => {
+        const category = this.serviceCategories.find(c => c.id === categoryId);
+        const activeSubcategories = data.filter(s => s.isActive)
+                                        .sort((a, b) => a.name.localeCompare(b.name));
+        
+        this.groupedSubCategories = [{
+          categoryId,
+          categoryName: category ? category.name : `Category #${categoryId}`,
+          subcategories: activeSubcategories
+        }];
+        
+        // Now find the subcategory that matches the package name
+        const matchingSubCat = activeSubcategories.find(s => s.name === packageName);
+        if (matchingSubCat) {
+          // Set the currentPackage.name to the subcategory ID (as string)
+          this.currentPackage.name = matchingSubCat.id.toString();
+        } else {
+          // If no match found, leave it as is (it will show as blank)
+          this.currentPackage.name = '';
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load subcategories:', err);
+        this.groupedSubCategories = [];
+      }
+    });
+}
+
+// Also update the regular fetch method to remove the edit logic
+fetchSubCategoriesByCategory(categoryId: number): void {
+  if (!categoryId) {
+    this.groupedSubCategories = [];
+    return;
+  }
+
+  this.servicePackageService.getServiceSubCategoriesByCategoryId(categoryId)
+    .subscribe({
+      next: (data) => {
+        const category = this.serviceCategories.find(c => c.id === categoryId);
+        const activeSubcategories = data.filter(s => s.isActive)
+                                        .sort((a, b) => a.name.localeCompare(b.name));
+        
+        this.groupedSubCategories = [{
+          categoryId,
+          categoryName: category ? category.name : `Category #${categoryId}`,
+          subcategories: activeSubcategories
+        }];
+      },
+      error: (err) => {
+        console.error('Failed to load subcategories:', err);
+        this.groupedSubCategories = [];
+      }
+    });
+}
 }
