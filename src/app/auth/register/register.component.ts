@@ -80,6 +80,12 @@ export class RegisterComponent {
 
   errors: any = {};
 
+  //otp...
+  //  showOtpModal = false;
+  // isMobileVerified = false;
+//...
+
+
   onInputChange(event: { field: string; value: any }) {
     this.formData[event.field] = event.value;
 
