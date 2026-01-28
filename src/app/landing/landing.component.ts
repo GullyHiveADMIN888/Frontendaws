@@ -27,13 +27,13 @@ import { interval,Subscription } from 'rxjs';
 import { environment } from '../../environments/environment.prod';
 
 
-import { Inject, PLATFORM_ID } from '@angular/core';
+import {  Inject, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { isPlatformBrowser } from '@angular/common';
+import {  isPlatformBrowser } from '@angular/common';
 import { AuthService } from '../auth/auth.service';
 
 
-import { HttpErrorResponse } from '@angular/common/http';
+import {  HttpErrorResponse } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 //import { OTPVerificationComponent } from '../auth/otp-verification/otp-verification.component';
 
@@ -54,9 +54,6 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   submitStatus: 'idle' | 'success' | 'error' = 'idle';
   charCount = 0;
 
-<<<<<<< HEAD
-  loginForm: FormGroup;
-=======
 
 // Forgot Pass....
 showForgotPasswordModal = false;
@@ -82,7 +79,6 @@ recaptchaVerifier!: RecaptchaVerifier;
 //....
 
  loginForm: FormGroup;
->>>>>>> 29559fe30d7b4d672792e0ce5f70d17d580644ce
   loginData = {
     email: '',
     password: ''
@@ -99,40 +95,40 @@ recaptchaVerifier!: RecaptchaVerifier;
 
 
   // API Configuration
-  private readonly apiUrl = `${environment.apiBaseUrl}`;
+  private readonly apiUrl = `${environment.apiBaseUrl}`; 
   // Common .NET Core ports: 7045, 5000, 5001, 7245
 
 
 
 
   popularServices = [
-    {
-      name: 'Home Cleaning',
+    { 
+      name: 'Home Cleaning', 
       icon: 'ri-home-smile-line',
       image: 'https://readdy.ai/api/search-image?query=professional%20home%20cleaning%20service%20with%20modern%20equipment%20and%20cleaning%20supplies%20in%20bright%20clean%20interior%2C%20simple%20minimalist%20background%20with%20natural%20lighting%20and%20organized%20workspace%20aesthetic&width=120&height=120&seq=pop-home-cleaning-001&orientation=squarish'
     },
-    {
-      name: 'AC Repair',
+    { 
+      name: 'AC Repair', 
       icon: 'ri-temp-cold-line',
       image: 'https://readdy.ai/api/search-image?query=air%20conditioner%20repair%20technician%20with%20professional%20tools%20working%20on%20AC%20unit%2C%20simple%20clean%20background%20with%20modern%20equipment%20and%20technical%20workspace%20aesthetic&width=120&height=120&seq=pop-ac-repair-002&orientation=squarish'
     },
-    {
-      name: 'Electrician',
+    { 
+      name: 'Electrician', 
       icon: 'ri-flashlight-line',
       image: 'https://readdy.ai/api/search-image?query=professional%20electrician%20with%20electrical%20tools%20and%20wiring%20equipment%20in%20modern%20workspace%2C%20simple%20clean%20background%20with%20safety%20gear%20and%20organized%20technical%20setup%20aesthetic&width=120&height=120&seq=pop-electrician-003&orientation=squarish'
     },
-    {
-      name: 'Plumber',
+    { 
+      name: 'Plumber', 
       icon: 'ri-drop-line',
       image: 'https://readdy.ai/api/search-image?query=professional%20plumber%20with%20plumbing%20tools%20and%20pipes%20in%20clean%20workspace%2C%20simple%20minimalist%20background%20with%20modern%20equipment%20and%20organized%20technical%20aesthetic&width=120&height=120&seq=pop-plumber-004&orientation=squarish'
     },
-    {
-      name: 'Pest Control',
+    { 
+      name: 'Pest Control', 
       icon: 'ri-bug-line',
       image: 'https://readdy.ai/api/search-image?query=pest%20control%20specialist%20in%20protective%20gear%20with%20professional%20equipment%20and%20safety%20tools%2C%20simple%20clean%20background%20with%20modern%20workspace%20and%20organized%20setup%20aesthetic&width=120&height=120&seq=pop-pest-control-005&orientation=squarish'
     },
-    {
-      name: 'Painting',
+    { 
+      name: 'Painting', 
       icon: 'ri-paint-brush-line',
       image: 'https://readdy.ai/api/search-image?query=professional%20painter%20with%20painting%20tools%20brushes%20and%20color%20palette%20in%20clean%20workspace%2C%20simple%20minimalist%20background%20with%20modern%20equipment%20and%20artistic%20setup%20aesthetic&width=120&height=120&seq=pop-painting-006&orientation=squarish'
     }
@@ -303,21 +299,6 @@ recaptchaVerifier!: RecaptchaVerifier;
   private subscription?: Subscription;
 
 
-<<<<<<< HEAD
-  constructor(
-    private http: HttpClient,
-    private fb: FormBuilder,
-    private authService: AuthService,
-    @Inject(PLATFORM_ID) private platformId: any
-  ) {
-    // Initialize login form
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      rememberMe: [false]
-    });
-  }
-=======
 //  constructor(
 //     private http: HttpClient,
 //     private fb: FormBuilder,
@@ -331,7 +312,6 @@ recaptchaVerifier!: RecaptchaVerifier;
 //       rememberMe: [false]
 //     });
 //   }
->>>>>>> 29559fe30d7b4d672792e0ce5f70d17d580644ce
 
   constructor(private fb: FormBuilder, private http: HttpClient, private authService: AuthService, private auth: Auth, @Inject(PLATFORM_ID) private platformId: any) {
   this.loginForm = this.fb.group({
@@ -397,7 +377,7 @@ recaptchaVerifier!: RecaptchaVerifier;
   onInputChanges(field: keyof typeof this.formData, event: Event): void {
     const input = event.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
     this.formData[field] = input.value;
-
+    
     if (field === 'message') {
       this.charCount = input.value.length;
     }
@@ -412,7 +392,7 @@ recaptchaVerifier!: RecaptchaVerifier;
 
   onSubmit(event: Event): void {
     event.preventDefault();
-
+    
     if (this.formData.message.length > 500) {
       return;
     }
@@ -467,52 +447,7 @@ recaptchaVerifier!: RecaptchaVerifier;
 
   // ========== .NET CORE 8 API LOGIN INTEGRATION ==========
 
-<<<<<<< HEAD
-  // onLoginSubmit(event: Event): void {
-  //   event.preventDefault();
-  //   this.loginError = '';
-
-  //   // Basic validation
-  //   if (!this.loginData.email || !this.loginData.password) {
-  //     this.loginError = 'Please fill in all fields';
-  //     return;
-  //   }
-
-  //   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.loginData.email)) {
-  //     this.loginError = 'Please enter a valid email address';
-  //     return;
-  //   }
-
-  //   this.isLoggingIn = true;
-
-  //   // Prepare login payload for .NET Core API
-  //   const loginPayload = {
-  //     email: this.loginData.email,
-  //     password: this.loginData.password
-  //   };
-
-  //   // Make API call to .NET Core 8 backend
-  //   this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
-  //     .pipe(
-  //       catchError((error: HttpErrorResponse) => {
-  //         this.isLoggingIn = false;
-  //         this.handleLoginError(error);
-  //         return throwError(() => error);
-  //       })
-  //     )
-  //     .subscribe({
-  //       next: (response: any) => {
-  //         this.handleLoginSuccess(response);
-  //       },
-  //       error: () => {
-  //         // Error already handled in catchError
-  //       }
-  //     });
-  // }
-  onLoginSubmit(event: Event): void {
-=======
 onLoginSubmit(event: Event): void {
->>>>>>> 29559fe30d7b4d672792e0ce5f70d17d580644ce
   event.preventDefault();
   this.loginError = '';
   
@@ -541,8 +476,6 @@ onLoginSubmit(event: Event): void {
 
   // Get values from reactive form
   const formValue = this.loginForm.value;
-<<<<<<< HEAD
-=======
  const loginPayload = {
   username: this.loginForm.value.email,
   password: this.loginForm.value.password
@@ -555,13 +488,7 @@ this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
   });
 
  
->>>>>>> 29559fe30d7b4d672792e0ce5f70d17d580644ce
   
-  // Prepare login payload
-  const loginPayload = {
-    username: formValue.email,
-    password: formValue.password
-  };
 
   // Handle remember me functionality
   if (isPlatformBrowser(this.platformId)) {
@@ -590,31 +517,24 @@ this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
       }
     });
 }
-
   private handleLoginSuccess(response: any): void {
     this.isLoggingIn = false;
-
+    
     if (response.token) {
       // Store authentication data using your AuthService
       if (this.authService) {
-        // Pass ALL fields from response including userId
-        this.authService.saveAuth(
-          response.token,
-          response.role,
-          response.name,
-          response.userId 
-        );
+        this.authService.saveAuth(response.token, response.role, response.name);
       } else {
-        // Store directly in localStorage
+        // Fallback: Store directly in localStorage
         localStorage.setItem('token', response.token);
-        localStorage.setItem('role', response.role);
-        localStorage.setItem('userId', response.userId); // Store userId
-        if (response.name) localStorage.setItem('name', response.name);
+        if (response.user) {
+          localStorage.setItem('user', JSON.stringify(response.user));
+        }
       }
-
+      
       // Close modal
       this.closeLoginModal();
-
+      
       // Redirect user based on role
       if (this.authService) {
         this.authService.redirectByRole(response.role);
@@ -629,7 +549,7 @@ this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
 
   private handleLoginError(error: HttpErrorResponse): void {
     this.isLoggingIn = false;
-
+    
     switch (error.status) {
       case 401:
         this.loginError = 'Invalid email or password';
@@ -653,7 +573,7 @@ this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
         this.loginError = error.error?.message || 'Login failed. Please try again';
         break;
     }
-
+    
     // Log error for debugging
     console.error('Login error:', error);
   }
@@ -677,15 +597,6 @@ this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
   
   // ========== FORGOT PASSWORD ==========
 
-<<<<<<< HEAD
-  forgotPassword(event: Event): void {
-    event.preventDefault();
-
-    const email = this.loginData.email || prompt('Please enter your email to reset password:');
-    if (email) {
-      this.sendResetPasswordEmail(email);
-    }
-=======
  forgotPassword(event: Event) {
   event.preventDefault();
   this.showForgotPasswordModal = true;
@@ -789,7 +700,6 @@ startTimer() {
         this.stopTimer();
       }
     });
->>>>>>> 29559fe30d7b4d672792e0ce5f70d17d580644ce
   }
 
 stopTimer() {
@@ -899,11 +809,4 @@ function throwError(errorFactory: () => any): any {
 
 
 
-
-
-
-
-
-
-
-
+ 
