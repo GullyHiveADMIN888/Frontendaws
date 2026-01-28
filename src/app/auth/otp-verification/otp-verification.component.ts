@@ -137,38 +137,6 @@ onInputChange(event: Event, index: number) {
     setTimeout(() => this.focusInput(Math.min(pastedData.length, 5)), 0);
   }
 
-//  onVerify() {
-//   const otpValue = this.otp.join('');
-
-//   if (otpValue.length !== 6) {
-//     this.error = 'Please enter complete OTP';
-//     return;
-//   }
-
-//   this.isVerifying = true;
-//   this.error = '';
-
-//   setTimeout(() => {
-//     this.isVerifying = false;
-//     this.onVerified.emit();
-//   }, 1500);
-// }
-
-  // onResend() {
-  //   this.timer = 60;
-  //   this.canResend = false;
-  //   this.otp = Array(6).fill('');
-  //   this.error = '';
-
-  //   this.stopTimer();
-  //   this.startTimer();
-
-  //   setTimeout(() => this.focusInput(0), 0);
-  // }
-
-  
-
-
 
 async onVerify() {
   const otpValue = this.otp.join('');

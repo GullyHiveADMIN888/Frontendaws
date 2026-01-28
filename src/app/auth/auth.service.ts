@@ -95,40 +95,6 @@ getCities(stateId: number): Observable<any[]> {
   return this.http.get<any[]>(`${this.apiUrl}/cities/${stateId}`);
 }
 
-
-
-
-
-  /** 🔹 Init reCAPTCHA ONCE */
-  // async initRecaptcha(): Promise<void> {
-  //   if (!isPlatformBrowser(this.platformId)) return;
-
-  //   if (!this.recaptchaVerifier) {
-  //     this.recaptchaVerifier = new RecaptchaVerifier(
-  //       this.auth,
-  //       'recaptcha-container',
-  //       { size: 'invisible' }
-  //     );
-  //     await this.recaptchaVerifier.render();
-  //   }
-  // }
-
-
- /** 🔹 Send OTP */
-  // async sendOtp(mobile: string): Promise<ConfirmationResult> {
-  //   await this.initRecaptcha();
-  //   const phoneNumber = `+91${mobile}`;
-
-  //   this.confirmationResult = await signInWithPhoneNumber(
-  //     this.auth,
-  //     phoneNumber,
-  //     this.recaptchaVerifier!
-  //   );
-
-  //   return this.confirmationResult;
-  // }
-
-
   /** 🔹 Verify OTP */
   async verifyOtp(otp: string) {
     if (!this.confirmationResult) {
@@ -137,18 +103,6 @@ getCities(stateId: number): Observable<any[]> {
     return this.confirmationResult.confirm(otp);
   }
 
-  // clearRecaptcha() {
-  //   this.recaptchaVerifier?.clear();
-  //   this.recaptchaVerifier = undefined;
-  //   this.confirmationResult = undefined;
-  // }
- 
-  /** 🔹 Resend OTP */
-  // async resendOtp(mobile: string) {
-  //   this.recaptchaVerifier?.clear();
-  //   this.recaptchaVerifier = undefined;
-  //   await this.sendOtp(mobile);
-  // }
 
 
 private async initRecaptcha(): Promise<void> {
@@ -193,67 +147,6 @@ clearRecaptcha() {
   this.recaptchaVerifier = undefined;
   this.confirmationResult = undefined;
 }
-
-
-
-
-
-
-
-  // /** 🔹 Init reCAPTCHA ONCE */
-  // private async initRecaptcha(): Promise<void> {
-  //   if (!isPlatformBrowser(this.platformId)) return;
-
-  //   if (this.recaptchaVerifier) {
-  //     return; // ✅ already created
-  //   }
-
-  //   this.recaptchaVerifier = new RecaptchaVerifier(
-  //     this.auth,
-  //     'recaptcha-container',
-  //     { size: 'invisible' }
-  //   );
-
-  //   await this.recaptchaVerifier.render();
-  // }
-
-  // /** 🔹 Send OTP */
-  // async sendOtp(mobile: string): Promise<void> {
-  //   await this.initRecaptcha();
-
-  //   const phoneNumber = `+91${mobile}`;
-
-  //   this.confirmationResult = await signInWithPhoneNumber(
-  //     this.auth,
-  //     phoneNumber,
-  //     this.recaptchaVerifier!
-  //   );
-  // }
-
-  // /** 🔹 Verify OTP */
-  // async verifyOtp(otp: string) {
-  //   if (!this.confirmationResult) {
-  //     throw new Error('OTP not requested');
-  //   }
-  //   return this.confirmationResult.confirm(otp);
-  // }
-
-  // /** 🔹 Resend OTP (SAFE WAY) */
-  // async resendOtp(mobile: string) {
-  //   // 🔥 Firebase requires reset before reuse
-  //   this.recaptchaVerifier?.clear();
-  //   this.recaptchaVerifier = undefined;
-
-  //   await this.sendOtp(mobile);
-  // }
-  // /** 🔹 Resend OTP (NO re-render) */
-
-
-
-  /** 🔹 Cleanup (optional but good) */
- 
-
-
 
 }
 

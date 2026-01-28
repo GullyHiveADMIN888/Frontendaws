@@ -624,7 +624,7 @@ closeForgotPasswordModal() {
   this.showOtpModal = false;
 
   this.otp = Array(6).fill('');
-  this.timer = 60;
+  this.timer = 30;
   this.canResend = false;
   this.error = '';
   this.otpMobile = '';
@@ -676,7 +676,7 @@ async onResend() {
   if (!this.canResend) return;
 
   this.canResend = false;
-  this.timer = 60;
+  this.timer = 30;
   this.stopTimer();
   this.startTimer();
 
