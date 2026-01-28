@@ -5,6 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { PLATFORM_ID } from '@angular/core';
 import { AuthService } from '../auth.service';
 
+import { Auth, signInWithPhoneNumber, ConfirmationResult } from '@angular/fire/auth';
+// import { RecaptchaVerifier } from 'firebase/auth';
+
 @Component({
   selector: 'app-step1-basic-info',
   standalone: true,
@@ -33,6 +36,7 @@ export class Step1BasicInfoComponent {
     { label: 'MSME / Agency', value: 'msme' },
     { label: 'Company / Corporate', value: 'company' }
   ];
+
 
   constructor(private authService: AuthService,  @Inject(PLATFORM_ID) private platformId: Object) {}
 
@@ -146,25 +150,49 @@ onInputFieldChange(field: string, value: any, event?: Event) {
 
 
   // onSendOTP() { this.sendOTP.emit(); }
-  onSendOTP() {
+//   onSendOTP() {
 
+//   const mobile = this.formData?.mobile;
+
+//   // 🔴 Required check
+//   if (!mobile) {
+//     this.errors.mobile = 'Mobile number is required';
+//     return;
+//   }
+
+//   // 🔴 10-digit validation
+//   if (!/^\d{10}$/.test(mobile)) {
+//     this.errors.mobile = 'Mobile number must be 10 digits';
+//     return;
+//   }
+
+//   // ✅ Valid → proceed
+//   this.sendOTP.emit();
+// }
+
+
+async onSendOTP() {
   const mobile = this.formData?.mobile;
 
-  // 🔴 Required check
   if (!mobile) {
     this.errors.mobile = 'Mobile number is required';
     return;
   }
 
-  // 🔴 10-digit validation
   if (!/^\d{10}$/.test(mobile)) {
     this.errors.mobile = 'Mobile number must be 10 digits';
     return;
   }
 
-  // ✅ Valid → proceed
-  this.sendOTP.emit();
+  try {
+    await this.authService.sendOtp(mobile);
+    this.sendOTP.emit(); // open OTP modal
+  } catch (err: any) {
+    this.errors.mobile = err.message || 'OTP failed';
+  }
 }
+
+
 
   onNextClick() { this.next.emit(); }
 

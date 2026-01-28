@@ -15,7 +15,7 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { interval, Subscription } from 'rxjs';
-
+import { AuthService } from '../auth.service';
 @Component({
   selector: 'app-otp-verification',
   standalone: true,
@@ -25,7 +25,7 @@ import { interval, Subscription } from 'rxjs';
 })
 export class OTPVerificationComponent implements OnInit, OnDestroy {
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+  constructor(private authService: AuthService, @Inject(PLATFORM_ID) private platformId: Object) {}
 
   @Input() mobile = '';
   @Output() onVerified = new EventEmitter<void>();
@@ -50,6 +50,7 @@ export class OTPVerificationComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stopTimer();
+     this.authService.clearRecaptcha();
   }
 
   startTimer() {
@@ -136,35 +137,76 @@ onInputChange(event: Event, index: number) {
     setTimeout(() => this.focusInput(Math.min(pastedData.length, 5)), 0);
   }
 
- onVerify() {
+//  onVerify() {
+//   const otpValue = this.otp.join('');
+
+//   if (otpValue.length !== 6) {
+//     this.error = 'Please enter complete OTP';
+//     return;
+//   }
+
+//   this.isVerifying = true;
+//   this.error = '';
+
+//   setTimeout(() => {
+//     this.isVerifying = false;
+//     this.onVerified.emit();
+//   }, 1500);
+// }
+
+  // onResend() {
+  //   this.timer = 60;
+  //   this.canResend = false;
+  //   this.otp = Array(6).fill('');
+  //   this.error = '';
+
+  //   this.stopTimer();
+  //   this.startTimer();
+
+  //   setTimeout(() => this.focusInput(0), 0);
+  // }
+
+  
+
+
+
+async onVerify() {
   const otpValue = this.otp.join('');
 
   if (otpValue.length !== 6) {
-    this.error = 'Please enter complete OTP';
+    this.error = 'Enter full OTP';
     return;
   }
 
   this.isVerifying = true;
-  this.error = '';
 
-  setTimeout(() => {
-    this.isVerifying = false;
+  try {
+    await this.authService.verifyOtp(otpValue);
     this.onVerified.emit();
-  }, 1500);
+  } catch {
+    this.error = 'Invalid OTP';
+  } finally {
+    this.isVerifying = false;
+  }
 }
 
-  onResend() {
-    this.timer = 60;
-    this.canResend = false;
-    this.otp = Array(6).fill('');
-    this.error = '';
 
-    this.stopTimer();
-    this.startTimer();
+async onResend() {
+  this.timer = 60;
+  this.canResend = false;
+  this.otp = Array(6).fill('');
+  this.error = '';
 
-    setTimeout(() => this.focusInput(0), 0);
+  this.stopTimer();
+  this.startTimer();
+
+  try {
+    await this.authService.resendOtp(this.mobile.replace('+91', ''));
+  } catch (e: any) {
+    alert(e.message);
   }
-  
+}
+
   trackByIndex(index: number) {
   return index;
 }

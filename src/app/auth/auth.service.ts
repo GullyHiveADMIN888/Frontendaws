@@ -4,6 +4,17 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
  // import { environment } from '../../environments/environment';
 import { environment } from '../../environments/environment.prod';
+
+
+
+import { Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Auth, signInWithPhoneNumber, ConfirmationResult, RecaptchaVerifier } from '@angular/fire/auth';
+
+  
+
+
+
 @Injectable({ providedIn: 'root' })
 
 
@@ -11,7 +22,13 @@ import { environment } from '../../environments/environment.prod';
 export class AuthService {
   private apiUrl = `${environment.apiBaseUrl}/auth`;
 
-  constructor(private http: HttpClient, private router: Router) {}
+   private recaptchaVerifier?: RecaptchaVerifier;
+  private confirmationResult?: ConfirmationResult;
+
+
+
+  constructor(private http: HttpClient, private router: Router, private auth: Auth,
+    @Inject(PLATFORM_ID) private platformId: Object) {}
 
   login(username: string, password: string) {
     return this.http.post<any>(`${this.apiUrl}/login`, {
@@ -21,51 +38,7 @@ export class AuthService {
   }
 
   // Register
-  //   register(data: any) {
-  //   return this.http.post(`${this.apiUrl}/register`, data);
-  // }
-
-
-
-// //export class RegistrationService 
-//   submitRegistration(formData: any): Observable<any> {
-//     const data = new FormData();
-
-//     // Step 1: Basic info
-//     if (formData.profilePicture) data.append('ProfilePicture', formData.profilePicture);
-//     data.append('FullName', formData.fullName || '');
-//     data.append('Email', formData.email || '');
-//     data.append('Mobile', formData.mobile || '');
-//     data.append('CoverageArea', formData.coverageArea || '');
-//     data.append('ProfessionalType', formData.professionalType || '');
-//     // if (formData.serviceCategory?.length) {
-//     //   data.append('ServiceCategory', JSON.stringify(formData.serviceCategory));
-//     // }
-// if (formData.serviceCategory?.length) {
-//   formData.serviceCategory.forEach((cat: string) => {
-//     data.append('ServiceCategory', cat);
-//   });
-// }
-
-//     // Step 2: Business info
-//     data.append('BusinessName', formData.businessName || '');
-//     data.append('RegistrationType', formData.registrationType || '');
-//     data.append('RegistrationNumber', formData.registrationNumber || '');
-//     if (formData.registrationDocument) data.append('RegistrationDocument', formData.registrationDocument);
-//     if (formData.addressProof) data.append('AddressProof', formData.addressProof);
-//     data.append('BusinessAddress', formData.businessAddress || '');
-//     data.append('State', formData.state || '');
-//      data.append('City', formData.city || '');
-//     data.append('PinCode', formData.pinCode || '');
-
-//     // Step 3: Professional details
-//     data.append('SelfOverview', formData.selfOverview || '');
-//     data.append('SkillsBackground', formData.skillsBackground || '');
-//     if (formData.achievements) data.append('Achievements', formData.achievements);
-
-//     return this.http.post(`${this.apiUrl}/register`, data);
- 
-//   }
+  
 submitRegistration(formData: FormData) {
   return this.http.post(`${this.apiUrl}/register`, formData);
 }
@@ -133,6 +106,164 @@ getStates(): Observable<any[]> {
 getCities(stateId: number): Observable<any[]> {
   return this.http.get<any[]>(`${this.apiUrl}/cities/${stateId}`);
 }
+
+
+
+
+
+  /** 🔹 Init reCAPTCHA ONCE */
+  // async initRecaptcha(): Promise<void> {
+  //   if (!isPlatformBrowser(this.platformId)) return;
+
+  //   if (!this.recaptchaVerifier) {
+  //     this.recaptchaVerifier = new RecaptchaVerifier(
+  //       this.auth,
+  //       'recaptcha-container',
+  //       { size: 'invisible' }
+  //     );
+  //     await this.recaptchaVerifier.render();
+  //   }
+  // }
+
+
+ /** 🔹 Send OTP */
+  // async sendOtp(mobile: string): Promise<ConfirmationResult> {
+  //   await this.initRecaptcha();
+  //   const phoneNumber = `+91${mobile}`;
+
+  //   this.confirmationResult = await signInWithPhoneNumber(
+  //     this.auth,
+  //     phoneNumber,
+  //     this.recaptchaVerifier!
+  //   );
+
+  //   return this.confirmationResult;
+  // }
+
+
+  /** 🔹 Verify OTP */
+  async verifyOtp(otp: string) {
+    if (!this.confirmationResult) {
+      throw new Error('OTP not requested');
+    }
+    return this.confirmationResult.confirm(otp);
+  }
+
+  // clearRecaptcha() {
+  //   this.recaptchaVerifier?.clear();
+  //   this.recaptchaVerifier = undefined;
+  //   this.confirmationResult = undefined;
+  // }
+ 
+  /** 🔹 Resend OTP */
+  // async resendOtp(mobile: string) {
+  //   this.recaptchaVerifier?.clear();
+  //   this.recaptchaVerifier = undefined;
+  //   await this.sendOtp(mobile);
+  // }
+
+
+private async initRecaptcha(): Promise<void> {
+  if (!isPlatformBrowser(this.platformId)) return;
+
+  if (this.recaptchaVerifier) {
+    return; // ✅ already rendered
+  }
+
+  this.recaptchaVerifier = new RecaptchaVerifier(
+    this.auth,
+    'recaptcha-container',
+    { size: 'invisible' }
+  );
+
+  await this.recaptchaVerifier.render();
+}
+async sendOtp(mobile: string): Promise<void> {
+  await this.initRecaptcha();
+
+  const phoneNumber = `+91${mobile}`;
+  this.confirmationResult = await signInWithPhoneNumber(
+    this.auth,
+    phoneNumber,
+    this.recaptchaVerifier!
+  );
+}
+async resendOtp(mobile: string): Promise<void> {
+  if (!this.recaptchaVerifier) {
+    throw new Error('reCAPTCHA not initialized');
+  }
+
+  const phoneNumber = `+91${mobile}`;
+  this.confirmationResult = await signInWithPhoneNumber(
+    this.auth,
+    phoneNumber,
+    this.recaptchaVerifier!
+  );
+}
+clearRecaptcha() {
+  this.recaptchaVerifier?.clear();
+  this.recaptchaVerifier = undefined;
+  this.confirmationResult = undefined;
+}
+
+
+
+
+
+
+
+  // /** 🔹 Init reCAPTCHA ONCE */
+  // private async initRecaptcha(): Promise<void> {
+  //   if (!isPlatformBrowser(this.platformId)) return;
+
+  //   if (this.recaptchaVerifier) {
+  //     return; // ✅ already created
+  //   }
+
+  //   this.recaptchaVerifier = new RecaptchaVerifier(
+  //     this.auth,
+  //     'recaptcha-container',
+  //     { size: 'invisible' }
+  //   );
+
+  //   await this.recaptchaVerifier.render();
+  // }
+
+  // /** 🔹 Send OTP */
+  // async sendOtp(mobile: string): Promise<void> {
+  //   await this.initRecaptcha();
+
+  //   const phoneNumber = `+91${mobile}`;
+
+  //   this.confirmationResult = await signInWithPhoneNumber(
+  //     this.auth,
+  //     phoneNumber,
+  //     this.recaptchaVerifier!
+  //   );
+  // }
+
+  // /** 🔹 Verify OTP */
+  // async verifyOtp(otp: string) {
+  //   if (!this.confirmationResult) {
+  //     throw new Error('OTP not requested');
+  //   }
+  //   return this.confirmationResult.confirm(otp);
+  // }
+
+  // /** 🔹 Resend OTP (SAFE WAY) */
+  // async resendOtp(mobile: string) {
+  //   // 🔥 Firebase requires reset before reuse
+  //   this.recaptchaVerifier?.clear();
+  //   this.recaptchaVerifier = undefined;
+
+  //   await this.sendOtp(mobile);
+  // }
+  // /** 🔹 Resend OTP (NO re-render) */
+
+
+
+  /** 🔹 Cleanup (optional but good) */
+ 
 
 
 
