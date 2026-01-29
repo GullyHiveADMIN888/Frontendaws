@@ -92,7 +92,10 @@ recaptchaVerifier!: RecaptchaVerifier;
   // Common .NET Core ports: 7045, 5000, 5001, 7245
 
 
-
+showPasswordPopup = false;
+newPassword = '';
+confirmPassword = '';
+passwordError = '';
 
   popularServices = [
     { 
@@ -823,6 +826,37 @@ onPaste(event: ClipboardEvent) {
     setTimeout(() => this.focusInput(Math.min(pastedData.length, 5)), 0);
   }
 
+// async onVerify() {
+//   const otpValue = this.otp.join('');
+//   if (otpValue.length !== 6) return;
+
+//   this.isVerifying = true;
+
+//   try {
+//     // 1️⃣ Verify OTP via Firebase
+//     await this.authService.verifyOtp(otpValue);
+
+//     // 2️⃣ Call backend to reset password
+//     const newPassword = await this.authService.resetPasswordByMobile(
+//       this.otpMobile.replace('+91', '')
+//     );
+
+//     // 3️⃣ Send new password via Firebase SMS
+//     const appVerifier = this.authService.recaptchaVerifier!;
+//     await signInWithPhoneNumber(this.authService.auth, this.otpMobile, appVerifier)
+//       .then((confirmationResult) => {
+//         confirmationResult.confirm(newPassword); // Optional if you want SMS to show new password
+//       });
+
+//     alert('New password sent to your mobile number');
+//     this.showOtpModal = false;
+
+//   } catch (e: any) {
+//     this.error = e.message || 'OTP verification failed';
+//   } finally {
+//     this.isVerifying = false;
+//   }
+// }
 async onVerify() {
   const otpValue = this.otp.join('');
   if (otpValue.length !== 6) return;
@@ -833,26 +867,48 @@ async onVerify() {
     // 1️⃣ Verify OTP via Firebase
     await this.authService.verifyOtp(otpValue);
 
-    // 2️⃣ Call backend to reset password
-    const newPassword = await this.authService.resetPasswordByMobile(
-      this.otpMobile.replace('+91', '')
-    );
-
-    // 3️⃣ Send new password via Firebase SMS
-    const appVerifier = this.authService.recaptchaVerifier!;
-    await signInWithPhoneNumber(this.authService.auth, this.otpMobile, appVerifier)
-      .then((confirmationResult) => {
-        confirmationResult.confirm(newPassword); // Optional if you want SMS to show new password
-      });
-
-    alert('New password sent to your mobile number');
-    this.showOtpModal = false;
+    // 2️⃣ Open password popup
+    this.showPasswordPopup = true;
 
   } catch (e: any) {
-    this.error = e.message || 'OTP verification failed';
+    this.error = e.message || "OTP verification failed";
   } finally {
     this.isVerifying = false;
   }
+}
+
+async submitNewPassword() {
+  this.passwordError = '';
+
+  if (!this.newPassword || this.newPassword.length < 6) {
+    this.passwordError = 'Password must be at least 6 characters';
+    return;
+  }
+
+  if (this.newPassword !== this.confirmPassword) {
+    this.passwordError = 'Passwords do not match';
+    return;
+  }
+
+  try {
+    await this.authService.updatePasswordByMobile({
+      mobile: this.otpMobile.replace('+91', ''),
+      newPassword: this.newPassword
+    });
+
+    alert('Password updated successfully');
+
+    this.closePasswordPopup();
+
+  } catch (e: any) {
+    this.passwordError = e.message || 'Failed to update password';
+  }
+}
+closePasswordPopup() {
+  this.showPasswordPopup = false;
+  this.newPassword = '';
+  this.confirmPassword = '';
+  this.passwordError = '';
 }
 
  
