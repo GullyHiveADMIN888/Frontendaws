@@ -29,6 +29,7 @@ import { CityMasterComponent } from './city-master/city-master.component';
 import { LeadStatusMasterComponent } from './lead-status-master/lead-status-master.component';
 import { ServicePackageMasterComponent } from './service-package-master/service-package-master.component';
 import { AuditLogComponent } from './audit-log/audit-log.component';
+import { AreaMasterComponent } from './area-master/area-master.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { AuditLogComponent } from './audit-log/audit-log.component';
     SubCategoryMasterComponent,
     // UserRolesComponent
     ServicePackageMasterComponent,
-    AuditLogComponent
+    AuditLogComponent,
+    AreaMasterComponent
   ],
   imports: [
     CommonModule,
