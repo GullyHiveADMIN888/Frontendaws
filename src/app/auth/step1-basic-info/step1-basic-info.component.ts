@@ -31,6 +31,11 @@ export class Step1BasicInfoComponent {
   parentCategories: any[] = [];
   subCategories: any[] = [];
 
+  //..otp
+
+@Input() isMobileVerified = false;
+//..
+
   professionalTypes = [
     { label: 'Independent Professional', value: 'individual' },
     { label: 'MSME / Agency', value: 'msme' },
@@ -192,10 +197,22 @@ async onSendOTP() {
   }
 }
 
+  // This is the method!
+  // handleOtpVerified() {
+  //   this.isMobileVerified = true; // enable the Continue button
+  //   this.showOtpModal = false;    // hide OTP modal
+  // }
 
+  // onNextClick() { this.next.emit(); }
 
-  onNextClick() { this.next.emit(); }
+onNextClick() {
+  if (!this.isMobileVerified) {
+    alert('⚠️ Please verify your mobile number before continuing');
+    return;
+  }
 
+  this.next.emit(); // go to next step
+}
 
  
 
