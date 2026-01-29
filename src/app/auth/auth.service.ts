@@ -169,15 +169,10 @@ checkMobileExists(mobile: string) {
   );
 }
 // AuthService.ts
-async resetPasswordByMobile(mobile: string): Promise<string> {
-  // Call backend to reset password
-  const response: any = await this.http
-    .post(`${this.apiUrl}/reset-password-mobile`, { mobile })
-    .toPromise();
-
-  // 🔹 Return the new password to component
-  return response.newPassword;
+updatePasswordByMobile(data: { mobile: string; newPassword: string }) {
+  return this.http.post(`${this.apiUrl}/update-password`, data).toPromise();
 }
+
 
 
 }
