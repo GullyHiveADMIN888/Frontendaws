@@ -81,8 +81,8 @@ export class RegisterComponent {
   errors: any = {};
 
   //otp...
-  //  showOtpModal = false;
-  // isMobileVerified = false;
+  showOtpModal = false;
+isMobileVerified = false;
 //...
 
 
@@ -124,6 +124,8 @@ export class RegisterComponent {
 
   /* OTP VERIFIED */
   onOTPVerified() {
+    this.isMobileVerified = true;
+  this.showOtpModal = false;
     this.currentStep = 1;
   }
 
