@@ -30,6 +30,7 @@
   *ngSwitchCase="1"
   [formData]="formData"
   [errors]="errors"
+   [isMobileVerified]="isMobileVerified" 
   (inputChange)="onInputChange($event)"
   (next)="goNextFromStep1()"
   (sendOTP)="openOTP()">

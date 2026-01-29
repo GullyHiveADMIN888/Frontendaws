@@ -1,11 +1,4 @@
 
-// import {
-//   Auth,
-//   signInWithPhoneNumber,
-//   RecaptchaVerifier,
-//   ConfirmationResult
-// } from '@angular/fire/auth';
-
 import { Auth, signInWithPhoneNumber, ConfirmationResult } from '@angular/fire/auth';
 import { RecaptchaVerifier } from 'firebase/auth';
 
@@ -99,7 +92,10 @@ recaptchaVerifier!: RecaptchaVerifier;
   // Common .NET Core ports: 7045, 5000, 5001, 7245
 
 
-
+showPasswordPopup = false;
+newPassword = '';
+confirmPassword = '';
+passwordError = '';
 
   popularServices = [
     { 
@@ -636,13 +632,45 @@ closeForgotPasswordModal() {
   this.authService.clearRecaptcha();
 }
 
+// async sendOtp() {
+//   if (this.forgotPasswordForm.invalid) return;
+
+//   this.isSendingOtp = true;
+//   const mobile = this.forgotPasswordForm.value.mobile;
+
+//   try {
+//     await this.authService.sendOtp(mobile);
+
+//     this.otpMobile = `+91${mobile}`;
+//     this.showOtpModal = true;
+//     this.showForgotPasswordModal = false;
+
+//     this.startTimer();
+//     setTimeout(() => this.focusInput(0), 0);
+//   } catch (e: any) {
+//     alert(e.message);
+//   } finally {
+//     this.isSendingOtp = false;
+//   }
+// }
 async sendOtp() {
   if (this.forgotPasswordForm.invalid) return;
 
-  this.isSendingOtp = true;
   const mobile = this.forgotPasswordForm.value.mobile;
+  this.isSendingOtp = true;
 
   try {
+    // 🔥 STEP 1: Check mobile exists
+    const res = await this.authService
+      .checkMobileExists(mobile)
+      .toPromise();
+
+    if (!res?.exists) {
+      this.error = 'Mobile number not registered';
+      return;
+    }
+
+    // 🔥 STEP 2: Send OTP via Firebase
     await this.authService.sendOtp(mobile);
 
     this.otpMobile = `+91${mobile}`;
@@ -651,25 +679,27 @@ async sendOtp() {
 
     this.startTimer();
     setTimeout(() => this.focusInput(0), 0);
+
   } catch (e: any) {
-    alert(e.message);
+    this.error = e.message || 'Failed to send OTP';
   } finally {
     this.isSendingOtp = false;
   }
 }
 
 
-async onVerify() {
-  const otpValue = this.otp.join('');
-  if (otpValue.length !== 6) return;
+// async onVerify() {
+//   const otpValue = this.otp.join('');
+//   if (otpValue.length !== 6) return;
 
-  try {
-    await this.authService.verifyOtp(otpValue);
-    alert('OTP verified!');
-  } catch {
-    this.error = 'Invalid OTP';
-  }
-}
+//   try {
+//     await this.authService.verifyOtp(otpValue);
+//     alert('OTP verified!');
+//   } catch {
+//     this.error = 'Invalid OTP';
+//   }
+// }
+
 
 
 async onResend() {
@@ -796,6 +826,94 @@ onPaste(event: ClipboardEvent) {
     setTimeout(() => this.focusInput(Math.min(pastedData.length, 5)), 0);
   }
 
+// async onVerify() {
+//   const otpValue = this.otp.join('');
+//   if (otpValue.length !== 6) return;
+
+//   this.isVerifying = true;
+
+//   try {
+//     // 1️⃣ Verify OTP via Firebase
+//     await this.authService.verifyOtp(otpValue);
+
+//     // 2️⃣ Call backend to reset password
+//     const newPassword = await this.authService.resetPasswordByMobile(
+//       this.otpMobile.replace('+91', '')
+//     );
+
+//     // 3️⃣ Send new password via Firebase SMS
+//     const appVerifier = this.authService.recaptchaVerifier!;
+//     await signInWithPhoneNumber(this.authService.auth, this.otpMobile, appVerifier)
+//       .then((confirmationResult) => {
+//         confirmationResult.confirm(newPassword); // Optional if you want SMS to show new password
+//       });
+
+//     alert('New password sent to your mobile number');
+//     this.showOtpModal = false;
+
+//   } catch (e: any) {
+//     this.error = e.message || 'OTP verification failed';
+//   } finally {
+//     this.isVerifying = false;
+//   }
+// }
+async onVerify() {
+  const otpValue = this.otp.join('');
+  if (otpValue.length !== 6) return;
+
+  this.isVerifying = true;
+  this.error = '';
+
+  try {
+    // 1️⃣ Verify OTP via Firebase
+    await this.authService.verifyOtp(otpValue);
+
+    // ✅ CLOSE OTP MODAL
+    this.showOtpModal = false;
+
+    // ✅ OPEN PASSWORD POPUP
+    this.showPasswordPopup = true;
+
+  } catch (e: any) {
+    this.error = e.message || 'OTP verification failed';
+  } finally {
+    this.isVerifying = false;
+  }
+}
+
+async submitNewPassword() {
+  this.passwordError = '';
+
+  if (!this.newPassword || this.newPassword.length < 6) {
+    this.passwordError = 'Password must be at least 6 characters';
+    return;
+  }
+
+  if (this.newPassword !== this.confirmPassword) {
+    this.passwordError = 'Passwords do not match';
+    return;
+  }
+
+  try {
+    await this.authService.updatePasswordByMobile({
+      mobile: this.otpMobile.replace('+91', ''),
+      newPassword: this.newPassword
+    });
+
+    alert('Password updated successfully');
+
+    this.closePasswordPopup();
+
+  } catch (e: any) {
+    this.passwordError = e.message || 'Failed to update password';
+  }
+}
+closePasswordPopup() {
+  this.showPasswordPopup = false;
+  this.newPassword = '';
+  this.confirmPassword = '';
+  this.passwordError = '';
+}
 
  
 }
