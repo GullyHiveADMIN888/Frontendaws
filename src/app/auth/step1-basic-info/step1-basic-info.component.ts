@@ -203,8 +203,16 @@ async onSendOTP() {
   //   this.showOtpModal = false;    // hide OTP modal
   // }
 
-  onNextClick() { this.next.emit(); }
+  // onNextClick() { this.next.emit(); }
 
+onNextClick() {
+  if (!this.isMobileVerified) {
+    alert('⚠️ Please verify your mobile number before continuing');
+    return;
+  }
+
+  this.next.emit(); // go to next step
+}
 
  
 
