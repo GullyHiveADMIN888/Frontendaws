@@ -32,8 +32,8 @@ export class Step1BasicInfoComponent {
   subCategories: any[] = [];
 
   //..otp
-isMobileVerified = false;
-showOtpModal = false;
+
+@Input() isMobileVerified = false;
 //..
 
   professionalTypes = [
@@ -198,10 +198,10 @@ async onSendOTP() {
 }
 
   // This is the method!
-  handleOtpVerified() {
-    this.isMobileVerified = true; // enable the Continue button
-    this.showOtpModal = false;    // hide OTP modal
-  }
+  // handleOtpVerified() {
+  //   this.isMobileVerified = true; // enable the Continue button
+  //   this.showOtpModal = false;    // hide OTP modal
+  // }
 
   onNextClick() { this.next.emit(); }
 
