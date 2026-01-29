@@ -155,8 +155,25 @@
               <!-- Pricing -->
               <td class="px-6 py-4">
                 <div class="text-sm">
-                  <div class="font-semibold text-gray-900">{{formatCurrency(pkg.basePrice, pkg.currency)}}</div>
-                  <div class="text-gray-500">{{pkg.currency}}</div>
+                  <!-- <div class="font-semibold text-gray-900">{{formatCurrency(pkg.totalPrice, pkg.currency)}}</div> -->
+                  <div class="text-xs text-gray-500 space-y-1 mt-1">
+                    <div class="flex items-center justify-between">
+                      <span>Base:</span>
+                      <span>{{formatCurrency(pkg.basePrice, pkg.currency)}}</span>
+                    </div>
+                    <div *ngIf="pkg.platformCharges" class="flex items-center justify-between">
+                      <span>Platform:</span>
+                      <span class="text-green-600">+{{formatCurrency(pkg.platformCharges, pkg.currency)}}</span>
+                    </div>
+                    <div *ngIf="pkg.visitingCharges" class="flex items-center justify-between">
+                      <span>Visiting:</span>
+                      <span class="text-orange-600">+{{formatCurrency(pkg.visitingCharges, pkg.currency)}}</span>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-gray-200 pt-1 mt-1">
+                      <span class="font-medium">Total:</span>
+                      <span class="font-bold text-blue-700">{{formatCurrency(pkg.totalPrice, pkg.currency)}}</span>
+                    </div>
+                  </div>
                 </div>
               </td>
 
@@ -280,11 +297,12 @@
               <span class="text-sm text-gray-500">Please select a category first...</span>
             </div>
 
-            <!-- In your modal template -->
+            <!-- Subcategory Dropdown -->
             <select [(ngModel)]="currentPackage.name" name="name" required
               [disabled]="modalLoading || groupedSubCategories.length === 0 || !currentPackage.categoryId"
               (ngModelChange)="onSubCategoryChange()" #nameInput="ngModel"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50">
+              [class]="nameInput.invalid && nameInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+              class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50">
 
               <option [ngValue]="''" [selected]="!currentPackage.name">-- Select Subcategory --</option>
 
@@ -381,31 +399,90 @@
               Selected: {{getCategoryName(currentPackage.categoryId)}}
             </p>
           </div>
+        </div>
 
+        <!-- Pricing Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <!-- Base Price -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
               Base Price *
             </label>
-            <input type="number" [(ngModel)]="currentPackage.basePrice" name="basePrice" required min="1" max="1000000"
+            <input type="number" [(ngModel)]="currentPackage.basePrice" name="basePrice" required min="0" max="1000000"
               step="0.01" [disabled]="modalLoading" #priceInput="ngModel"
+              (change)="calculateTotalPrice()"
               [class]="priceInput.invalid && priceInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
-              class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50" placeholder="0.00"
-              (change)="currentPackage.basePrice = +currentPackage.basePrice">
+              class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50" placeholder="0.00">
             <div *ngIf="priceInput.invalid && priceInput.touched" class="mt-1 text-sm text-red-600">
               <div *ngIf="priceInput.errors?.['required']">Base price is required</div>
-              <div *ngIf="priceInput.errors?.['min']">Price must be at least ₹1</div>
+              <div *ngIf="priceInput.errors?.['min']">Price must be at least ₹0</div>
               <div *ngIf="priceInput.errors?.['max']">Price cannot exceed ₹1,000,000</div>
             </div>
-            <p class="text-xs text-gray-500 mt-1">Enter amount between ₹1 and ₹1,000,000</p>
+            <p class="text-xs text-gray-500 mt-1">Enter amount between ₹0 and ₹1,000,000</p>
           </div>
 
+          <!-- Platform Charges -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Platform Charges
+            </label>
+            <input type="number" [(ngModel)]="currentPackage.platformCharges" name="platformCharges" min="0" max="100000"
+              step="0.01" [disabled]="modalLoading" #platformInput="ngModel"
+              (change)="calculateTotalPrice()"
+              [class]="platformInput.invalid && platformInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+              class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50" placeholder="0.00">
+            <div *ngIf="platformInput.invalid && platformInput.touched" class="mt-1 text-sm text-red-600">
+              <div *ngIf="platformInput.errors?.['min']">Platform charges cannot be negative</div>
+              <div *ngIf="platformInput.errors?.['max']">Platform charges cannot exceed ₹100,000</div>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Optional platform service charges (₹0 to ₹100,000)</p>
+          </div>
+
+          <!-- Visiting Charges -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Visiting Charges
+            </label>
+            <input type="number" [(ngModel)]="currentPackage.visitingCharges" name="visitingCharges" min="0" max="100000"
+              step="0.01" [disabled]="modalLoading" #visitingInput="ngModel"
+              (change)="calculateTotalPrice()"
+              [class]="visitingInput.invalid && visitingInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+              class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50" placeholder="0.00">
+            <div *ngIf="visitingInput.invalid && visitingInput.touched" class="mt-1 text-sm text-red-600">
+              <div *ngIf="visitingInput.errors?.['min']">Visiting charges cannot be negative</div>
+              <div *ngIf="visitingInput.errors?.['max']">Visiting charges cannot exceed ₹100,000</div>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Optional technician visiting charges (₹0 to ₹100,000)</p>
+          </div>
+        </div>
+
+        <!-- Total Price Display -->
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="font-medium text-gray-800">Total Price</h4>
+              <p class="text-sm text-gray-500">Base + Platform + Visiting Charges</p>
+            </div>
+            <div class="text-right">
+              <div class="text-2xl font-bold text-gray-800">{{formatCurrency(calculateTotalPrice(), currentPackage.currency)}}</div>
+              <div class="text-sm text-gray-500">{{currentPackage.currency}}</div>
+            </div>
+          </div>
+          <div *ngIf="currentPackage.totalPrice > 1000000" class="mt-2 p-2 bg-red-50 border border-red-200 rounded">
+            <p class="text-xs text-red-700">
+              <strong>Warning:</strong> Total price exceeds maximum recommended limit of ₹1,000,000
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Currency -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
               Currency *
             </label>
             <select [(ngModel)]="currentPackage.currency" name="currency" required [disabled]="modalLoading"
+              (change)="calculateTotalPrice()"
               #currencyInput="ngModel"
               [class]="currencyInput.invalid && currencyInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
               class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50">
@@ -425,12 +502,15 @@
             </label>
             <textarea [(ngModel)]="currentPackage.description" name="description" rows="3" maxlength="2000"
               [disabled]="modalLoading" #descInput="ngModel"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+              [class]="descInput.invalid && descInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+              class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50"
               placeholder="Enter package description"></textarea>
-            <div *ngIf="descInput.errors?.['maxlength']" class="mt-1 text-sm text-red-600">
-              Description cannot exceed 2000 characters
+            <div *ngIf="descInput.invalid && descInput.touched" class="mt-1 text-sm text-red-600">
+              <div *ngIf="descInput.errors?.['maxlength']">Description cannot exceed 2000 characters</div>
             </div>
-            <p class="text-xs text-gray-500 mt-1">Optional description for the package</p>
+            <p class="text-xs text-gray-500 mt-1">
+              {{currentPackage.description?.length || 0}}/2000 characters
+            </p>
           </div>
         </div>
 
@@ -450,18 +530,43 @@
         </div>
 
         <!-- Example Packages (Only in Add Mode) -->
-        <div *ngIf="!isEditMode" class="bg-blue-50 p-4 rounded-lg">
+        <div *ngIf="!isEditMode" class="bg-blue-50 p-4 rounded-lg border border-blue-200">
           <h4 class="text-sm font-medium text-blue-800 mb-2">Package Examples:</h4>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
             <div class="bg-white p-3 rounded border border-blue-200">
               <div class="font-medium text-blue-700">Cooler Repair</div>
-              <div class="text-blue-600">Category: Home Services, Price: ₹999</div>
+              <div class="text-blue-600">Category: Home Services</div>
+              <div class="text-blue-500 text-xs mt-1">
+                Base: ₹800, Platform: ₹100, Visiting: ₹99, Total: ₹999
+              </div>
             </div>
             <div class="bg-white p-3 rounded border border-blue-200">
               <div class="font-medium text-blue-700">AC Installation</div>
-              <div class="text-blue-600">Category: Home Services, Price: ₹1999</div>
+              <div class="text-blue-600">Category: Home Services</div>
+              <div class="text-blue-500 text-xs mt-1">
+                Base: ₹1500, Platform: ₹200, Visiting: ₹299, Total: ₹1999
+              </div>
             </div>
           </div>
+        </div>
+
+        <!-- Validation Summary -->
+        <div *ngIf="(priceInput.invalid && priceInput.touched) || 
+                    (platformInput.invalid && platformInput.touched) || 
+                    (visitingInput.invalid && visitingInput.touched) ||
+                    (currentPackage.totalPrice > 1000000)"
+             class="bg-red-50 border border-red-200 rounded-lg p-4">
+          <h4 class="text-sm font-medium text-red-800 mb-2">Please fix the following errors:</h4>
+          <ul class="text-sm text-red-700 space-y-1">
+            <li *ngIf="priceInput.errors?.['required'] && priceInput.touched">• Base price is required</li>
+            <li *ngIf="priceInput.errors?.['min'] && priceInput.touched">• Base price must be at least ₹0</li>
+            <li *ngIf="priceInput.errors?.['max'] && priceInput.touched">• Base price cannot exceed ₹1,000,000</li>
+            <li *ngIf="platformInput.errors?.['min'] && platformInput.touched">• Platform charges cannot be negative</li>
+            <li *ngIf="platformInput.errors?.['max'] && platformInput.touched">• Platform charges cannot exceed ₹100,000</li>
+            <li *ngIf="visitingInput.errors?.['min'] && visitingInput.touched">• Visiting charges cannot be negative</li>
+            <li *ngIf="visitingInput.errors?.['max'] && visitingInput.touched">• Visiting charges cannot exceed ₹100,000</li>
+            <li *ngIf="currentPackage.totalPrice > 1000000">• Total price exceeds maximum recommended limit of ₹1,000,000</li>
+          </ul>
         </div>
 
         <!-- Form Actions -->
@@ -470,7 +575,7 @@
             class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50">
             Cancel
           </button>
-          <button type="submit" [disabled]="!packageForm.form.valid || modalLoading || serviceCategories.length === 0"
+          <button type="submit" [disabled]="!packageForm.form.valid || modalLoading || serviceCategories.length === 0 || currentPackage.totalPrice > 1000000"
             class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]">
             <span *ngIf="!modalLoading">
               {{isEditMode ? 'Update Package' : 'Create Package'}}
