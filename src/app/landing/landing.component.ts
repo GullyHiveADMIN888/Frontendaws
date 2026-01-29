@@ -862,16 +862,20 @@ async onVerify() {
   if (otpValue.length !== 6) return;
 
   this.isVerifying = true;
+  this.error = '';
 
   try {
     // 1️⃣ Verify OTP via Firebase
     await this.authService.verifyOtp(otpValue);
 
-    // 2️⃣ Open password popup
+    // ✅ CLOSE OTP MODAL
+    this.showOtpModal = false;
+
+    // ✅ OPEN PASSWORD POPUP
     this.showPasswordPopup = true;
 
   } catch (e: any) {
-    this.error = e.message || "OTP verification failed";
+    this.error = e.message || 'OTP verification failed';
   } finally {
     this.isVerifying = false;
   }
