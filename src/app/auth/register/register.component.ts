@@ -102,9 +102,22 @@ isMobileVerified = false;
     //this.showOTP = false;
   }
   goNextFromStep1() {
-    if (this.validateStep1()) {
-      this.currentStep = 3; // OTP
-    }
+    // if (this.validateStep1()) {
+    //   this.currentStep = 3; // OTP
+    // }
+     // 🔴 Step validation first
+  if (!this.validateStep1()) {
+    return;
+  }
+
+  // 🔴 Mobile NOT verified → STOP + ALERT
+  if (!this.isMobileVerified) {
+    alert('Please verify your mobile number before continuing.');
+    return;
+  }
+
+  // ✅ All good → go to Legal Identity
+  this.currentStep = 3;
   }
   goNextFromStep3() {
     if (this.validateStep3()) {
