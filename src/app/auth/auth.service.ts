@@ -22,12 +22,12 @@ import { Auth, signInWithPhoneNumber, ConfirmationResult, RecaptchaVerifier } fr
 export class AuthService {
   private apiUrl = `${environment.apiBaseUrl}/auth`;
 
-   private recaptchaVerifier?: RecaptchaVerifier;
+   public recaptchaVerifier?: RecaptchaVerifier;
   private confirmationResult?: ConfirmationResult;
 
 
 
-  constructor(private http: HttpClient, private router: Router, private auth: Auth,
+  constructor(private http: HttpClient, private router: Router, public auth: Auth,
     @Inject(PLATFORM_ID) private platformId: Object) {}
 
   login(username: string, password: string) {
@@ -159,6 +159,26 @@ clearRecaptcha() {
   this.recaptchaVerifier = undefined;
   this.confirmationResult = undefined;
 }
+
+
+
+checkMobileExists(mobile: string) {
+  return this.http.get<{ exists: boolean }>(
+    `${this.apiUrl}/check-mobile`,
+    { params: { mobile } }
+  );
+}
+// AuthService.ts
+async resetPasswordByMobile(mobile: string): Promise<string> {
+  // Call backend to reset password
+  const response: any = await this.http
+    .post(`${this.apiUrl}/reset-password-mobile`, { mobile })
+    .toPromise();
+
+  // 🔹 Return the new password to component
+  return response.newPassword;
+}
+
 
 }
 
