@@ -1,8 +1,6 @@
 // src/environments/environment.prod.ts
 export const environment = {
   production: true,
-
- 
   firebase: {
   
     apiKey: "AIzaSyDYuk9b8BkHNsCkuCraUyP2sTdSxfFEQq8",
@@ -18,4 +16,5 @@ export const environment = {
   assetUrl: 'https://gullyhivebackend-optn.onrender.com'
   // apiBaseUrl: 'https://localhost:7252/api',
   // assetUrl: 'https://localhost:7252'
+
 };
