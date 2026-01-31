@@ -519,7 +519,7 @@ this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
     if (response.token) {
       // Store authentication data using your AuthService
       if (this.authService) {
-        this.authService.saveAuth(response.token, response.role, response.name);
+        this.authService.saveAuth(response.token, response.role, response.name, response.userId);
       } else {
         // Fallback: Store directly in localStorage
         localStorage.setItem('token', response.token);

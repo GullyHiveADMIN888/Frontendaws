@@ -1,28 +1,9 @@
 <div class="min-h-screen bg-gray-50">
-  <!-- Admin Dashboard Header -->
   <app-admin-header></app-admin-header>
-  <div class="bg-white border-b border-gray-200 px-6 py-4">
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-xl font-bold text-gray-800">Admin Dashboard</h1>
-        <p class="text-sm text-gray-500 mt-1">System Configuration & Masters</p>
-      </div>
-      <div class="flex items-center space-x-3">
-        <div class="text-right">
-          <div class="text-xs text-gray-500">Last login</div>
-          <div class="text-sm font-medium">Today, 10:30 AM</div>
-        </div>
-        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-          <span class="text-blue-600 text-sm font-medium">A</span>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Main Dashboard Content -->
-  <main class="p-6">
-    <!-- Compact Cards Grid -->
-    <div class="grid grid-cols-5 gap-4 max-w-7xl mx-auto">
+  <main class="p-4 sm:p-6 my-4 sm:my-6">
+    <!-- Simple responsive: 2 on mobile, 3 on tablet, 4 on laptop, 7 on desktop -->
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 xl:grid-cols-7 gap-4 max-w-8xl mx-auto">
 
       <!-- City Master -->
       <a routerLink="/admin/city-master"
@@ -36,6 +17,7 @@
         </h3>
       </a>
 
+      <!-- Repeat other cards with the same structure... -->
       <!-- Service Package -->
       <a routerLink="/admin/service-package"
         class="group bg-white rounded-lg border border-gray-200 hover:border-amber-300 hover:shadow-md transition-all duration-200 p-4 flex flex-col items-center justify-center text-center h-32">
@@ -167,6 +149,7 @@
           Audit Log
         </h3>
       </a>
+
       <!-- Area Master -->
       <a routerLink="/admin/area-master"
         class="group bg-white rounded-lg border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all duration-200 p-4 flex flex-col items-center justify-center text-center h-32">
@@ -176,6 +159,18 @@
         </div>
         <h3 class="text-sm font-semibold text-gray-700 group-hover:text-emerald-600 transition-colors">
           Area Master
+        </h3>
+      </a>
+
+      <!-- Subscription Master -->
+      <a routerLink="/admin/subscription-master"
+        class="group bg-white rounded-lg border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all duration-200 p-4 flex flex-col items-center justify-center text-center h-32">
+        <div
+          class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center mb-3 group-hover:bg-emerald-100 transition-colors">
+          <span class="text-emerald-600 text-xl">📊</span>
+        </div>
+        <h3 class="text-sm font-semibold text-gray-700 group-hover:text-emerald-600 transition-colors">
+          Subscription Master
         </h3>
       </a>
     </div>
