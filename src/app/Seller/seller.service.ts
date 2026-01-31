@@ -3,8 +3,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map,BehaviorSubject  } from 'rxjs';
-//import { environment } from '../../environments/environment';
-import { environment } from '../../environments/environment.prod';
+import { environment } from '../../environments/environment';
+//import { environment } from '../../environments/environment.prod';
 
 // --- Dashboard & Stats ---
 export interface SellerStats {
@@ -23,13 +23,20 @@ export interface Lead {
   budgetMax?: number;
   status: string;
   createdAt: string;
-
-    // UI-only fields
   name?: string;
   service?: string;
   time?: string;
   budget?: string;
   avatar?: string;
+  leadType?: string;
+  timePreference?: string;
+  serviceSubCategoryName?: string;
+  scheduledStart?: string | null;
+  scheduledEnd?: string | null;
+  scheduleLabel?: string;
+  isPurchased: boolean; // 🔥 important
+  leadPrice?: string;
+  priceBreakdown?: { [key: string]: number }; // parsed JSON
 }
 
 
@@ -201,15 +208,36 @@ export class SellerService {
 
   
   // --- All Leads ---
-  getLeads(): Observable<Lead[]> {
-    return this.http
-      .get<{ success: boolean; data: Lead[] }>(
-        `${this.apiUrl}/leads`,
-        { headers: this.getHeaders() }
-      )
-      .pipe(map(res => res.data));
-  }
+  // getLeads(): Observable<Lead[]> {
+  //   const providerId = Number(localStorage.getItem('userId'));
+  //   return this.http
+  //     .get<{ success: boolean; data: Lead[] }>(
+  //       `${this.apiUrl}/leads`,
+  //       { headers: this.getHeaders() }
+  //     )
+  //     .pipe(map(res => res.data));
+  // }
 
+
+getLeads(): Observable<Lead[]> {
+  return this.http
+    .get<{ success: boolean; data: Lead[] }>(
+      `${this.apiUrl}/leads`, // no userId needed
+      { headers: this.getHeaders() } // token carries userId
+    )
+    .pipe(map(res => res.data));
+}
+
+
+  // 🔹 Buy Lead
+  buyLead(leadId: number): Observable<any> {
+    const sellerId = Number(localStorage.getItem('sellerId'));
+
+    return this.http.post(
+      `${this.apiUrl}/leads/${leadId}/buy?sellerId=${sellerId}`,
+      {}
+    );
+  }
 
 // getPublicProfile(sellerId: number) {
 //   return this.http.get<{ success: boolean; data: PublicProfile }>(
@@ -346,18 +374,59 @@ getCitiess(stateId: number): Observable<any[]> {
   return this.http.get<any[]>(`${environment.apiBaseUrl}/auth/cities/${stateId}`);
 }
 
-
-// changePassword(data: any) {
-//   return this.http.post('/api/auth/change-password', data);
-  
-// }
-
 changePassword(sellerId: number, data: any) {
   return this.http.post(
     `${this.apiUrl}/change-password/${sellerId}`,
     data
   );
 }
+
+
+
+// GET
+getBankDetails(sellerId: number) {
+  return this.http.get<any>(
+    `${this.apiUrl}/bank-details/${sellerId}`,
+    { headers: this.getHeaders() }
+  );
+}
+
+// SAVE / UPDATE
+saveBankDetails(payload: any) {
+  return this.http.post(
+    `${this.apiUrl}/bank-details`,
+    payload,
+    { headers: this.getHeaders() }
+  );
+}
+
+// DELETE
+deleteBankDetails(sellerId: number) {
+  return this.http.delete(
+    `${this.apiUrl}/bank-details/${sellerId}`,
+    { headers: this.getHeaders() }
+  );
+}
+
+// Buy Leads
+buyLeads(leadId: number) {
+ // const providerId = Number(localStorage.getItem('userId'));
+    const providerId = 42;
+
+  return this.http.post(
+    `${this.apiUrl}/buy`,
+    {
+      leadId: leadId,
+      providerId: providerId
+    },
+    {
+      headers: this.getHeaders()
+    }
+  );
+}
+
+
+
 
 }
 

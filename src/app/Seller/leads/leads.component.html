@@ -1,193 +1,386 @@
 <!-- PAGE CONTENT -->
 <div class="max-w-7xl mx-auto px-4 py-8">
+  <!-- PAGE CONTENT -->
+  <div class="max-w-7xl mx-auto px-4 py-8">
 
-  <!-- <h1 class="text-3xl font-bold mb-6">Leads</h1> -->
+    <!-- TITLE -->
+    <h1 class="text-3xl font-bold mb-4">Leads</h1>
 
-  <!-- FILTERS -->
-  <!-- <div class="flex gap-3 mb-6">
-    <button
-      *ngFor="let s of ['all','new','responded','viewed']"
-      (click)="setFilter(s)"
-      class="px-4 py-2 rounded-lg font-medium"
-      [ngClass]="filterStatus === s ? 'bg-orange-600 text-white' : 'bg-gray-100'"
-    >
-      {{ s | titlecase }}
-    </button>
-  </div> -->
-
-  <!-- LEADS LIST -->
-   <!-- <div class="space-y-4">
-    <div *ngFor="let lead of filteredLeads"
-      class="bg-white border rounded-lg p-6 hover:shadow-lg transition">
-
-      <div class="flex justify-between">
-        <div>
-          <h3 class="text-lg font-semibold">{{ lead.serviceName }}</h3>
-          <p class="text-orange-600 font-medium">{{ lead.status }}</p>
-          <p class="text-gray-600 text-sm mt-2">{{ lead.description }}</p>
-
-           <div class="flex gap-4 text-sm text-gray-500 mt-3">
-            <span><i class="ri-map-pin-line"></i> {{ lead.location }}</span>
-            <span><i class="ri-time-line"></i>  {{ lead.createdAt | date:'dd MMM yyyy, hh:mm a' }}</span>
-            <span><i class="ri-money-dollar-circle-line"></i> {{ lead.budgetMin }}</span>
-          </div> 
-        </div>
-
-        <div class="flex flex-col gap-2">
-          <button class="px-4 py-2 bg-orange-600 text-white rounded-lg">Send Quote</button>
-          <button class="px-4 py-2 border rounded-lg">View Details</button>
-        </div>
-      </div>
-
-    </div>
-  </div>  -->
-
-
-
-  <!-- LEADS LIST -->
-<!-- <div class="space-y-4">
-  <div *ngFor="let lead of paginatedLeads"
-    class="bg-white border rounded-lg p-6 hover:shadow-lg transition">
-
-    <div class="flex justify-between">
-      <div>
-        <h3 class="text-lg font-semibold">{{ lead.serviceName }}</h3>
-        <p class="text-orange-600 font-medium">{{ lead.status }}</p>
-        <p class="text-gray-600 text-sm mt-2">{{ lead.description }}</p>
-
-        <div class="flex gap-4 text-sm text-gray-500 mt-3">
-          <span><i class="ri-map-pin-line"></i> {{ lead.location }}</span>
-          <span><i class="ri-time-line"></i>  {{ lead.time }}</span>
-          <span><i class="ri-money-dollar-circle-line"></i> {{ lead.budget }}</span>
-        </div> 
-      </div>
-
-      <div class="flex flex-col gap-2">
-        <button class="px-4 py-2 bg-orange-600 text-white rounded-lg">Send Quote</button>
-        <button class="px-4 py-2 border rounded-lg">View Details</button>
-      </div>
+    <!-- FILTERS -->
+    <div class="flex gap-3 mb-4">
+      <button *ngFor="let s of ['all','new','responded','viewed']" (click)="setFilter(s)"
+        class="px-4 py-2 rounded-lg font-medium"
+        [ngClass]="filterStatus === s ? 'bg-orange-600 text-white' : 'bg-gray-100'">
+        {{ s | titlecase }}
+      </button>
     </div>
 
-  </div>
-</div>
+    <!-- TOP BAR -->
+    <div class="flex justify-between items-center mb-6">
 
-<div class="flex justify-center items-center gap-2 mt-6">
-  <button (click)="prevPage()" [disabled]="currentPage === 1" class="px-3 py-1 border rounded-lg">
-    Prev
-  </button>
+      <!-- LEFT: COUNT -->
+      <div class="text-sm text-gray-600">
+        Showing
+        <span class="font-semibold">{{ startIndex }}</span>
+        –
+        <span class="font-semibold">{{ endIndex }}</span>
+        of
+        <span class="font-semibold">{{ totalLeads }}</span>
+        leads
+      </div>
 
-  <button *ngFor="let page of pages"
-          (click)="goToPage(page)"
-          [ngClass]="page === currentPage ? 'bg-orange-600 text-white px-3 py-1 rounded-lg' : 'px-3 py-1 border rounded-lg'">
-    {{ page }}
-  </button>
 
-  <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="px-3 py-1 border rounded-lg">
-    Next
-  </button>
-</div>  -->
 
-<!-- PAGE CONTENT -->
-<div class="max-w-7xl mx-auto px-4 py-8">
-
-  <!-- TITLE -->
-  <h1 class="text-3xl font-bold mb-4">Leads</h1>
-
-  <!-- FILTERS -->
-  <div class="flex gap-3 mb-4">
-    <button
-      *ngFor="let s of ['all','new','responded','viewed']"
-      (click)="setFilter(s)"
-      class="px-4 py-2 rounded-lg font-medium"
-      [ngClass]="filterStatus === s ? 'bg-orange-600 text-white' : 'bg-gray-100'">
-      {{ s | titlecase }}
-    </button>
-  </div>
-
-  <!-- TOP BAR -->
-  <div class="flex justify-between items-center mb-6">
-
-    <!-- LEFT: COUNT -->
-    <div class="text-sm text-gray-600">
-      Showing
-      <span class="font-semibold">{{ startIndex }}</span>
-      –
-      <span class="font-semibold">{{ endIndex }}</span>
-      of
-      <span class="font-semibold">{{ totalLeads }}</span>
-      leads
     </div>
 
-  
+    <!-- LEADS LIST -->
+    <div class="space-y-4">
+      <div *ngFor="let lead of paginatedLeads" class="bg-white border rounded-lg p-6 hover:shadow-lg transition">
 
-  </div>
+        <div class="flex justify-between">
+          <div>
+            <h3 class="text-lg font-semibold">{{ lead.serviceName }}</h3>
+            <p class="text-orange-600 font-medium">{{ lead.status }}</p>
+            <p class="text-gray-600 text-sm mt-2">{{ lead.description }}</p>
 
-  <!-- LEADS LIST -->
-  <div class="space-y-4">
-    <div *ngFor="let lead of paginatedLeads"
-         class="bg-white border rounded-lg p-6 hover:shadow-lg transition">
+            <div class="flex gap-4 text-sm text-gray-500 mt-3">
+              <span><i class="ri-map-pin-line"></i> {{ lead.location }}</span>
+              <span><i class="ri-time-line"></i> {{ lead.time }}</span>
 
-      <div class="flex justify-between">
-        <div>
-          <h3 class="text-lg font-semibold">{{ lead.serviceName }}</h3>
-          <p class="text-orange-600 font-medium">{{ lead.status }}</p>
-          <p class="text-gray-600 text-sm mt-2">{{ lead.description }}</p>
 
-          <div class="flex gap-4 text-sm text-gray-500 mt-3">
-            <span><i class="ri-map-pin-line"></i> {{ lead.location }}</span>
-            <span><i class="ri-time-line"></i> {{ lead.time }}</span>
-            <span><i class="ri-money-dollar-circle-line"></i> {{ lead.budget }}</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <button class="px-4 py-2 bg-orange-600 text-white rounded-lg"  (click)="handleSendQuote(lead)">
+              Send Quote
+            </button>
+            <button class="px-4 py-2 border rounded-lg" (click)="openLeadDetails(lead)">
+              View Details
+            </button>
           </div>
         </div>
 
-        <div class="flex flex-col gap-2">
-          <button class="px-4 py-2 bg-orange-600 text-white rounded-lg">
-            Send Quote
-          </button>
-          <button class="px-4 py-2 border rounded-lg">
-            View Details
-          </button>
+      </div>
+    </div>
+
+
+    <!-- PAGINATION (BOTTOM RIGHT) -->
+    <div class="flex justify-end mt-8">
+      <div class="flex items-center gap-1">
+
+        <button (click)="prevPage()" [disabled]="currentPage === 1"
+          class="px-3 py-1 border rounded-lg text-sm disabled:opacity-50">
+          Prev
+        </button>
+
+        <button *ngFor="let page of pages" (click)="goToPage(page)" class="px-3 py-1 text-sm rounded-lg" [ngClass]="page === currentPage
+        ? 'bg-orange-600 text-white'
+        : 'border hover:bg-gray-100'">
+          {{ page }}
+        </button>
+
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+          class="px-3 py-1 border rounded-lg text-sm disabled:opacity-50">
+          Next
+        </button>
+
+      </div>
+    </div>
+
+
+  </div>
+
+</div>
+
+<!-- LEAD DETAILS MODAL -->
+
+
+
+<!-- LEAD DETAILS MODAL -->
+<div
+  *ngIf="showLeadModal && selectedLead"
+  class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+>
+  <div
+    class="bg-white w-full max-w-xl rounded-2xl shadow-2xl p-6 relative animate-fadeIn"
+  >
+
+    <!-- Header -->
+    <div class="flex justify-between items-start mb-5">
+      <div>
+        <h2 class="text-xl font-bold text-gray-900">
+          {{ selectedLead.serviceName }}
+        </h2>
+         <p class="text-sm text-gray-900 font-medium mr-2">
+    {{ selectedLead.serviceSubCategoryName }}
+  </p>
+        <p class="text-sm text-gray-500 mt-1">
+          <i class="ri-map-pin-line mr-1"></i>
+          {{ selectedLead.location }}
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span
+          class="px-3 py-1 text-xs font-semibold rounded-full"
+          [ngClass]="{
+            'bg-green-100 text-green-700': selectedLead.status === 'new',
+            'bg-blue-100 text-blue-700': selectedLead.status === 'viewed',
+            'bg-gray-100 text-gray-700': selectedLead.status !== 'new' && selectedLead.status !== 'viewed'
+          }"
+        >
+          {{ selectedLead.status | titlecase }}
+        </span>
+
+        <button
+          (click)="closeLeadModal()"
+          class="text-gray-400 hover:text-gray-700"
+        >
+          <i class="ri-close-line text-2xl"></i>
+        </button>
+      </div>
+    </div>
+
+   
+
+    <!-- Info Grid -->
+    <div class="grid grid-cols-2 gap-4 text-sm">
+
+      <div class="flex items-center gap-3 border rounded-lg p-3">
+        <i class="ri-money-dollar-circle-line text-orange-600 text-xl"></i>
+        <div>
+          <p class="text-xs text-gray-500">Budget</p>
+          <p class="font-semibold">{{ selectedLead.budget }}</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 border rounded-lg p-3">
+        <i class="ri-time-line text-orange-600 text-xl"></i>
+        <div>
+          <p class="text-xs text-gray-500">Preferred Time</p>
+           <p class="font-semibold">
+            {{ selectedLead.timePreference || 'Anytime' }}
+          </p> 
+          <!-- <div
+  *ngIf="selectedLead.timePreference === 'scheduled'"
+  class="col-span-2 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800 flex items-center gap-2"
+>
+  <i class="ri-calendar-event-line text-blue-600"></i>
+  <span>
+    Scheduled:
+    <strong>{{ selectedLead.scheduleLabel }}</strong>
+  </span>
+</div> -->
+
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 border rounded-lg p-3">
+        <i class="ri-briefcase-line text-orange-600 text-xl"></i>
+        <div>
+          <p class="text-xs text-gray-500">Lead Type</p>
+          <p class="font-semibold">{{ selectedLead.leadType }}</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 border rounded-lg p-3">
+        <i class="ri-calendar-line text-orange-600 text-xl"></i>
+        <div>
+          <p class="text-xs text-gray-500">Created On</p>
+          <p class="font-semibold">{{ selectedLead.time }}</p>
         </div>
       </div>
 
     </div>
-  </div>
+ <!-- Description -->
+    <div class="bg-gray-50 border rounded-xl p-4 text-sm text-gray-700 mb-4  mt-5">
+      {{ selectedLead.description }}
+    </div>
+    <!-- Locked Contact Info -->
+    <div
+      class="flex gap-3 bg-yellow-50 border border-yellow-200 rounded-xl p-4 mt-5"
+    >
+      <i class="ri-lock-line text-yellow-600 text-xl mt-0.5"></i>
+      <p class="text-sm text-yellow-800">
+        Contact details will be visible after purchasing this lead.
+      </p>
+    </div>
 
+    <!-- Actions -->
+    <div class="flex justify-end gap-3 mt-6">
 
+      <button
+        (click)="closeLeadModal()"
+        class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100"
+      >
+        Cancel
+      </button>
 
-  <!-- RIGHT: PAGINATION -->
-   <!-- PAGINATION (BOTTOM RIGHT) -->
-<div class="flex justify-end mt-8">
-  <div class="flex items-center gap-1">
+      <button
+        (click)="buyLead()"
+        class="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg shadow"
+      >
+        Buy Lead
+      </button>
 
-    <button
-      (click)="prevPage()"
-      [disabled]="currentPage === 1"
-      class="px-3 py-1 border rounded-lg text-sm disabled:opacity-50">
-      Prev
-    </button>
-
-    <button
-      *ngFor="let page of pages"
-      (click)="goToPage(page)"
-      class="px-3 py-1 text-sm rounded-lg"
-      [ngClass]="page === currentPage
-        ? 'bg-orange-600 text-white'
-        : 'border hover:bg-gray-100'">
-      {{ page }}
-    </button>
-
-    <button
-      (click)="nextPage()"
-      [disabled]="currentPage === totalPages"
-      class="px-3 py-1 border rounded-lg text-sm disabled:opacity-50">
-      Next
-    </button>
+    </div>
 
   </div>
 </div>
 
 
+
+<!-- PAYMENT MODAL -->
+<div
+  *ngIf="showPaymentModal"
+  class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+>
+  <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 animate-fadeIn">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-bold text-gray-900">
+        Payment Details
+      </h3>
+      <button
+        (click)="closePaymentModal()"
+        class="text-gray-400 hover:text-gray-700"
+      >
+        <i class="ri-close-line text-2xl"></i>
+      </button>
+    </div>
+
+    <!-- Lead Summary -->
+    <div class="border rounded-xl p-4 mb-4 bg-gray-50">
+      <p class="font-semibold text-gray-900">
+        {{ selectedLead?.serviceName }}
+      </p>
+      <p class="text-sm text-gray-600">
+        {{ selectedLead?.serviceSubCategoryName }}
+      </p>
+      <p class="text-sm text-gray-500 mt-1">
+        <i class="ri-map-pin-line mr-1"></i>
+        {{ selectedLead?.location }}
+      </p>
+    </div>
+
+    <!-- Price -->
+<div class="flex justify-between items-center border rounded-xl p-4 mb-4">
+  <span class="text-sm text-gray-600">Lead Price</span>
+  <span class="text-lg font-bold text-gray-900">
+    ₹{{ selectedLead?.leadPrice || 'N/A' }}
+  </span>
 </div>
 
+
+<div *ngIf="selectedLead" class="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-4 text-sm text-gray-700">
+  <p class="font-semibold text-gray-800 mb-2">Price Breakdown:</p>
+  <div *ngFor="let item of selectedLead.priceBreakdown || {} | keyvalue" class="flex justify-between">
+    <span>{{ item.key | titlecase }}</span>
+    <span>₹{{ item.value }}</span>
+  </div>
+</div>
+
+
+
+
+
+    <!-- Wallet / Payment Info -->
+    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800 mb-4">
+      <i class="ri-wallet-3-line mr-1"></i>
+      Amount will be deducted from your wallet.
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-end gap-3">
+      <button
+        (click)="closePaymentModal()"
+        class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow"
+      (click)="confirmBuyLead()">
+        Pay & Unlock Lead
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+
+<!-- SEND QUOTE MODAL -->
+<div
+  *ngIf="showSendQuoteModal"
+  class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+>
+  <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 animate-fadeIn">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-bold text-gray-900">
+        Send Quote
+      </h3>
+      <button
+        (click)="closeSendQuoteModal()"
+        class="text-gray-400 hover:text-gray-700"
+      >
+        <i class="ri-close-line text-2xl"></i>
+      </button>
+    </div>
+
+    <!-- Lead Info -->
+    <div class="border rounded-xl p-4 bg-gray-50 mb-4">
+      <p class="font-semibold">{{ selectedLead?.serviceName }}</p>
+      <p class="text-sm text-gray-600">
+        {{ selectedLead?.serviceSubCategoryName }}
+      </p>
+      <p class="text-sm text-gray-500 mt-1">
+        <i class="ri-map-pin-line"></i>
+        {{ selectedLead?.location }}
+      </p>
+    </div>
+
+    <!-- Quote Form -->
+    <div class="space-y-4">
+      <div>
+        <label class="text-sm text-gray-600">Quote Amount</label>
+        <input
+          type="number"
+          class="w-full border rounded-lg px-3 py-2 mt-1"
+          placeholder="Enter amount"
+        />
+      </div>
+
+      <div>
+        <label class="text-sm text-gray-600">Message</label>
+        <textarea
+          rows="3"
+          class="w-full border rounded-lg px-3 py-2 mt-1"
+          placeholder="Write message to customer"
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-end gap-3 mt-6">
+      <button
+        (click)="closeSendQuoteModal()"
+        class="px-4 py-2 border rounded-lg"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow"
+      >
+        Send Quote
+      </button>
+    </div>
+
+  </div>
 </div>
