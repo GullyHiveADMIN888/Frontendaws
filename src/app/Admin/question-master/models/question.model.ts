@@ -2,6 +2,7 @@
 export interface Question {
   id: number;
   categoryId: number;
+  subCategoryId?: number;
   questionText: string;
   questionType: string;
   isMandatory: boolean;
@@ -10,13 +11,14 @@ export interface Question {
   createdAt?: string;
   updatedAt?: string;
   options?: Option[];
-  updating?: boolean;  // For loading state in toggle active
-  deleting?: boolean;  // For loading state in delete
+  updating?: boolean; 
+  deleting?: boolean; 
 }
 
 export interface QuestionResponse {
   id: number;
   category_id: number;
+  subcat_id: number;
   question_text: string;
   question_type: string;
   is_mandatory: boolean;
@@ -29,6 +31,7 @@ export interface QuestionResponse {
 
 export interface CreateQuestion {
   categoryId: number;
+  subCategoryId?: number;
   questionText: string;
   questionType: string;
   isMandatory: boolean;
@@ -41,12 +44,14 @@ export interface UpdateQuestion {
   displayOrder: number;
   isActive: boolean;
   categoryId: number;
+  subCategoryId?: number;
   questionType: string;
 }
 
 export interface QuestionWithOptions {
   id: number;
   categoryId: number;
+  subCategoryId?: number;
   questionText: string;
   questionType: string;
   isMandatory: boolean;
@@ -79,5 +84,12 @@ export interface UpdateOption {
   questionId: number;
   optionText: string;
   // displayOrder: number;
+  isActive: boolean;
+}
+
+export interface SubCategory {
+  id: number;
+  categoryId: number;
+  name: string;
   isActive: boolean;
 }

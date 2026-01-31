@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { AuditLog } from './models/audit-log.model';
+import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { AuditLog, User } from './models/audit-log.model';
 import { PagedResult } from './models/paged-result.model';
 import { AuditLogService } from './services/audit-log.service';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, tap } from 'rxjs/operators';
+import { Subject, of } from 'rxjs';
 
 @Component({
   selector: 'app-audit-log',
@@ -9,72 +12,153 @@ import { AuditLogService } from './services/audit-log.service';
   styleUrls: ['./audit-log.component.css']
 })
 export class AuditLogComponent implements OnInit {
-
   logs: AuditLog[] = [];
   totalCount = 0;
   todaysLogs = 0;
   uniqueUsers = 0;
-
   pageNumber = 1;
   pageSize = 25;
   totalPages = 0;
-
-  entityType?: string;
-  action: string = '';
-  actorUserId?: number;
-  
-  // Date and time filters
-  startDate?: string;
-  startTime: string = '00:00';
-  endDate?: string;
-  endTime: string = '23:59';
-
   expandedRowId: number | null = null;
   loading = false;
+  
+  // Filter form
+  filterForm!: FormGroup;
+  
+  // User search properties
+  filteredUsers: User[] = [];
+  showUserDropdown = false;
+  selectedUser: User | null = null;
+  loadingUsers = false;
+  searchError = false;
+  
+  // Subject for user search
+  private searchTerms = new Subject<string>();
 
-  constructor(private auditService: AuditLogService) {}
+  @ViewChild('userSearchInput') userSearchInputElement!: ElementRef;
+  @ViewChild('userDropdown') userDropdown!: ElementRef;
+
+  constructor(
+    private auditService: AuditLogService,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit(): void {
     this.initializeDateFilters();
+    this.initFilterForm();
+    this.setupUserSearch();
     this.loadLogs();
   }
 
-  initializeDateFilters(): void {
-    // Set default date range to last 30 days
+  initFilterForm(): void {
     const today = new Date();
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(today.getDate() - 30);
-    
-    this.endDate = this.formatDateForInput(today);
-    this.endTime = '23:59';
-    this.startDate = this.formatDateForInput(thirtyDaysAgo);
-    this.startTime = '00:00';
+
+    this.filterForm = this.fb.group({
+      entityType: [''],
+      action: [''],
+      actorUserId: [''],
+      userSearch: [''],
+      startDate: [this.formatDateForInput(thirtyDaysAgo)],
+      startTime: ['00:00'],
+      endDate: [this.formatDateForInput(today)],
+      endTime: ['23:59']
+    });
+  }
+
+  setupUserSearch(): void {
+    this.filterForm.get('userSearch')?.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(searchTerm => {
+          console.log('User search term:', searchTerm);
+          
+          // Clear selection if user starts typing a different name
+          if (searchTerm && this.selectedUser) {
+            const currentDisplay = `${this.selectedUser.name} (${this.selectedUser.email})`;
+            if (searchTerm !== currentDisplay) {
+              this.clearUserSelection();
+            }
+          }
+          
+          // Clear results if search term is empty
+          if (!searchTerm.trim()) {
+            this.filteredUsers = [];
+            this.showUserDropdown = false;
+            this.clearUserSelection();
+          }
+        }),
+        switchMap(searchTerm => {
+          if (!searchTerm || !searchTerm.trim()) {
+            this.loadingUsers = false;
+            return of([]);
+          }
+          
+          this.loadingUsers = true;
+          this.searchError = false;
+          
+          return this.auditService.searchUsers(searchTerm.trim(), 10).pipe(
+            catchError(error => {
+              console.error('Error searching users:', error);
+              this.searchError = true;
+              this.loadingUsers = false;
+              return of([]);
+            })
+          );
+        })
+      )
+      .subscribe({
+        next: (users) => {
+          console.log('Search results:', users);
+          this.filteredUsers = users;
+          this.loadingUsers = false;
+          this.showUserDropdown = users.length > 0;
+        },
+        error: (error) => {
+          console.error('Error in search subscription:', error);
+          this.loadingUsers = false;
+          this.searchError = true;
+        }
+      });
+  }
+
+  initializeDateFilters(): void {
+    // Already handled in form initialization
   }
 
   formatDateForInput(date: Date): string {
     return date.toISOString().split('T')[0];
   }
 
-  // Combine date and time into ISO string
   getStartDateTime(): string | undefined {
-    if (!this.startDate) return undefined;
-    const dateTime = new Date(this.startDate + 'T' + (this.startTime || '00:00'));
+    const startDate = this.filterForm.get('startDate')?.value;
+    const startTime = this.filterForm.get('startTime')?.value || '00:00';
+    
+    if (!startDate) return undefined;
+    const dateTime = new Date(startDate + 'T' + startTime);
     return dateTime.toISOString();
   }
 
   getEndDateTime(): string | undefined {
-    if (!this.endDate) return undefined;
-    const dateTime = new Date(this.endDate + 'T' + (this.endTime || '23:59'));
+    const endDate = this.filterForm.get('endDate')?.value;
+    const endTime = this.filterForm.get('endTime')?.value || '23:59';
+    
+    if (!endDate) return undefined;
+    const dateTime = new Date(endDate + 'T' + endTime);
     return dateTime.toISOString();
   }
 
   loadLogs(): void {
     this.loading = true;
-
+    
+    const formValues = this.filterForm.value;
+    
     this.auditService.getAuditLogs({
-      entityType: this.entityType,
-      action: this.action,
-      actorUserId: this.actorUserId,
+      entityType: formValues.entityType || undefined,
+      action: formValues.action || undefined,
+      actorUserId: formValues.actorUserId || undefined,
       startDate: this.getStartDateTime(),
       endDate: this.getEndDateTime(),
       pageNumber: this.pageNumber,
@@ -84,7 +168,6 @@ export class AuditLogComponent implements OnInit {
         this.logs = res.items;
         this.totalCount = res.totalCount;
         this.totalPages = Math.ceil(this.totalCount / this.pageSize);
-        
         this.calculateStats();
         this.loading = false;
       },
@@ -100,21 +183,16 @@ export class AuditLogComponent implements OnInit {
     this.todaysLogs = this.logs.filter(log => 
       new Date(log.createdAt).toDateString() === today
     ).length;
-
     const uniqueUserIds = new Set(this.logs.map(log => log.actorUserId));
     this.uniqueUsers = uniqueUserIds.size;
   }
 
   getActionBadgeClass(action: string): string {
     switch (action) {
-      case 'INSERT':
-        return 'bg-green-100 text-green-800';
-      case 'UPDATE':
-        return 'bg-blue-100 text-blue-800';
-      case 'DELETE':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+      case 'INSERT': return 'bg-green-100 text-green-800';
+      case 'UPDATE': return 'bg-blue-100 text-blue-800';
+      case 'DELETE': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   }
 
@@ -124,10 +202,22 @@ export class AuditLogComponent implements OnInit {
   }
 
   resetFilters(): void {
-    this.entityType = undefined;
-    this.action = '';
-    this.actorUserId = undefined;
-    this.initializeDateFilters();
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+
+    this.filterForm.patchValue({
+      entityType: '',
+      action: '',
+      actorUserId: '',
+      userSearch: '',
+      startDate: this.formatDateForInput(thirtyDaysAgo),
+      startTime: '00:00',
+      endDate: this.formatDateForInput(today),
+      endTime: '23:59'
+    });
+
+    this.clearUserSelection();
     this.pageNumber = 1;
     this.loadLogs();
   }
@@ -137,75 +227,114 @@ export class AuditLogComponent implements OnInit {
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
     
+    let startDate: Date = today;
+    let endDate: Date = today;
+    
     switch (range) {
       case 'today':
-        this.startDate = this.formatDateForInput(today);
-        this.startTime = '00:00';
-        this.endDate = this.formatDateForInput(today);
-        this.endTime = '23:59';
+        startDate = today;
+        endDate = today;
         break;
-        
       case 'yesterday':
-        this.startDate = this.formatDateForInput(yesterday);
-        this.startTime = '00:00';
-        this.endDate = this.formatDateForInput(yesterday);
-        this.endTime = '23:59';
+        startDate = yesterday;
+        endDate = yesterday;
         break;
-        
       case 'last7days':
-        const last7Days = new Date(today);
-        last7Days.setDate(last7Days.getDate() - 7);
-        this.startDate = this.formatDateForInput(last7Days);
-        this.startTime = '00:00';
-        this.endDate = this.formatDateForInput(today);
-        this.endTime = '23:59';
+        startDate = new Date(today);
+        startDate.setDate(startDate.getDate() - 7);
+        endDate = today;
         break;
-        
       case 'last30days':
-        const last30Days = new Date(today);
-        last30Days.setDate(last30Days.getDate() - 30);
-        this.startDate = this.formatDateForInput(last30Days);
-        this.startTime = '00:00';
-        this.endDate = this.formatDateForInput(today);
-        this.endTime = '23:59';
+        startDate = new Date(today);
+        startDate.setDate(startDate.getDate() - 30);
+        endDate = today;
         break;
-        
       case 'thismonth':
-        const firstDayThisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        this.startDate = this.formatDateForInput(firstDayThisMonth);
-        this.startTime = '00:00';
-        this.endDate = this.formatDateForInput(today);
-        this.endTime = '23:59';
+        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        endDate = today;
         break;
-        
       case 'lastmonth':
-        const firstDayLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-        const lastDayLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-        this.startDate = this.formatDateForInput(firstDayLastMonth);
-        this.startTime = '00:00';
-        this.endDate = this.formatDateForInput(lastDayLastMonth);
-        this.endTime = '23:59';
+        startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        endDate = new Date(today.getFullYear(), today.getMonth(), 0);
         break;
     }
+    
+    this.filterForm.patchValue({
+      startDate: this.formatDateForInput(startDate),
+      startTime: '00:00',
+      endDate: this.formatDateForInput(endDate),
+      endTime: '23:59'
+    });
     
     this.applyFilters();
   }
 
-  // Time change handlers to update the filters
-  onStartDateChange(event: any): void {
-    this.startDate = event.target.value;
+  // User search methods
+  selectUser(user: User): void {
+    console.log('User selected:', user);
+    this.selectedUser = user;
+    
+    // Update form values
+    this.filterForm.patchValue({
+      actorUserId: user.id,
+      userSearch: `${user.name} (${user.email})`
+    }, { emitEvent: false }); // Don't trigger userSearch valueChanges
+    
+    this.showUserDropdown = false;
+    this.filteredUsers = [];
   }
 
-  onStartTimeChange(event: any): void {
-    this.startTime = event.target.value || '00:00';
+  clearUserSelection(): void {
+    console.log('Clearing user selection');
+    this.selectedUser = null;
+    
+    // Update form values
+    this.filterForm.patchValue({
+      actorUserId: '',
+      userSearch: ''
+    }, { emitEvent: false }); // Don't trigger userSearch valueChanges
+    
+    this.filteredUsers = [];
+    this.showUserDropdown = false;
   }
 
-  onEndDateChange(event: any): void {
-    this.endDate = event.target.value;
+  onUserInputClick(): void {
+    console.log('Input clicked');
+    // If we have search results and no user selected, show dropdown
+    const searchTerm = this.filterForm.get('userSearch')?.value;
+    if (searchTerm && searchTerm.trim() && !this.selectedUser && this.filteredUsers.length > 0) {
+      this.showUserDropdown = true;
+    }
   }
 
-  onEndTimeChange(event: any): void {
-    this.endTime = event.target.value || '23:59';
+  onUserInputKeydown(event: KeyboardEvent): void {
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        setTimeout(() => {
+          const firstItem = document.querySelector('.user-dropdown-item');
+          if (firstItem instanceof HTMLElement) firstItem.focus();
+        });
+        break;
+      case 'Escape':
+        this.showUserDropdown = false;
+        break;
+      case 'Enter':
+        if (this.filteredUsers.length === 1 && !this.selectedUser) {
+          this.selectUser(this.filteredUsers[0]);
+        }
+        break;
+    }
+  }
+
+  // Close dropdown when clicking outside
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: Event): void {
+    if (this.userSearchInputElement?.nativeElement.contains(event.target) || 
+        this.userDropdown?.nativeElement?.contains(event.target)) {
+      return;
+    }
+    this.showUserDropdown = false;
   }
 
   toggleRow(id: number): void {
@@ -248,7 +377,6 @@ export class AuditLogComponent implements OnInit {
   getPageNumbers(): number[] {
     const pages: number[] = [];
     const maxVisiblePages = 5;
-    
     let startPage = Math.max(1, this.pageNumber - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
     
@@ -259,17 +387,19 @@ export class AuditLogComponent implements OnInit {
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
     }
-    
     return pages;
   }
 
   getActiveFilters(): number {
     let count = 0;
-    if (this.entityType) count++;
-    if (this.action) count++;
-    if (this.actorUserId) count++;
-    if (this.startDate) count++;
-    if (this.endDate) count++;
+    const formValues = this.filterForm.value;
+    
+    if (formValues.entityType) count++;
+    if (formValues.action) count++;
+    if (formValues.actorUserId) count++;
+    if (formValues.startDate) count++;
+    if (formValues.endDate) count++;
+    
     return count;
   }
 }

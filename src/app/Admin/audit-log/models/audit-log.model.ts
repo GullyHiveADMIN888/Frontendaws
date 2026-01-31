@@ -11,3 +11,9 @@ export interface AuditLog {
   createdAt: string;
   ipAddress: string | null;
 }
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+}

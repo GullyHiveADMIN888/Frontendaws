@@ -2,9 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-
 import { AdminRoutingModule } from './admin-routing.module';
-
+import { ReactiveFormsModule } from '@angular/forms';
 // Layout Components
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
@@ -59,7 +58,8 @@ import { AreaMasterComponent } from './area-master/area-master.component';
     CommonModule,
     AdminRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   exports: [
     HeaderComponent,
