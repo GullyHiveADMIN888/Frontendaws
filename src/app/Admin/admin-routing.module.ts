@@ -15,6 +15,8 @@ import { LeadStatusMasterComponent } from './lead-status-master/lead-status-mast
 import { ServicePackageMasterComponent } from './service-package-master/service-package-master.component';
 import { AuditLogComponent } from './audit-log/audit-log.component';
 import { AreaMasterComponent } from './area-master/area-master.component';
+import { SubscriptionMasterComponent } from './subscription-master/subscription-master.component';
+import { ChangePasswordComponent } from './change-password/change-password.component';
 
 const routes: Routes = [
   { 
@@ -77,6 +79,14 @@ const routes: Routes = [
   {
     path: 'area-master',
     component: AreaMasterComponent
+  },
+  {
+    path: 'subscription-master',
+    component: SubscriptionMasterComponent
+  },
+  {
+    path: 'change-password',
+    component: ChangePasswordComponent
   },
   { 
     path: '**', 
