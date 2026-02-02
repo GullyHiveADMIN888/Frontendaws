@@ -62,4 +62,8 @@ input[type="number"] {
   .checkbox-custom-checked {
     @apply bg-primary-500 border-primary-500;
   }
+
+  .abc{
+    color: red;
+  }
 }
