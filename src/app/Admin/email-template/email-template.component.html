@@ -1,0 +1,156 @@
+<div class="email-template-container">
+    <!-- Header -->
+    <div class="header">
+        <h2>Email Template Manager</h2>
+        <p>View templates and update content</p>
+    </div>
+
+    <!-- Message Alert -->
+    <div *ngIf="message" class="alert" [class.success]="messageType === 'success'"
+        [class.error]="messageType === 'error'">
+        {{message}}
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <div class="row">
+            <!-- Left Panel: Template Selection and Variables -->
+            <div class="form-panel">
+                <div class="panel-section">
+                    <h3>Template Selection</h3>
+
+                    <!-- Template Selection -->
+                    <div class="form-group">
+                        <label for="templateSelect">Select Template</label>
+                        <select id="templateSelect" class="form-control" formControlName="templateName"
+                            (change)="onTemplateSelect($any($event.target).value)" [disabled]="isLoading">
+                            <option value="">-- Select Template --</option>
+                            <option *ngFor="let template of templates" [value]="template">
+                                {{template | titlecase}}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Template Variables -->
+                    <div class="variables-section" *ngIf="selectedTemplate && !selectedTemplate.isLoading">
+                        <h4>Template Variables</h4>
+
+                        <div *ngIf="variableControls.length > 0; else noVariables">
+                            <p class="variables-info">This template uses the following variables:</p>
+                            <div class="variables-list">
+                                <div *ngFor="let variable of variableControls" class="variable-item">
+                                    <span class="variable-badge">{{variable}}</span>
+                                    <span class="variable-example">{{getVariableLabel(variable)}}</span>
+                                </div>
+                            </div>
+                            <p class="variables-note">Variables are replaced with
+                                <code>{{"{{" + "variableName" + "}}"}}</code> syntax
+                            </p>
+                        </div>
+
+                        <ng-template #noVariables>
+                            <div class="no-variables">
+                                <p>This template doesn't contain any variables.</p>
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+
+                <!-- File Upload Section -->
+                <div class="panel-section upload-section" *ngIf="selectedTemplate">
+                    <h3>Update Template Content</h3>
+
+                    <div class="file-upload-area">
+                        <div class="file-input-container">
+                            <input type="file" id="templateFile" accept=".txt" (change)="onFileSelected($event)"
+                                class="file-input" [disabled]="isUploading">
+                            <label for="templateFile" class="file-label">
+                                <span class="file-icon">📄</span>
+                                <span class="file-text">
+                                    {{selectedFile ? selectedFile.name : 'Choose .txt file'}}
+                                </span>
+                                <span class="browse-btn">Browse</span>
+                            </label>
+                        </div>
+
+                        <div class="upload-info">
+                            <p><small>Selected template: <strong>{{selectedTemplate.name}}</strong></small></p>
+                            <p><small>Uploading will replace the content of "{{selectedTemplate.name}}.txt"</small></p>
+                        </div>
+
+                        <div class="upload-actions">
+                            <button type="button" class="btn-upload" (click)="updateTemplate()"
+                                [disabled]="!selectedFile || isUploading || !selectedTemplate">
+                                <span *ngIf="!isUploading">Update Template</span>
+                                <span *ngIf="isUploading">Updating...</span>
+                            </button>
+
+                            <button type="button" class="btn-download" (click)="downloadTemplate()"
+                                [disabled]="!selectedTemplate || isUploading">
+                                Download Current
+                            </button>
+                        </div>
+
+                        <button (click)="testTemplatePath()" class="btn-test">
+                            Test Template Path
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Template Preview -->
+            <div class="preview-panel">
+                <div class="preview-header">
+                    <h3>Template Preview</h3>
+                    <small *ngIf="selectedTemplate">
+                        Template: {{selectedTemplate.name | titlecase}}
+                        <span *ngIf="selectedTemplate.isLoading"> (Loading...)</span>
+                    </small>
+                </div>
+
+                <div class="template-content">
+                    <!-- Loading State -->
+                    <div *ngIf="isLoadingTemplate" class="template-loading">
+                        <div class="loading-spinner-large"></div>
+                        <p>Loading template content...</p>
+                    </div>
+
+                    <!-- Preview Content -->
+                    <div *ngIf="selectedTemplate && !selectedTemplate.isLoading" class="preview-box">
+                        <div class="preview-header-info">
+                            <div class="preview-meta">
+                                <div class="meta-item">
+                                    <strong>File:</strong> {{selectedTemplate.name}}.txt
+                                </div>
+                                <div class="meta-item">
+                                    <strong>Variables:</strong> {{variableControls.length}}
+                                </div>
+                                <div class="meta-item">
+                                    <strong>Lines:</strong> {{selectedTemplate.content.split('\n').length}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="preview-content">
+                            <div class="preview-body" [innerHTML]="previewHtml"></div>
+                        </div>
+
+                        <div class="preview-footer">
+                            <div class="variable-highlight">
+                                <strong>Note:</strong> Variables are highlighted in <span class="var-example">{{"{{" +
+                                    "orange" + "}}"}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- No Template Selected -->
+                    <div *ngIf="!selectedTemplate && !isLoadingTemplate" class="no-template">
+                        <div class="no-template-icon">📧</div>
+                        <h4>No Template Selected</h4>
+                        <p>Select a template from the dropdown to view its content</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
