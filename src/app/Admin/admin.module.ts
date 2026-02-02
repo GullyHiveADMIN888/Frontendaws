@@ -31,6 +31,7 @@ import { AuditLogComponent } from './audit-log/audit-log.component';
 import { AreaMasterComponent } from './area-master/area-master.component';
 import { SubscriptionMasterComponent } from './subscription-master/subscription-master.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
+import { EmailTemplateComponent } from './email-template/email-template.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +57,8 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
     AuditLogComponent,
     AreaMasterComponent,
     SubscriptionMasterComponent,
-    ChangePasswordComponent
+    ChangePasswordComponent,
+    EmailTemplateComponent
   ],
   imports: [
     CommonModule,
