@@ -18,6 +18,18 @@ export interface EmailData {
     variables: { [key: string]: string };
 }
 
+export interface TemplatePathInfo {
+    directoryPath: string;
+    exists: boolean;
+    files: string[];
+}
+
+export interface UpdateTemplateResponse {
+    success: boolean;
+    message: string;
+    path: string;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -30,7 +42,12 @@ export class EmailTemplateService {
 
     // Get all available templates
     getTemplates(): Observable<string[]> {
-        return this.http.get<string[]>(`${this.apiUrl}/templates`);
+        return this.http.get<string[]>(`${this.apiUrl}/templates`).pipe(
+            catchError(error => {
+                console.error('Error loading templates:', error);
+                return of([]);
+            })
+        );
     }
 
     // Get specific template content with proper loading state
@@ -43,12 +60,24 @@ export class EmailTemplateService {
             isLoading: true
         };
         this.currentTemplateSubject.next(loadingTemplate);
+        
         console.log(`Loading template: ${templateName}`);
-        return this.http.get<EmailTemplate>(`${this.apiUrl}/templates/${templateName}`).pipe(
-            tap(template => {
-                template.isLoading = false;
+        return this.http.get<{name: string, content: string, variables: string[]}>(`${this.apiUrl}/templates/${templateName}`).pipe(
+            tap(response => {
+                const template: EmailTemplate = {
+                    name: response.name,
+                    content: response.content,
+                    variables: response.variables || [],
+                    isLoading: false
+                };
                 this.currentTemplateSubject.next(template);
             }),
+            map(response => ({
+                name: response.name,
+                content: response.content,
+                variables: response.variables || [],
+                isLoading: false
+            })),
             catchError(error => {
                 console.error('Error loading template:', error);
                 const errorTemplate: EmailTemplate = {
@@ -64,13 +93,62 @@ export class EmailTemplateService {
     }
 
     // Update template content
-    updateTemplate(updateData: { templateName: string; content: string }): Observable<any> {
-        return this.http.put(`${this.apiUrl}/update`, updateData);
+    updateTemplate(updateData: { templateName: string; content: string }): Observable<UpdateTemplateResponse> {
+        return this.http.put<UpdateTemplateResponse>(`${this.apiUrl}/update`, updateData).pipe(
+            tap(response => {
+                console.log('Template update response:', response);
+            }),
+            catchError(error => {
+                console.error('Error updating template:', error);
+                throw error;
+            })
+        );
     }
 
-    // Also add this method to check template path
-    getTemplatePath(templateName: string): Observable<any> {
-        return this.http.get(`${this.apiUrl}/template-path/${templateName}`);
+    // Get template directory information
+    getTemplateDirectory(): Observable<TemplatePathInfo> {
+        return this.http.get<TemplatePathInfo>(`${this.apiUrl}/templates-directory`).pipe(
+            catchError(error => {
+                console.error('Error getting template directory:', error);
+                return of({
+                    directoryPath: 'Unknown',
+                    exists: false,
+                    files: []
+                });
+            })
+        );
+    }
+
+    // Clear template cache
+    clearCache(): Observable<any> {
+        return this.http.post(`${this.apiUrl}/clear-cache`, {}).pipe(
+            tap(() => console.log('Template cache cleared')),
+            catchError(error => {
+                console.error('Error clearing cache:', error);
+                throw error;
+            })
+        );
+    }
+
+    // Reload specific template
+    reloadTemplate(templateName: string): Observable<any> {
+        return this.http.post(`${this.apiUrl}/reload/${templateName}`, {}).pipe(
+            tap(() => console.log(`Template ${templateName} reloaded`)),
+            catchError(error => {
+                console.error('Error reloading template:', error);
+                throw error;
+            })
+        );
+    }
+
+    // Send test email
+    sendTestEmail(emailData: EmailData): Observable<any> {
+        return this.http.post(`${this.apiUrl}/send`, emailData).pipe(
+            catchError(error => {
+                console.error('Error sending test email:', error);
+                throw error;
+            })
+        );
     }
 
     // Extract variables from template content (client-side fallback)
@@ -102,11 +180,36 @@ export class EmailTemplateService {
 
         // Format for HTML display
         preview = preview.replace(/\n/g, '<br>');
+        
+        // Highlight variables
+        preview = preview.replace(/\{\{(\w+)\}\}/g, '<span class="variable-highlight">{{$1}}</span>');
+        
         return preview;
     }
 
     // Get current template (for immediate access)
     getCurrentTemplate(): EmailTemplate | null {
         return this.currentTemplateSubject.value;
+    }
+
+    // Update current template locally (before saving to server)
+    updateCurrentTemplateLocally(content: string): void {
+        const current = this.currentTemplateSubject.value;
+        if (current) {
+            const updated: EmailTemplate = {
+                ...current,
+                content: content,
+                variables: this.extractVariables(content)
+            };
+            this.currentTemplateSubject.next(updated);
+        }
+    }
+
+    // Refresh current template from server
+    refreshCurrentTemplate(): void {
+        const current = this.currentTemplateSubject.value;
+        if (current && current.name) {
+            this.getTemplate(current.name).subscribe();
+        }
     }
 }

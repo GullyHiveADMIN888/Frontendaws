@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { EmailTemplateService, EmailTemplate } from './services/email-template.service';
+import { EmailTemplateService, EmailTemplate, TemplatePathInfo, UpdateTemplateResponse } from './services/email-template.service';
 import { Subject } from 'rxjs';
-import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-email-template',
@@ -20,6 +20,8 @@ export class EmailTemplateComponent implements OnInit, OnDestroy {
   messageType: 'success' | 'error' = 'success';
   selectedFile: File | null = null;
   isUploading = false;
+  templatePathInfo: TemplatePathInfo | null = null;
+  showPathInfo = false;
   
   private destroy$ = new Subject<void>();
 
@@ -46,6 +48,7 @@ export class EmailTemplateComponent implements OnInit, OnDestroy {
       });
 
     this.loadTemplates();
+    this.loadTemplateDirectoryInfo();
   }
 
   ngOnDestroy() {
@@ -65,11 +68,24 @@ export class EmailTemplateComponent implements OnInit, OnDestroy {
       next: (templates) => {
         this.templates = templates;
         this.isLoading = false;
+        console.log('Loaded templates:', templates);
       },
       error: (error) => {
         console.error('Error loading templates:', error);
         this.showMessage('Failed to load templates', 'error');
         this.isLoading = false;
+      }
+    });
+  }
+
+  loadTemplateDirectoryInfo() {
+    this.emailService.getTemplateDirectory().subscribe({
+      next: (info) => {
+        this.templatePathInfo = info;
+        console.log('Template directory info:', info);
+      },
+      error: (error) => {
+        console.error('Error loading directory info:', error);
       }
     });
   }
@@ -85,7 +101,7 @@ export class EmailTemplateComponent implements OnInit, OnDestroy {
   updateFormWithTemplate(template: EmailTemplate) {
     if (!template) return;
     
-    // Force update preview immediately
+    // Update preview
     this.updatePreview();
     this.cdr.detectChanges();
   }
@@ -93,27 +109,35 @@ export class EmailTemplateComponent implements OnInit, OnDestroy {
   updatePreview() {
     // If no template or loading, show loading message
     if (!this.selectedTemplate) {
-      this.previewHtml = '<em>No template selected</em>';
+      this.previewHtml = '<div class="no-content"><em>No template selected</em></div>';
       return;
     }
     
     if (this.selectedTemplate.isLoading) {
-      this.previewHtml = '<em>Loading template...</em>';
+      this.previewHtml = '<div class="loading-content"><em>Loading template...</em></div>';
       return;
     }
 
     // If template has no content (error case), show error
     if (!this.selectedTemplate.content) {
-      this.previewHtml = '<em>Unable to load template content</em>';
+      this.previewHtml = '<div class="error-content"><em>Unable to load template content</em></div>';
       return;
     }
 
     try {
-      // Format for HTML display
-      this.previewHtml = this.selectedTemplate.content.replace(/\n/g, '<br>');
+      // Format for HTML display with variable highlighting
+      let content = this.selectedTemplate.content;
+      
+      // Replace newlines with <br>
+      content = content.replace(/\n/g, '<br>');
+      
+      // Highlight variables
+      content = content.replace(/\{\{(\w+)\}\}/g, '<span class="variable-highlight">{{$1}}</span>');
+      
+      this.previewHtml = content;
     } catch (error) {
       console.error('Error generating preview:', error);
-      this.previewHtml = '<em>Error generating preview</em>';
+      this.previewHtml = '<div class="error-content"><em>Error generating preview</em></div>';
     }
   }
 
@@ -128,6 +152,7 @@ export class EmailTemplateComponent implements OnInit, OnDestroy {
       }
       
       this.selectedFile = file;
+      console.log('File selected:', file.name);
     }
   }
 
@@ -149,33 +174,21 @@ export class EmailTemplateComponent implements OnInit, OnDestroy {
       try {
         const newContent = e.target?.result as string;
         
-        // Update the template content locally
-        if (this.selectedTemplate) {
-          this.selectedTemplate.content = newContent;
-          
-          // Extract variables from new content
-          this.selectedTemplate.variables = this.emailService.extractVariables(newContent);
-          
-          // Update preview
-          this.updatePreview();
-          
-          // Show success message
-          this.showMessage('Template updated successfully!', 'success');
-          
-          // Call API to update template on server
-          this.saveTemplateToServer();
-        }
+        // Update the template content locally first
+        this.emailService.updateCurrentTemplateLocally(newContent);
+        
+        // Update preview
+        this.updatePreview();
+        
+        // Show temporary success message
+        this.showMessage('Template updated locally, saving to server...', 'success');
+        
+        // Call API to update template on server
+        this.saveTemplateToServer(newContent);
       } catch (error) {
         console.error('Error reading file:', error);
         this.showMessage('Error reading file content', 'error');
-      } finally {
         this.isUploading = false;
-        // Clear file input
-        this.selectedFile = null;
-        const fileInput = document.getElementById('templateFile') as HTMLInputElement;
-        if (fileInput) {
-          fileInput.value = '';
-        }
       }
     };
     
@@ -188,43 +201,96 @@ export class EmailTemplateComponent implements OnInit, OnDestroy {
     reader.readAsText(this.selectedFile);
   }
 
-  saveTemplateToServer() {
-  if (!this.selectedTemplate) return;
-  
-  const updateData = {
-    templateName: this.selectedTemplate.name,
-    content: this.selectedTemplate.content
-  };
-  
-  this.emailService.updateTemplate(updateData).subscribe({
-    next: (response: any) => {
-      console.log('Template saved to server:', response);
-      this.showMessage(`Template "${this.selectedTemplate?.name}" updated successfully!`, 'success');
-      
-      // Refresh the template to get updated content
-      if (this.selectedTemplate?.name) {
-        this.emailService.getTemplate(this.selectedTemplate.name).subscribe();
-      }
-    },
-    error: (error) => {
-      console.error('Error saving template to server:', error);
-      this.showMessage('Template updated locally but failed to save to server', 'error');
+  saveTemplateToServer(newContent: string) {
+    // Add null check for selectedTemplate
+    if (!this.selectedTemplate || !this.selectedTemplate.name) {
+      this.showMessage('No template selected', 'error');
+      this.isUploading = false;
+      return;
     }
-  });
-}
-
-testTemplatePath() {
-  if (this.selectedTemplate) {
-    this.emailService.getTemplatePath(this.selectedTemplate.name).subscribe({
-      next: (response) => {
-        console.log('Template path:', response);
-        alert(JSON.stringify(response, null, 2));
+    
+    const updateData = {
+      templateName: this.selectedTemplate.name,
+      content: newContent
+    };
+    
+    this.emailService.updateTemplate(updateData).subscribe({
+      next: (response: UpdateTemplateResponse) => {
+        console.log('Template saved to server:', response);
+        this.showMessage(`Template "${this.selectedTemplate?.name}" updated successfully!`, 'success');
+        
+        // Reload the template to ensure we have latest from server
+        if (this.selectedTemplate?.name) {
+          this.emailService.reloadTemplate(this.selectedTemplate.name).subscribe({
+            next: () => {
+              // Now get fresh content from server
+              setTimeout(() => {
+                this.emailService.refreshCurrentTemplate();
+              }, 500);
+            },
+            error: (reloadError) => {
+              console.warn('Warning: Could not reload template:', reloadError);
+              // Still show success since file was saved
+            }
+          });
+        }
+        
+        // Clear file input
+        this.selectedFile = null;
+        const fileInput = document.getElementById('templateFile') as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = '';
+        }
+      },
+      error: (error) => {
+        console.error('Error saving template to server:', error);
+        this.showMessage(`Failed to save template to server: ${error.message}`, 'error');
+      },
+      complete: () => {
+        this.isUploading = false;
       }
     });
   }
-}
 
-// Call this method in updateTemplate() after updating locally
+  clearTemplateCache() {
+    this.emailService.clearCache().subscribe({
+      next: () => {
+        this.showMessage('Template cache cleared successfully', 'success');
+        // Reload current template
+        if (this.selectedTemplate?.name) {
+          this.emailService.refreshCurrentTemplate();
+        }
+      },
+      error: (error) => {
+        this.showMessage(`Failed to clear cache: ${error.message}`, 'error');
+      }
+    });
+  }
+
+  reloadCurrentTemplate() {
+    // Add null check
+    if (!this.selectedTemplate?.name) {
+      this.showMessage('Please select a template first', 'error');
+      return;
+    }
+    
+    this.emailService.reloadTemplate(this.selectedTemplate.name).subscribe({
+      next: () => {
+        this.showMessage('Template reloaded from server', 'success');
+        this.emailService.refreshCurrentTemplate();
+      },
+      error: (error) => {
+        this.showMessage(`Failed to reload template: ${error.message}`, 'error');
+      }
+    });
+  }
+
+  togglePathInfo() {
+    this.showPathInfo = !this.showPathInfo;
+    if (this.showPathInfo && !this.templatePathInfo) {
+      this.loadTemplateDirectoryInfo();
+    }
+  }
 
   showMessage(message: string, type: 'success' | 'error') {
     this.message = message;
@@ -266,5 +332,14 @@ testTemplatePath() {
     // Cleanup
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
+  }
+
+  // Helper method to safely access selectedTemplate properties
+  get selectedTemplateName(): string {
+    return this.selectedTemplate?.name || '';
+  }
+
+  get isTemplateSelected(): boolean {
+    return !!this.selectedTemplate && !!this.selectedTemplate.name;
   }
 }
