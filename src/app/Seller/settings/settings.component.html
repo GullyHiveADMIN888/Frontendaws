@@ -15,27 +15,14 @@
       <!-- Settings categories -->
       <div *ngFor="let category of settingsCategories" class="mb-8">
         <h2 class="text-xl font-bold text-gray-900 mb-4">{{ category.title }}</h2>
-        <!-- <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-           <a *ngFor="let item of category.items" (click)="openChangePassword()" [routerLink]="item.link" class="bg-white rounded-lg p-6 border border-gray-200 hover:shadow-lg">
-            <div class="flex items-start justify-between mb-4">
-              <div class="w-12 h-12 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center">
-                <i [class]="item.icon + ' text-2xl'"></i>
-              </div>
-              <i class="ri-arrow-right-line text-gray-400"></i>
-            </div>
-            <h3 class="font-semibold text-gray-900 mb-2">{{ item.title }}</h3>
-            <p class="text-sm text-gray-600">{{ item.description }}</p>
-          </a> 
- 
+       
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
-        </div> -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
   <a
     *ngFor="let item of category.items"
     (click)="onSettingClick(item)"
-    class="cursor-pointer bg-white rounded-lg p-6 border border-gray-200 hover:shadow-lg"
-  >
+    class="cursor-pointer bg-white rounded-lg p-4 border border-gray-200 hover:shadow-lg">
     <div class="flex items-start justify-between mb-4">
       <div class="w-12 h-12 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center">
         <i [class]="item.icon + ' text-2xl'"></i>
@@ -174,6 +161,113 @@
           Update Password
         </button>
       </div>
+
+    </form>
+  </div>
+</div>
+
+
+
+<!-- BANK DETAILS MODAL -->
+<div
+  *ngIf="showBankDetailsModal"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div class="bg-white w-full max-w-md rounded-xl shadow-xl p-6 relative">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold text-gray-900">Bank Details</h2>
+      <button (click)="closeBankDetailsModal()" class="text-gray-400 hover:text-gray-700">
+        <i class="ri-close-line text-2xl"></i>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="saveBankDetails()" #bankForm="ngForm" class="space-y-4">
+
+      <!-- Bank Name -->
+  <div>
+    <label class="block text-sm font-medium mb-1">Bank Name <span class="text-red-500">*</span></label>
+    <input
+      [(ngModel)]="bankDetails.bankName"
+      name="bankName"
+      class="w-full border rounded-lg px-3 py-2"
+    />
+    <p *ngIf="errors?.bankName" class="text-red-500 text-sm mt-1">
+      {{ errors.bankName }}
+    </p>
+  </div>
+
+  <!-- Account Number -->
+  <div>
+    <label class="block text-sm font-medium mb-1">Account Number <span class="text-red-500">*</span></label>
+    <input
+      [(ngModel)]="bankDetails.accountNumber"
+      name="accountNumber"
+      class="w-full border rounded-lg px-3 py-2"
+    />
+    <p *ngIf="errors?.accountNumber" class="text-red-500 text-sm mt-1">
+      {{ errors.accountNumber }}
+    </p>
+  </div>
+
+  <!-- IFSC Code -->
+  <div>
+    <label class="block text-sm font-medium mb-1">IFSC Code <span class="text-red-500">*</span></label>
+    <input
+      [(ngModel)]="bankDetails.ifsc"
+      name="ifsc"
+      class="w-full border rounded-lg px-3 py-2"
+    />
+    <p *ngIf="errors?.ifsc" class="text-red-500 text-sm mt-1">
+      {{ errors.ifsc }}
+    </p>
+  </div>
+
+  <!-- Address (optional) -->
+  <div>
+    <label class="block text-sm font-medium mb-1">Address(Optional)</label>
+     <textarea
+          [(ngModel)]="bankDetails.address"
+          name="address"
+          rows="2"
+          class="w-full border rounded-lg px-3 py-2"
+        ></textarea>
+  </div>
+
+    
+    <div class="flex justify-between pt-4">
+
+  <!-- DELETE (only in edit mode) -->
+  <button
+    *ngIf="isEditMode"
+    type="button"
+    (click)="deleteBankDetails()"
+    class="px-4 py-2 text-red-600 border border-red-200 rounded-lg hover:bg-red-50"
+  >
+    Delete
+  </button>
+
+  <div class="flex gap-2 ml-auto">
+    <button
+      type="button"
+      (click)="closeBankDetailsModal()"
+      class="px-4 py-2 border rounded-lg"
+    >
+      Cancel
+    </button>
+
+    <button
+      type="button"
+      (click)="saveBankDetails()"
+      class="px-4 py-2 bg-orange-600 text-white rounded-lg"
+    >
+      {{ isEditMode ? 'Update' : 'Save' }}
+    </button>
+  </div>
+
+</div>
 
     </form>
   </div>

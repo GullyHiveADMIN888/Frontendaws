@@ -78,7 +78,6 @@ ngOnInit() {
   pincodeInput = '';
   showServicesModal = false;
 
-
 onCategoryChange(categoryId: number) {
   this.editCategoryId = categoryId;
 
@@ -94,14 +93,45 @@ onCategoryChange(categoryId: number) {
     if (existingService) {
       this.editSubCategoryIds = [...existingService.subCategoryIds];
     }
+
+    // ✅ Load questions for selected subcategories
+    this.subCategoryQuestions = []; // clear previous questions
+    this.selectedQuestions = []; // clear previous selections
+    this.editSubCategoryIds.forEach(subId => {
+      this.loadQuestionsForSubCategory(subId, true);
+    });
   });
 }
+// onCategoryChange(categoryId: number) {
 
-toggleSubCategory(subId: number) {
-  const index = this.editSubCategoryIds.indexOf(subId);
-  if (index > -1) this.editSubCategoryIds.splice(index, 1);
-  else this.editSubCategoryIds.push(subId);
-}
+//   this.editCategoryId = categoryId;
+
+//   // ✅ HARD RESET
+//   this.editSubCategoryIds = [];
+//   this.subCategoryQuestions = [];
+//   this.selectedQuestions = [];
+
+//   // Fetch subcategories
+//   this.sellerService.getSubCategories(categoryId).subscribe(subs => {
+
+//     this.subCategories = subs;
+
+//     // Check if provider already has services in this category
+//     const existingService = this.services.find(s => s.categoryId === categoryId);
+
+//     if (existingService) {
+
+//       this.editSubCategoryIds = [...existingService.subCategoryIds];
+
+//       // ✅ Load questions for each subcategory
+//       this.editSubCategoryIds.forEach(subId => {
+//         this.loadQuestionsForSubCategory(subId, true);
+//       });
+//     }
+//   });
+// }
+
+
 isSubCategorySelected(subId: number): boolean {
   return this.editSubCategoryIds.includes(subId);
 }
@@ -134,15 +164,6 @@ loadProviderServices(providerId: number) {
         subCategoryIds: s.subCategoryIds
       }));
 
-      // ✅ service area
-      // if (data.serviceArea) {
-      //   this.serviceArea = {
-      //     type: data.serviceArea.type,
-      //     cityId: data.serviceArea.cityId,
-      //     radiusKm: data.serviceArea.radiusKm,
-      //     pincodes: data.serviceArea.pincodes || []
-      //   };
-      // }
       if (data.serviceArea) {
   this.serviceArea = {
     type: data.serviceArea.type,
@@ -159,7 +180,7 @@ loadProviderServices(providerId: number) {
       this.parentCategories = data.categories;
       this.subCategories = data.subCategories;
       this.cities = data.cities;
-
+      this.serviceProviderQuestions = data.providerQuestionIds || [];
       if (this.services.length > 0) {
         this.onCategoryChange(this.services[0].categoryId);
       }
@@ -168,7 +189,6 @@ loadProviderServices(providerId: number) {
   });
 }
 
-// dashboard.component.ts
 
 // Get category name from ID safely
 getCategoryName(categoryId: number): string {
@@ -225,30 +245,126 @@ openEditServices() {
   });
 }
 
+// openEditServices() {
+//   if (!this.sellerId) return;
+
+//   this.sellerService.getProviderServices(this.sellerId).subscribe({
+//     next: (data) => {
+//       this.services = data.providerServices ?? [];
+//       this.parentCategories = data.categories ?? [];
+//       this.cities = data.cities ?? [];
+//       this.serviceArea = {
+//         type: data.serviceArea?.type ?? '',
+//         cityId: data.serviceArea?.cityId,
+//         radiusKm: data.serviceArea?.radiusKm,
+//         pincodes: Array.isArray(data.serviceArea?.pincodes)
+//           ? [...data.serviceArea.pincodes]
+//           : []
+//       };
+
+//       // Reset category/subcategory selections
+//       this.editCategoryId = null;
+//       this.subCategories = [];
+//       this.editSubCategoryIds = [];
+//       this.subCategoryQuestions = [];
+//       this.selectedQuestions = [];
+
+//       // Preload only if there is a selected category
+//       if (this.services.length > 0) {
+//         const firstService = this.services[0];
+//         if (firstService.categoryId) {
+//           this.editCategoryId = firstService.categoryId;
+//           this.editSubCategoryIds = [...firstService.subCategoryIds];
+//           this.onCategoryChange(this.editCategoryId, true); // true = preload questions
+//         }
+//       }
+
+//       this.showServicesModal = true;
+//     },
+//     error: err => console.error(err)
+//   });
+// }
+
+
+
 
 
 closeServicesModal() {
   this.showServicesModal = false;
 }
 
+
+// saveServicesAndArea() {
+//   if (!this.sellerId) return;
+
+//   const payload = {
+//     services: this.services,
+//     serviceArea: this.serviceArea,
+//     questions: this.subCategoryQuestions
+//   .filter(q => !this.selectedQuestions.includes(q.id))
+//   .map(({ id, subCategoryId }) => ({
+//     categoryId: this.editCategoryId!,
+//     subCategoryId,
+//     questionId: id,
+//     isChecked: false
+//   }))
+
+//   };
+
+//   this.sellerService.updateServicesAndArea(this.sellerId, payload).subscribe({
+//     next: () => {
+//       console.log('Saved successfully');
+//       this.showServicesModal = false;
+//     },
+//     error: err => console.error(err)
+//   });
+// }
 saveServicesAndArea() {
   if (!this.sellerId) return;
 
+  // Add currently editing category if not already in updatedServices
+  if (this.editCategoryId && this.editSubCategoryIds.length > 0) {
+    const exists = this.updatedServices.find(s => s.categoryId === this.editCategoryId);
+    if (exists) {
+      exists.subCategoryIds = [...this.editSubCategoryIds];
+    } else {
+      this.updatedServices.push({
+        categoryId: this.editCategoryId,
+        subCategoryIds: [...this.editSubCategoryIds]
+      });
+    }
+  }
+
+  // 🔹 Only send unchecked questions
+  const uncheckedQuestions = this.subCategoryQuestions
+    .filter(q => !this.selectedQuestions.includes(q.id))
+    .map(q => ({
+      categoryId: this.editCategoryId!,
+      subCategoryId: q.subCategoryId,
+      questionId: q.id,
+      isChecked: false
+    }));
+
   const payload = {
-    services: this.services,       // your categories + subcategories
-    serviceArea: this.serviceArea  // city/radius/pincode info
+    services: this.updatedServices,  // Only send updated selections
+    serviceArea: this.serviceArea,
+    questions: uncheckedQuestions  // 🔹 Send only false questions
   };
 
   this.sellerService.updateServicesAndArea(this.sellerId, payload).subscribe({
-    next: (res) => {
-      console.log('Services updated successfully', res);
-      this.showServicesModal = false; // close modal
+    next: () => {
+      console.log('Saved successfully');
+      this.showServicesModal = false;
+
+      // Reset updatedServices after successful save
+      this.updatedServices = [];
     },
-    error: (err) => {
-      console.error('Failed to update services', err);
-    }
+    error: err => console.error(err)
   });
 }
+
+
+
 
 addService() {
   if (!this.editCategoryId || this.editSubCategoryIds.length === 0) return;
@@ -268,6 +384,150 @@ addService() {
   this.editSubCategoryIds = [];
   this.subCategories = [];
 }
+
+
+
+subCategoryQuestions: any[] = []; // questions for selected subcategory
+selectedQuestions: number[] = [];  // question IDs checked by user
+serviceProviderQuestions: number[] = []; // existing checked questions from backend
+
+
+
+// toggleSubCategory(subId: number) {
+
+//   const index = this.editSubCategoryIds.indexOf(subId);
+
+//   if (index > -1) {
+
+//     // ✅ Remove subcategory
+//     this.editSubCategoryIds.splice(index, 1);
+
+//     // Get question ids to remove
+//     const removedQuestionIds = this.subCategoryQuestions
+//       .filter(q => q.subCategoryId === subId)
+//       .map(q => q.id);
+
+//     // Remove questions
+//     this.subCategoryQuestions =
+//       this.subCategoryQuestions.filter(q => q.subCategoryId !== subId);
+
+//     // Remove selections
+//     this.selectedQuestions =
+//       this.selectedQuestions.filter(id => !removedQuestionIds.includes(id));
+
+//   } else {
+
+//     this.editSubCategoryIds.push(subId);
+//     this.loadQuestionsForSubCategory(subId);
+//   }
+// }
+
+// New array to track only edited services
+updatedServices: { categoryId: number; subCategoryIds: number[] }[] = [];
+
+toggleSubCategory(subId: number) {
+  const index = this.editSubCategoryIds.indexOf(subId);
+
+  if (index > -1) {
+    // Remove subcategory
+    this.editSubCategoryIds.splice(index, 1);
+
+    // Remove questions
+    const removedQuestionIds = this.subCategoryQuestions
+      .filter(q => q.subCategoryId === subId)
+      .map(q => q.id);
+
+    this.subCategoryQuestions =
+      this.subCategoryQuestions.filter(q => q.subCategoryId !== subId);
+
+    this.selectedQuestions =
+      this.selectedQuestions.filter(id => !removedQuestionIds.includes(id));
+
+  } else {
+    // Add new subcategory
+    this.editSubCategoryIds.push(subId);
+    this.loadQuestionsForSubCategory(subId);
+  }
+
+  if (!this.editCategoryId) return;
+
+  // Update only updatedServices (not all old services)
+  const existing = this.updatedServices.find(s => s.categoryId === this.editCategoryId);
+
+  if (this.editSubCategoryIds.length === 0) {
+    // Remove category if no subcategories
+    if (existing) {
+      this.updatedServices = this.updatedServices.filter(s => s.categoryId !== this.editCategoryId);
+    }
+  } else {
+    if (existing) {
+      existing.subCategoryIds = [...this.editSubCategoryIds];
+    } else {
+      this.updatedServices.push({
+        categoryId: this.editCategoryId,
+        subCategoryIds: [...this.editSubCategoryIds]
+      });
+    }
+  }
+}
+
+
+
+loadQuestionsForSubCategory(subId: number, isInitialLoad: boolean = false) {
+
+  this.sellerService.getQuestionsBySubCategory(subId).subscribe(res => {
+
+    const questions = res.data.map((q: any) => ({
+
+      ...q,
+      subCategoryId: subId,
+
+      // unchecked stored in DB → invert
+      checked: !this.serviceProviderQuestions.includes(q.id)
+    }));
+
+
+    // remove old questions of this subcategory
+    this.subCategoryQuestions =
+      this.subCategoryQuestions.filter(q => q.subCategoryId !== subId);
+
+    this.subCategoryQuestions.push(...questions);
+
+
+    // sync selected array
+    questions.forEach(q => {
+
+      const exists = this.selectedQuestions.includes(q.id);
+
+      if (q.checked && !exists) {
+        this.selectedQuestions.push(q.id);
+      }
+
+      if (!q.checked && exists) {
+        this.selectedQuestions =
+          this.selectedQuestions.filter(id => id !== q.id);
+      }
+
+    });
+
+  });
+}
+
+
+
+removeQuestionsForSubCategory(subId: number) {
+  this.subCategoryQuestions = this.subCategoryQuestions.filter(q => q.subCategoryId !== subId);
+}
+
+toggleQuestion(questionId: number): void {
+  const index = this.selectedQuestions.indexOf(questionId);
+  if (index > -1) {
+    this.selectedQuestions.splice(index, 1);
+  } else {
+    this.selectedQuestions.push(questionId);
+  }
+}
+
 
 }
 
