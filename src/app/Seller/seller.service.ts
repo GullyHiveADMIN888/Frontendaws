@@ -159,6 +159,7 @@ export interface ProviderServicesResponse {
   categories: any[];
   subCategories: any[];
   cities: any[];
+  providerQuestionIds: number[];
 }
 
 
@@ -425,7 +426,21 @@ buyLeads(leadId: number) {
   );
 }
 
+sendQuote(payload: any) {
+  return this.http.post(
+    `${this.apiUrl}/quotes`,
+    payload,
+    { headers: this.getHeaders() }
+  );
+}
 
+
+
+getQuestionsBySubCategory(subCategoryId: number) {
+  return this.http.get<{ success: boolean; data: any[] }>(
+    `${this.apiUrl}/by-subcategory/${subCategoryId}`
+  );
+}
 
 
 }

@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { SellerService, PublicProfile } from '../seller.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { environment } from '../../../environments/environment.prod';
 
 @Component({
   selector: 'app-sharable-profile',
@@ -18,6 +19,7 @@ export class SharableProfileComponent implements OnInit {
   sellerId!: number;
 
   shareUrl = '';
+  apiUrl = environment.apiBaseUrl;
 
   constructor(
     private route: ActivatedRoute,
@@ -29,7 +31,7 @@ export class SharableProfileComponent implements OnInit {
       const id = params.get('id');
       if (id) {
         this.sellerId = +id;
-        this.shareUrl = `${window.location.origin}/seller/sharableProfile/${this.sellerId}`;
+        this.shareUrl = `${this.apiUrl}/seller/sharableProfile/${this.sellerId}`;
         this.loadProfile(this.sellerId);
       } else {
         this.errorMessage = 'Invalid seller ID';

@@ -217,12 +217,18 @@
         Cancel
       </button>
 
-      <button
+      <!-- <button
         (click)="buyLead()"
         class="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg shadow"
       >
         Buy Lead
-      </button>
+      </button> -->
+      <button
+  [disabled]="selectedLead?.isPurchased"
+  (click)="buyLead()" class="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg shadow">
+  {{ selectedLead?.isPurchased ? 'Purchased' : 'Buy Lead' }}
+</button>
+
 
     </div>
 
@@ -351,6 +357,7 @@
         <label class="text-sm text-gray-600">Quote Amount</label>
         <input
           type="number"
+      [(ngModel)]="quoteAmount"
           class="w-full border rounded-lg px-3 py-2 mt-1"
           placeholder="Enter amount"
         />
@@ -360,6 +367,7 @@
         <label class="text-sm text-gray-600">Message</label>
         <textarea
           rows="3"
+          [(ngModel)]="quoteMessage"
           class="w-full border rounded-lg px-3 py-2 mt-1"
           placeholder="Write message to customer"
         ></textarea>
@@ -376,6 +384,7 @@
       </button>
 
       <button
+      (click)="sendQuote()"
         class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow"
       >
         Send Quote

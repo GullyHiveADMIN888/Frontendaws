@@ -22,6 +22,13 @@ export class LeadsComponent implements OnInit {
   selectedLead: Lead | null = null;
   showLeadModal = false;
 
+
+
+  // Send Quote form fields
+quoteAmount: number | null = null;
+quoteMessage: string = '';
+
+
   constructor(private sellerService: SellerService) { }
 
   ngOnInit(): void {
@@ -200,42 +207,56 @@ closePaymentModal() {
 showSendQuoteModal = false;
 
 
+// handleSendQuote(lead: any) {
+//   this.selectedLead = lead;
+
+//   if (lead.isPurchased) {
+//     // ✅ Lead already purchased → open send quote modal
+//     this.showSendQuoteModal = true;
+//   } else {
+//     // ❌ Not purchased → redirect to buy lead
+//     this.showPaymentModal = true;
+    
+//   }
+// }
+
+closeSendQuoteModal() {
+  this.showSendQuoteModal = false;
+  this.quoteAmount = null;
+  this.quoteMessage = '';
+}
+
 handleSendQuote(lead: any) {
   this.selectedLead = lead;
 
   if (lead.isPurchased) {
-    // ✅ Lead already purchased → open send quote modal
+    this.quoteAmount = null;
+    this.quoteMessage = '';
     this.showSendQuoteModal = true;
   } else {
-    // ❌ Not purchased → redirect to buy lead
     this.showPaymentModal = true;
-    
   }
 }
 
-closeSendQuoteModal() {
-  this.showSendQuoteModal = false;
-}
 
+// confirmBuyLead() {
+//   const lead = this.selectedLead;
+//   if (!lead) return;
 
-confirmBuyLead() {
-  const lead = this.selectedLead;
-  if (!lead) return;
+//   this.sellerService.buyLeads(lead.id).subscribe({
+//     next: (res: any) => {
+//       lead.isPurchased = true;
+//       lead.leadPrice = `₹${res.pplPrice}`;
 
-  this.sellerService.buyLeads(lead.id).subscribe({
-    next: (res: any) => {
-      lead.isPurchased = true;
-      lead.leadPrice = `₹${res.pplPrice}`;
-
-      this.showPaymentModal = false;
-      alert(`Lead purchased successfully for ₹${res.pplPrice}`);
-    },
-    error: (err) => {
-      console.error('Failed to buy lead', err);
-      alert('Failed to purchase lead. Please try again.');
-    }
-  });
-}
+//       this.showPaymentModal = false;
+//       alert(`Lead purchased successfully for ₹${res.pplPrice}`);
+//     },
+//     error: (err) => {
+//       console.error('Failed to buy lead', err);
+//       alert('Failed to purchase lead. Please try again.');
+//     }
+//   });
+// }
 
   // buyLead() {
   //   if (!this.selectedLead) return;
@@ -252,6 +273,57 @@ confirmBuyLead() {
   //   });
   // }
 
+  confirmBuyLead() {
+  const lead = this.selectedLead;
+  if (!lead) return;
+
+  this.sellerService.buyLeads(lead.id).subscribe({
+    next: (res: any) => {
+      // ✅ Mark as purchased locally
+      lead.isPurchased = true;
+      lead.leadPrice = `₹${res.pplPrice}`;
+
+      // ✅ Close modal
+      this.showPaymentModal = false;
+
+      alert(`Lead purchased successfully for ₹${res.pplPrice}`);
+    },
+
+    error: (err) => {
+      console.error('Failed to buy lead', err);
+
+      // ✅ Show backend message if available
+      const message =
+        err?.error?.message ||
+        'Failed to purchase lead. Please try again.';
+
+      alert(message);
+    }
+  });
+}
+
+
+sendQuote() {
+  if (!this.selectedLead) return;
+
+  const payload = {
+    leadId: this.selectedLead.id,
+    priceMin: this.quoteAmount,          // bind input
+    priceMax: this.quoteAmount,          // or different field if needed
+    notes: this.quoteMessage,
+    validUntil: null                     // optional
+  };
+
+  this.sellerService.sendQuote(payload).subscribe({
+    next: () => {
+      alert('Quote sent successfully');
+      this.closeSendQuoteModal();
+    },
+    error: (err) => {
+      alert(err?.error?.message || 'Failed to send quote');
+    }
+  });
+}
 
 
 
