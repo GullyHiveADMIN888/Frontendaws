@@ -2,9 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-
 import { AdminRoutingModule } from './admin-routing.module';
-
+import { ReactiveFormsModule } from '@angular/forms';
 // Layout Components
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
@@ -29,6 +28,10 @@ import { CityMasterComponent } from './city-master/city-master.component';
 import { LeadStatusMasterComponent } from './lead-status-master/lead-status-master.component';
 import { ServicePackageMasterComponent } from './service-package-master/service-package-master.component';
 import { AuditLogComponent } from './audit-log/audit-log.component';
+import { AreaMasterComponent } from './area-master/area-master.component';
+import { SubscriptionMasterComponent } from './subscription-master/subscription-master.component';
+import { ChangePasswordComponent } from './change-password/change-password.component';
+import { EmailTemplateComponent } from './email-template/email-template.component';
 
 @NgModule({
   declarations: [
@@ -51,13 +54,18 @@ import { AuditLogComponent } from './audit-log/audit-log.component';
     SubCategoryMasterComponent,
     // UserRolesComponent
     ServicePackageMasterComponent,
-    AuditLogComponent
+    AuditLogComponent,
+    AreaMasterComponent,
+    SubscriptionMasterComponent,
+    ChangePasswordComponent,
+    EmailTemplateComponent
   ],
   imports: [
     CommonModule,
     AdminRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   exports: [
     HeaderComponent,

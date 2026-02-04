@@ -1,6 +1,7 @@
-// src/app/features/admin/question-master/question-master.component.ts
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { forkJoin, Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { QuestionService } from './services/question.service';
 import { environment } from '../../../environments/environment.prod';
 import { 
@@ -10,13 +11,18 @@ import {
   Option,
   CreateOption,
   UpdateOption,
-  QuestionWithOptions 
+  QuestionWithOptions,
+  SubCategory
 } from './models/question.model';
 
 interface ServiceCategory {
   id: number;
   name: string;
   isActive: boolean;
+}
+
+interface QuestionWithSubCategory extends Question {
+  subCategoryName?: string;
 }
 
 @Component({
@@ -26,13 +32,15 @@ interface ServiceCategory {
 })
 export class QuestionMasterComponent implements OnInit {
   // Data properties
-  questions: Question[] = [];
-  filteredQuestions: Question[] = [];
-  categories: ServiceCategory[] = []; // Fetched from backend
+  questions: QuestionWithSubCategory[] = [];
+  filteredQuestions: QuestionWithSubCategory[] = [];
+  categories: ServiceCategory[] = [];
+  subCategories: SubCategory[] = []; // For modal - specific to selected category
 
   // UI state properties
   loading: boolean = true;
   categoriesLoading: boolean = true;
+  subCategoriesLoading: boolean = false;
   error: string | null = null;
   searchTerm: string = '';
 
@@ -42,10 +50,10 @@ export class QuestionMasterComponent implements OnInit {
   showOptionUpdateModal: boolean = false;
   isEditMode: boolean = false;
   currentQuestion: Question = this.getEmptyQuestion();
-  currentOption: UpdateOption = this.getEmptyUpdateOption(); // Changed to UpdateOption
+  currentOption: UpdateOption = this.getEmptyUpdateOption();
   modalLoading: boolean = false;
   selectedQuestionForOptions: Question | null = null;
-  tempQuestionForOptions: Question | null = null; // NEW: Temporary storage for question reference
+  tempQuestionForOptions: Question | null = null;
 
   // Stats properties
   totalQuestions: number = 0;
@@ -64,8 +72,9 @@ export class QuestionMasterComponent implements OnInit {
   showOptionsModal: boolean = false;
 
   // API endpoints
-  private apiUrl = `${environment.apiBaseUrl}/api/admin`;
+  private apiUrl = `${environment.apiBaseUrl}/admin`;
   private categoryApiUrl = `${environment.apiBaseUrl}/admin/service-category-master`;
+  private subCategoryApiUrl = `${environment.apiBaseUrl}/admin/sub-category-master`;
 
   constructor(
     private http: HttpClient,
@@ -94,10 +103,128 @@ export class QuestionMasterComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching categories:', err);
-        // Still try to fetch questions even if categories fail
         this.categories = [];
         this.categoriesLoading = false;
         this.fetchQuestions();
+      }
+    });
+  }
+
+  // Load subcategories based on selected category (for modal)
+  loadSubCategories(categoryId: number): void {
+    if (!categoryId) {
+      this.subCategories = [];
+      this.currentQuestion.subCategoryId = 0;
+      return;
+    }
+
+    this.subCategoriesLoading = true;
+    this.questionService.getSubCategoriesByCategory(categoryId).subscribe({
+      next: (subCats) => {
+        // Filter to show only active subcategories
+        this.subCategories = subCats.filter(subCat => subCat.isActive);
+        this.subCategoriesLoading = false;
+        
+        // Reset subcategory selection if current one is not in the list
+        if (this.currentQuestion.subCategoryId && 
+            !this.subCategories.find(sc => sc.id === this.currentQuestion.subCategoryId)) {
+          this.currentQuestion.subCategoryId = 0;
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching subcategories:', err);
+        this.subCategories = [];
+        this.subCategoriesLoading = false;
+      }
+    });
+  }
+
+  // Fetch individual subcategory by ID
+  fetchSubCategoryById(subCategoryId: number): Observable<SubCategory | null> {
+    if (!subCategoryId || subCategoryId === 0) {
+      return of(null);
+    }
+
+    return this.http.get<SubCategory>(`${this.subCategoryApiUrl}/${subCategoryId}`)
+      .pipe(
+        catchError(err => {
+          console.error(`Error fetching subcategory ${subCategoryId}:`, err);
+          return of(null);
+        })
+      );
+  }
+
+  // Fetch and load all subcategories for questions
+  loadSubCategoriesForQuestions(questions: Question[]): void {
+    // Get unique subcategory IDs from questions
+    const subCategoryIds = new Set<number>();
+    
+    questions.forEach(question => {
+      if (question.subCategoryId && question.subCategoryId > 0) {
+        subCategoryIds.add(question.subCategoryId);
+      }
+    });
+
+    if (subCategoryIds.size === 0) {
+      // No subcategories, set questions directly
+      this.questions = questions.map(question => ({
+        ...question,
+        updating: false,
+        deleting: false,
+        subCategoryName: 'No Subcategory'
+      })) as QuestionWithSubCategory[];
+      
+      this.filteredQuestions = [...this.questions];
+      this.calculateStats();
+      this.loading = false;
+      return;
+    }
+
+    // Create an array of observables for fetching subcategories
+    const subCategoryRequests: Observable<SubCategory | null>[] = [];
+    subCategoryIds.forEach(id => {
+      subCategoryRequests.push(this.fetchSubCategoryById(id));
+    });
+
+    // Fetch all subcategories in parallel
+    forkJoin(subCategoryRequests).subscribe({
+      next: (results) => {
+        // Create a map of subcategory ID to name
+        const subCategoryMap = new Map<number, string>();
+        
+        results.forEach(subCat => {
+          if (subCat) {
+            subCategoryMap.set(subCat.id, subCat.name);
+          }
+        });
+
+        // Update questions with subcategory names
+        this.questions = questions.map(question => ({
+          ...question,
+          updating: false,
+          deleting: false,
+          subCategoryName: question.subCategoryId && question.subCategoryId > 0 
+            ? (subCategoryMap.get(question.subCategoryId) || 'Unknown Subcategory')
+            : 'No Subcategory'
+        })) as QuestionWithSubCategory[];
+
+        this.filteredQuestions = [...this.questions];
+        this.calculateStats();
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading subcategories:', err);
+        // If there's an error, still set the questions without subcategory names
+        this.questions = questions.map(question => ({
+          ...question,
+          updating: false,
+          deleting: false,
+          subCategoryName: 'Error loading'
+        })) as QuestionWithSubCategory[];
+        
+        this.filteredQuestions = [...this.questions];
+        this.calculateStats();
+        this.loading = false;
       }
     });
   }
@@ -107,6 +234,7 @@ export class QuestionMasterComponent implements OnInit {
     return {
       id: 0,
       categoryId: 0,
+      subCategoryId: 0,
       questionText: '',
       questionType: 'single_select',
       isMandatory: true,
@@ -122,7 +250,6 @@ export class QuestionMasterComponent implements OnInit {
     return {
       questionId: 0,
       optionText: '',
-      // displayOrder: 0,
       isActive: true
     };
   }
@@ -132,7 +259,6 @@ export class QuestionMasterComponent implements OnInit {
       id: 0,
       questionId: 0,
       optionText: '',
-      // displayOrder: 0,
       isActive: true
     };
   }
@@ -150,32 +276,21 @@ export class QuestionMasterComponent implements OnInit {
     // Set default category to first active category if available
     if (this.categories.length > 0) {
       this.currentQuestion.categoryId = this.categories[0].id;
+      this.loadSubCategories(this.currentQuestion.categoryId);
     }
     
     this.showQuestionModal = true;
   }
 
   openOptionModal(question: Question): void {
-    console.log('Opening Option Modal for question:', question.id);
     this.selectedQuestionForOptions = question;
     this.currentOption = {
       id: 0,
       questionId: question.id,
       optionText: '',
-      // displayOrder: this.calculateNextDisplayOrder(question),
       isActive: true
     };
     this.showOptionModal = true;
-    console.log('showOptionModal set to:', this.showOptionModal);
-  }
-
-  // Helper method to calculate next display order
-  private calculateNextDisplayOrder(question: Question): number {
-    if (!question.options || question.options.length === 0) {
-      return 1;
-    }
-    const maxOrder = Math.max(...question.options.map(opt => opt.displayOrder));
-    return maxOrder + 1;
   }
 
   openOptionUpdateModal(option: Option): void {
@@ -183,11 +298,10 @@ export class QuestionMasterComponent implements OnInit {
       id: option.id,
       questionId: option.questionId,
       optionText: option.optionText,
-      // displayOrder: option.displayOrder,
       isActive: option.isActive
     };
     this.showOptionUpdateModal = true;
-    this.showOptionsModal = false; // Close options view modal
+    this.showOptionsModal = false;
   }
 
   editQuestion(question: Question): void {
@@ -197,12 +311,17 @@ export class QuestionMasterComponent implements OnInit {
       updating: false,
       deleting: false 
     };
+    
+    // Load subcategories for the selected category
+    this.loadSubCategories(question.categoryId);
+    
     this.showQuestionModal = true;
   }
 
   closeQuestionModal(): void {
     this.showQuestionModal = false;
     this.currentQuestion = this.getEmptyQuestion();
+    this.subCategories = [];
     this.modalLoading = false;
   }
 
@@ -233,7 +352,6 @@ export class QuestionMasterComponent implements OnInit {
       {
         questionId: this.currentOption.questionId,
         optionText: this.currentOption.optionText,
-        // displayOrder: this.currentOption.displayOrder,
         isActive: this.currentOption.isActive
       }
     ).subscribe({
@@ -259,7 +377,6 @@ export class QuestionMasterComponent implements OnInit {
       this.currentOption
     ).subscribe({
       next: () => {
-        // Update local state for better UX
         this.updateLocalOption();
         this.closeOptionUpdateModal();
         this.modalLoading = false;
@@ -275,12 +392,10 @@ export class QuestionMasterComponent implements OnInit {
 
   // Helper method to update option in local state
   private updateLocalOption(): void {
-    // Update in questionOptions array
     this.questionOptions = this.questionOptions.map(opt => 
       opt.id === this.currentOption.id ? { ...opt, ...this.currentOption } : opt
     );
 
-    // Update in questions array
     this.questions = this.questions.map(q => {
       if (q.options && q.id === this.currentOption.questionId) {
         q.options = q.options.map(opt => 
@@ -305,6 +420,7 @@ export class QuestionMasterComponent implements OnInit {
 
     const createData: CreateQuestion = {
       categoryId: this.currentQuestion.categoryId,
+      subCategoryId: this.currentQuestion.subCategoryId || 0,
       questionText: this.currentQuestion.questionText,
       questionType: this.currentQuestion.questionType,
       isMandatory: this.currentQuestion.isMandatory,
@@ -340,9 +456,10 @@ export class QuestionMasterComponent implements OnInit {
     }
 
     const updateData: UpdateQuestion = {
-      categoryId: this.currentQuestion.categoryId,    
+      categoryId: this.currentQuestion.categoryId,
+      subCategoryId: this.currentQuestion.subCategoryId || 0,
       questionText: this.currentQuestion.questionText,
-      questionType: this.currentQuestion.questionType, 
+      questionType: this.currentQuestion.questionType,
       isMandatory: this.currentQuestion.isMandatory,
       displayOrder: this.currentQuestion.displayOrder,
       isActive: this.currentQuestion.isActive
@@ -371,15 +488,8 @@ export class QuestionMasterComponent implements OnInit {
 
     this.questionService.getQuestions().subscribe({
       next: (data) => {
-        // Initialize UI state properties
-        this.questions = data.map(question => ({
-          ...question,
-          updating: false,
-          deleting: false
-        }));
-        this.filteredQuestions = [...this.questions];
-        this.calculateStats();
-        this.loading = false;
+        // Load subcategories for all questions
+        this.loadSubCategoriesForQuestions(data);
       },
       error: (err) => {
         this.error = 'Failed to load questions. Please try again.';
@@ -405,7 +515,8 @@ export class QuestionMasterComponent implements OnInit {
     this.filteredQuestions = this.questions.filter(question =>
       question.questionText.toLowerCase().includes(term) ||
       this.getQuestionTypeLabel(question.questionType).toLowerCase().includes(term) ||
-      this.getCategoryName(question.categoryId).toLowerCase().includes(term)
+      this.getCategoryName(question.categoryId).toLowerCase().includes(term) ||
+      (question.subCategoryName && question.subCategoryName.toLowerCase().includes(term))
     );
   }
 
@@ -417,7 +528,6 @@ export class QuestionMasterComponent implements OnInit {
   toggleActive(question: Question): void {
     const newStatus = !question.isActive;
 
-    // Show loading state on the specific button
     question.updating = true;
 
     this.questionService.updateQuestion(question.id, {
@@ -425,7 +535,6 @@ export class QuestionMasterComponent implements OnInit {
       isActive: newStatus
     } as UpdateQuestion).subscribe({
       next: () => {
-        // Update local state immediately for better UX
         question.isActive = newStatus;
         question.updating = false;
         this.calculateStats();
@@ -445,12 +554,10 @@ export class QuestionMasterComponent implements OnInit {
   }
 
   deleteQuestion(question: Question): void {
-    // Show loading state on the specific button
     question.deleting = true;
 
     this.questionService.deleteQuestion(question.id).subscribe({
       next: () => {
-        // Remove question from local array
         this.questions = this.questions.filter(q => q.id !== question.id);
         this.filteredQuestions = this.filteredQuestions.filter(q => q.id !== question.id);
         this.calculateStats();
@@ -484,9 +591,13 @@ export class QuestionMasterComponent implements OnInit {
 
   getCategoryName(categoryId: number): string {
     if (!categoryId) return 'No Category';
-    
     const category = this.categories.find(c => c.id === categoryId);
     return category ? category.name : `Category ${categoryId}`;
+  }
+
+  getSubCategoryName(question: QuestionWithSubCategory): string {
+    // Use the pre-loaded subCategoryName
+    return question.subCategoryName || 'No Subcategory';
   }
 
   getQuestionTypeColor(type: string): string {
@@ -504,36 +615,23 @@ export class QuestionMasterComponent implements OnInit {
   closeOptionsModal(): void {
     this.showOptionsModal = false;
     this.questionOptions = [];
-    // Don't clear selectedQuestionForOptions here - keep it for Add Another Option
   }
 
-  // method for Add Another Option
   addAnotherOption(): void {
-    console.log('addAnotherOption called');
-    console.log('Current selectedQuestionForOptions:', this.selectedQuestionForOptions);
-    
-    // Save the question reference in a temporary variable
     this.tempQuestionForOptions = this.selectedQuestionForOptions;
-    
-    // Close the options view modal
     this.showOptionsModal = false;
     this.questionOptions = [];
     
-    console.log('Options modal closed, tempQuestionForOptions:', this.tempQuestionForOptions);
-    
-    // Wait for modal to close completely, then open add option modal
     setTimeout(() => {
       if (this.tempQuestionForOptions) {
-        console.log('Opening option modal for question:', this.tempQuestionForOptions.id);
         this.openOptionModal(this.tempQuestionForOptions);
-        this.tempQuestionForOptions = null; // Clear temp variable
+        this.tempQuestionForOptions = null;
       } else {
         console.error('No question found to add option to');
       }
-    }, 300); // Increased delay to ensure modal closes completely
+    }, 300);
   }
 
-  // Keep the old method for compatibility
   addOptionFromViewModal(): void {
     this.addAnotherOption();
   }
@@ -544,14 +642,11 @@ export class QuestionMasterComponent implements OnInit {
 
   deleteOption(option: Option): void {
     if (confirm(`Are you sure you want to delete option "${option.optionText}"?`)) {
-      // Show loading on the specific option
       option.deleting = true;
       
       this.questionService.deleteOption(option.id).subscribe({
         next: () => {
-          // Remove option from local array
           this.questionOptions = this.questionOptions.filter(opt => opt.id !== option.id);
-          // Also update the question in the main list
           this.questions = this.questions.map(q => {
             if (q.id === option.questionId && q.options) {
               q.options = q.options.filter(opt => opt.id !== option.id);
@@ -567,5 +662,12 @@ export class QuestionMasterComponent implements OnInit {
         }
       });
     }
+  }
+
+  // Category change handler
+  onCategoryChange(): void {
+    this.loadSubCategories(this.currentQuestion.categoryId);
+    // Reset subcategory when category changes
+    this.currentQuestion.subCategoryId = 0;
   }
 }

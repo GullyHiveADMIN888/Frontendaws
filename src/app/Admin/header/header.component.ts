@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 })
 export class HeaderComponent {
   showDropdown: boolean = false;
-  adminName: string = 'Admin User';
+  adminName: string = 'Admin';
 
   constructor(private router: Router) {}
 
@@ -38,6 +38,11 @@ export class HeaderComponent {
     // this.router.navigate(['/admin/settings']);
     alert('Settings page coming soon!');
   }
+
+  goToChangePassword(): void {
+  this.router.navigate(['/admin/change-password']);
+  this.showDropdown = false; // Close the dropdown
+}
 
   logout(): void {
     // Remove token from localStorage

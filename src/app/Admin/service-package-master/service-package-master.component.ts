@@ -60,6 +60,9 @@ export class ServicePackageMasterComponent implements OnInit {
       name: '',
       description: '',
       basePrice: 0,
+      platformCharges: null,
+      visitingCharges: null,
+      totalPrice: 0,
       currency: 'INR',
       isActive: true,
       parameters: {},
@@ -91,30 +94,6 @@ export class ServicePackageMasterComponent implements OnInit {
       }
     });
   }
-
-  // Fetch subcategories by category ID
-  // fetchSubCategoriesByCategory(categoryId: number): void {
-  //   if (!categoryId) {
-  //     this.groupedSubCategories = [];
-  //     return;
-  //   }
-
-  //   this.servicePackageService.getServiceSubCategoriesByCategoryId(categoryId)
-  //     .subscribe({
-  //       next: (data) => {
-  //         const category = this.serviceCategories.find(c => c.id === categoryId);
-  //         this.groupedSubCategories = [{
-  //           categoryId,
-  //           categoryName: category ? category.name : `Category #${categoryId}`,
-  //           subcategories: data.sort((a, b) => a.name.localeCompare(b.name))
-  //         }];
-  //       },
-  //       error: (err) => {
-  //         console.error('Failed to load subcategories:', err);
-  //         this.groupedSubCategories = [];
-  //       }
-  //     });
-  // }
 
   // Get category name for display
   getCategoryName(categoryId: number): string {
@@ -179,6 +158,16 @@ export class ServicePackageMasterComponent implements OnInit {
     return this.currentPackage.name;
   }
 
+  // Calculate total price
+  calculateTotalPrice(): number {
+    const basePrice = this.currentPackage.basePrice || 0;
+    const platformCharges = this.currentPackage.platformCharges || 0;
+    const visitingCharges = this.currentPackage.visitingCharges || 0;
+    
+    this.currentPackage.totalPrice = basePrice + platformCharges + visitingCharges;
+    return this.currentPackage.totalPrice;
+  }
+
   // Modal Methods
   openAddModal(): void {
     this.isEditMode = false;
@@ -187,28 +176,18 @@ export class ServicePackageMasterComponent implements OnInit {
     this.showModal = true;
   }
 
-  // editPackage(pkg: ServicePackage): void {
-  //   this.isEditMode = true;
-  //   this.currentPackage = { ...pkg };
-  //   this.groupedSubCategories = [];
+  editPackage(pkg: ServicePackage): void {
+    this.isEditMode = true;
+    this.currentPackage = { ...pkg };
+    this.groupedSubCategories = [];
     
-  //   // Set the category ID and fetch subcategories for that category
-  //   if (this.currentPackage.categoryId) {
-  //     this.fetchSubCategoriesByCategory(this.currentPackage.categoryId);
-      
-  //     // Try to find matching subcategory
-  //     setTimeout(() => {
-  //       const matchingSubCat = this.findSubCategoryByName(pkg.name, pkg.categoryId);
-  //       if (matchingSubCat) {
-  //         this.currentPackage.name = matchingSubCat.id.toString();
-  //       } else {
-  //         this.currentPackage.name = pkg.name;
-  //       }
-  //     }, 100);
-  //   }
+    // Set the category ID and fetch subcategories for that category
+    if (this.currentPackage.categoryId) {
+      this.fetchSubCategoriesByCategoryForEdit(this.currentPackage.categoryId, pkg.name);
+    }
     
-  //   this.showModal = true;
-  // }
+    this.showModal = true;
+  }
 
   // Helper to find subcategory by name and category
   findSubCategoryByName(name: string, categoryId: number): ServiceSubCategory | null {
@@ -258,6 +237,15 @@ export class ServicePackageMasterComponent implements OnInit {
       return;
     }
 
+    // Ensure optional charges are valid numbers or null
+    const platformCharges = this.currentPackage.platformCharges 
+      ? Number(this.currentPackage.platformCharges) 
+      : null;
+    
+    const visitingCharges = this.currentPackage.visitingCharges 
+      ? Number(this.currentPackage.visitingCharges) 
+      : null;
+
     // Get subcategory name from the selected ID
     let subCategoryName = this.currentPackage.name;
     const subCategoryId = parseInt(this.currentPackage.name, 10);
@@ -279,6 +267,8 @@ export class ServicePackageMasterComponent implements OnInit {
       name: subCategoryName.trim(),
       description: this.currentPackage.description?.trim() || null,
       basePrice: basePrice,
+      platformCharges: platformCharges,
+      visitingCharges: visitingCharges,
       currency: this.currentPackage.currency,
       isActive: this.currentPackage.isActive
     };
@@ -330,6 +320,15 @@ export class ServicePackageMasterComponent implements OnInit {
       return;
     }
 
+    // Ensure optional charges are valid numbers or null
+    const platformCharges = this.currentPackage.platformCharges 
+      ? Number(this.currentPackage.platformCharges) 
+      : null;
+    
+    const visitingCharges = this.currentPackage.visitingCharges 
+      ? Number(this.currentPackage.visitingCharges) 
+      : null;
+
     // Get subcategory name from the selected ID
     let subCategoryName = this.currentPackage.name;
     const subCategoryId = parseInt(this.currentPackage.name, 10);
@@ -351,6 +350,8 @@ export class ServicePackageMasterComponent implements OnInit {
       name: subCategoryName.trim(),
       description: this.currentPackage.description?.trim() || null,
       basePrice: basePrice,
+      platformCharges: platformCharges,
+      visitingCharges: visitingCharges,
       currency: this.currentPackage.currency,
       isActive: this.currentPackage.isActive
     };
@@ -404,7 +405,7 @@ export class ServicePackageMasterComponent implements OnInit {
   calculateStats(): void {
     this.totalPackages = this.servicePackages.length;
     this.activePackages = this.servicePackages.filter(p => p.isActive).length;
-    this.totalRevenue = this.servicePackages.reduce((sum, p) => sum + p.basePrice, 0);
+    this.totalRevenue = this.servicePackages.reduce((sum, p) => sum + (p.totalPrice || 0), 0);
   }
 
   filterPackages(): void {
@@ -434,6 +435,8 @@ export class ServicePackageMasterComponent implements OnInit {
       name: pkg.name,
       description: pkg.description,
       basePrice: pkg.basePrice,
+      platformCharges: pkg.platformCharges,
+      visitingCharges: pkg.visitingCharges,
       currency: pkg.currency,
       isActive: newStatus
     };
@@ -506,80 +509,67 @@ export class ServicePackageMasterComponent implements OnInit {
     return city ? city.name : `City #${cityId}`;
   }
 
-  editPackage(pkg: ServicePackage): void {
-  this.isEditMode = true;
-  this.currentPackage = { ...pkg };
-  this.groupedSubCategories = [];
-  
-  // Set the category ID and fetch subcategories for that category
-  if (this.currentPackage.categoryId) {
-    this.fetchSubCategoriesByCategoryForEdit(this.currentPackage.categoryId, pkg.name);
-  }
-  
-  this.showModal = true;
-}
+  // New method for fetching subcategories in edit mode
+  fetchSubCategoriesByCategoryForEdit(categoryId: number, packageName: string): void {
+    if (!categoryId) {
+      this.groupedSubCategories = [];
+      return;
+    }
 
-// New method for fetching subcategories in edit mode
-fetchSubCategoriesByCategoryForEdit(categoryId: number, packageName: string): void {
-  if (!categoryId) {
-    this.groupedSubCategories = [];
-    return;
-  }
-
-  this.servicePackageService.getServiceSubCategoriesByCategoryId(categoryId)
-    .subscribe({
-      next: (data) => {
-        const category = this.serviceCategories.find(c => c.id === categoryId);
-        const activeSubcategories = data.filter(s => s.isActive)
-                                        .sort((a, b) => a.name.localeCompare(b.name));
-        
-        this.groupedSubCategories = [{
-          categoryId,
-          categoryName: category ? category.name : `Category #${categoryId}`,
-          subcategories: activeSubcategories
-        }];
-        
-        // Now find the subcategory that matches the package name
-        const matchingSubCat = activeSubcategories.find(s => s.name === packageName);
-        if (matchingSubCat) {
-          // Set the currentPackage.name to the subcategory ID (as string)
-          this.currentPackage.name = matchingSubCat.id.toString();
-        } else {
-          // If no match found, leave it as is (it will show as blank)
-          this.currentPackage.name = '';
+    this.servicePackageService.getServiceSubCategoriesByCategoryId(categoryId)
+      .subscribe({
+        next: (data) => {
+          const category = this.serviceCategories.find(c => c.id === categoryId);
+          const activeSubcategories = data.filter(s => s.isActive)
+                                          .sort((a, b) => a.name.localeCompare(b.name));
+          
+          this.groupedSubCategories = [{
+            categoryId,
+            categoryName: category ? category.name : `Category #${categoryId}`,
+            subcategories: activeSubcategories
+          }];
+          
+          // Now find the subcategory that matches the package name
+          const matchingSubCat = activeSubcategories.find(s => s.name === packageName);
+          if (matchingSubCat) {
+            // Set the currentPackage.name to the subcategory ID (as string)
+            this.currentPackage.name = matchingSubCat.id.toString();
+          } else {
+            // If no match found, leave it as is (it will show as blank)
+            this.currentPackage.name = '';
+          }
+        },
+        error: (err) => {
+          console.error('Failed to load subcategories:', err);
+          this.groupedSubCategories = [];
         }
-      },
-      error: (err) => {
-        console.error('Failed to load subcategories:', err);
-        this.groupedSubCategories = [];
-      }
-    });
-}
-
-// Also update the regular fetch method to remove the edit logic
-fetchSubCategoriesByCategory(categoryId: number): void {
-  if (!categoryId) {
-    this.groupedSubCategories = [];
-    return;
+      });
   }
 
-  this.servicePackageService.getServiceSubCategoriesByCategoryId(categoryId)
-    .subscribe({
-      next: (data) => {
-        const category = this.serviceCategories.find(c => c.id === categoryId);
-        const activeSubcategories = data.filter(s => s.isActive)
-                                        .sort((a, b) => a.name.localeCompare(b.name));
-        
-        this.groupedSubCategories = [{
-          categoryId,
-          categoryName: category ? category.name : `Category #${categoryId}`,
-          subcategories: activeSubcategories
-        }];
-      },
-      error: (err) => {
-        console.error('Failed to load subcategories:', err);
-        this.groupedSubCategories = [];
-      }
-    });
-}
+  // Also update the regular fetch method to remove the edit logic
+  fetchSubCategoriesByCategory(categoryId: number): void {
+    if (!categoryId) {
+      this.groupedSubCategories = [];
+      return;
+    }
+
+    this.servicePackageService.getServiceSubCategoriesByCategoryId(categoryId)
+      .subscribe({
+        next: (data) => {
+          const category = this.serviceCategories.find(c => c.id === categoryId);
+          const activeSubcategories = data.filter(s => s.isActive)
+                                          .sort((a, b) => a.name.localeCompare(b.name));
+          
+          this.groupedSubCategories = [{
+            categoryId,
+            categoryName: category ? category.name : `Category #${categoryId}`,
+            subcategories: activeSubcategories
+          }];
+        },
+        error: (err) => {
+          console.error('Failed to load subcategories:', err);
+          this.groupedSubCategories = [];
+        }
+      });
+  }
 }

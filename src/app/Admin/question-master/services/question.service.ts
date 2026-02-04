@@ -1,8 +1,6 @@
-// src/app/features/admin/question-master/services/question.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-// import { environment } from '../../environments/environment';
 import { environment } from '../../../../environments/environment.prod';
 import { 
   Question, 
@@ -12,7 +10,8 @@ import {
   QuestionWithOptions,
   Option,
   CreateOption,
-  UpdateOption
+  UpdateOption,
+  SubCategory
 } from '../models/question.model';
 
 @Injectable({
@@ -76,11 +75,21 @@ export class QuestionService {
     return this.http.delete<void>(`${this.apiUrl}/options/${id}`);
   }
 
+  // SubCategory endpoints
+  getSubCategoriesByCategory(categoryId: number): Observable<SubCategory[]> {
+    return this.http.get<SubCategory[]>(`${this.apiUrl}/sub-category-master/by-category/${categoryId}`);
+  }
+
+getSubCategoryById(id: number): Observable<SubCategory> {
+  return this.http.get<SubCategory>(`${this.apiUrl}/sub-category-master/${id}`);
+}
+
   // Helper method to transform response
   private transformQuestionResponse(response: QuestionResponse): Question {
     return {
       id: response.id,
       categoryId: response.category_id,
+      subCategoryId: response.subcat_id || 0, 
       questionText: response.question_text,
       questionType: response.question_type,
       isMandatory: response.is_mandatory,

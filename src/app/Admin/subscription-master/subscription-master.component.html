@@ -1,0 +1,440 @@
+<div class="min-h-screen bg-gray-50">
+  <app-admin-header></app-admin-header>
+  <div class="max-w-7xl mx-auto my-12">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+        Subscription Plans Master
+      </h1>
+      <p class="text-gray-600">
+        Manage all subscription plans, tiers, and pricing
+      </p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-blue-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Total Plans</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{totalPlans}}</h3>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
+            <span class="text-blue-600 text-xl">📋</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-green-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Active Plans</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{activePlans}}</h3>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center">
+            <span class="text-green-600 text-xl">✅</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-purple-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Unique Tiers</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{uniqueTiers}}</h3>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
+            <span class="text-purple-600 text-xl">📊</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-orange-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Categories</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{totalCategories}}</h3>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-orange-50 flex items-center justify-center">
+            <span class="text-orange-600 text-xl">🏷️</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add New Plan Button -->
+    <div class="mb-6 flex justify-between items-center">
+      <div class="text-gray-600">
+        Manage subscription plans for different cities and categories
+      </div>
+      <button (click)="openAddModal()"
+        class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-5 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md flex items-center">
+        <span class="mr-2">➕</span> Add New Plan
+      </button>
+    </div>
+
+    <!-- Table Card -->
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <h2 class="text-lg font-semibold text-gray-800">
+            Subscription Plans
+          </h2>
+          <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+            {{subscriptions.length}} Plans
+          </span>
+        </div>
+        
+        <!-- Search -->
+        <div class="w-full sm:w-auto">
+          <div class="relative">
+            <input type="text" placeholder="Search plans..." [(ngModel)]="searchTerm" (input)="onSearch()"
+              class="w-full sm:w-64 px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <span>🔍</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="loading" class="p-8 text-center">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+        <p class="text-gray-600">Loading subscription plans...</p>
+      </div>
+
+      <!-- Table -->
+      <div *ngIf="!loading && subscriptions.length > 0" class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Plan Code
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Name
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Subject & Tier
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Price
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Duration
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let plan of filteredSubscriptions" class="hover:bg-gray-50 transition-colors">
+              <!-- Plan Code -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-semibold text-gray-900">{{ plan.code }}</div>
+                <div class="text-xs text-gray-500">ID: {{ plan.id }}</div>
+              </td>
+
+              <!-- Name -->
+              <td class="px-6 py-4">
+                <div class="text-sm font-medium text-gray-900">{{ plan.name }}</div>
+                <div class="text-xs text-gray-500 truncate max-w-xs">{{ plan.description }}</div>
+              </td>
+
+              <!-- Subject & Tier -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex flex-col gap-1">
+                  <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium inline-block w-fit">
+                    {{ plan.subject }}
+                  </span>
+                  <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-medium inline-block w-fit">
+                    {{ plan.tier }}
+                  </span>
+                </div>
+              </td>
+
+              <!-- Price -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-semibold text-gray-900">
+                  {{ plan.currency }} {{ plan.price_amount }}
+                </div>
+              </td>
+
+              <!-- Duration -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">{{ plan.duration_days }} days</div>
+              </td>
+
+              <!-- Status -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span [class]="plan.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                  class="px-2 py-1 rounded text-xs font-medium">
+                  {{ plan.is_active ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+
+              <!-- Actions -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center gap-2">
+                  <button (click)="editPlan(plan)"
+                    class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                    title="Edit Plan">
+                    <span>✏️</span>
+                  </button>
+                  <button (click)="togglePlanStatus(plan)"
+                    [class]="plan.is_active ? 'text-orange-600 hover:text-orange-900 hover:bg-orange-50' : 'text-green-600 hover:text-green-900 hover:bg-green-50'"
+                    class="p-2 rounded-lg transition-colors"
+                    [title]="plan.is_active ? 'Deactivate Plan' : 'Activate Plan'">
+                    <span>{{ plan.is_active ? '⏸️' : '▶️' }}</span>
+                  </button>
+                  <button (click)="viewDetails(plan)"
+                    class="text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    title="View Details">
+                    <span>👁️</span>
+                  </button>
+                  <button (click)="deletePlan(plan)"
+                    class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                    title="Delete Plan">
+                    <span>🗑️</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!loading && subscriptions.length === 0" class="p-12 text-center">
+        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="text-gray-400 text-3xl">📋</span>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">No Subscription Plans</h3>
+        <p class="text-gray-600 mb-6">
+          No subscription plans found. Create your first plan to get started.
+        </p>
+        <button (click)="openAddModal()"
+          class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
+          <span class="mr-2">➕</span>
+          Add New Plan
+        </button>
+      </div>
+    </div>
+  </div>
+  <app-admin-footer></app-admin-footer>
+
+  <!-- Add/Edit Plan Modal -->
+  <div *ngIf="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+      <!-- Modal Header -->
+      <div class="px-8 py-6 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xl font-bold text-gray-800">
+            {{ editingPlan ? 'Edit Subscription Plan' : 'Add New Subscription Plan' }}
+          </h3>
+          <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600 p-2">
+            <span class="text-xl">✕</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-8 overflow-y-auto max-h-[70vh]">
+        <form [formGroup]="planForm" (ngSubmit)="savePlan()" class="space-y-6">
+          <!-- First Row: Code, Name, Subject -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Plan Code -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Plan Code *
+              </label>
+              <input type="text" formControlName="code"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="e.g., BASIC_MONTHLY">
+              <div *ngIf="planForm.get('code')?.invalid && planForm.get('code')?.touched" class="mt-1 text-xs text-red-600">
+                Plan code is required
+              </div>
+            </div>
+
+            <!-- Plan Name -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Plan Name *
+              </label>
+              <input type="text" formControlName="name"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="e.g., Basic Monthly Plan">
+              <div *ngIf="planForm.get('name')?.invalid && planForm.get('name')?.touched" class="mt-1 text-xs text-red-600">
+                Plan name is required
+              </div>
+            </div>
+
+            <!-- Subject -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Subject *
+              </label>
+              <select formControlName="subject"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">Select Subject</option>
+                <option value="LEAD_GENERATION">Lead Generation</option>
+                <option value="LEAD_MANAGEMENT">Lead Management</option>
+                <option value="ANALYTICS">Analytics</option>
+                <option value="REPORTING">Reporting</option>
+              </select>
+              <div *ngIf="planForm.get('subject')?.invalid && planForm.get('subject')?.touched" class="mt-1 text-xs text-red-600">
+                Subject is required
+              </div>
+            </div>
+          </div>
+
+          <!-- Second Row: Tier, Price, Currency -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Tier -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Plan Tier *
+              </label>
+              <select formControlName="tier"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">Select Tier</option>
+                <option value="BASIC">Basic</option>
+                <option value="STANDARD">Standard</option>
+                <option value="PREMIUM">Premium</option>
+                <option value="ENTERPRISE">Enterprise</option>
+              </select>
+              <div *ngIf="planForm.get('tier')?.invalid && planForm.get('tier')?.touched" class="mt-1 text-xs text-red-600">
+                Tier is required
+              </div>
+            </div>
+
+            <!-- Price -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Price Amount *
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span class="text-gray-500">₹</span>
+                </div>
+                <input type="number" step="0.01" min="0" formControlName="price_amount"
+                  class="w-full px-4 py-2.5 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="0.00">
+              </div>
+              <div *ngIf="planForm.get('price_amount')?.invalid && planForm.get('price_amount')?.touched" class="mt-1 text-xs text-red-600">
+                Valid price amount is required
+              </div>
+            </div>
+
+            <!-- Currency -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Currency *
+              </label>
+              <select formControlName="currency"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="INR">INR (₹)</option>
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Third Row: Duration, City, Category -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Duration Days -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Duration (Days) *
+              </label>
+              <input type="number" min="1" formControlName="duration_days"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="e.g., 30">
+              <div *ngIf="planForm.get('duration_days')?.invalid && planForm.get('duration_days')?.touched" class="mt-1 text-xs text-red-600">
+                Duration must be at least 1 day
+              </div>
+            </div>
+
+            <!-- City ID -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                City ID (Optional)
+              </label>
+              <input type="number" min="0" formControlName="city_id"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Leave blank for all cities">
+            </div>
+
+            <!-- Category ID -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Category ID (Optional)
+              </label>
+              <input type="number" min="0" formControlName="category_id"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Leave blank for all categories">
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Description
+            </label>
+            <textarea formControlName="description" rows="3"
+              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Describe the subscription plan features..."></textarea>
+          </div>
+
+          <!-- Entitlements JSON Editor -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Entitlements (JSON) *
+            </label>
+            <div class="border border-gray-300 rounded-lg overflow-hidden">
+              <textarea formControlName="entitlements" rows="8"
+                class="w-full px-4 py-2.5 font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                placeholder='{{ "{" }}"max_leads": 100, "max_users": 3, "features": ["basic_analytics", "email_support"]{{ "}" }}'></textarea>
+            </div>
+            <div *ngIf="planForm.get('entitlements')?.invalid && planForm.get('entitlements')?.touched" class="mt-1 text-xs text-red-600">
+              Valid JSON is required
+            </div>
+            <div class="mt-2 text-xs text-gray-500">
+              Enter valid JSON format. Example: {{ '{' }}"max_leads": 100, "max_users": 3, "features": ["basic_analytics"]{{ '}' }}
+            </div>
+          </div>
+
+          <!-- Active Status -->
+          <div class="flex items-center">
+            <input type="checkbox" formControlName="is_active" id="is_active"
+              class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+            <label for="is_active" class="ml-2 text-sm font-medium text-gray-700">
+              Active Plan
+            </label>
+          </div>
+
+          <!-- Submit Button (in the form) -->
+          <div class="pt-6 border-t border-gray-200">
+            <div class="flex items-center justify-end gap-3">
+              <button type="button" (click)="closeModal()"
+                class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg font-medium hover:bg-gray-200 transition-colors border border-gray-300">
+                Cancel
+              </button>
+              <button type="submit" [disabled]="planForm.invalid"
+                class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                {{ editingPlan ? 'Update Plan' : 'Create Plan' }}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Modal -->
+</div>
