@@ -16,5 +16,4 @@ export const environment = {
   assetUrl: 'https://gullyhivebackend-optn.onrender.com'
   // apiBaseUrl: 'https://localhost:7252/api',
   // assetUrl: 'https://localhost:7252'
-
 };

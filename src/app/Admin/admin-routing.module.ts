@@ -3,13 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { CategoryMasterComponent } from './category-master/category-master.component';
-// import { CityMasterComponent } from './city-master/city-master.component';
 // import { JobStatusMasterComponent } from './job-status-master/job-status-master.component';
-// import { LeadStatusMasterComponent } from './lead-status-master/lead-status-master.component';
 // import { ProviderStatusMasterComponent } from './provider-status-master/provider-status-master.component';
-// import { QuestionMasterComponent } from './question-master/question-master.component';
 // import { RoleMasterComponent } from './role-master/role-master.component';
-// import { SubCategoryMasterComponent } from './sub-category-master/sub-category-master.component';
 // import { UserRolesComponent } from './user-roles/user-roles.component';
 import { UserManagementComponent } from './user-management/user-management.component';
 import { SubCategoryMasterComponent } from './sub-category-master/sub-category-master.component';
@@ -18,6 +14,10 @@ import { CityMasterComponent } from './city-master/city-master.component';
 import { LeadStatusMasterComponent } from './lead-status-master/lead-status-master.component';
 import { ServicePackageMasterComponent } from './service-package-master/service-package-master.component';
 import { AuditLogComponent } from './audit-log/audit-log.component';
+import { AreaMasterComponent } from './area-master/area-master.component';
+import { SubscriptionMasterComponent } from './subscription-master/subscription-master.component';
+import { ChangePasswordComponent } from './change-password/change-password.component';
+import { EmailTemplateComponent } from './email-template/email-template.component';
 
 const routes: Routes = [
   { 
@@ -76,6 +76,22 @@ const routes: Routes = [
   {
     path: 'audit-log',
     component: AuditLogComponent
+  },
+  {
+    path: 'area-master',
+    component: AreaMasterComponent
+  },
+  {
+    path: 'subscription-master',
+    component: SubscriptionMasterComponent
+  },
+  {
+    path: 'change-password',
+    component: ChangePasswordComponent
+  },
+  {
+    path: 'email-template',
+    component: EmailTemplateComponent
   },
   { 
     path: '**', 

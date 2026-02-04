@@ -35,54 +35,61 @@
 
         <!-- Dropdown Menu -->
         <div *ngIf="showDropdown" 
-             class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg py-2 z-50 border border-gray-200 animate-fadeIn">
-          <!-- User Info -->
-          <div class="px-4 py-3 border-b border-gray-100">
-            <div class="flex items-center space-x-3">
-              <div class="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full font-semibold text-white">
-                {{adminName.charAt(0)}}
-              </div>
-              <div>
-                <p class="text-sm font-semibold text-gray-800">{{adminName}}</p>
-                <p class="text-xs text-gray-500">Administrator</p>
-              </div>
-            </div>
-          </div>
+     class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg py-2 z-50 border border-gray-200 animate-fadeIn">
+  <!-- User Info -->
+  <div class="px-4 py-3 border-b border-gray-100">
+    <div class="flex items-center space-x-3">
+      <div class="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full font-semibold text-white">
+        {{adminName.charAt(0)}}
+      </div>
+      <div>
+        <p class="text-sm font-semibold text-gray-800">{{adminName}}</p>
+        <p class="text-xs text-gray-500">Administrator</p>
+      </div>
+    </div>
+  </div>
 
-          <!-- Dropdown Items -->
-          <div class="py-1">
-            <!-- Dashboard -->
-            <a (click)="goToDashboard()" 
-               class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors group">
-              <i class="mr-3 text-gray-400 group-hover:text-blue-500">📊</i>
-              <span>Dashboard</span>
-            </a>
+  <!-- Dropdown Items -->
+  <div class="py-1">
+    <!-- Dashboard -->
+    <a (click)="goToDashboard()" 
+       class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors group">
+      <i class="mr-3 text-gray-400 group-hover:text-blue-500">📊</i>
+      <span>Dashboard</span>
+    </a>
 
-            <!-- Update Profile -->
-            <a (click)="goToProfile()" 
-               class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors group">
-              <i class="mr-3 text-gray-400 group-hover:text-blue-500">👤</i>
-              <span>Update Profile</span>
-            </a>
+    <!-- Update Profile -->
+    <a (click)="goToProfile()" 
+       class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors group">
+      <i class="mr-3 text-gray-400 group-hover:text-blue-500">👤</i>
+      <span>Update Profile</span>
+    </a>
 
-            <!-- Settings -->
-            <a (click)="goToSettings()" 
-               class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors group">
-              <i class="mr-3 text-gray-400 group-hover:text-blue-500">⚙️</i>
-              <span>Settings</span>
-            </a>
+    <!-- Change Password -->
+    <a routerLink="/admin/change-password" 
+       class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors group">
+      <i class="mr-3 text-gray-400 group-hover:text-blue-500">🔐</i>
+      <span>Change Password</span>
+    </a>
 
-            <!-- Divider -->
-            <div class="border-t border-gray-100 my-1"></div>
+    <!-- Settings -->
+    <a (click)="goToSettings()" 
+       class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors group">
+      <i class="mr-3 text-gray-400 group-hover:text-blue-500">⚙️</i>
+      <span>Settings</span>
+    </a>
 
-            <!-- Logout -->
-            <a (click)="logout()" 
-               class="flex items-center px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 cursor-pointer transition-colors group">
-              <i class="mr-3 group-hover:text-red-700">🚪</i>
-              <span>Logout</span>
-            </a>
-          </div>
-        </div>
+    <!-- Divider -->
+    <div class="border-t border-gray-100 my-1"></div>
+
+    <!-- Logout -->
+    <a (click)="logout()" 
+       class="flex items-center px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 cursor-pointer transition-colors group">
+      <i class="mr-3 group-hover:text-red-700">🚪</i>
+      <span>Logout</span>
+    </a>
+  </div>
+</div>
       </div>
     </div>
   </div>

@@ -5,6 +5,9 @@ export interface ServicePackage {
   name: string;
   description: string | null;
   basePrice: number;
+  platformCharges?: number | null;
+  visitingCharges?: number | null;
+  totalPrice: number;
   currency: string;
   isActive: boolean;
   parameters: any;
@@ -21,6 +24,8 @@ export interface ServicePackageCreateDto {
   name: string;
   description: string | null;
   basePrice: number;
+  platformCharges?: number | null;
+  visitingCharges?: number | null;
   currency: string;
   isActive: boolean;
   parameters?: any;
@@ -33,6 +38,8 @@ export interface ServicePackageUpdateDto {
   name: string;
   description: string | null;
   basePrice: number;
+  platformCharges?: number | null;
+  visitingCharges?: number | null;
   currency: string;
   isActive: boolean;
   parameters?: any;
