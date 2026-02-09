@@ -35,7 +35,11 @@ export interface Lead {
   scheduledEnd?: string | null;
   scheduleLabel?: string;
   isPurchased: boolean; // 🔥 important
+  phone?: string;
+  email?: string;
   leadPrice?: string;
+  unlockedCount?: string;
+  committedCount?: string;  
   priceBreakdown?: { [key: string]: number }; // parsed JSON
 }
 
