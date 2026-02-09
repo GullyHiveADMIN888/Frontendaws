@@ -30,21 +30,7 @@ selectedCityId!: number;
     private route: ActivatedRoute,
     private sellerService: SellerService
   ) {
-    // this.editForm = this.fb.group({
-    //   firstName: ['', Validators.required],
-    //   lastName: ['', Validators.required],
-    //   email: ['', [Validators.required, Validators.email]],
-    //   phone: ['', Validators.required],
-    //  // bio: [''],
-    //   address: [''],
-    //   city: [''],
-    //   state: [''],
-    //   description: [''],
-    // //  zipCode: [''],
-    //   website: [''],
-    //   linkedin: [''],
-    //   pincode: ['']
-    // });
+    
 this.editForm = this.fb.group({
   firstName: ['', Validators.required],
    lastName: [''],
