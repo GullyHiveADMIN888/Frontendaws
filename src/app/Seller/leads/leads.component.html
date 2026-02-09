@@ -34,7 +34,7 @@
     </div>
 
     <!-- LEADS LIST -->
-    <div class="space-y-4">
+    <!-- <div class="space-y-4">
       <div *ngFor="let lead of paginatedLeads" class="bg-white border rounded-lg p-6 hover:shadow-lg transition">
 
         <div class="flex justify-between">
@@ -47,7 +47,13 @@
               <span><i class="ri-map-pin-line"></i> {{ lead.location }}</span>
               <span><i class="ri-time-line"></i> {{ lead.time }}</span>
 
-
+      <span><i class="ri-money-dollar-circle-line mr-1"></i>{{ lead.budget }}</span>
+      <span><i class="ri-money-dollar-circle-line mr-1"></i>{{ lead.leadType }}</span>
+       <span class="text-lg font-bold text-gray-900">
+    ₹{{ lead?.leadPrice || 'N/A' }}
+  </span>
+      
+    
             </div>
           </div>
 
@@ -62,8 +68,227 @@
         </div>
 
       </div>
-    </div>
+    </div> -->
 
+    <!-- <div class="space-y-4">
+  <div
+    *ngFor="let lead of paginatedLeads"
+    class="bg-white border rounded-xl p-4 sm:p-6 transition hover:shadow-xl"
+  >
+   
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+
+     
+      <div class="flex-1">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900">
+            {{ lead.serviceName }}
+          </h3>
+
+         
+          <span
+            class="px-3 py-1 text-xs font-medium rounded-full"
+            [ngClass]="{
+              'bg-green-100 text-green-700': lead.status === 'active',
+              'bg-yellow-100 text-yellow-700': lead.status === 'pending',
+              'bg-gray-100 text-gray-600': lead.status !== 'active' && lead.status !== 'pending'
+            }"
+          >
+            {{ lead.status }}
+          </span>
+        </div>
+
+        <p class="text-gray-600 text-sm mt-2 line-clamp-2">
+          {{ lead.description }}
+        </p>
+
+       
+        <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 text-xs sm:text-sm text-gray-500 mt-4">
+          <span class="flex items-center gap-1">
+            <i class="ri-map-pin-line text-orange-500"></i>
+            {{ lead.location }}
+          </span>
+
+          <span class="flex items-center gap-1">
+            <i class="ri-time-line text-orange-500"></i>
+            {{ lead.time }}
+          </span>
+
+          <span class="flex items-center gap-1">
+            <i class="ri-briefcase-line text-orange-500"></i>
+            {{ lead.leadType }}
+          </span>
+
+          <span class="flex items-center gap-1">
+            <i class="ri-money-dollar-circle-line text-orange-500"></i>
+            {{ lead.budget }}
+          </span>
+        </div>
+      </div>
+
+     
+      <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-3 mt-4 sm:mt-0">
+
+        
+        <div class="text-center sm:text-right">
+          <p class="text-xs text-gray-500">Lead Price</p>
+          <p class="text-xl font-bold text-orange-600">
+            ₹{{ lead?.leadPrice || 'N/A' }}
+          </p>
+        </div>
+
+      
+        <div class="flex sm:flex-col gap-2 w-full sm:w-auto">
+          <button
+            class="flex-1 sm:flex-none px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition text-sm"
+            (click)="handleSendQuote(lead)"
+          >
+            Send Quote
+          </button>
+
+          <button
+            class="flex-1 sm:flex-none px-4 py-2 border rounded-lg hover:bg-gray-50 transition text-sm"
+            (click)="openLeadDetails(lead)"
+          >
+            View Details
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<div class="space-y-4">
+  <div
+    *ngFor="let lead of paginatedLeads"
+    class="bg-white border rounded-2xl p-4 sm:p-6 transition hover:shadow-2xl hover:-translate-y-1 duration-300"
+  >
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+
+      <!-- LEFT -->
+      <div class="flex-1">
+
+        <!-- Title + Badges -->
+        <div class="flex flex-wrap items-center gap-2 justify-between">
+
+          <h3 class="text-lg font-semibold text-gray-900">
+            {{ lead.serviceName }}
+          </h3>
+        
+          <div class="flex gap-2 flex-wrap">
+
+            <!-- STATUS -->
+            <span
+              class="flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full shadow-sm"
+              [ngClass]="{
+                'bg-gradient-to-r from-green-100 to-green-200 text-green-800': lead.status === 'active',
+                'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800': lead.status === 'pending',
+                'bg-gradient-to-r from-red-100 to-red-200 text-red-800': lead.status === 'expired',
+                'bg-gray-100 text-gray-700': !lead.status
+              }"
+            >
+              <span
+                class="w-2 h-2 rounded-full"
+                [ngClass]="{
+                  'bg-green-600': lead.status === 'active',
+                  'bg-yellow-500': lead.status === 'pending',
+                  'bg-red-600': lead.status === 'expired'
+                }"
+              ></span>
+
+              {{ lead.status || 'Unknown' | titlecase }}
+            </span>
+
+            <!-- LEAD TYPE -->
+            <span
+              class="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full border"
+              [ngClass]="{
+                'bg-purple-50 text-purple-700 border-purple-300': lead.leadType === 'exclusive',
+                'bg-blue-50 text-blue-700 border-blue-300': lead.leadType === 'premium',
+                'bg-gray-50 text-gray-700 border-gray-300': lead.leadType === 'standard'
+              }"
+            >
+              <i class="ri-vip-crown-line"></i>
+              {{ lead.leadType | titlecase }}
+            </span>
+
+<!-- UNLOCKED COUNT -->
+<span
+  class="flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full
+         bg-orange-50 text-orange-700 border border-orange-200"
+>
+  <i class="ri-lock-unlock-line"></i>
+
+  {{ lead.unlockedCount || 0 }} Unlocked
+</span>
+
+
+          </div>
+        </div>
+  <h5 class="text-sm font-semibold text-gray-900">
+            {{ lead.serviceSubCategoryName }}
+          </h5>
+
+        <!-- Description -->
+        <p class="text-gray-600 text-sm mt-2 line-clamp-2">
+          {{ lead.description }}
+        </p>
+
+        <!-- META -->
+        <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 text-sm text-gray-500 mt-4">
+
+          <span class="flex items-center gap-1">
+            <i class="ri-map-pin-line text-orange-500"></i>
+            {{ lead.location }}
+          </span>
+
+          <span class="flex items-center gap-1">
+            <i class="ri-time-line text-orange-500"></i>
+            {{ lead.time }}
+          </span>
+
+          <span class="flex items-center gap-1">
+            <i class="ri-wallet-3-line text-orange-500"></i>
+            {{ lead.budget }}
+          </span>
+
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="flex sm:flex-col items-center sm:items-end justify-between gap-3">
+
+        <!-- PRICE CARD -->
+        <div class="bg-orange-50 border border-orange-200 px-4 py-2 rounded-xl text-center">
+          <p class="text-xs text-gray-500">Lead Price</p>
+          <p class="text-2xl font-bold text-orange-600">
+            ₹{{ lead?.leadPrice || 'N/A' }}
+          </p>
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="flex sm:flex-col gap-2 w-full sm:w-auto">
+
+          <button
+            class="flex-1 sm:flex-none px-4 py-2 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition font-medium shadow hover:shadow-lg"
+            (click)="handleSendQuote(lead)"
+          >
+            <!-- Send Quote -->Quote
+          </button>
+
+          <button
+            class="flex-1 sm:flex-none px-4 py-2 border rounded-xl hover:bg-gray-50 transition"
+            (click)="openLeadDetails(lead)"
+          >
+            <!-- View Details -->Details
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 
     <!-- PAGINATION (BOTTOM RIGHT) -->
     <div class="flex justify-end mt-8">
@@ -93,36 +318,50 @@
 
 </div>
 
-<!-- LEAD DETAILS MODAL -->
 
 
 
 <!-- LEAD DETAILS MODAL -->
+
+
+
+
 <div
   *ngIf="showLeadModal && selectedLead"
   class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
 >
   <div
-    class="bg-white w-full max-w-xl rounded-2xl shadow-2xl p-6 relative animate-fadeIn"
+    class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl p-6 relative animate-fadeIn"
   >
 
-    <!-- Header -->
-    <div class="flex justify-between items-start mb-5">
+    <!-- HEADER -->
+    <div class="flex justify-between items-start mb-6">
       <div>
-        <h2 class="text-xl font-bold text-gray-900">
+        <!-- <h2 class="text-xl font-bold text-gray-900"> -->
+          <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
           {{ selectedLead.serviceName }}
+  <span
+    class="flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full
+           bg-orange-50 text-orange-700 border border-orange-200"
+  >
+    <i class="ri-lock-unlock-line"></i>
+    {{ selectedLead.unlockedCount || 0 }} Unlocked
+  </span>
         </h2>
-         <p class="text-sm text-gray-900 font-medium mr-2">
-    {{ selectedLead.serviceSubCategoryName }}
-  </p>
-        <p class="text-sm text-gray-500 mt-1">
+
+        <p class="text-sm text-gray-700 font-medium">
+          {{ selectedLead.serviceSubCategoryName }}
+        </p>
+
+        <p class="text-sm text-gray-500 mt-1 flex items-center">
           <i class="ri-map-pin-line mr-1"></i>
           {{ selectedLead.location }}
         </p>
       </div>
 
       <div class="flex items-center gap-3">
-        <span
+        <!-- STATUS -->
+        <!-- <span
           class="px-3 py-1 text-xs font-semibold rounded-full"
           [ngClass]="{
             'bg-green-100 text-green-700': selectedLead.status === 'new',
@@ -131,60 +370,73 @@
           }"
         >
           {{ selectedLead.status | titlecase }}
-        </span>
+        </span> -->
 
-        <button
-          (click)="closeLeadModal()"
-          class="text-gray-400 hover:text-gray-700"
-        >
+        <button (click)="closeLeadModal()" class="text-gray-400 hover:text-gray-700">
           <i class="ri-close-line text-2xl"></i>
         </button>
       </div>
     </div>
 
-   
+    <!-- PRICE + TYPE -->
+    <!-- <div class="flex justify-between items-center bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-5">
+      <span
+        class="px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-700 border border-purple-300"
+      >
+        {{ selectedLead.leadType | titlecase }} Lead
+      </span>
 
-    <!-- Info Grid -->
+      <p class="text-2xl font-bold text-orange-600">
+        {{ selectedLead.budget }}
+      </p>
+    </div> -->
+<!-- PRICE + TYPE -->
+
+<div class="flex justify-between items-center border rounded-xl px-4 py-3 mb-5 bg-orange-50 border-orange-200">
+
+  <!-- Lead Type -->
+  <div class="flex flex-col">
+    
+    <span
+      class="px-3 py-1 text-xs font-semibold rounded-full border bg-purple-100 text-purple-700 border-purple-300 w-fit"
+    >
+      {{ selectedLead.leadType | titlecase }} Lead
+    </span>
+
+    <!-- Budget BELOW lead type -->
+    <p class="text-sm text-gray-500 mt-2">Customer Budget</p>
+    <p class="text-lg font-semibold text-gray-900">
+      ₹{{ selectedLead.budget }}
+    </p>
+
+  </div>
+
+  <!-- Purchase Price (ONLY if not purchased) -->
+  <div *ngIf="!selectedLead?.isPurchased" class="text-right">
+    <p class="text-xs text-gray-500">Purchase Price</p>
+    <p class="text-2xl font-bold text-orange-600">
+      ₹{{ selectedLead.leadPrice }}
+    </p>
+  </div>
+
+</div>
+
+
+
+    <!-- INFO GRID -->
     <div class="grid grid-cols-2 gap-4 text-sm">
 
-      <div class="flex items-center gap-3 border rounded-lg p-3">
-        <i class="ri-money-dollar-circle-line text-orange-600 text-xl"></i>
-        <div>
-          <p class="text-xs text-gray-500">Budget</p>
-          <p class="font-semibold">{{ selectedLead.budget }}</p>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-3 border rounded-lg p-3">
+      <div class="flex items-center gap-3 border rounded-xl p-3">
         <i class="ri-time-line text-orange-600 text-xl"></i>
         <div>
           <p class="text-xs text-gray-500">Preferred Time</p>
-           <p class="font-semibold">
+          <p class="font-semibold">
             {{ selectedLead.timePreference || 'Anytime' }}
-          </p> 
-          <!-- <div
-  *ngIf="selectedLead.timePreference === 'scheduled'"
-  class="col-span-2 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800 flex items-center gap-2"
->
-  <i class="ri-calendar-event-line text-blue-600"></i>
-  <span>
-    Scheduled:
-    <strong>{{ selectedLead.scheduleLabel }}</strong>
-  </span>
-</div> -->
-
+          </p>
         </div>
       </div>
 
-      <div class="flex items-center gap-3 border rounded-lg p-3">
-        <i class="ri-briefcase-line text-orange-600 text-xl"></i>
-        <div>
-          <p class="text-xs text-gray-500">Lead Type</p>
-          <p class="font-semibold">{{ selectedLead.leadType }}</p>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-3 border rounded-lg p-3">
+      <div class="flex items-center gap-3 border rounded-xl p-3">
         <i class="ri-calendar-line text-orange-600 text-xl"></i>
         <div>
           <p class="text-xs text-gray-500">Created On</p>
@@ -193,47 +445,71 @@
       </div>
 
     </div>
- <!-- Description -->
-    <div class="bg-gray-50 border rounded-xl p-4 text-sm text-gray-700 mb-4  mt-5">
+
+    <!-- DESCRIPTION -->
+    <div class="bg-gray-50 border rounded-xl p-4 text-sm text-gray-700 mt-5">
       {{ selectedLead.description }}
     </div>
-    <!-- Locked Contact Info -->
+
+    <!-- 🔓 CONTACT DETAILS (ONLY IF PURCHASED) -->
     <div
-      class="flex gap-3 bg-yellow-50 border border-yellow-200 rounded-xl p-4 mt-5"
+      *ngIf="selectedLead?.isPurchased; else lockedInfo"
+      class="bg-green-50 border border-green-200 rounded-xl p-4 mt-5"
     >
-      <i class="ri-lock-line text-yellow-600 text-xl mt-0.5"></i>
-      <p class="text-sm text-yellow-800">
-        Contact details will be visible after purchasing this lead.
-      </p>
+      <h4 class="font-semibold text-green-800 mb-3 flex items-center gap-2">
+        <i class="ri-check-double-line"></i>
+        Contact Details
+      </h4>
+
+      <div class="space-y-2 text-sm text-gray-800">
+        <p class="flex items-center gap-2">
+          <i class="ri-user-line text-green-600"></i>
+          {{ selectedLead.customerName }}
+        </p>
+
+        <p class="flex items-center gap-2">
+          <i class="ri-phone-line text-green-600"></i>
+           {{ selectedLead.phone }}
+        </p>
+
+        <p class="flex items-center gap-2">
+          <i class="ri-mail-line text-green-600"></i>
+           {{ selectedLead.email }} 
+        </p>
+      </div>
     </div>
 
-    <!-- Actions -->
-    <div class="flex justify-end gap-3 mt-6">
+    <!-- 🔒 LOCKED INFO -->
+    <ng-template #lockedInfo>
+      <div class="flex gap-3 bg-yellow-50 border border-yellow-200 rounded-xl p-4 mt-5">
+        <i class="ri-lock-line text-yellow-600 text-xl mt-0.5"></i>
+        <p class="text-sm text-yellow-800">
+          Contact details will be visible after purchasing this lead.
+        </p>
+      </div>
+    </ng-template>
 
+    <!-- ACTIONS -->
+    <div class="flex justify-end gap-3 mt-6">
       <button
         (click)="closeLeadModal()"
         class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100"
       >
-        Cancel
+        Close
       </button>
 
-      <!-- <button
+      <button
+        *ngIf="!selectedLead?.isPurchased"
         (click)="buyLead()"
         class="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg shadow"
       >
         Buy Lead
-      </button> -->
-      <button
-  [disabled]="selectedLead?.isPurchased"
-  (click)="buyLead()" class="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg shadow">
-  {{ selectedLead?.isPurchased ? 'Purchased' : 'Buy Lead' }}
-</button>
-
-
+      </button>
     </div>
 
   </div>
 </div>
+
 
 
 
@@ -258,7 +534,7 @@
     </div>
 
     <!-- Lead Summary -->
-    <div class="border rounded-xl p-4 mb-4 bg-gray-50">
+    <!-- <div class="border rounded-xl p-4 mb-4 bg-gray-50">
       <p class="font-semibold text-gray-900">
         {{ selectedLead?.serviceName }}
       </p>
@@ -269,7 +545,60 @@
         <i class="ri-map-pin-line mr-1"></i>
         {{ selectedLead?.location }}
       </p>
+      <p class="font-semibold text-gray-900">
+        {{ selectedLead?.leadType }}
+      </p>
+      <p class="font-semibold text-gray-900">
+        {{ selectedLead?.budget }}
+      </p>
+    </div> -->
+<!-- Lead Summary -->
+<div class="border rounded-xl p-4 mb-4 bg-gray-50">
+  <div class="flex justify-between items-start gap-4">
+
+    <!-- LEFT SIDE -->
+    <div>
+      <!-- <p class="font-semibold text-gray-900"> -->
+         <p class="font-semibold text-gray-900 flex items-center gap-2">
+        {{ selectedLead?.serviceName }}
+        <span
+    class="flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full
+           bg-orange-50 text-orange-700 border border-orange-200"
+  >
+    <i class="ri-lock-unlock-line"></i>
+    {{ selectedLead?.unlockedCount || 0 }} Unlocked
+  </span>
+      </p>
+
+      <p class="text-sm text-gray-600">
+        {{ selectedLead?.serviceSubCategoryName }}
+      </p>
+
+      <p class="text-sm text-gray-500 mt-1 flex items-center">
+        <i class="ri-map-pin-line mr-1"></i>
+        {{ selectedLead?.location }}
+      </p>
     </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="text-right flex flex-col items-end gap-2">
+
+      <!-- Lead Type Badge -->
+      <span
+        class="px-3 py-1 text-xs font-semibold rounded-full border bg-purple-50 text-purple-700 border-purple-300"
+      >
+        {{ selectedLead?.leadType | titlecase }}
+      </span>
+
+      <!-- Budget -->
+      <span class="text-lg font-bold text-green-600">
+        {{ selectedLead?.budget }}
+      </span>
+
+    </div>
+
+  </div>
+</div>
 
     <!-- Price -->
 <div class="flex justify-between items-center border rounded-xl p-4 mb-4">
@@ -340,16 +669,60 @@
     </div>
 
     <!-- Lead Info -->
-    <div class="border rounded-xl p-4 bg-gray-50 mb-4">
+    <!-- <div class="border rounded-xl p-4 bg-gray-50 mb-4">
       <p class="font-semibold">{{ selectedLead?.serviceName }}</p>
       <p class="text-sm text-gray-600">
         {{ selectedLead?.serviceSubCategoryName }}
+      </p>
+      <p class="text-sm text-gray-600">
+        {{ selectedLead?.leadType }}
+      </p>
+      <p class="text-sm text-gray-600">
+        {{ selectedLead?.budget }}
       </p>
       <p class="text-sm text-gray-500 mt-1">
         <i class="ri-map-pin-line"></i>
         {{ selectedLead?.location }}
       </p>
+    </div> -->
+<div class="border rounded-xl p-4 bg-gray-50 mb-4">
+  <div class="flex justify-between items-start gap-4">
+
+    <!-- LEFT -->
+    <div>
+      <p class="font-semibold text-gray-900">
+        {{ selectedLead?.serviceName }}
+      </p>
+
+      <p class="text-sm text-gray-600">
+        {{ selectedLead?.serviceSubCategoryName }}
+      </p>
+
+      <p class="text-sm text-gray-500 mt-1 flex items-center gap-1">
+        <i class="ri-map-pin-line"></i>
+        {{ selectedLead?.location }}
+      </p>
     </div>
+
+    <!-- RIGHT -->
+    <div class="text-right flex flex-col gap-2">
+
+      <!-- Lead Type Badge -->
+      <span
+        class="px-1 py-1 text-xs font-semibold rounded-full border bg-purple-50 text-purple-700 border-purple-300 text-center"
+      >
+        {{ selectedLead?.leadType | titlecase }}
+      </span>
+
+      <!-- Budget Highlight -->
+      <span class="text-lg font-bold text-green-600">
+        {{ selectedLead?.budget }}
+      </span>
+
+    </div>
+
+  </div>
+</div>
 
     <!-- Quote Form -->
     <div class="space-y-4">

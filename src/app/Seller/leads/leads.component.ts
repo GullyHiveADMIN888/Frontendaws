@@ -66,12 +66,12 @@ loadLeads() {
             l.budgetMin && l.budgetMax
               ? `₹${l.budgetMin} - ₹${l.budgetMax}`
               : 'Budget not specified',
-          time: new Date(l.createdAt).toLocaleString(),
+        //  time: new Date(l.createdAt).toLocaleString(),
           scheduleLabel:
             isScheduled && l.scheduledStart && l.scheduledEnd
               ? `${new Date(l.scheduledStart).toLocaleString()} - ${new Date(l.scheduledEnd).toLocaleString()}`
               : 'Flexible / Anytime',
-
+          time: this.timeAgo(l.createdAt),
           leadPrice: l.leadPrice ? `${l.leadPrice}` : undefined,
           priceBreakdown: priceBreakdown,
           isPurchased: l.isPurchased ?? false,
@@ -87,47 +87,16 @@ loadLeads() {
     }
   });
 }
+ timeAgo(date: string): string {
+    const diff = Date.now() - new Date(date).getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
 
+    if (hours < 1) return 'Just now';
+    if (hours < 24) return `${hours} hours ago`;
 
-//   loadLeads() {
-//   this.sellerService.getLeads().subscribe({
-//     next: (data) => {
-//       this.leads = data.map((l) => {
-//         const isScheduled = l.timePreference === 'scheduled';
-
-//         return {
-//           ...l,
-
-//           // ✅ Safe defaults
-//           description: l.description || 'No description provided',
-//           location: l.location || 'N/A',
-
-//           // ✅ Budget formatting
-//           budget:
-//             l.budgetMin && l.budgetMax
-//               ? `₹${l.budgetMin} - ₹${l.budgetMax}`
-//               : 'Budget not specified',
-
-//           // ✅ Date formatting
-//           time: new Date(l.createdAt).toLocaleString(),
-
-//           // ✅ Human-friendly schedule label
-//           scheduleLabel: isScheduled && l.scheduledStart && l.scheduledEnd
-//             ? `${new Date(l.scheduledStart).toLocaleString()} - ${new Date(l.scheduledEnd).toLocaleString()}`
-//             : 'Flexible / Anytime'
-//         };
-//       });
-
-//       this.updatePagination();
-//       this.loading = false;
-//     },
-//     error: (err) => {
-//       console.error('Failed to load leads', err);
-//       this.loading = false;
-//     }
-//   });
-// }
-
+    const days = Math.floor(hours / 24);
+    return `${days} days ago`;
+  }
 
   setFilter(status: any) {
     this.filterStatus = status;
@@ -206,20 +175,6 @@ closePaymentModal() {
 
 showSendQuoteModal = false;
 
-
-// handleSendQuote(lead: any) {
-//   this.selectedLead = lead;
-
-//   if (lead.isPurchased) {
-//     // ✅ Lead already purchased → open send quote modal
-//     this.showSendQuoteModal = true;
-//   } else {
-//     // ❌ Not purchased → redirect to buy lead
-//     this.showPaymentModal = true;
-    
-//   }
-// }
-
 closeSendQuoteModal() {
   this.showSendQuoteModal = false;
   this.quoteAmount = null;
@@ -237,41 +192,6 @@ handleSendQuote(lead: any) {
     this.showPaymentModal = true;
   }
 }
-
-
-// confirmBuyLead() {
-//   const lead = this.selectedLead;
-//   if (!lead) return;
-
-//   this.sellerService.buyLeads(lead.id).subscribe({
-//     next: (res: any) => {
-//       lead.isPurchased = true;
-//       lead.leadPrice = `₹${res.pplPrice}`;
-
-//       this.showPaymentModal = false;
-//       alert(`Lead purchased successfully for ₹${res.pplPrice}`);
-//     },
-//     error: (err) => {
-//       console.error('Failed to buy lead', err);
-//       alert('Failed to purchase lead. Please try again.');
-//     }
-//   });
-// }
-
-  // buyLead() {
-  //   if (!this.selectedLead) return;
-  //   // 🔥 Call API here
-  //   this.sellerService.buyLead(this.selectedLead.id).subscribe({
-  //     next: () => {
-  //       alert('Lead purchased successfully');
-  //       this.closeLeadModal();
-  //       this.loadLeads(); // refresh list
-  //     },
-  //     error: (err) => {
-  //       alert(err?.error?.message || 'Failed to buy lead');
-  //     }
-  //   });
-  // }
 
   confirmBuyLead() {
   const lead = this.selectedLead;

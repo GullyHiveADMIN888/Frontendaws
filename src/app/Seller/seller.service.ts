@@ -3,8 +3,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map,BehaviorSubject  } from 'rxjs';
-import { environment } from '../../environments/environment';
-//import { environment } from '../../environments/environment.prod';
+//import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.prod';
 
 // --- Dashboard & Stats ---
 export interface SellerStats {
@@ -35,7 +35,11 @@ export interface Lead {
   scheduledEnd?: string | null;
   scheduleLabel?: string;
   isPurchased: boolean; // 🔥 important
+  phone?: string;
+  email?: string;
   leadPrice?: string;
+  unlockedCount?: string;
+  committedCount?: string;  
   priceBreakdown?: { [key: string]: number }; // parsed JSON
 }
 
