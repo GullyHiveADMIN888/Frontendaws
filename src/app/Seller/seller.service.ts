@@ -41,6 +41,10 @@ export interface Lead {
   unlockedCount?: string;
   committedCount?: string;  
   priceBreakdown?: { [key: string]: number }; // parsed JSON
+  basePrice?: string;
+  visitingPrice?: string;
+  providerPrice?: string;
+
 }
 
 
