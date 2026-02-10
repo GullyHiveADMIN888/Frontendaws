@@ -31,7 +31,7 @@ export class SharableProfileComponent implements OnInit {
       const id = params.get('id');
       if (id) {
         this.sellerId = +id;
-        this.shareUrl = `${this.apiUrl}/seller/sharableProfile/${this.sellerId}`;
+        this.shareUrl = `${this.apiUrl}/seller/sharableeProfile/${this.sellerId}`;
         this.loadProfile(this.sellerId);
       } else {
         this.errorMessage = 'Invalid seller ID';
