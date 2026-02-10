@@ -118,7 +118,6 @@
                 <i class="ri-wallet-3-line text-orange-500"></i>
                 ₹{{ lead.providerPrice || 'Undefined'}}
               </span>
-
             </div>
           </div>
 
@@ -353,10 +352,18 @@
         Close
       </button>
 
-      <button *ngIf="!selectedLead?.isPurchased" (click)="buyLead()"
+      <!-- <button *ngIf="!selectedLead?.isPurchased" (click)="buyLead()"
         class="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg shadow">
         Buy Lead
-      </button>
+      </button> -->
+      <button 
+  [disabled]="selectedLead?.isPurchased"
+  class="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 font-semibold rounded-lg shadow"
+  (click)="buyLead()"
+>
+  {{ selectedLead?.isPurchased ? 'Purchased' : 'Buy Lead' }}
+</button>
+
     </div>
 
   </div>
@@ -522,10 +529,18 @@
         (click)="confirmBuyLead()">
         Pay & Unlock Lead
       </button> -->
-      <button class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow"
+      <!-- <button class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow"
         (click)="confirmPurchase()">
         Pay & Unlock Lead
-      </button>
+      </button> -->
+      <button 
+  [disabled]="selectedLead?.isPurchased"
+  class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow"
+  (click)="confirmPurchase()"
+>
+  {{ selectedLead?.isPurchased ? 'Purchased' : 'Pay & Unlock Lead' }}
+</button>
+
 
 
     </div>

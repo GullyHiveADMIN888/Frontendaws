@@ -221,7 +221,7 @@ closeConfirmModal() {
 
       // ✅ Close modal
       this.showPaymentModal = false;
-
+      this.showConfirmModal = false;
       alert(`Lead purchased successfully for ₹${res.pplPrice}`);
     },
 
@@ -234,6 +234,7 @@ closeConfirmModal() {
         'Failed to purchase lead. Please try again.';
 
       alert(message);
+      this.showConfirmModal = false;
     }
   });
 }

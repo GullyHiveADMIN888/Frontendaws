@@ -43,7 +43,7 @@ export interface Lead {
   priceBreakdown?: { [key: string]: number }; // parsed JSON
   basePrice?: string;
   visitingPrice?: string;
-  providerPrice?: string;
+  providerPrice?: number;
 
 }
 
