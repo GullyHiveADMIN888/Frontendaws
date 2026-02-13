@@ -53,7 +53,7 @@ export class Step1BasicInfoComponent {
   }
 }
 
-  onCategoryChange(categoryId: string) {
+  onCategoryChange(categoryId: number) {
   if (!categoryId) return;
 
   const id = Number(categoryId);
@@ -154,28 +154,6 @@ onInputFieldChange(field: string, value: any, event?: Event) {
 }
 
 
-  // onSendOTP() { this.sendOTP.emit(); }
-//   onSendOTP() {
-
-//   const mobile = this.formData?.mobile;
-
-//   // 🔴 Required check
-//   if (!mobile) {
-//     this.errors.mobile = 'Mobile number is required';
-//     return;
-//   }
-
-//   // 🔴 10-digit validation
-//   if (!/^\d{10}$/.test(mobile)) {
-//     this.errors.mobile = 'Mobile number must be 10 digits';
-//     return;
-//   }
-
-//   // ✅ Valid → proceed
-//   this.sendOTP.emit();
-// }
-
-
 async onSendOTP() {
   const mobile = this.formData?.mobile;
 
@@ -196,14 +174,6 @@ async onSendOTP() {
     this.errors.mobile = err.message || 'OTP failed';
   }
 }
-
-  // This is the method!
-  // handleOtpVerified() {
-  //   this.isMobileVerified = true; // enable the Continue button
-  //   this.showOtpModal = false;    // hide OTP modal
-  // }
-
-  // onNextClick() { this.next.emit(); }
 
 onNextClick() {
   if (!this.isMobileVerified) {
