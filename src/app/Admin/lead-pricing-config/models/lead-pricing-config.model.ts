@@ -9,6 +9,7 @@ export interface LeadPricingConfigDto {
   cityTier: CityTierEnum;
   categoryId: number;
   basePrice: number | null;
+  normalBasePrice: number | null;
   platformMultiplier: number;
   providerTierMultiplier: string | null;
   isActive: boolean;

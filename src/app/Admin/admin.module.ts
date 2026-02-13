@@ -33,6 +33,7 @@ import { SubscriptionMasterComponent } from './subscription-master/subscription-
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { EmailTemplateComponent } from './email-template/email-template.component';
 import { LeadPricingConfigComponent } from './lead-pricing-config/lead-pricing-config.component';
+import { LeadPricingEngineComponent } from './lead-pricing-engine/lead-pricing-engine.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,8 @@ import { LeadPricingConfigComponent } from './lead-pricing-config/lead-pricing-c
     SubscriptionMasterComponent,
     ChangePasswordComponent,
     EmailTemplateComponent,
-    LeadPricingConfigComponent
+    LeadPricingConfigComponent,
+    LeadPricingEngineComponent
   ],
   imports: [
     CommonModule,

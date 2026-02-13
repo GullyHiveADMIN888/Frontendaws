@@ -314,12 +314,50 @@
                             </td>
 
                             <!-- Pricing -->
+                            <!-- Pricing Column - Replace the existing pricing column -->
                             <td class="px-6 py-4">
                                 <div class="text-sm">
-                                    <div class="font-semibold text-gray-900">
-                                        {{formatCurrency(config.basePrice, 'INR')}}
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-1">Base Price</p>
+                                    <ng-container *ngIf="getPriceDisplay(config) as priceInfo">
+                                        <!-- Display with comparison -->
+                                        <div class="flex flex-col space-y-1">
+                                            <div class="flex items-center gap-2">
+                                                <span [class]="
+            priceInfo.hasDifference ? 
+            (priceInfo.differenceType === 'lower' ? 'text-red-600 font-semibold' : 
+             priceInfo.differenceType === 'higher' ? 'text-green-600 font-semibold' : 
+             'text-gray-900') : 
+            'text-gray-900'" class="text-base">
+                                                    {{priceInfo.displayPrice}}
+                                                </span>
+
+                                                <!-- Show original price if different -->
+                                                <span *ngIf="priceInfo.hasDifference"
+                                                    class="text-xs text-gray-500 line-through">
+                                                    {{priceInfo.originalPrice}}
+                                                </span>
+                                            </div>
+
+                                            <!-- Show percentage difference -->
+                                            <span *ngIf="priceInfo.hasDifference"
+                                                [class]="priceInfo.differenceType === 'lower' ? 'text-red-600' : 'text-green-600'"
+                                                class="text-xs font-medium">
+                                                {{priceInfo.differenceType === 'lower' ? '▼' : '▲'}}
+                                                {{priceInfo.differencePercentage | number:'1.1-1'}}%
+                                                {{priceInfo.differenceType === 'lower' ? 'below' : 'above'}} normal
+                                                price
+                                            </span>
+                                        </div>
+
+                                        <p class="text-xs text-gray-500 mt-2">Base Price</p>
+                                        <!-- <p *ngIf="!priceInfo.hasDifference && config.basePrice !== null"
+                                            class="text-xs text-gray-500">
+                                            Same as normal price
+                                        </p> -->
+                                        <p *ngIf="config.basePrice === null || config.basePrice === undefined"
+                                            class="text-xs text-amber-600">
+                                            Using normal price
+                                        </p>
+                                    </ng-container>
                                 </div>
                             </td>
 
