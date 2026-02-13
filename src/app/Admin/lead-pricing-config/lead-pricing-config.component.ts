@@ -347,11 +347,13 @@ export class LeadPricingConfigComponent implements OnInit {
   }
 
   // Format currency
-  formatCurrency(amount: number | null, currency: string = 'INR'): string {
+  formatCurrency(amount: number | null | undefined, currency: string = 'INR'): string {
     if (amount === null || amount === undefined) return 'Not Set';
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: currency
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
     }).format(amount);
   }
 
@@ -504,23 +506,23 @@ export class LeadPricingConfigComponent implements OnInit {
   createConfig(): void {
     console.log('Creating config with data:', this.currentConfig);
 
-     // Reset modal error before validation
-  this.modalErrorMessage = '';
+    // Reset modal error before validation
+    this.modalErrorMessage = '';
 
 
-  // Validate that if subcategory is selected, it belongs to the selected category
-  if (this.currentConfig.subcatId) {
-    const isValidSubcat = this.groupedSubCategories.some(group =>
-      group.categoryId === this.currentConfig.categoryId &&
-      group.subcategories.some(subcat => subcat.id === this.currentConfig.subcatId)
-    );
+    // Validate that if subcategory is selected, it belongs to the selected category
+    if (this.currentConfig.subcatId) {
+      const isValidSubcat = this.groupedSubCategories.some(group =>
+        group.categoryId === this.currentConfig.categoryId &&
+        group.subcategories.some(subcat => subcat.id === this.currentConfig.subcatId)
+      );
 
-    if (!isValidSubcat) {
-      this.modalErrorMessage = 'Selected subcategory does not belong to the selected category!';
-      this.modalErrorType = 'error';
-      return;
+      if (!isValidSubcat) {
+        this.modalErrorMessage = 'Selected subcategory does not belong to the selected category!';
+        this.modalErrorType = 'error';
+        return;
+      }
     }
-  }
     // Validate required fields
     if (!this.currentConfig.cityTier || this.currentConfig.cityTier.trim() === '') {
       this.showMessage('City tier is required!', 'error');
@@ -669,7 +671,7 @@ export class LeadPricingConfigComponent implements OnInit {
   updateConfig(): void {
     console.log('Updating config with data:', this.currentConfig);
 
-     // Reset modal error before validation
+    // Reset modal error before validation
     this.modalErrorMessage = '';
     // Validate required fields
     if (!this.currentConfig.cityTier || this.currentConfig.cityTier.trim() === '') {
@@ -888,4 +890,42 @@ export class LeadPricingConfigComponent implements OnInit {
         }
       });
   }
+
+  // Display increase/decrease in price compared to normal base price
+  getPriceDisplay(config: LeadPricingConfigDto): {
+    displayPrice: string;
+    originalPrice: string;
+    hasDifference: boolean;
+    differenceType: 'higher' | 'lower' | 'equal';
+    differencePercentage: number;
+  } {
+    const result = {
+      displayPrice: this.formatCurrency(config.basePrice, 'INR'),
+      originalPrice: this.formatCurrency(config.normalBasePrice, 'INR'),
+      hasDifference: false,
+      differenceType: 'equal' as 'higher' | 'lower' | 'equal',
+      differencePercentage: 0
+    };
+
+    // If basePrice is null or undefined, show normalBasePrice
+    if (config.basePrice === null || config.basePrice === undefined) {
+      result.displayPrice = this.formatCurrency(config.normalBasePrice, 'INR');
+      return result;
+    }
+
+    // Compare basePrice with normalBasePrice
+    if (config.normalBasePrice && config.basePrice !== config.normalBasePrice) {
+      result.hasDifference = true;
+      result.differenceType = config.basePrice > config.normalBasePrice ? 'higher' : 'lower';
+
+      // Calculate percentage difference
+      if (config.normalBasePrice > 0) {
+        result.differencePercentage = ((config.basePrice - config.normalBasePrice) / config.normalBasePrice) * 100;
+      }
+    }
+
+    return result;
+  }
+
+
 }
