@@ -166,9 +166,12 @@ isMobileVerified = false;
     // ✅ Service Category IDs
     formData.append('ServiceCategoryId', this.formData.serviceCategoryId?.toString() || '');
     // ✅ SubCategoryIds (append one-by-one)
-    (this.formData.subCategoryIds || []).forEach((id: number) => {
-      formData.append('SubCategoryIds', id.toString());
-    });
+    // (this.formData.subCategoryIds || []).forEach((id: number) => {
+    //   formData.append('SubCategoryIds', id.toString());
+    // });
+(this.formData.subCategoryIds || []).forEach((id: number) => {
+  formData.append('SubCategoryIds[]', id.toString());
+});
 
     if (this.formData.profilePicture) formData.append('ProfilePicture', this.formData.profilePicture);
 
