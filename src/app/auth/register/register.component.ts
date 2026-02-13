@@ -216,35 +216,47 @@ formData.append('Pincodes', this.formData.pincodes || '');
    if (this.formData.profilePicture) 
     formData.append('ProfilePicture', this.formData.profilePicture);
 
-    this.service.submitRegistration(formData).subscribe({
-      next: res => {
-        this.submitSuccess = true;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      },
-      error: err => {
-        console.error('Full error object:', err);
+    // this.service.submitRegistration(formData).subscribe({
+    //   next: res => {
+    //     this.submitSuccess = true;
+    //     window.scrollTo({ top: 0, behavior: 'smooth' });
+    //   },
+    //   error: err => {
+    //     console.error('Full error object:', err);
 
-        if (err.status === 400 && err.error && typeof err.error === 'object') {
-          const messages: string[] = [];
-          for (const field in err.error) {
-            const value = err.error[field];
-            if (Array.isArray(value)) {
-              messages.push(`${field}: ${value.join(', ')}`);
-            } else if (typeof value === 'string') {
-              messages.push(`${field}: ${value}`);
-            } else if (typeof value === 'object') {
-              for (const sub in value) {
-                if (Array.isArray(value[sub])) messages.push(`${sub}: ${value[sub].join(', ')}`);
-              }
-            }
-          }
-          alert('Validation Errors:\n' + messages.join('\n'));
-        } else {
-          alert('Error: ' + (err.error?.message || 'Unknown error'));
-        }
-      },
-      complete: () => (this.isSubmitting = false)
-    });
+    //     if (err.status === 400 && err.error && typeof err.error === 'object') {
+    //       const messages: string[] = [];
+    //       for (const field in err.error) {
+    //         const value = err.error[field];
+    //         if (Array.isArray(value)) {
+    //           messages.push(`${field}: ${value.join(', ')}`);
+    //         } else if (typeof value === 'string') {
+    //           messages.push(`${field}: ${value}`);
+    //         } else if (typeof value === 'object') {
+    //           for (const sub in value) {
+    //             if (Array.isArray(value[sub])) messages.push(`${sub}: ${value[sub].join(', ')}`);
+    //           }
+    //         }
+    //       }
+    //       alert('Validation Errors:\n' + messages.join('\n'));
+    //     } else {
+    //       alert('Error: ' + (err.error?.message || 'Unknown error'));
+    //     }
+    //   },
+    //   complete: () => (this.isSubmitting = false)
+    // });
+  
+      this.service.submitRegistration(formData).subscribe({
+    next: (res) => {
+      console.log('Backend response:', res);
+      this.isSubmitting = false;
+      this.submitSuccess = true; // show success message
+    },
+    error: (err) => {
+      console.error('Registration error:', err);
+      this.isSubmitting = false;
+    }
+  });
   }
 
 
