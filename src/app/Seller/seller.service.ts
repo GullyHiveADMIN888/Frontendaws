@@ -419,8 +419,8 @@ deleteBankDetails(sellerId: number) {
 
 // Buy Leads
 buyLeads(leadId: number) {
- // const providerId = Number(localStorage.getItem('userId'));
-    const providerId = 42;
+  const providerId = Number(localStorage.getItem('userId'));
+  //  const providerId = 42;
 
   return this.http.post(
     `${this.apiUrl}/buy`,
