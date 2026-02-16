@@ -1,8 +1,7 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 import { SellerService, Lead } from '../seller.service';
-
 
 @Component({
   selector: 'app-leads',
@@ -25,10 +24,10 @@ export class LeadsComponent implements OnInit {
 
 
   // Send Quote form fields
-quoteAmount: number | null = null;
+quoteAmount: string ='';
 quoteMessage: string = '';
 
-
+@Input() totalBalance: number = 0;
   constructor(private sellerService: SellerService) { }
 
   ngOnInit(): void {
@@ -74,7 +73,9 @@ loadLeads() {
           time: this.timeAgo(l.createdAt),
           leadPrice: l.leadPrice ? `${l.leadPrice}` : undefined,
           priceBreakdown: priceBreakdown,
-          isPurchased: l.isPurchased ?? false,
+         isPurchased: l.isPurchased ?? false,
+     //  isPurchased: l.isPurchased === true || l.isPurchased === 'true',
+
         } as Lead;
       });
 
@@ -177,7 +178,7 @@ showSendQuoteModal = false;
 
 closeSendQuoteModal() {
   this.showSendQuoteModal = false;
-  this.quoteAmount = null;
+  this.quoteAmount = '';
   this.quoteMessage = '';
 }
 
@@ -185,12 +186,32 @@ handleSendQuote(lead: any) {
   this.selectedLead = lead;
 
   if (lead.isPurchased) {
-    this.quoteAmount = null;
+    this.quoteAmount = '';
     this.quoteMessage = '';
     this.showSendQuoteModal = true;
   } else {
     this.showPaymentModal = true;
   }
+}
+
+
+
+
+
+
+
+
+showConfirmModal = false;
+
+// Open the confirmation modal
+confirmPurchase() {
+  if (!this.selectedLead) return;
+  this.showConfirmModal = true;
+}
+
+// Close the modal
+closeConfirmModal() {
+  this.showConfirmModal = false;
 }
 
   confirmBuyLead() {
@@ -202,10 +223,14 @@ handleSendQuote(lead: any) {
       // ✅ Mark as purchased locally
       lead.isPurchased = true;
       lead.leadPrice = `₹${res.pplPrice}`;
+   if (res.leadType) {
+        lead.leadType = res.leadType; // e.g., 'standard' or 'confirmed'
+      }
 
       // ✅ Close modal
       this.showPaymentModal = false;
-
+      this.showConfirmModal = false;
+      this.showSendQuoteModal = true;
       alert(`Lead purchased successfully for ₹${res.pplPrice}`);
     },
 
@@ -218,9 +243,11 @@ handleSendQuote(lead: any) {
         'Failed to purchase lead. Please try again.';
 
       alert(message);
+      this.showConfirmModal = false;
     }
   });
 }
+
 
 
 sendQuote() {
@@ -245,6 +272,57 @@ sendQuote() {
   });
 }
 
+
+// Allow only digits and one dot, with proper navigation keys
+allowDecimal(event: KeyboardEvent) {
+  const allowedKeys = [
+    'Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Home', 'End'
+  ];
+
+  if (allowedKeys.includes(event.key)) return;
+
+  const isNumber = /[0-9]/.test(event.key);
+  const isDot = event.key === '.';
+
+  // Prevent multiple dots
+  if (isDot && this.quoteAmount.includes('.')) {
+    event.preventDefault();
+    return;
+  }
+
+  if (!isNumber && !isDot) {
+    event.preventDefault();
+  }
+
+  // Prevent more than 2 digits after dot while typing
+  if (this.quoteAmount.includes('.') && isNumber) {
+    const decimalPart = this.quoteAmount.split('.')[1] || '';
+    const selectionStart = (event.target as HTMLInputElement).selectionStart || 0;
+    const cursorAfterDot = selectionStart - this.quoteAmount.indexOf('.') - 1;
+
+    if (cursorAfterDot >= 2) {
+      event.preventDefault();
+      return;
+    }
+  }
+}
+
+// Sanitize input (handles paste, removes letters, limits 2 decimals)
+sanitizeDecimal() {
+  if (!this.quoteAmount) return;
+
+  let value = this.quoteAmount
+    .replace(/[^0-9.]/g, '')       // remove letters
+    .replace(/(\..*)\./g, '$1');   // allow only one dot
+
+  // limit 2 decimals
+  if (value.includes('.')) {
+    const [whole, decimal] = value.split('.');
+    value = whole + '.' + decimal.slice(0, 2);
+  }
+
+  this.quoteAmount = value;
+}
 
 
 }

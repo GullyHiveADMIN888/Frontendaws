@@ -6,7 +6,6 @@ import { PLATFORM_ID } from '@angular/core';
 import { AuthService } from '../auth.service';
 
 import { Auth, signInWithPhoneNumber, ConfirmationResult } from '@angular/fire/auth';
-// import { RecaptchaVerifier } from 'firebase/auth';
 
 @Component({
   selector: 'app-step1-basic-info',
@@ -53,40 +52,68 @@ export class Step1BasicInfoComponent {
   }
 }
 
-  onCategoryChange(categoryId: string) {
-  if (!categoryId) return;
+//   onCategoryChange(categoryId: number) {
+//   if (!categoryId) return;
 
+//   const id = Number(categoryId);
+
+//   this.formData.serviceCategoryId = id;
+//   this.inputChange.emit({ field: 'serviceCategoryId', value: id });
+
+//   this.formData.subCategoryIds = [];
+//   this.subCategories = [];
+
+//   this.authService.getSubCategories(id).subscribe(res => {
+//     this.subCategories = res;
+//   });
+// }
+
+
+  // toggleSubCategory(subId: number) {
+  //   if (!this.formData.subCategoryIds) {
+  //     this.formData.subCategoryIds = [];
+  //   }
+
+  //   const index = this.formData.subCategoryIds.indexOf(subId);
+
+  //   if (index > -1) {
+  //     this.formData.subCategoryIds.splice(index, 1);
+  //   } else {
+  //     this.formData.subCategoryIds.push(subId);
+  //   }
+
+  //   // Emit changes
+  //   this.inputChange.emit({ field: 'subCategoryIds', value: this.formData.subCategoryIds });
+  // }
+
+  onCategoryChange(categoryId: number) {
   const id = Number(categoryId);
-
   this.formData.serviceCategoryId = id;
   this.inputChange.emit({ field: 'serviceCategoryId', value: id });
 
+  // Reset subcategories
   this.formData.subCategoryIds = [];
   this.subCategories = [];
 
-  this.authService.getSubCategories(id).subscribe(res => {
-    this.subCategories = res;
-  });
+  if (id) {
+    this.authService.getSubCategories(id).subscribe(res => {
+      this.subCategories = res;
+
+      // Optional: preselect or reset subcategories
+      this.inputChange.emit({ field: 'subCategoryIds', value: this.formData.subCategoryIds });
+    });
+  }
 }
 
+toggleSubCategory(subId: number) {
+  if (!this.formData.subCategoryIds) this.formData.subCategoryIds = [];
+  const idx = this.formData.subCategoryIds.indexOf(subId);
+  if (idx > -1) this.formData.subCategoryIds.splice(idx, 1);
+  else this.formData.subCategoryIds.push(subId);
 
-  toggleSubCategory(subId: number) {
-    if (!this.formData.subCategoryIds) {
-      this.formData.subCategoryIds = [];
-    }
-
-    const index = this.formData.subCategoryIds.indexOf(subId);
-
-    if (index > -1) {
-      this.formData.subCategoryIds.splice(index, 1);
-    } else {
-      this.formData.subCategoryIds.push(subId);
-    }
-
-    // Emit changes
-    this.inputChange.emit({ field: 'subCategoryIds', value: this.formData.subCategoryIds });
-  }
-
+  // Emit after every toggle
+  this.inputChange.emit({ field: 'subCategoryIds', value: this.formData.subCategoryIds });
+}
 
   onProfilePictureChange(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -154,29 +181,27 @@ onInputFieldChange(field: string, value: any, event?: Event) {
 }
 
 
-  // onSendOTP() { this.sendOTP.emit(); }
-//   onSendOTP() {
-
+// async onSendOTP() {
 //   const mobile = this.formData?.mobile;
 
-//   // 🔴 Required check
 //   if (!mobile) {
 //     this.errors.mobile = 'Mobile number is required';
 //     return;
 //   }
 
-//   // 🔴 10-digit validation
 //   if (!/^\d{10}$/.test(mobile)) {
 //     this.errors.mobile = 'Mobile number must be 10 digits';
 //     return;
 //   }
 
-//   // ✅ Valid → proceed
-//   this.sendOTP.emit();
+//   try {
+//     await this.authService.sendOtp(mobile);
+//     this.sendOTP.emit(); // open OTP modal
+//   } catch (err: any) {
+//     this.errors.mobile = err.message || 'OTP failed';
+//   }
 // }
-
-
-async onSendOTP() {
+onSendOTP() {
   const mobile = this.formData?.mobile;
 
   if (!mobile) {
@@ -189,21 +214,28 @@ async onSendOTP() {
     return;
   }
 
-  try {
-    await this.authService.sendOtp(mobile);
-    this.sendOTP.emit(); // open OTP modal
-  } catch (err: any) {
-    this.errors.mobile = err.message || 'OTP failed';
-  }
+  // 🔥 Call API
+  this.authService.checkMobileExists(mobile).subscribe({
+    next: (response) => {
+
+      if (response.exists) {
+        this.errors.mobile = 'Mobile number already registered';
+        return; // ❌ Stop here
+      }
+
+      // ✅ If mobile NOT exists → send OTP
+      this.authService.sendOtp(mobile).then(() => {
+        this.sendOTP.emit();
+      });
+
+    },
+    error: (err) => {
+      this.errors.mobile = 'Something went wrong';
+      console.error(err);
+    }
+  });
 }
 
-  // This is the method!
-  // handleOtpVerified() {
-  //   this.isMobileVerified = true; // enable the Continue button
-  //   this.showOtpModal = false;    // hide OTP modal
-  // }
-
-  // onNextClick() { this.next.emit(); }
 
 onNextClick() {
   if (!this.isMobileVerified) {

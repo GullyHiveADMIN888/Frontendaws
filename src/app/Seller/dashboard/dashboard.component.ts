@@ -19,7 +19,7 @@ totalLeads = 0;
 totalResponses = 0;
 acceptedResponses = 0;
 pendingResponses = 0;
-
+totalBalance=0;
 
 ngOnInit() {
   this.sellerService.getDashboardData().subscribe(d => {
@@ -37,6 +37,7 @@ ngOnInit() {
       this.totalResponses = responses.length;
       this.acceptedResponses = responses.filter(r => r.status === 'accepted').length;
       this.pendingResponses = responses.filter(r => r.status === 'pending').length;
+        this.totalBalance = d.totalBalance || 0;
     });
 
     // Load services

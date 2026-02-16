@@ -56,23 +56,23 @@ export class RegisterComponent {
 
 
 
-  
-  // Step 2 - Business Address
-  line1: '',
-  line2: '',
- 
-  locality: '',
-  landmark: '',
-                 // eg. Seller/Admin
 
- 
-  // Step 3 - Service Areas
-  areaType: '',                 // city/radius/pincode
-  cityId: null as number | null,
-  radiusKm: null as number | null,
-  pincodes: '',                 // comma-separated string
+    // Step 2 - Business Address
+    line1: '',
+    line2: '',
 
-  // Optional: more backend fields if needed
+    locality: '',
+    landmark: '',
+    // eg. Seller/Admin
+
+
+    // Step 3 - Service Areas
+    areaType: '',                 // city/radius/pincode
+    cityId: null as number | null,
+    radiusKm: null as number | null,
+    pincodes: '',                 // comma-separated string
+
+    // Optional: more backend fields if needed
 
 
 
@@ -82,8 +82,8 @@ export class RegisterComponent {
 
   //otp...
   showOtpModal = false;
-isMobileVerified = false;
-//...
+  isMobileVerified = false;
+  //...
 
 
   onInputChange(event: { field: string; value: any }) {
@@ -105,19 +105,19 @@ isMobileVerified = false;
     // if (this.validateStep1()) {
     //   this.currentStep = 3; // OTP
     // }
-     // 🔴 Step validation first
-  if (!this.validateStep1()) {
-    return;
-  }
+    // 🔴 Step validation first
+    if (!this.validateStep1()) {
+      return;
+    }
 
-  // 🔴 Mobile NOT verified → STOP + ALERT
-  if (!this.isMobileVerified) {
-    alert('Please verify your mobile number before continuing.');
-    return;
-  }
+    // 🔴 Mobile NOT verified → STOP + ALERT
+    if (!this.isMobileVerified) {
+      alert('Please verify your mobile number before continuing.');
+      return;
+    }
 
-  // ✅ All good → go to Legal Identity
-  this.currentStep = 3;
+    // ✅ All good → go to Legal Identity
+    this.currentStep = 3;
   }
   goNextFromStep3() {
     if (this.validateStep3()) {
@@ -138,7 +138,7 @@ isMobileVerified = false;
   /* OTP VERIFIED */
   onOTPVerified() {
     this.isMobileVerified = true;
-  this.showOtpModal = false;
+    this.showOtpModal = false;
     this.currentStep = 1;
   }
 
@@ -160,14 +160,13 @@ isMobileVerified = false;
     formData.append('Mobile', this.formData.mobile || '');
     // formData.append('CoverageArea', this.formData.coverageArea || '');
     formData.append('ProfessionalType', this.formData.professionalType || '');
-    formData.append('ServiceCategory', JSON.stringify(this.formData.serviceCategory || []));
+   // formData.append('ServiceCategory', JSON.stringify(this.formData.serviceCategory || []));
 
 
     // ✅ Service Category IDs
     formData.append('ServiceCategoryId', this.formData.serviceCategoryId?.toString() || '');
-    // ✅ SubCategoryIds (append one-by-one)
     (this.formData.subCategoryIds || []).forEach((id: number) => {
-      formData.append('SubCategoryIds', id.toString());
+      formData.append('SubCategoryIds[]', id.toString());
     });
 
     if (this.formData.profilePicture) formData.append('ProfilePicture', this.formData.profilePicture);
@@ -176,12 +175,9 @@ isMobileVerified = false;
     formData.append('BusinessName', this.formData.businessName || '');
     formData.append('RegistrationType', this.formData.registrationType || '');
     formData.append('RegistrationNumber', this.formData.registrationNumber || '');
-   // formData.append('BusinessAddress', this.formData.businessAddress || '');
-    // formData.append('State', this.formData.state || '');
-    // formData.append('City', this.formData.city || '');
     // Instead of sending state name:
-formData.append('State', this.formData.stateId?.toString() || '');
-formData.append('City', this.formData.cityId?.toString() || '');
+    formData.append('State', this.formData.stateId?.toString() || '');
+    formData.append('City', this.formData.cityId?.toString() || '');
 
     formData.append('PlotNumber', this.formData.plotNumber || '');
     formData.append('PinCode', this.formData.pinCode || '');
@@ -193,19 +189,19 @@ formData.append('City', this.formData.cityId?.toString() || '');
 
 
 
-formData.append('Line1', this.formData.line1 || '');
-formData.append('Line2', this.formData.line2 || '');
-formData.append('Locality', this.formData.locality || '');
-formData.append('Landmark', this.formData.landmark || '');
+    formData.append('Line1', this.formData.line1 || '');
+    formData.append('Line2', this.formData.line2 || '');
+    formData.append('Locality', this.formData.locality || '');
+    formData.append('Landmark', this.formData.landmark || '');
 
-formData.append('StateId', this.formData.stateId?.toString() || '');
-formData.append('CityId', this.formData.cityId?.toString() || '');
-formData.append('PinCode', this.formData.pinCode || '');
+    formData.append('StateId', this.formData.stateId?.toString() || '');
+    formData.append('CityId', this.formData.cityId?.toString() || '');
+    formData.append('PinCode', this.formData.pinCode || '');
 
-formData.append('AreaType', this.formData.areaType || '');
-formData.append('ServiceCityId', this.formData.cityId?.toString() || '');
-formData.append('RadiusKm', this.formData.radiusKm?.toString() || '');
-formData.append('Pincodes', this.formData.pincodes || '');
+    formData.append('AreaType', this.formData.areaType || '');
+    formData.append('ServiceCityId', this.formData.cityId?.toString() || '');
+    formData.append('RadiusKm', this.formData.radiusKm?.toString() || '');
+    formData.append('Pincodes', this.formData.pincodes || '');
 
 
 
@@ -213,37 +209,21 @@ formData.append('Pincodes', this.formData.pincodes || '');
     formData.append('SelfOverview', this.formData.selfOverview || '');
     formData.append('SkillsBackground', this.formData.skillsBackground || '');
     formData.append('Achievements', this.formData.achievements || '');
-   if (this.formData.profilePicture) 
-    formData.append('ProfilePicture', this.formData.profilePicture);
+    if (this.formData.profilePicture)
+      formData.append('ProfilePicture', this.formData.profilePicture);
+
+
 
     this.service.submitRegistration(formData).subscribe({
-      next: res => {
-        this.submitSuccess = true;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+      next: (res) => {
+        console.log('Backend response:', res);
+        this.isSubmitting = false;
+        this.submitSuccess = true; // show success message
       },
-      error: err => {
-        console.error('Full error object:', err);
-
-        if (err.status === 400 && err.error && typeof err.error === 'object') {
-          const messages: string[] = [];
-          for (const field in err.error) {
-            const value = err.error[field];
-            if (Array.isArray(value)) {
-              messages.push(`${field}: ${value.join(', ')}`);
-            } else if (typeof value === 'string') {
-              messages.push(`${field}: ${value}`);
-            } else if (typeof value === 'object') {
-              for (const sub in value) {
-                if (Array.isArray(value[sub])) messages.push(`${sub}: ${value[sub].join(', ')}`);
-              }
-            }
-          }
-          alert('Validation Errors:\n' + messages.join('\n'));
-        } else {
-          alert('Error: ' + (err.error?.message || 'Unknown error'));
-        }
-      },
-      complete: () => (this.isSubmitting = false)
+      error: (err) => {
+        console.error('Registration error:', err);
+        this.isSubmitting = false;
+      }
     });
   }
 
@@ -282,7 +262,7 @@ formData.append('Pincodes', this.formData.pincodes || '');
     // if (!this.formData.coverageArea?.trim()) {
     //   this.errors.coverageArea = 'Coverage area is required';
     // }
-     if (!this.formData.password?.trim()) {
+    if (!this.formData.password?.trim()) {
       this.errors.password = 'password is required';
     }
 

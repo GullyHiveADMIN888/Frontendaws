@@ -3,8 +3,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map,BehaviorSubject  } from 'rxjs';
-//import { environment } from '../../environments/environment';
-import { environment } from '../../environments/environment.prod';
+// import { environment } from '../../environments/environment';
+ import { environment } from '../../environments/environment.prod';
 
 // --- Dashboard & Stats ---
 export interface SellerStats {
@@ -41,6 +41,10 @@ export interface Lead {
   unlockedCount?: string;
   committedCount?: string;  
   priceBreakdown?: { [key: string]: number }; // parsed JSON
+  basePrice?: string;
+  visitingPrice?: string;
+  providerPrice?: number;
+
 }
 
 
@@ -51,6 +55,10 @@ export interface DashboardData {
   stats: SellerStats;
   recentLeads: Lead[];
    profilePictureUrl?: string; // ← add this
+    // ✅ Wallet balances
+  totalBalance?: number;      
+  cashableBalance?: number;    
+  nonCashableBalance?: number; 
 }
 
 
@@ -164,6 +172,30 @@ export interface ProviderServicesResponse {
   subCategories: any[];
   cities: any[];
   providerQuestionIds: number[];
+}
+
+export interface WalletTransaction {
+  wallet_id: number;
+  user_id: number;
+  wallet_type: string;
+  wallet_amount_type: string;
+  balance: number;
+  currency: string;
+
+  txn_id?: number;
+  txn_type?: string;
+  direction?: string;
+  amount?: number;
+  txn_currency?: string;
+  reference_type?: string;
+  reference_id?: number;
+  description?: string;
+  balance_before?: number;
+  balance_after?: number;
+  created_at?: string;
+  cashable_balance?: number;
+    non_cashable_balance?: number;
+      total_balance: number;
 }
 
 
@@ -415,8 +447,8 @@ deleteBankDetails(sellerId: number) {
 
 // Buy Leads
 buyLeads(leadId: number) {
- // const providerId = Number(localStorage.getItem('userId'));
-    const providerId = 42;
+  const providerId = Number(localStorage.getItem('userId'));
+  //  const providerId = 42;
 
   return this.http.post(
     `${this.apiUrl}/buy`,
@@ -445,6 +477,29 @@ getQuestionsBySubCategory(subCategoryId: number) {
     `${this.apiUrl}/by-subcategory/${subCategoryId}`
   );
 }
+
+
+
+// ───────── Wallet APIs ─────────
+// getWallets(userId: number): Observable<WalletTransaction[]> {
+//   return this.http.get<{ success: boolean; data: WalletTransaction[] }>(
+//     `${this.apiUrl}/wallets/${userId}`, 
+//     { headers: this.getHeaders() }
+//   ).pipe(
+//     map(res => res.data)
+//   );
+// }
+
+ 
+getWalletTransactions(sellerId: number): Observable<WalletTransaction[]> {
+  return this.http.get<{ success: boolean; data: WalletTransaction[] }>(
+    `${this.apiUrl}/wallet_transactions/${sellerId}`,
+    { headers: this.getHeaders() }
+  ).pipe(
+    map(res => res.data)
+  );
+}
+
 
 
 }
