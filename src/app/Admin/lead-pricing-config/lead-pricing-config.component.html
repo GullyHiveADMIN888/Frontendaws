@@ -1,0 +1,753 @@
+<div class="min-h-screen bg-gray-50">
+    <!-- Alert/Message System -->
+    <div *ngIf="showAlert" [class]="'fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg border ' + 
+                (alertType === 'success' ? 'bg-green-50 border-green-200 text-green-800' :
+                 alertType === 'error' ? 'bg-red-50 border-red-200 text-red-800' :
+                 alertType === 'warning' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
+                 'bg-blue-50 border-blue-200 text-blue-800')">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <i *ngIf="alertType === 'success'" class="text-lg mr-2">✅</i>
+                <i *ngIf="alertType === 'error'" class="text-lg mr-2">❌</i>
+                <i *ngIf="alertType === 'warning'" class="text-lg mr-2">⚠️</i>
+                <i *ngIf="alertType === 'info'" class="text-lg mr-2">ℹ️</i>
+                <span>{{alertMessage}}</span>
+            </div>
+            <button (click)="hideMessage()" class="ml-4 text-gray-500 hover:text-gray-700">
+                <i>✕</i>
+            </button>
+        </div>
+    </div>
+
+    <app-admin-header></app-admin-header>
+    <div class="max-w-7xl mx-auto my-12 px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+                        Lead Pricing Configuration
+                    </h1>
+                    <p class="text-gray-600">
+                        Configure pricing for leads based on city tier and category
+                    </p>
+                </div>
+                <button (click)="openAddModal()"
+                    class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md flex items-center gap-2 w-full sm:w-auto justify-center">
+                    <i class="text-lg">+</i>
+                    <span>Add New Configuration</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Total Configurations</p>
+                        <h3 class="text-2xl font-bold text-gray-800">{{totalConfigs}}</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
+                        <i class="text-blue-600 text-xl">⚙️</i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-green-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Active Configurations</p>
+                        <h3 class="text-2xl font-bold text-gray-800">{{activeConfigs}}</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center">
+                        <i class="text-green-600 text-xl">✅</i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-purple-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Average Base Price</p>
+                        <h3 class="text-2xl font-bold text-gray-800">{{formatCurrency(averageBasePrice, 'INR')}}</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
+                        <i class="text-purple-600 text-xl">💰</i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-orange-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Avg Platform Multiplier</p>
+                        <h3 class="text-2xl font-bold text-gray-800">{{averageMultiplier | number:'1.2-2'}}x</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-orange-50 flex items-center justify-center">
+                        <i class="text-orange-600 text-xl">📈</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters Card -->
+        <div class="bg-white rounded-xl shadow mb-6 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">Filters</h3>
+            </div>
+
+            <div class="p-6">
+                <!-- Search and Basic Filters -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <!-- Search -->
+                    <!-- <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Search
+            </label>
+            <input type="text" [(ngModel)]="searchTerm" placeholder="Search by category or city tier"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+          </div> -->
+
+                    <!-- City Tier Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            City Tier
+                        </label>
+                        <select [(ngModel)]="selectedCityTier"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">All Tiers</option>
+                            <option value="X">Tier X</option>
+                            <option value="Y">Tier Y</option>
+                            <option value="Z">Tier Z</option>
+                        </select>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Status
+                        </label>
+                        <select [(ngModel)]="isActiveFilter"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">All Status</option>
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Category and Subcategory Filters -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Category Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Category
+                        </label>
+                        <div *ngIf="serviceCategories.length === 0" class="mb-2">
+                            <div class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2">
+                            </div>
+                            <span class="text-sm text-gray-500">Loading categories...</span>
+                        </div>
+
+                        <select [(ngModel)]="selectedCategoryId" (change)="onCategoryFilterChange()"
+                            [disabled]="serviceCategories.length === 0"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">All Categories</option>
+                            <option *ngFor="let category of serviceCategories" [value]="category.id">
+                                {{category.name}}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Subcategory Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Subcategory
+                        </label>
+                        <select [(ngModel)]="selectedSubcategoryId"
+                            [disabled]="!selectedCategoryId || groupedSubCategories.length === 0"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">All Subcategories</option>
+                            <ng-container *ngFor="let group of groupedSubCategories">
+                                <option *ngFor="let subcat of group.subcategories" [value]="subcat.id">
+                                    {{subcat.name}}
+                                </option>
+                            </ng-container>
+                        </select>
+                        <div *ngIf="!selectedCategoryId" class="mt-1">
+                            <p class="text-xs text-amber-600">Please select a category first</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-between gap-3 mt-6 pt-6 border-t border-gray-200">
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm text-gray-500">
+                            {{getActiveFilters()}} active filter(s)
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button (click)="resetFilters()"
+                            class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg font-medium hover:bg-gray-200 transition-colors border border-gray-300">
+                            <i class="mr-2">🔄</i> Reset All Filters
+                        </button>
+                        <button (click)="applyFilters()"
+                            class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
+                            Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+            <!-- Table Header -->
+            <div
+                class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-lg font-semibold text-gray-800">
+                        Pricing Configurations
+                    </h2>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                        {{totalCount}} Items
+                    </span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <select [(ngModel)]="pageSize" (change)="applyFilters()"
+                        class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="10">10 per page</option>
+                        <option value="20">20 per page</option>
+                        <option value="50">50 per page</option>
+                        <option value="100">100 per page</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div *ngIf="loading" class="p-8 text-center">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+                <p class="text-gray-600">Loading pricing configurations...</p>
+            </div>
+
+            <!-- Error State -->
+            <div *ngIf="error" class="p-8 text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="text-red-600 text-2xl">⚠️</i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Error Loading Data</h3>
+                <p class="text-gray-600 mb-4">{{error}}</p>
+                <button (click)="applyFilters()"
+                    class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    Try Again
+                </button>
+            </div>
+
+            <!-- Table -->
+            <div *ngIf="!loading && !error && configs.length > 0" class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                ID
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Configuration
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Pricing
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Multipliers
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Created
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr *ngFor="let config of configs" class="hover:bg-gray-50 transition-colors">
+                            <!-- ID -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm font-medium text-gray-900">#{{config.id}}</span>
+                            </td>
+
+                            <!-- Configuration Details -->
+                            <td class="px-6 py-4">
+                                <div>
+                                    <div class="flex flex-wrap gap-2 mb-2">
+                                        <span
+                                            class="px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">
+                                            Tier {{getCityTierDisplay(config.cityTier)}}
+                                        </span>
+                                        <span
+                                            [class]="config.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                                            class="px-3 py-1 rounded-full text-xs font-medium">
+                                            {{config.isActive ? 'Active' : 'Inactive'}}
+                                        </span>
+                                    </div>
+                                    <h4 class="text-sm font-semibold text-gray-900">{{config.categoryName ||
+                                        'Category'}}</h4>
+                                    <p *ngIf="config.subcategoryName" class="text-sm text-gray-600 mt-1">
+                                        Subcategory: {{config.subcategoryName}}
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        Category ID: {{config.categoryId}}
+                                        <span *ngIf="config.subcatId"> | Subcat ID: {{config.subcatId}}</span>
+                                    </p>
+                                </div>
+                            </td>
+
+                            <!-- Pricing -->
+                            <!-- Pricing Column - Replace the existing pricing column -->
+                            <td class="px-6 py-4">
+                                <div class="text-sm">
+                                    <ng-container *ngIf="getPriceDisplay(config) as priceInfo">
+                                        <!-- Display with comparison -->
+                                        <div class="flex flex-col space-y-1">
+                                            <div class="flex items-center gap-2">
+                                                <span [class]="
+            priceInfo.hasDifference ? 
+            (priceInfo.differenceType === 'lower' ? 'text-red-600 font-semibold' : 
+             priceInfo.differenceType === 'higher' ? 'text-green-600 font-semibold' : 
+             'text-gray-900') : 
+            'text-gray-900'" class="text-base">
+                                                    {{priceInfo.displayPrice}}
+                                                </span>
+
+                                                <!-- Show original price if different -->
+                                                <span *ngIf="priceInfo.hasDifference"
+                                                    class="text-xs text-gray-500 line-through">
+                                                    {{priceInfo.originalPrice}}
+                                                </span>
+                                            </div>
+
+                                            <!-- Show percentage difference -->
+                                            <span *ngIf="priceInfo.hasDifference"
+                                                [class]="priceInfo.differenceType === 'lower' ? 'text-red-600' : 'text-green-600'"
+                                                class="text-xs font-medium">
+                                                {{priceInfo.differenceType === 'lower' ? '▼' : '▲'}}
+                                                {{priceInfo.differencePercentage | number:'1.1-1'}}%
+                                                {{priceInfo.differenceType === 'lower' ? 'below' : 'above'}} normal
+                                                price
+                                            </span>
+                                        </div>
+
+                                        <p class="text-xs text-gray-500 mt-2">Base Price</p>
+                                        <!-- <p *ngIf="!priceInfo.hasDifference && config.basePrice !== null"
+                                            class="text-xs text-gray-500">
+                                            Same as normal price
+                                        </p> -->
+                                        <p *ngIf="config.basePrice === null || config.basePrice === undefined"
+                                            class="text-xs text-amber-600">
+                                            Using normal price
+                                        </p>
+                                    </ng-container>
+                                </div>
+                            </td>
+
+                            <!-- Multipliers -->
+                            <td class="px-6 py-4">
+                                <div class="text-sm space-y-1">
+                                    <div>
+                                        <span class="font-medium text-gray-700">Platform:</span>
+                                        <span class="ml-2 px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs">
+                                            {{config.platformMultiplier}}x
+                                        </span>
+                                    </div>
+                                    <div *ngIf="config.providerTierMultiplier">
+                                        <span class="font-medium text-gray-700">Provider:</span>
+                                        <span class="ml-2 text-xs text-gray-600">
+                                            {{getProviderMultiplierDisplay(config.providerTierMultiplier)}}
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Status -->
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div [class]="config.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                                        class="px-3 py-1 rounded-full text-xs font-medium">
+                                        {{config.isActive ? 'Active' : 'Inactive'}}
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Created Date -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">
+                                    {{formatDate(config.createdAt)}}
+                                </div>
+                            </td>
+
+                            <!-- Actions -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-2">
+                                    <button (click)="editConfig(config)"
+                                        class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors">
+                                        <i class="text-lg">✏️</i>
+                                    </button>
+                                    <button (click)="toggleActive(config)" [disabled]="isConfigUpdating(config.id)"
+                                        [class]="config.isActive ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900'"
+                                        class="p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 min-w-[40px] min-h-[40px] flex items-center justify-center">
+                                        <span *ngIf="!isConfigUpdating(config.id)">
+                                            <i class="text-lg">{{config.isActive ? '⏸️' : '▶️'}}</i>
+                                        </span>
+                                        <span *ngIf="isConfigUpdating(config.id)" class="flex">
+                                            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                    stroke-width="4">
+                                                </circle>
+                                                <path class="opacity-75" fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                </path>
+                                            </svg>
+                                        </span>
+                                    </button>
+                                    <button (click)="confirmDelete(config)" [disabled]="isConfigDeleting(config.id)"
+                                        class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50 min-w-[40px] min-h-[40px] flex items-center justify-center">
+                                        <span *ngIf="!isConfigDeleting(config.id)">
+                                            <i class="text-lg">🗑️</i>
+                                        </span>
+                                        <span *ngIf="isConfigDeleting(config.id)" class="flex">
+                                            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                    stroke-width="4">
+                                                </circle>
+                                                <path class="opacity-75" fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                </path>
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div *ngIf="!loading && !error && configs.length === 0" class="p-12 text-center">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="text-gray-400 text-3xl">⚙️</i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">No Pricing Configurations Found</h3>
+                <p class="text-gray-600 mb-6">
+                    No pricing configurations match your current filters or no configurations have been created yet.
+                </p>
+                <button (click)="resetFilters()"
+                    class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md mr-4">
+                    <i class="mr-2">🔄</i>
+                    Reset Filters
+                </button>
+                <button (click)="openAddModal()"
+                    class="bg-gradient-to-r from-green-600 to-emerald-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
+                    <i class="mr-2">+</i>
+                    Add New Configuration
+                </button>
+            </div>
+
+            <!-- Pagination -->
+            <div *ngIf="!loading && !error && configs.length > 0"
+                class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                <div class="text-sm text-gray-500">
+                    Showing <span class="font-medium">{{getStartIndex()}}</span> to
+                    <span class="font-medium">{{getEndIndex()}}</span> of
+                    <span class="font-medium">{{totalCount}}</span> configurations
+                </div>
+                <div class="flex items-center gap-2">
+                    <button (click)="changePage(-1)" [disabled]="page === 1"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="mr-1">←</i> Previous
+                    </button>
+
+                    <div class="flex items-center gap-1">
+                        <button *ngFor="let pageNum of getPageNumbers()" (click)="goToPage(pageNum)"
+                            [class]="pageNum === page ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'"
+                            class="px-3 py-1 rounded text-sm">
+                            {{pageNum}}
+                        </button>
+                    </div>
+
+                    <button (click)="changePage(1)" [disabled]="page >= totalPages"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        Next <i class="ml-1">→</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <app-admin-footer></app-admin-footer>
+
+    <!-- Add/Edit Modal -->
+    <div *ngIf="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="sticky top-0 bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                <h3 class="text-xl font-bold text-gray-800">
+                    <span *ngIf="isEditMode">Edit Pricing Configuration</span>
+                    <span *ngIf="!isEditMode">Add New Pricing Configuration</span>
+                </h3>
+                <button (click)="closeModal()" [disabled]="modalLoading"
+                    class="text-gray-400 hover:text-gray-600 disabled:opacity-50">
+                    <i class="text-2xl">×</i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6">
+                <form (ngSubmit)="saveConfig()" #configForm="ngForm" class="space-y-6">
+                    <div *ngIf="modalErrorMessage" [class]="modalErrorType === 'warning' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
+                  modalErrorType === 'info' ? 'bg-blue-50 border-blue-200 text-blue-800' :
+                  'bg-red-50 border-red-200 text-red-800'" class="border rounded-lg p-4 mb-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <i *ngIf="modalErrorType === 'warning'" class="text-lg mr-2">⚠️</i>
+                                <i *ngIf="modalErrorType === 'error'" class="text-lg mr-2">❌</i>
+                                <i *ngIf="modalErrorType === 'info'" class="text-lg mr-2">ℹ️</i>
+                            </div>
+                            <div class="ml-3">
+                                <h4 *ngIf="modalErrorType === 'warning'"
+                                    class="text-sm font-medium text-yellow-800 mb-1">
+                                    Configuration Already Exists
+                                </h4>
+                                <h4 *ngIf="modalErrorType === 'error'" class="text-sm font-medium text-red-800 mb-1">
+                                    Validation Error
+                                </h4>
+                                <h4 *ngIf="modalErrorType === 'info'" class="text-sm font-medium text-blue-800 mb-1">
+                                    Information
+                                </h4>
+                                <div class="text-sm">
+                                    {{modalErrorMessage}}
+                                </div>
+                            </div>
+                            <div class="ml-auto pl-3">
+                                <div class="-mx-1.5 -my-1.5">
+                                    <button type="button" (click)="modalErrorMessage = ''" [class]="modalErrorType === 'warning' ? 'text-yellow-500 hover:text-yellow-600' :
+                          modalErrorType === 'info' ? 'text-blue-500 hover:text-blue-600' :
+                          'text-red-500 hover:text-red-600'"
+                                        class="inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2">
+                                        <i class="text-lg">✕</i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- City Tier -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                City Tier *
+                            </label>
+                            <select [(ngModel)]="currentConfig.cityTier" name="cityTier" required
+                                [disabled]="modalLoading" #cityTierInput="ngModel"
+                                [class]="cityTierInput.invalid && cityTierInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+                                class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50">
+                                <option [ngValue]="null" disabled>-- Select City Tier --</option>
+                                <option value="X">Tier X</option>
+                                <option value="Y">Tier Y</option>
+                                <option value="Z">Tier Z</option>
+                            </select>
+
+                            <div *ngIf="cityTierInput.invalid && cityTierInput.touched"
+                                class="mt-1 text-sm text-red-600">
+                                <div *ngIf="cityTierInput.errors?.['required']">City tier is required</div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">
+                                Select the city tier for this pricing configuration
+                            </p>
+                        </div>
+
+                        <!-- Category -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Category *
+                            </label>
+                            <div *ngIf="serviceCategories.length === 0" class="mb-2">
+                                <div
+                                    class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2">
+                                </div>
+                                <span class="text-sm text-gray-500">Loading categories...</span>
+                            </div>
+
+                            <select [(ngModel)]="currentConfig.categoryId" name="categoryId" required
+                                [disabled]="modalLoading || serviceCategories.length === 0"
+                                (ngModelChange)="onCategoryChange()" #categoryInput="ngModel"
+                                [class]="categoryInput.invalid && categoryInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+                                class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50">
+                                <option [ngValue]="0">-- Select Category --</option>
+                                <option *ngFor="let category of serviceCategories" [value]="category.id">
+                                    {{category.name}}
+                                </option>
+                            </select>
+                            <div *ngIf="categoryInput.invalid && categoryInput.touched"
+                                class="mt-1 text-sm text-red-600">
+                                <div *ngIf="categoryInput.errors?.['required']">Please select a category</div>
+                                <div *ngIf="currentConfig.categoryId === 0">Please select a valid category</div>
+                            </div>
+                            <p *ngIf="serviceCategories.length === 0" class="text-xs text-amber-600 mt-1">
+                                No active categories found. Please create categories first.
+                            </p>
+                            <p *ngIf="currentConfig.categoryId > 0 && serviceCategories.length > 0"
+                                class="text-xs text-gray-500 mt-1">
+                                Selected: {{getCategoryName(currentConfig.categoryId)}}
+                            </p>
+                        </div>
+
+                        <!-- Subcategory -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Subcategory
+                            </label>
+                            <select [(ngModel)]="currentConfig.subcatId" name="subcatId" required
+                                [disabled]="modalLoading || groupedSubCategories.length === 0 || !currentConfig.categoryId"
+                                #subcatInput="ngModel"
+                                [class]="subcatInput.invalid && subcatInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+                                class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50">
+
+                                <option [ngValue]="null">-- Select Subcategory --</option>
+
+                                <ng-container *ngFor="let group of groupedSubCategories">
+                                    <option *ngFor="let subcat of group.subcategories" [ngValue]="subcat.id">
+                                        {{subcat.name}}
+                                    </option>
+                                </ng-container>
+
+                            </select>
+                            <div *ngIf="subcatInput.invalid && subcatInput.touched" class="mt-1 text-sm text-red-600">
+                                <div *ngIf="subcatInput.errors?.['required']">Please select a subcategory</div>
+                            </div>
+                            <div *ngIf="!currentConfig.categoryId"
+                                class="mt-2 p-2 bg-amber-50 border border-amber-200 rounded">
+                                <p class="text-xs text-amber-700">
+                                    <strong>Note:</strong> Please select a category first to see available
+                                    subcategories.
+                                </p>
+                            </div>
+
+                            <div *ngIf="modalLoading && currentConfig.categoryId"
+                                class="mt-2 p-2 bg-blue-50 border border-blue-200 rounded">
+                                <div
+                                    class="inline-block animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 mr-2">
+                                </div>
+                                <span class="text-xs text-blue-700">Loading subcategories...</span>
+                            </div>
+
+                            <p *ngIf="currentConfig.categoryId && groupedSubCategories.length > 0 && !modalLoading"
+                                class="text-xs text-gray-500 mt-1">
+                                <ng-container *ngIf="currentConfig.subcatId">
+                                    Selected: {{getSubCategoryName(currentConfig.subcatId)}}
+                                </ng-container>
+                                <ng-container *ngIf="!currentConfig.subcatId">
+                                    Available subcategories for {{getCategoryName(currentConfig.categoryId)}}
+                                </ng-container>
+                            </p>
+
+                            <p *ngIf="currentConfig.categoryId && groupedSubCategories.length === 0 && !modalLoading"
+                                class="text-xs text-amber-600 mt-1">
+                                No active subcategories found for this category.
+                            </p>
+                        </div>
+
+                        <!-- Base Price -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Base Price (Optional)
+                            </label>
+                            <input type="number" [(ngModel)]="currentConfig.basePrice" name="basePrice" min="0"
+                                max="1000000" step="0.01" [disabled]="modalLoading" #basePriceInput="ngModel"
+                                [class]="basePriceInput.invalid && basePriceInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+                                class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50"
+                                placeholder="Enter base price">
+                            <div *ngIf="basePriceInput.invalid && basePriceInput.touched"
+                                class="mt-1 text-sm text-red-600">
+                                <div *ngIf="basePriceInput.errors?.['min']">Price must be at least ₹0</div>
+                                <div *ngIf="basePriceInput.errors?.['max']">Price cannot exceed ₹1,000,000</div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Enter amount between ₹0 and ₹1,000,000</p>
+                        </div>
+                    </div>
+
+                    <!-- Active Status -->
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div>
+                            <h4 class="font-medium text-gray-800">Active Status</h4>
+                            <p class="text-sm text-gray-500">Configuration will be available in pricing calculations</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" [(ngModel)]="currentConfig.isActive" name="isActive"
+                                [disabled]="modalLoading" class="sr-only peer">
+                            <div [class]="modalLoading ? 'opacity-50' : ''"
+                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Validation Summary -->
+                    <div *ngIf="(cityTierInput.invalid && cityTierInput.touched) || 
+                            (categoryInput.invalid && categoryInput.touched)
+                            " class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <h4 class="text-sm font-medium text-red-800 mb-2">Please fix the following errors:</h4>
+                        <ul class="text-sm text-red-700 space-y-1">
+                            <li *ngIf="cityTierInput.errors?.['required'] && cityTierInput.touched">• City tier is
+                                required
+                            </li>
+                            <li *ngIf="categoryInput.errors?.['required'] && categoryInput.touched">• Category is
+                                required
+                            </li>
+                            <li *ngIf="currentConfig.categoryId === 0 && categoryInput.touched">• Please select a valid
+                                category</li>
+                        </ul>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
+                        <button type="button" (click)="closeModal()" [disabled]="modalLoading"
+                            class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            [disabled]="!configForm.form.valid || modalLoading || serviceCategories.length === 0"
+                            class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]">
+                            <span *ngIf="!modalLoading">
+                                <span *ngIf="isEditMode">Update Configuration</span>
+                                <span *ngIf="!isEditMode">Create Configuration</span>
+                            </span>
+                            <span *ngIf="modalLoading" class="flex items-center">
+                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                                <span *ngIf="isEditMode">Updating...</span>
+                                <span *ngIf="!isEditMode">Creating...</span>
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
