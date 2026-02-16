@@ -9,6 +9,7 @@ interface SubCategory {
   id: number;
   categoryId: number;
   name: string;
+  maxProviderUnlocks: number; 
   isActive: boolean;
   saving?: boolean; // For loading state in modal
   updating?: boolean; // For loading state in toggle active
@@ -19,6 +20,7 @@ interface Category {
   id: number;
   name: string;
   isActive: boolean;
+  maxProviderUnlocks: number; 
 }
 
 // Create DTO interface for backend
@@ -26,6 +28,7 @@ interface SubCategoryCreateDto {
   categoryId: number;
   name: string;
   isActive: boolean;
+  maxProviderUnlocks: number; 
 }
 
 @Component({
@@ -110,7 +113,8 @@ export class SubCategoryMasterComponent implements OnInit {
       id: 0,
       categoryId: 0,
       name: '',
-      isActive: true
+      isActive: true,
+      maxProviderUnlocks: 0
     };
   }
 
@@ -153,8 +157,8 @@ export class SubCategoryMasterComponent implements OnInit {
 
   createSubCategory(): void {
     // Validate required fields
-    if (!this.currentSubCategory.name || !this.currentSubCategory.categoryId) {
-      alert('Sub-category name and parent category are required!');
+    if (!this.currentSubCategory.name || !this.currentSubCategory.categoryId || this.currentSubCategory.maxProviderUnlocks < 0) {
+      alert('Sub-category name, parent category, and max provider unlock count are required!');
       return;
     }
 
@@ -162,7 +166,8 @@ export class SubCategoryMasterComponent implements OnInit {
     const createDto: SubCategoryCreateDto = {
       categoryId: this.currentSubCategory.categoryId,
       name: this.currentSubCategory.name,
-      isActive: this.currentSubCategory.isActive
+      isActive: this.currentSubCategory.isActive,
+      maxProviderUnlocks: this.currentSubCategory.maxProviderUnlocks
     };
 
     console.log('Creating sub-category with data:', createDto);
@@ -194,8 +199,8 @@ export class SubCategoryMasterComponent implements OnInit {
 
   updateSubCategory(): void {
     // Validate required fields
-    if (!this.currentSubCategory.name || !this.currentSubCategory.categoryId) {
-      alert('Sub-category name and parent category are required!');
+    if (!this.currentSubCategory.name || !this.currentSubCategory.categoryId || this.currentSubCategory.maxProviderUnlocks < 0) {
+      alert('Sub-category name, parent category, and max provider unlock count are required!');
       return;
     }
 
@@ -204,7 +209,8 @@ export class SubCategoryMasterComponent implements OnInit {
       id: this.currentSubCategory.id,
       categoryId: this.currentSubCategory.categoryId,
       name: this.currentSubCategory.name,
-      isActive: this.currentSubCategory.isActive
+      isActive: this.currentSubCategory.isActive,
+      maxProviderUnlocks: this.currentSubCategory.maxProviderUnlocks
     };
 
     console.log('Updating sub-category with data:', updateData);

@@ -1,0 +1,25 @@
+/* wallet-transaction.component.css */
+.credit-amount {
+    color: #16a34a !important; /* green-600 */
+}
+
+.debit-amount {
+    color: #dc2626 !important; /* red-600 */
+}
+
+.credit-text {
+    color: #16a34a !important;
+}
+
+.debit-text {
+    color: #dc2626 !important;
+}
+
+/* Ensure table text colors */
+.text-green-600 {
+    color: #16a34a !important;
+}
+
+.text-red-600 {
+    color: #dc2626 !important;
+}

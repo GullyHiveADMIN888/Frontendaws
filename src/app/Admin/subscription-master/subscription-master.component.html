@@ -1,14 +1,21 @@
 <div class="min-h-screen bg-gray-50">
   <app-admin-header></app-admin-header>
-  <div class="max-w-7xl mx-auto my-12">
+
+  <div class="max-w-7xl mx-auto my-12 px-4 sm:px-6 lg:px-8">
     <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-        Subscription Plans Master
-      </h1>
-      <p class="text-gray-600">
-        Manage all subscription plans, tiers, and pricing
-      </p>
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+          Subscription Plans Master
+        </h1>
+        <p class="text-gray-600">
+          Manage all subscription plans, tiers, and pricing
+        </p>
+      </div>
+      <button (click)="openAddModal()"
+        class="mt-4 sm:mt-0 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md flex items-center">
+        <span class="mr-2">➕</span> Add New Plan
+      </button>
     </div>
 
     <!-- Stats Cards -->
@@ -17,7 +24,7 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm text-gray-500 mb-1">Total Plans</p>
-            <h3 class="text-2xl font-bold text-gray-800">{{totalPlans}}</h3>
+            <h3 class="text-2xl font-bold text-gray-800">{{totalCount}}</h3>
           </div>
           <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
             <span class="text-blue-600 text-xl">📋</span>
@@ -40,11 +47,11 @@
       <div class="bg-white rounded-xl shadow p-5 border-l-4 border-purple-500">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-500 mb-1">Unique Tiers</p>
-            <h3 class="text-2xl font-bold text-gray-800">{{uniqueTiers}}</h3>
+            <p class="text-sm text-gray-500 mb-1">Avg. Price</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{avgPrice | currency:'INR'}}</h3>
           </div>
           <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
-            <span class="text-purple-600 text-xl">📊</span>
+            <span class="text-purple-600 text-xl">💰</span>
           </div>
         </div>
       </div>
@@ -52,43 +59,243 @@
       <div class="bg-white rounded-xl shadow p-5 border-l-4 border-orange-500">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-500 mb-1">Categories</p>
-            <h3 class="text-2xl font-bold text-gray-800">{{totalCategories}}</h3>
+            <p class="text-sm text-gray-500 mb-1">Avg. Duration</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{avgDuration}} days</h3>
           </div>
           <div class="w-12 h-12 rounded-lg bg-orange-50 flex items-center justify-center">
-            <span class="text-orange-600 text-xl">🏷️</span>
+            <span class="text-orange-600 text-xl">📅</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Add New Plan Button -->
-    <div class="mb-6 flex justify-between items-center">
-      <div class="text-gray-600">
-        Manage subscription plans for different cities and categories
+    <!-- Filters Card -->
+    <div class="bg-white rounded-xl shadow mb-6 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-800">Filters</h3>
       </div>
-      <button (click)="openAddModal()"
-        class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-5 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md flex items-center">
-        <span class="mr-2">➕</span> Add New Plan
-      </button>
+
+      <div class="p-6">
+        <form [formGroup]="filterForm" class="space-y-4">
+          <!-- First Row: Search, Subject, Tier -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Search Term -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Search
+              </label>
+              <input type="text" formControlName="searchTerm" placeholder="Search by name, code, description..."
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+            </div>
+
+            <!-- Subject -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Subject
+              </label>
+              <select formControlName="subject"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">All Subjects</option>
+                <option *ngFor="let option of subjectOptions" [value]="option.value">
+                  {{option.label}}
+                </option>
+              </select>
+            </div>
+
+            <!-- Tier -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Tier
+              </label>
+              <select formControlName="tier"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">All Tiers</option>
+                <option *ngFor="let option of tierOptions" [value]="option.value">
+                  {{option.label}}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Second Row: City Search -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- City Search Dropdown -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                City
+              </label>
+              <div class="relative" #filterCityDropdown>
+                <div class="relative">
+                  <input type="text" formControlName="citySearch" placeholder="Search by city name..."
+                    (input)="onFilterCitySearchInput()"
+                    (input)="onFilterCitySearchClick()"
+                    class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    autocomplete="off" />
+
+                  <!-- Clear button -->
+                  <button *ngIf="selectedFilterCity" type="button" (click)="clearFilterCitySelection()"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600">
+                    <span>✕</span>
+                  </button>
+                </div>
+
+                <!-- Loading State -->
+                <div *ngIf="loadingCities"
+                  class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                  <div class="flex items-center justify-center p-4">
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                    <span class="text-sm text-gray-600">Searching cities...</span>
+                  </div>
+                </div>
+
+                <!-- Dropdown Results -->
+                <div *ngIf="showCityDropdown && !loadingCities && filteredCities.length > 0"
+                  class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                  <div class="py-1">
+                    <div *ngFor="let city of filteredCities; let i = index" (click)="selectFilterCity(city)" tabindex="0"
+                      class="city-dropdown-item px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors focus:outline-none focus:bg-gray-100"
+                      [class.border-b]="i < filteredCities.length - 1">
+                      <div class="flex items-start">
+                        <div class="flex-1">
+                          <div class="font-medium text-gray-900">{{ city.name }}, {{ city.stateName }}</div>
+                          <div class="text-xs text-gray-500">Country: {{ city.country }} | Tier: <span>{{ getTierDisplayValue(city.tier) }}</span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category Search Dropdown -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Category
+              </label>
+              <div class="relative" #filterCategoryDropdown>
+                <div class="relative">
+                  <input type="text" formControlName="categorySearch" placeholder="Search by category name..."
+                    (input)="onFilterCategorySearchInput()"
+                    (input)="onFilterCategorySearchClick()"
+                    class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    autocomplete="off" />
+
+                  <!-- Clear button -->
+                  <button *ngIf="selectedFilterCategory" type="button" (click)="clearFilterCategorySelection()"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600">
+                    <span>✕</span>
+                  </button>
+                </div>
+
+                <!-- Loading State -->
+                <div *ngIf="loadingCategories"
+                  class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                  <div class="flex items-center justify-center p-4">
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                    <span class="text-sm text-gray-600">Searching categories...</span>
+                  </div>
+                </div>
+
+                <!-- Dropdown Results -->
+                <div *ngIf="showCategoryDropdown && !loadingCategories && filteredCategories.length > 0"
+                  class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                  <div class="py-1">
+                    <div *ngFor="let category of filteredCategories; let i = index" (click)="selectFilterCategory(category)"
+                      tabindex="0"
+                      class="category-dropdown-item px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors focus:outline-none focus:bg-gray-100"
+                      [class.border-b]="i < filteredCategories.length - 1">
+                      <div class="flex items-start">
+                        <div class="flex-1">
+                          <div class="font-medium text-gray-900">{{ category.name }}</div>
+                          <div class="text-xs text-gray-500">Slug: {{ category.slug }}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Active Status -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Status
+              </label>
+              <select formControlName="isActive"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">All</option>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Third Row: Price Range and Duration Range -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Price Range -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Price Range (INR)
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="number" formControlName="minPrice" placeholder="Min"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                <span class="text-gray-500">-</span>
+                <input type="number" formControlName="maxPrice" placeholder="Max"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              </div>
+            </div>
+
+            <!-- Duration Range -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Duration Range (Days)
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="number" formControlName="minDuration" placeholder="Min"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                <span class="text-gray-500">-</span>
+                <input type="number" formControlName="maxDuration" placeholder="Max"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              </div>
+            </div>
+          </div>
+
+          
+        </form>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-gray-200">
+          <button (click)="resetFilters()"
+            class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg font-medium hover:bg-gray-200 transition-colors border border-gray-300">
+            <span class="mr-2">🔄</span> Reset Filters
+          </button>
+          <button (click)="applyFilters()"
+            class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
+            Apply Filters
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Table Card -->
     <div class="bg-white rounded-xl shadow overflow-hidden">
-      <div class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div
+        class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div class="flex items-center gap-4">
           <h2 class="text-lg font-semibold text-gray-800">
             Subscription Plans
           </h2>
           <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-            {{subscriptions.length}} Plans
+            {{filteredPlans.length}} Records
           </span>
         </div>
-        
-        <!-- Search -->
+
+        <!-- Local Search (filters existing results) -->
         <div class="w-full sm:w-auto">
           <div class="relative">
-            <input type="text" placeholder="Search plans..." [(ngModel)]="searchTerm" (input)="onSearch()"
+            <input type="text" placeholder="Search in current results..." [(ngModel)]="searchTerm"
+              (input)="filterPlans()"
               class="w-full sm:w-64 px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
             <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
               <span>🔍</span>
@@ -103,8 +310,17 @@
         <p class="text-gray-600">Loading subscription plans...</p>
       </div>
 
+      <!-- Error State -->
+      <div *ngIf="error" class="p-8 text-center">
+        <div class="text-red-600 mb-4">⚠️</div>
+        <p class="text-red-600 mb-4">{{ error }}</p>
+        <button (click)="fetchPlans()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+          Try Again
+        </button>
+      </div>
+
       <!-- Table -->
-      <div *ngIf="!loading && subscriptions.length > 0" class="overflow-x-auto">
+      <div *ngIf="!loading && !error && filteredPlans.length > 0" class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
@@ -124,6 +340,9 @@
                 Duration
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                City/Category
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -132,96 +351,239 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr *ngFor="let plan of filteredSubscriptions" class="hover:bg-gray-50 transition-colors">
-              <!-- Plan Code -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-semibold text-gray-900">{{ plan.code }}</div>
-                <div class="text-xs text-gray-500">ID: {{ plan.id }}</div>
-              </td>
+            <!-- Main rows -->
+            <ng-container *ngFor="let plan of filteredPlans">
+              <tr class="hover:bg-gray-50 transition-colors">
+                <!-- Plan Code -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-semibold text-gray-900">{{ plan.code }}</div>
+                  <div class="text-xs text-gray-500">ID: {{ plan.id }}</div>
+                </td>
 
-              <!-- Name -->
-              <td class="px-6 py-4">
-                <div class="text-sm font-medium text-gray-900">{{ plan.name }}</div>
-                <div class="text-xs text-gray-500 truncate max-w-xs">{{ plan.description }}</div>
-              </td>
+                <!-- Name -->
+                <td class="px-6 py-4">
+                  <div class="text-sm font-medium text-gray-900">{{ plan.name }}</div>
+                  <div class="text-xs text-gray-500 truncate max-w-xs">{{ plan.description }}</div>
+                </td>
 
-              <!-- Subject & Tier -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex flex-col gap-1">
-                  <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium inline-block w-fit">
-                    {{ plan.subject }}
+                <!-- Subject & Tier -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex flex-col gap-1">
+                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium inline-block w-fit">
+                      {{ getSubjectLabel(plan.subject) }}
+                    </span>
+                    <span
+                      class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-medium inline-block w-fit">
+                      {{ getTierLabel(plan.tier) }}
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Price -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-semibold text-gray-900">
+                    {{ formatPrice(plan.priceAmount, plan.currency) }}
+                  </div>
+                </td>
+
+                <!-- Duration -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">{{ plan.durationDays }} days</div>
+                </td>
+
+                <!-- City/Category -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">{{ plan.cityName || 'All Cities' }}</div>
+                  <div class="text-xs text-gray-500">{{ plan.categoryName || 'All Categories' }}</div>
+                </td>
+
+                <!-- Status -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span [class]="plan.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                    class="px-2 py-1 rounded text-xs font-medium">
+                    {{ plan.isActive ? 'Active' : 'Inactive' }}
                   </span>
-                  <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-medium inline-block w-fit">
-                    {{ plan.tier }}
-                  </span>
-                </div>
-              </td>
+                </td>
 
-              <!-- Price -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-semibold text-gray-900">
-                  {{ plan.currency }} {{ plan.price_amount }}
-                </div>
-              </td>
+                <!-- Actions -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center gap-2">
+                    <button (click)="editPlan(plan)"
+                      class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                      title="Edit Plan">
+                      <span>✏️</span>
+                    </button>
+                    <button (click)="toggleActive(plan)"
+                      [class]="plan.isActive ? 'text-orange-600 hover:text-orange-900 hover:bg-orange-50' : 'text-green-600 hover:text-green-900 hover:bg-green-50'"
+                      class="p-2 rounded-lg transition-colors"
+                      [title]="plan.isActive ? 'Deactivate Plan' : 'Activate Plan'">
+                      <span>{{ plan.isActive ? '⏸️' : '▶️' }}</span>
+                    </button>
+                    <button (click)="toggleDetails(plan)"
+                      class="text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                      [title]="expandedPlanId === plan.id ? 'Hide Details' : 'View Details'">
+                      <span>{{ expandedPlanId === plan.id ? '📖' : '👁️' }}</span>
+                    </button>
+                    <button (click)="confirmDelete(plan)"
+                      class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                      title="Delete Plan">
+                      <span>🗑️</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
 
-              <!-- Duration -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ plan.duration_days }} days</div>
-              </td>
+              <!-- Expanded Details Row (shows when eye icon is clicked) -->
+              <tr *ngIf="expandedPlanId === plan.id" class="bg-gray-50">
+                <td colspan="8" class="px-6 py-6">
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Left Column: Plan Details -->
+                    <div>
+                      <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-semibold text-gray-800 flex items-center">
+                          <span class="mr-2">📋</span> Plan Details
+                        </h4>
+                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                          ID: {{ plan.id }}
+                        </span>
+                      </div>
+                      <div class="bg-white rounded-lg border border-gray-200 p-4">
+                        <div class="grid grid-cols-2 gap-4">
+                          <div>
+                            <p class="text-xs text-gray-500">Subject</p>
+                            <p class="text-sm font-medium">{{ getSubjectLabel(plan.subject) }}</p>
+                          </div>
+                          <div>
+                            <p class="text-xs text-gray-500">Tier</p>
+                            <p class="text-sm font-medium">{{ getTierLabel(plan.tier) }}</p>
+                          </div>
+                          <div>
+                            <p class="text-xs text-gray-500">Code</p>
+                            <p class="text-sm font-medium">{{ plan.code }}</p>
+                          </div>
+                          <div>
+                            <p class="text-xs text-gray-500">Name</p>
+                            <p class="text-sm font-medium">{{ plan.name }}</p>
+                          </div>
+                          <div>
+                            <p class="text-xs text-gray-500">Price</p>
+                            <p class="text-sm font-medium">{{ formatPrice(plan.priceAmount, plan.currency) }}</p>
+                          </div>
+                          <div>
+                            <p class="text-xs text-gray-500">Duration</p>
+                            <p class="text-sm font-medium">{{ plan.durationDays }} days</p>
+                          </div>
+                          <div>
+                            <p class="text-xs text-gray-500">City</p>
+                            <p class="text-sm font-medium">{{ plan.cityName || 'All Cities' }}</p>
+                          </div>
+                          <div>
+                            <p class="text-xs text-gray-500">Category</p>
+                            <p class="text-sm font-medium">{{ plan.categoryName || 'All Categories' }}</p>
+                          </div>
+                          <div>
+                            <p class="text-xs text-gray-500">Created</p>
+                            <p class="text-sm font-medium">{{ plan.createdAt | date:'dd MMM yyyy, hh:mm a' }}</p>
+                          </div>
+                          <div>
+                            <p class="text-xs text-gray-500">Updated</p>
+                            <p class="text-sm font-medium">{{ plan.updatedAt | date:'dd MMM yyyy, hh:mm a' }}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
-              <!-- Status -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span [class]="plan.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-                  class="px-2 py-1 rounded text-xs font-medium">
-                  {{ plan.is_active ? 'Active' : 'Inactive' }}
-                </span>
-              </td>
+                    <!-- Right Column: Entitlements -->
+                    <div>
+                      <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-semibold text-gray-800 flex items-center">
+                          <span class="mr-2">✨</span> Entitlements
+                        </h4>
+                        <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">
+                          JSON Configuration
+                        </span>
+                      </div>
+                      <div class="bg-white rounded-lg border border-gray-200 p-4 max-h-80 overflow-y-auto">
+                        <pre
+                          class="text-sm text-gray-700 whitespace-pre-wrap font-mono">{{ formatEntitlements(plan.entitlements) }}</pre>
+                      </div>
+                    </div>
+                  </div>
 
-              <!-- Actions -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center gap-2">
-                  <button (click)="editPlan(plan)"
-                    class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors"
-                    title="Edit Plan">
-                    <span>✏️</span>
-                  </button>
-                  <button (click)="togglePlanStatus(plan)"
-                    [class]="plan.is_active ? 'text-orange-600 hover:text-orange-900 hover:bg-orange-50' : 'text-green-600 hover:text-green-900 hover:bg-green-50'"
-                    class="p-2 rounded-lg transition-colors"
-                    [title]="plan.is_active ? 'Deactivate Plan' : 'Activate Plan'">
-                    <span>{{ plan.is_active ? '⏸️' : '▶️' }}</span>
-                  </button>
-                  <button (click)="viewDetails(plan)"
-                    class="text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                    title="View Details">
-                    <span>👁️</span>
-                  </button>
-                  <button (click)="deletePlan(plan)"
-                    class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
-                    title="Delete Plan">
-                    <span>🗑️</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
+                  <!-- Description (if exists) -->
+                  <div *ngIf="plan.description" class="mt-4">
+                    <div class="flex items-center mb-2">
+                      <h4 class="font-semibold text-gray-800 flex items-center">
+                        <span class="mr-2">📝</span> Description
+                      </h4>
+                    </div>
+                    <div class="bg-white rounded-lg border border-gray-200 p-3">
+                      <p class="text-sm text-gray-700">{{ plan.description }}</p>
+                    </div>
+                  </div>
+
+                  <!-- Close Button -->
+                  <div class="mt-4 text-right">
+                    <button (click)="toggleDetails(plan)"
+                      class="text-gray-600 hover:text-gray-800 text-sm font-medium flex items-center ml-auto bg-white px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50">
+                      <span class="mr-1">↑</span> Hide Details
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
           </tbody>
         </table>
       </div>
 
       <!-- Empty State -->
-      <div *ngIf="!loading && subscriptions.length === 0" class="p-12 text-center">
+      <div *ngIf="!loading && !error && filteredPlans.length === 0" class="p-12 text-center">
         <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <span class="text-gray-400 text-3xl">📋</span>
         </div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">No Subscription Plans</h3>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">No Subscription Plans Found</h3>
         <p class="text-gray-600 mb-6">
-          No subscription plans found. Create your first plan to get started.
+          No subscription plans match your current filters. Try adjusting your search or create a new plan.
         </p>
-        <button (click)="openAddModal()"
-          class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
-          <span class="mr-2">➕</span>
-          Add New Plan
-        </button>
+        <div class="flex items-center justify-center gap-3">
+          <button (click)="resetFilters()"
+            class="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors border border-gray-300">
+            <span class="mr-2">🔄</span> Reset Filters
+          </button>
+          <button (click)="openAddModal()"
+            class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
+            <span class="mr-2">➕</span> Add New Plan
+          </button>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div *ngIf="!loading && !error && filteredPlans.length > 0"
+        class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+        <div class="text-sm text-gray-500">
+          Showing <span class="font-medium">{{getStartIndex()}}</span> to
+          <span class="font-medium">{{getEndIndex()}}</span> of
+          <span class="font-medium">{{totalCount}}</span> plans
+        </div>
+        <div class="flex items-center gap-2">
+          <button (click)="changePage(-1)" [disabled]="pageNumber === 1"
+            class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            <span class="mr-1">←</span> Previous
+          </button>
+
+          <div class="flex items-center gap-1">
+            <button *ngFor="let page of getPageNumbers()" (click)="goToPage(page)"
+              [class]="page === pageNumber ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'"
+              class="px-3 py-1 rounded text-sm">
+              {{page}}
+            </button>
+          </div>
+
+          <button (click)="changePage(1)" [disabled]="pageNumber * pageSize >= totalCount"
+            class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            Next <span class="ml-1">→</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -234,7 +596,7 @@
       <div class="px-8 py-6 border-b border-gray-200">
         <div class="flex items-center justify-between">
           <h3 class="text-xl font-bold text-gray-800">
-            {{ editingPlan ? 'Edit Subscription Plan' : 'Add New Subscription Plan' }}
+            {{ isEditMode ? 'Edit Subscription Plan' : 'Add New Subscription Plan' }}
           </h3>
           <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600 p-2">
             <span class="text-xl">✕</span>
@@ -254,8 +616,9 @@
               </label>
               <input type="text" formControlName="code"
                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g., BASIC_MONTHLY">
-              <div *ngIf="planForm.get('code')?.invalid && planForm.get('code')?.touched" class="mt-1 text-xs text-red-600">
+                placeholder="e.g., PRO-MONTHLY-001">
+              <div *ngIf="planForm.get('code')?.invalid && planForm.get('code')?.touched"
+                class="mt-1 text-xs text-red-600">
                 Plan code is required
               </div>
             </div>
@@ -267,8 +630,9 @@
               </label>
               <input type="text" formControlName="name"
                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g., Basic Monthly Plan">
-              <div *ngIf="planForm.get('name')?.invalid && planForm.get('name')?.touched" class="mt-1 text-xs text-red-600">
+                placeholder="e.g., Pro Monthly Plan">
+              <div *ngIf="planForm.get('name')?.invalid && planForm.get('name')?.touched"
+                class="mt-1 text-xs text-red-600">
                 Plan name is required
               </div>
             </div>
@@ -281,12 +645,12 @@
               <select formControlName="subject"
                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <option value="">Select Subject</option>
-                <option value="LEAD_GENERATION">Lead Generation</option>
-                <option value="LEAD_MANAGEMENT">Lead Management</option>
-                <option value="ANALYTICS">Analytics</option>
-                <option value="REPORTING">Reporting</option>
+                <option *ngFor="let option of subjectOptions" [value]="option.value">
+                  {{option.label}}
+                </option>
               </select>
-              <div *ngIf="planForm.get('subject')?.invalid && planForm.get('subject')?.touched" class="mt-1 text-xs text-red-600">
+              <div *ngIf="planForm.get('subject')?.invalid && planForm.get('subject')?.touched"
+                class="mt-1 text-xs text-red-600">
                 Subject is required
               </div>
             </div>
@@ -302,12 +666,12 @@
               <select formControlName="tier"
                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <option value="">Select Tier</option>
-                <option value="BASIC">Basic</option>
-                <option value="STANDARD">Standard</option>
-                <option value="PREMIUM">Premium</option>
-                <option value="ENTERPRISE">Enterprise</option>
+                <option *ngFor="let option of tierOptions" [value]="option.value">
+                  {{option.label}}
+                </option>
               </select>
-              <div *ngIf="planForm.get('tier')?.invalid && planForm.get('tier')?.touched" class="mt-1 text-xs text-red-600">
+              <div *ngIf="planForm.get('tier')?.invalid && planForm.get('tier')?.touched"
+                class="mt-1 text-xs text-red-600">
                 Tier is required
               </div>
             </div>
@@ -317,15 +681,11 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Price Amount *
               </label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span class="text-gray-500">₹</span>
-                </div>
-                <input type="number" step="0.01" min="0" formControlName="price_amount"
-                  class="w-full px-4 py-2.5 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="0.00">
-              </div>
-              <div *ngIf="planForm.get('price_amount')?.invalid && planForm.get('price_amount')?.touched" class="mt-1 text-xs text-red-600">
+              <input type="number" step="0.01" min="0" formControlName="priceAmount"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="0.00">
+              <div *ngIf="planForm.get('priceAmount')?.invalid && planForm.get('priceAmount')?.touched"
+                class="mt-1 text-xs text-red-600">
                 Valid price amount is required
               </div>
             </div>
@@ -337,10 +697,9 @@
               </label>
               <select formControlName="currency"
                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option value="INR">INR (₹)</option>
-                <option value="USD">USD ($)</option>
-                <option value="EUR">EUR (€)</option>
-                <option value="GBP">GBP (£)</option>
+                <option *ngFor="let option of currencyOptions" [value]="option.value">
+                  {{option.label}}
+                </option>
               </select>
             </div>
           </div>
@@ -352,32 +711,109 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Duration (Days) *
               </label>
-              <input type="number" min="1" formControlName="duration_days"
+              <input type="number" min="1" formControlName="durationDays"
                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="e.g., 30">
-              <div *ngIf="planForm.get('duration_days')?.invalid && planForm.get('duration_days')?.touched" class="mt-1 text-xs text-red-600">
+              <div *ngIf="planForm.get('durationDays')?.invalid && planForm.get('durationDays')?.touched"
+                class="mt-1 text-xs text-red-600">
                 Duration must be at least 1 day
               </div>
             </div>
 
-            <!-- City ID -->
+            <!-- City Search Dropdown -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                City ID (Optional)
+                City (Optional)
               </label>
-              <input type="number" min="0" formControlName="city_id"
-                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Leave blank for all cities">
+              <div class="relative" #cityDropdown>
+                <div class="relative">
+                  <input type="text" 
+                         formControlName="citySearch" 
+                         #citySearchInput
+                         placeholder="Search for a city..."
+                         (input)="onCitySearchInput()"
+                         (click)="onCitySearchClick()"
+                         (keydown)="onCityInputKeydown($event)"
+                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                         autocomplete="off" />
+
+                  <!-- Hidden input for cityId -->
+                  <input type="hidden" formControlName="cityId" />
+
+                  <!-- Clear button -->
+                  <button *ngIf="selectedCity" type="button" (click)="clearCitySelection()"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600">
+                    <span>✕</span>
+                  </button>
+                </div>
+
+                <!-- Loading State -->
+                <div *ngIf="loadingCities" 
+                     class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                  <div class="flex items-center justify-center p-4">
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                    <span class="text-sm text-gray-600">Searching cities...</span>
+                  </div>
+                </div>
+
+                <!-- Dropdown -->
+                <div *ngIf="showCityDropdown && !loadingCities && filteredCities.length > 0"
+                     class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                  <div *ngFor="let city of filteredCities" 
+                       (click)="selectCity(city)"
+                       class="px-4 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-b-0">
+                    {{ city.name }}, {{ city.stateName }} ({{ city.country }})
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <!-- Category ID -->
+            <!-- Category Search Dropdown -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                Category ID (Optional)
+                Category (Optional)
               </label>
-              <input type="number" min="0" formControlName="category_id"
-                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Leave blank for all categories">
+              <div class="relative" #categoryDropdown>
+                <div class="relative">
+                  <input type="text" 
+                         formControlName="categorySearch" 
+                         #categorySearchInput
+                         placeholder="Search for a category..."
+                         (input)="onCategorySearchInput()"
+                         (click)="onCategorySearchClick()"
+                         (keydown)="onCategoryInputKeydown($event)"
+                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                         autocomplete="off" />
+
+                  <!-- Hidden input for categoryId -->
+                  <input type="hidden" formControlName="categoryId" />
+
+                  <!-- Clear button -->
+                  <button *ngIf="selectedCategory" type="button" (click)="clearCategorySelection()"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600">
+                    <span>✕</span>
+                  </button>
+                </div>
+
+                <!-- Loading State -->
+                <div *ngIf="loadingCategories"
+                  class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                  <div class="flex items-center justify-center p-4">
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                    <span class="text-sm text-gray-600">Searching categories...</span>
+                  </div>
+                </div>
+
+                <!-- Dropdown -->
+                <div *ngIf="showCategoryDropdown && !loadingCategories && filteredCategories.length > 0"
+                  class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                  <div *ngFor="let category of filteredCategories" 
+                       (click)="selectCategory(category)"
+                       class="px-4 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-b-0">
+                    {{ category.name }}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -399,35 +835,38 @@
             <div class="border border-gray-300 rounded-lg overflow-hidden">
               <textarea formControlName="entitlements" rows="8"
                 class="w-full px-4 py-2.5 font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                placeholder='{{ "{" }}"max_leads": 100, "max_users": 3, "features": ["basic_analytics", "email_support"]{{ "}" }}'></textarea>
+                placeholder='&lcub; "max_leads": 100, "max_users": 3, "features": ["basic_analytics", "email_support"] &rcub;'></textarea>
             </div>
-            <div *ngIf="planForm.get('entitlements')?.invalid && planForm.get('entitlements')?.touched" class="mt-1 text-xs text-red-600">
+            <div *ngIf="planForm.get('entitlements')?.invalid && planForm.get('entitlements')?.touched"
+              class="mt-1 text-xs text-red-600">
               Valid JSON is required
             </div>
             <div class="mt-2 text-xs text-gray-500">
-              Enter valid JSON format. Example: {{ '{' }}"max_leads": 100, "max_users": 3, "features": ["basic_analytics"]{{ '}' }}
+              Enter valid JSON format. Example: &lcub;"max_leads": 100, "max_users": 3, "features": ["basic_analytics"]&rcub;
             </div>
           </div>
 
           <!-- Active Status -->
           <div class="flex items-center">
-            <input type="checkbox" formControlName="is_active" id="is_active"
+            <input type="checkbox" formControlName="isActive" id="isActive"
               class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-            <label for="is_active" class="ml-2 text-sm font-medium text-gray-700">
+            <label for="isActive" class="ml-2 text-sm font-medium text-gray-700">
               Active Plan
             </label>
           </div>
 
-          <!-- Submit Button (in the form) -->
+          <!-- Submit Button -->
           <div class="pt-6 border-t border-gray-200">
             <div class="flex items-center justify-end gap-3">
               <button type="button" (click)="closeModal()"
                 class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg font-medium hover:bg-gray-200 transition-colors border border-gray-300">
                 Cancel
               </button>
-              <button type="submit" [disabled]="planForm.invalid"
-                class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
-                {{ editingPlan ? 'Update Plan' : 'Create Plan' }}
+              <button type="submit" [disabled]="planForm.invalid || modalLoading"
+                class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+                <span *ngIf="modalLoading"
+                  class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+                {{ isEditMode ? 'Update Plan' : 'Create Plan' }}
               </button>
             </div>
           </div>
@@ -435,6 +874,4 @@
       </div>
     </div>
   </div>
-
-  <!-- End Modal -->
 </div>
