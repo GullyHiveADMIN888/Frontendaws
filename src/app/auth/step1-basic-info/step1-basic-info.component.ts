@@ -6,7 +6,6 @@ import { PLATFORM_ID } from '@angular/core';
 import { AuthService } from '../auth.service';
 
 import { Auth, signInWithPhoneNumber, ConfirmationResult } from '@angular/fire/auth';
-// import { RecaptchaVerifier } from 'firebase/auth';
 
 @Component({
   selector: 'app-step1-basic-info',
@@ -53,40 +52,68 @@ export class Step1BasicInfoComponent {
   }
 }
 
+//   onCategoryChange(categoryId: number) {
+//   if (!categoryId) return;
+
+//   const id = Number(categoryId);
+
+//   this.formData.serviceCategoryId = id;
+//   this.inputChange.emit({ field: 'serviceCategoryId', value: id });
+
+//   this.formData.subCategoryIds = [];
+//   this.subCategories = [];
+
+//   this.authService.getSubCategories(id).subscribe(res => {
+//     this.subCategories = res;
+//   });
+// }
+
+
+  // toggleSubCategory(subId: number) {
+  //   if (!this.formData.subCategoryIds) {
+  //     this.formData.subCategoryIds = [];
+  //   }
+
+  //   const index = this.formData.subCategoryIds.indexOf(subId);
+
+  //   if (index > -1) {
+  //     this.formData.subCategoryIds.splice(index, 1);
+  //   } else {
+  //     this.formData.subCategoryIds.push(subId);
+  //   }
+
+  //   // Emit changes
+  //   this.inputChange.emit({ field: 'subCategoryIds', value: this.formData.subCategoryIds });
+  // }
+
   onCategoryChange(categoryId: number) {
-  if (!categoryId) return;
-
   const id = Number(categoryId);
-
   this.formData.serviceCategoryId = id;
   this.inputChange.emit({ field: 'serviceCategoryId', value: id });
 
+  // Reset subcategories
   this.formData.subCategoryIds = [];
   this.subCategories = [];
 
-  this.authService.getSubCategories(id).subscribe(res => {
-    this.subCategories = res;
-  });
+  if (id) {
+    this.authService.getSubCategories(id).subscribe(res => {
+      this.subCategories = res;
+
+      // Optional: preselect or reset subcategories
+      this.inputChange.emit({ field: 'subCategoryIds', value: this.formData.subCategoryIds });
+    });
+  }
 }
 
+toggleSubCategory(subId: number) {
+  if (!this.formData.subCategoryIds) this.formData.subCategoryIds = [];
+  const idx = this.formData.subCategoryIds.indexOf(subId);
+  if (idx > -1) this.formData.subCategoryIds.splice(idx, 1);
+  else this.formData.subCategoryIds.push(subId);
 
-  toggleSubCategory(subId: number) {
-    if (!this.formData.subCategoryIds) {
-      this.formData.subCategoryIds = [];
-    }
-
-    const index = this.formData.subCategoryIds.indexOf(subId);
-
-    if (index > -1) {
-      this.formData.subCategoryIds.splice(index, 1);
-    } else {
-      this.formData.subCategoryIds.push(subId);
-    }
-
-    // Emit changes
-    this.inputChange.emit({ field: 'subCategoryIds', value: this.formData.subCategoryIds });
-  }
-
+  // Emit after every toggle
+  this.inputChange.emit({ field: 'subCategoryIds', value: this.formData.subCategoryIds });
+}
 
   onProfilePictureChange(event: Event) {
     const input = event.target as HTMLInputElement;
