@@ -16,34 +16,9 @@ import { ResponsesComponent } from './responses/responses.component';
 import { HelpComponent } from './help/help.component';
 import { ReferEarnComponent } from './refer-earn/refer-earn.component';
 import {  SharableProfileComponent} from './sharable-profile/sharable-profile.component';
-// const routes: Routes = [
-//   { path: '', component: DashboardComponent },          // /seller -> dashboard
-//   { path: 'recentLeads', component: RecentLeadsComponent },  // /seller/leads -> all leads
-//   { path: 'leads/:id', component: RecentLeadsComponent },
-//    { path: 'cards', component: StatsCardsComponent },          // /seller -> dashboard
-//  // { path: 'completeProfile', component: ProfileCompletionComponent },  // /seller/leads -> all leads
-//   { path: 'quickAction', component: QuickActionsComponent }, // optional lead details
-//   { path: 'completeProfile', component: PublicProfileComponent },
-//    { path: 'leads', component: LeadsComponent },
-//     { path: 'responses', component: ResponsesComponent },
-//      { path: 'help', component: HelpComponent },
+import { LedgerComponent } from './ledger/ledger.component';
 
-//   {
-//     path: 'settings',
-//     component: SettingsComponent,
-//     children: [
-//       {
-//         path: 'profile',
-//         component: EditProfileComponent
-//       }
-//     ]
-//   },
-//   {
-//   path: 'completeProfile',
-//     component: PublicProfileComponent,
-//   }
 
-// ];
 const routes: Routes = [
   {
     path: '',
@@ -66,7 +41,8 @@ const routes: Routes = [
 
       // Stats / cards
       { path: 'cards', component: StatsCardsComponent },
-
+      // Wallet  👈 ADD THIS
+      { path: 'ledger', component: LedgerComponent },
       // Quick actions
       { path: 'quickAction', component: QuickActionsComponent },
 

@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-//import { environment } from '../../environments/environment';
- import { environment } from '../../environments/environment.prod';
+// import { environment } from '../../environments/environment';
+  import { environment } from '../../environments/environment.prod';
 
 
 
@@ -113,6 +113,12 @@ getCities(stateId: number): Observable<any[]> {
       throw new Error('OTP not requested');
     }
     return this.confirmationResult.confirm(otp);
+
+  //   const result = await this.confirmationResult.confirm(otp);
+  // // 🔥 CLEAR after success
+  // this.clearRecaptcha();
+  // return result;
+
   }
 
 

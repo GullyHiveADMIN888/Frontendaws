@@ -154,7 +154,27 @@ onInputFieldChange(field: string, value: any, event?: Event) {
 }
 
 
-async onSendOTP() {
+// async onSendOTP() {
+//   const mobile = this.formData?.mobile;
+
+//   if (!mobile) {
+//     this.errors.mobile = 'Mobile number is required';
+//     return;
+//   }
+
+//   if (!/^\d{10}$/.test(mobile)) {
+//     this.errors.mobile = 'Mobile number must be 10 digits';
+//     return;
+//   }
+
+//   try {
+//     await this.authService.sendOtp(mobile);
+//     this.sendOTP.emit(); // open OTP modal
+//   } catch (err: any) {
+//     this.errors.mobile = err.message || 'OTP failed';
+//   }
+// }
+onSendOTP() {
   const mobile = this.formData?.mobile;
 
   if (!mobile) {
@@ -167,13 +187,28 @@ async onSendOTP() {
     return;
   }
 
-  try {
-    await this.authService.sendOtp(mobile);
-    this.sendOTP.emit(); // open OTP modal
-  } catch (err: any) {
-    this.errors.mobile = err.message || 'OTP failed';
-  }
+  // 🔥 Call API
+  this.authService.checkMobileExists(mobile).subscribe({
+    next: (response) => {
+
+      if (response.exists) {
+        this.errors.mobile = 'Mobile number already registered';
+        return; // ❌ Stop here
+      }
+
+      // ✅ If mobile NOT exists → send OTP
+      this.authService.sendOtp(mobile).then(() => {
+        this.sendOTP.emit();
+      });
+
+    },
+    error: (err) => {
+      this.errors.mobile = 'Something went wrong';
+      console.error(err);
+    }
+  });
 }
+
 
 onNextClick() {
   if (!this.isMobileVerified) {

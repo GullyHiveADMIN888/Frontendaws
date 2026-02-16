@@ -17,6 +17,7 @@ import { HelpComponent } from './help/help.component';
 import { ReferEarnComponent } from './refer-earn/refer-earn.component';
 import { ReactiveFormsModule } from '@angular/forms'; //
 import { FormsModule } from '@angular/forms';
+import { LedgerComponent } from './ledger/ledger.component';
 
 @NgModule({
   declarations: [
@@ -31,14 +32,16 @@ import { FormsModule } from '@angular/forms';
     LeadsComponent,
     ResponsesComponent,
     HelpComponent,
-    ReferEarnComponent
+    ReferEarnComponent,
+    LedgerComponent
+   
   ],
   imports: [
     CommonModule,
     SellerRoutingModule,
      RouterModule, // needed for routerLink
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
   ]
 })
 export class SellerModule {}

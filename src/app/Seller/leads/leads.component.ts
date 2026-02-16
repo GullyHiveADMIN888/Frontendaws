@@ -1,8 +1,7 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 import { SellerService, Lead } from '../seller.service';
-
 
 @Component({
   selector: 'app-leads',
@@ -28,7 +27,7 @@ export class LeadsComponent implements OnInit {
 quoteAmount: string ='';
 quoteMessage: string = '';
 
-
+@Input() totalBalance: number = 0;
   constructor(private sellerService: SellerService) { }
 
   ngOnInit(): void {
@@ -74,7 +73,9 @@ loadLeads() {
           time: this.timeAgo(l.createdAt),
           leadPrice: l.leadPrice ? `${l.leadPrice}` : undefined,
           priceBreakdown: priceBreakdown,
-          isPurchased: l.isPurchased ?? false,
+         isPurchased: l.isPurchased ?? false,
+     //  isPurchased: l.isPurchased === true || l.isPurchased === 'true',
+
         } as Lead;
       });
 
@@ -193,6 +194,13 @@ handleSendQuote(lead: any) {
   }
 }
 
+
+
+
+
+
+
+
 showConfirmModal = false;
 
 // Open the confirmation modal
@@ -222,6 +230,7 @@ closeConfirmModal() {
       // ✅ Close modal
       this.showPaymentModal = false;
       this.showConfirmModal = false;
+      this.showSendQuoteModal = true;
       alert(`Lead purchased successfully for ₹${res.pplPrice}`);
     },
 
@@ -238,6 +247,7 @@ closeConfirmModal() {
     }
   });
 }
+
 
 
 sendQuote() {
