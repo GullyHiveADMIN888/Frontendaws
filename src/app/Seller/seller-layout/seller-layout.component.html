@@ -45,7 +45,7 @@
           class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-semibold">
           {{ userInitials }}
         </div> -->
-        <img *ngIf="user.profilePictureUrl; else initialsAvatar" [src]="user.profilePictureUrl" class="w-10 h-10 rounded-full object-cover" />
+        <img *ngIf="user?.profilePictureUrl; else initialsAvatar" [src]="user?.profilePictureUrl" class="w-10 h-10 rounded-full object-cover" />
 <ng-template #initialsAvatar>
   <div class="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center">
     {{ userInitials }}
