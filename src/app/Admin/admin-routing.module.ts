@@ -20,6 +20,7 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
 import { EmailTemplateComponent } from './email-template/email-template.component';
 import { LeadPricingConfigComponent } from './lead-pricing-config/lead-pricing-config.component';
 import { LeadPricingEngineComponent } from './lead-pricing-engine/lead-pricing-engine.component';
+import { WalletTransactionComponent } from './wallet-transaction/wallet-transaction.component';
 
 const routes: Routes = [
   { 
@@ -102,6 +103,10 @@ const routes: Routes = [
   {
     path: 'lead-price-engine',
     component: LeadPricingEngineComponent
+  },
+  {
+    path: 'wallet-transactions',
+    component: WalletTransactionComponent
   },
   { 
     path: '**', 

@@ -18,7 +18,7 @@
 
 
 import { ApplicationConfig } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withHashLocation } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 
@@ -31,7 +31,8 @@ import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    provideRouter(routes, withHashLocation()),
+    // provideRouter(routes),
     provideAnimations(),
     provideHttpClient(withInterceptors([jwtInterceptor])),
 
@@ -40,4 +41,6 @@ export const appConfig: ApplicationConfig = {
     provideAuth(() => getAuth()),
   ]
 };
+
+
 

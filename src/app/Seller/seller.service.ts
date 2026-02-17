@@ -318,6 +318,7 @@ sharableProfile(sellerId: number) {
           profile.profilePictureUrl = environment.assetUrl  + profile.profilePictureUrl;
         }
 
+        console.log('Sharable profile data:', profile); // Debug log
         return profile;
       })
     );
