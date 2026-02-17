@@ -111,10 +111,10 @@ export class RegisterComponent {
     }
 
     // 🔴 Mobile NOT verified → STOP + ALERT
-    if (!this.isMobileVerified) {
-      alert('Please verify your mobile number before continuing.');
-      return;
-    }
+    // if (!this.isMobileVerified) {
+    //   alert('Please verify your mobile number before continuing.');
+    //   return;
+    // }
 
     // ✅ All good → go to Legal Identity
     this.currentStep = 3;
@@ -160,7 +160,7 @@ export class RegisterComponent {
     formData.append('Mobile', this.formData.mobile || '');
     // formData.append('CoverageArea', this.formData.coverageArea || '');
     formData.append('ProfessionalType', this.formData.professionalType || '');
-   // formData.append('ServiceCategory', JSON.stringify(this.formData.serviceCategory || []));
+    formData.append('ServiceCategory', JSON.stringify(this.formData.serviceCategory || []));
 
 
     // ✅ Service Category IDs
@@ -307,8 +307,8 @@ export class RegisterComponent {
   validateStep4(): boolean {
     this.errors = {};
 
-    if (!this.formData.selfOverview || this.formData.selfOverview.trim().length < 50) {
-      this.errors.selfOverview = 'Minimum 50 characters required';
+    if (!this.formData.selfOverview || this.formData.selfOverview.trim().length < 150) {
+      this.errors.selfOverview = 'Minimum 150 characters required';
     }
 
     if (!this.formData.skillsBackground || this.formData.skillsBackground.trim().length < 50) {
