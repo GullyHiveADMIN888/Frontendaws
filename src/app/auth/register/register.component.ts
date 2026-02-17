@@ -262,9 +262,17 @@ export class RegisterComponent {
     // if (!this.formData.coverageArea?.trim()) {
     //   this.errors.coverageArea = 'Coverage area is required';
     // }
-    if (!this.formData.password?.trim()) {
-      this.errors.password = 'password is required';
-    }
+    // if (!this.formData.password?.trim()) {
+    //   this.errors.password = 'password is required';
+    // }
+// 🔹 PASSWORD (Min 6, 1 uppercase, 1 number, 1 special char)
+if (!this.formData.password?.trim()) {
+  this.errors.password = 'Password is required';
+}
+else if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/.test(this.formData.password)) {
+  this.errors.password =
+    'Password must be at least 6 characters and include 1 uppercase letter, 1 number, and 1 special character';
+}
 
     if (!this.formData.professionalType?.trim()) {
       this.errors.professionalType = 'Select professional type';
