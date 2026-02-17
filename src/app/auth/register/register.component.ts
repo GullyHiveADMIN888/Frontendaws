@@ -111,10 +111,10 @@ export class RegisterComponent {
     }
 
     // 🔴 Mobile NOT verified → STOP + ALERT
-    if (!this.isMobileVerified) {
-      alert('Please verify your mobile number before continuing.');
-      return;
-    }
+    // if (!this.isMobileVerified) {
+    //   alert('Please verify your mobile number before continuing.');
+    //   return;
+    // }
 
     // ✅ All good → go to Legal Identity
     this.currentStep = 3;
@@ -255,9 +255,16 @@ export class RegisterComponent {
     if (!this.formData.serviceCategoryId) {
       this.errors.serviceCategoryId = 'Select a service category';
     }
-    if (!this.formData.subCategoryIds?.length) {
-      this.errors.subCategoryIds = 'Select at least one service subCategoory';
-    }
+    // if (!this.formData.subCategoryIds?.length) {
+    //   this.errors.subCategoryIds = 'Select at least one service subCategoory';
+    // }
+    // 🔹 SUBCATEGORY VALIDATION
+if (this.formData.hasSubCategories) {
+  if (!this.formData.subCategoryIds?.length) {
+    this.errors.subCategoryIds = 'Select at least one service subcategory';
+  }
+}
+
 
     // if (!this.formData.coverageArea?.trim()) {
     //   this.errors.coverageArea = 'Coverage area is required';
@@ -282,13 +289,6 @@ else if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/.test(this.formData.passwor
   }
 
 
-
-
-
-
-
-
-
   validateStep3(): boolean {
     this.errors = {};
     if (!this.formData.businessName?.length) {
@@ -309,6 +309,18 @@ else if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/.test(this.formData.passwor
     if (!this.formData.line1?.trim()) {
       this.errors.line1 = 'Line 1 is required';
     }
+    // if (!this.formData.state?.trim()) {
+    //   this.errors.state = 'State is required';
+    // }
+    // if (!this.formData.city?.trim()) {
+    //   this.errors.city = 'City  is required';
+    // }
+    // if (!this.formData.line1?.trim()) {
+    //   this.errors.line1 = 'Line 1 is required';
+    // }
+    // if (!this.formData.line1?.trim()) {
+    //   this.errors.line1 = 'Line 1 is required';
+    // }
     return Object.keys(this.errors).length === 0;
   }
 

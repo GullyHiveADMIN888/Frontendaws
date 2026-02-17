@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
- //  import { environment } from '../../environments/environment';
-  import { environment } from '../../environments/environment.prod';
+   import { environment } from '../../environments/environment';
+ // import { environment } from '../../environments/environment.prod';
 
 
 
@@ -11,7 +11,8 @@ import { Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Auth, signInWithPhoneNumber, ConfirmationResult, RecaptchaVerifier } from '@angular/fire/auth';
 
-  
+// For seller not call by url
+  import { CanActivate,  ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
 
 
@@ -19,7 +20,7 @@ import { Auth, signInWithPhoneNumber, ConfirmationResult, RecaptchaVerifier } fr
 
 
 
-export class AuthService {
+export class AuthService implements CanActivate {
   private apiUrl = `${environment.apiBaseUrl}/auth`;
 
    public recaptchaVerifier?: RecaptchaVerifier;
@@ -29,6 +30,21 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router, public auth: Auth,
     @Inject(PLATFORM_ID) private platformId: Object) {}
+
+ 
+// For seller not call by url
+canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      // No token → redirect to login
+      this.router.navigate(['/login']);
+      return false;
+    }
+
+    // Optional: check role or expiry here
+    return true;
+  }
 
   login(username: string, password: string) {
     return this.http.post<any>(`${this.apiUrl}/login`, {

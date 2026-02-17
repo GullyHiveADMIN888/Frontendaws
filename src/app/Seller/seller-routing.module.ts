@@ -18,11 +18,14 @@ import { ReferEarnComponent } from './refer-earn/refer-earn.component';
 import {  SharableProfileComponent} from './sharable-profile/sharable-profile.component';
 import { LedgerComponent } from './ledger/ledger.component';
 
+// For seller not call by url
+import { AuthService } from '../auth/auth.service'; 
 
 const routes: Routes = [
   {
     path: '',
-    component: SellerLayoutComponent,   // 👈 LAYOUT HERE
+    component: SellerLayoutComponent,
+    canActivate: [AuthService],    // For seller not call by url
     children: [
 
       // /seller

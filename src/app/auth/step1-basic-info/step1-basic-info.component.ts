@@ -7,6 +7,9 @@ import { AuthService } from '../auth.service';
 
 import { Auth, signInWithPhoneNumber, ConfirmationResult } from '@angular/fire/auth';
 
+// from data not reset when back 
+import { SimpleChanges } from '@angular/core';
+
 @Component({
   selector: 'app-step1-basic-info',
   standalone: true,
@@ -95,14 +98,24 @@ export class Step1BasicInfoComponent {
   this.formData.subCategoryIds = [];
   this.subCategories = [];
 
-  if (id) {
-    this.authService.getSubCategories(id).subscribe(res => {
-      this.subCategories = res;
+  // if (id) {
+  //   this.authService.getSubCategories(id).subscribe(res => {
+  //     this.subCategories = res;
 
-      // Optional: preselect or reset subcategories
-      this.inputChange.emit({ field: 'subCategoryIds', value: this.formData.subCategoryIds });
-    });
-  }
+  //     // Optional: preselect or reset subcategories
+  //     this.inputChange.emit({ field: 'subCategoryIds', value: this.formData.subCategoryIds });
+  //   });
+  // }
+  this.authService.getSubCategories(id).subscribe(res => {
+  this.subCategories = res;
+
+  // Tell parent whether subcategories exist
+  this.inputChange.emit({
+    field: 'hasSubCategories',
+    value: res.length > 0
+  });
+});
+
 }
 
 toggleSubCategory(subId: number) {
@@ -238,14 +251,66 @@ onSendOTP() {
 
 
 onNextClick() {
-  if (!this.isMobileVerified) {
-    alert('⚠️ Please verify your mobile number before continuing');
-    return;
-  }
+  // if (!this.isMobileVerified) {
+  //   alert('⚠️ Please verify your mobile number before continuing');
+  //   return;
+  // }
 
   this.next.emit(); // go to next step
 }
 
- 
+
+// // form data not resert when back s
+// ngOnChanges(changes: SimpleChanges) {
+//   if (changes['formData']) {
+//     // Reload selected category
+//     const catId = this.formData.serviceCategoryId;
+//     if (catId) {
+//       this.authService.getSubCategories(catId).subscribe(res => {
+//         this.subCategories = res;
+
+//         // Tell parent if subcategories exist
+//         this.inputChange.emit({ field: 'hasSubCategories', value: res.length > 0 });
+
+//         // Keep selected subcategories if already present
+//         if (!this.formData.subCategoryIds) {
+//           this.formData.subCategoryIds = [];
+//         }
+//       });
+//     }
+//   }
+// }
+ngOnChanges(changes: SimpleChanges) {
+  if (changes['formData'] && this.formData) {
+
+    // --- CATEGORY + SUBCATEGORIES ---
+    const catId = this.formData.serviceCategoryId;
+    if (catId) {
+      this.authService.getSubCategories(catId).subscribe(res => {
+        this.subCategories = res;
+
+        // Notify parent if subcategories exist
+        this.inputChange.emit({ field: 'hasSubCategories', value: res.length > 0 });
+
+        // Keep selected subcategories
+        if (!this.formData.subCategoryIds) {
+          this.formData.subCategoryIds = [];
+        }
+      });
+    }
+
+    // --- PROFESSIONAL TYPE ---
+    if (this.formData.professionalType) {
+      // Just emit the value to make sure the parent is aware (optional)
+      this.inputChange.emit({
+        field: 'professionalType',
+        value: this.formData.professionalType
+      });
+    }
+  }
+}
+
+
+
 
 }

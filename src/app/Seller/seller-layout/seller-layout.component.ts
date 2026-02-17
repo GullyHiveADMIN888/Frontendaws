@@ -1,9 +1,10 @@
-
-
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SellerService } from '../seller.service';
+import { Router } from '@angular/router';
+
+
 
 @Component({
   selector: 'app-seller-layout',
@@ -16,7 +17,8 @@ export class SellerLayoutComponent implements OnInit {
   user: any;
    sellerId!: number;
 
-  constructor(private sellerService: SellerService) {}
+  constructor(private sellerService: SellerService,
+  private router: Router) {}
 
   ngOnInit(): void {
     this.loadUserData();
@@ -38,9 +40,15 @@ export class SellerLayoutComponent implements OnInit {
     this.showUserMenu = !this.showUserMenu;
   }
 
-  logout() {
-    window.location.href = '/';
-  }
+
+logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('userId');
+  localStorage.removeItem('sellerId');
+  this.sellerService.clearSession();
+  this.router.navigate(['/login']);
+}
+
   // Helper to get initials
 get userInitials(): string {
   if (!this.user?.name) return 'S'; // fallback
