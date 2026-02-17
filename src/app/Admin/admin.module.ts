@@ -29,11 +29,12 @@ import { LeadStatusMasterComponent } from './lead-status-master/lead-status-mast
 import { ServicePackageMasterComponent } from './service-package-master/service-package-master.component';
 import { AuditLogComponent } from './audit-log/audit-log.component';
 import { AreaMasterComponent } from './area-master/area-master.component';
-import { SubscriptionMasterComponent } from './subscription-master/subscription-master.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { EmailTemplateComponent } from './email-template/email-template.component';
 import { LeadPricingConfigComponent } from './lead-pricing-config/lead-pricing-config.component';
 import { LeadPricingEngineComponent } from './lead-pricing-engine/lead-pricing-engine.component';
+import { SubscriptionMasterComponent} from './subscription-master/subscription-master.component';
+import { WalletTransactionComponent } from './wallet-transaction/wallet-transaction.component';
 
 @NgModule({
   declarations: [
@@ -58,11 +59,12 @@ import { LeadPricingEngineComponent } from './lead-pricing-engine/lead-pricing-e
     ServicePackageMasterComponent,
     AuditLogComponent,
     AreaMasterComponent,
-    SubscriptionMasterComponent,
     ChangePasswordComponent,
     EmailTemplateComponent,
     LeadPricingConfigComponent,
-    LeadPricingEngineComponent
+    LeadPricingEngineComponent,
+    SubscriptionMasterComponent,
+    WalletTransactionComponent
   ],
   imports: [
     CommonModule,

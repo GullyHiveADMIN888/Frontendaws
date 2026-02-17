@@ -32,7 +32,7 @@ export class SharableProfileComponent implements OnInit {
       if (id) {
         this.sellerId = +id;
         // this.shareUrl = `${this.apiUrl}/seller/sharableeProfile/${this.sellerId}`;
-        this.shareUrl = `https://gullyhivefrontend-z698.onrender.com/seller/sharableProfile/${this.sellerId}`;
+        this.shareUrl = `https://gullyhivefrontend-z698.onrender.com/#/seller/sharableProfile/${this.sellerId}`;
         this.loadProfile(this.sellerId);
       } else {
         this.errorMessage = 'Invalid seller ID';
