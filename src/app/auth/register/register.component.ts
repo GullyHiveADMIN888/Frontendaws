@@ -8,6 +8,10 @@ import { Step3ProfessionalDetailsComponent } from '../step3-professional-details
 import { OTPVerificationComponent } from '../otp-verification/otp-verification.component';
 import { AuthService } from '../auth.service';
 import { RouterModule } from '@angular/router';
+
+// For identity type validation
+import { ViewChild } from '@angular/core';
+
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -47,7 +51,7 @@ export class RegisterComponent {
     businessAddress: '',
     state: '',
     city: '',
-    plotNumber: '',
+    // plotNumber: '',
     pinCode: '',
     role: '',
     password: '',
@@ -63,18 +67,10 @@ export class RegisterComponent {
 
     locality: '',
     landmark: '',
-    // eg. Seller/Admin
 
-
-    // Step 3 - Service Areas
-    areaType: '',                 // city/radius/pincode
+    areaId: '',
     cityId: null as number | null,
-    radiusKm: null as number | null,
-    pincodes: '',                 // comma-separated string
-
-    // Optional: more backend fields if needed
-
-
+   
 
   };
 
@@ -95,6 +91,9 @@ export class RegisterComponent {
     }
   }
 
+  // For identity type validation
+@ViewChild(Step2LegalIdentityComponent) step2Component!: Step2LegalIdentityComponent;
+//...
 
   /* 🔹 STEP NAVIGATION */
   goToStep(step: number) {
@@ -111,19 +110,35 @@ export class RegisterComponent {
     }
 
     // 🔴 Mobile NOT verified → STOP + ALERT
-    // if (!this.isMobileVerified) {
-    //   alert('Please verify your mobile number before continuing.');
-    //   return;
-    // }
+    if (!this.isMobileVerified) {
+      alert('Please verify your mobile number before continuing.');
+      return;
+    }
 
     // ✅ All good → go to Legal Identity
     this.currentStep = 3;
   }
+  // goNextFromStep3() {
+  //   if (this.validateStep3()) {
+  //     this.currentStep = 4; // OTP
+  //   }
+  // }
+  
   goNextFromStep3() {
-    if (this.validateStep3()) {
-      this.currentStep = 4; // OTP
-    }
+  // Step 3 fields
+  if (!this.validateStep3()) return;
+
+  // Validate identity number
+  const step2Valid = this.step2Component?.validateIdentityNumber();
+  if (!step2Valid) {
+    // Focus the field if needed
+    alert(this.errors.registrationNumber || 'Please correct your identity number.');
+    return;
   }
+
+  this.currentStep = 4; // OTP
+}
+
   goNextFromStep4() {
     if (this.validateStep4()) {
       // this.currentStep = 5; // OTP
@@ -158,7 +173,6 @@ export class RegisterComponent {
     formData.append('FullName', this.formData.fullName || '');
     formData.append('Email', this.formData.email || '');
     formData.append('Mobile', this.formData.mobile || '');
-    // formData.append('CoverageArea', this.formData.coverageArea || '');
     formData.append('ProfessionalType', this.formData.professionalType || '');
     formData.append('ServiceCategory', JSON.stringify(this.formData.serviceCategory || []));
 
@@ -169,7 +183,7 @@ export class RegisterComponent {
       formData.append('SubCategoryIds[]', id.toString());
     });
 
-    if (this.formData.profilePicture) formData.append('ProfilePicture', this.formData.profilePicture);
+   // if (this.formData.profilePicture) formData.append('ProfilePicture', this.formData.profilePicture);
 
     // Step 2
     formData.append('BusinessName', this.formData.businessName || '');
@@ -179,31 +193,48 @@ export class RegisterComponent {
     formData.append('State', this.formData.stateId?.toString() || '');
     formData.append('City', this.formData.cityId?.toString() || '');
 
-    formData.append('PlotNumber', this.formData.plotNumber || '');
+    // formData.append('PlotNumber', this.formData.plotNumber || '');
     formData.append('PinCode', this.formData.pinCode || '');
-    formData.append('Role', 'Seller');
+   // formData.append('Role', 'Seller');
     formData.append('Password', this.formData.password || '');
     if (this.formData.registrationDocument) formData.append('RegistrationDocument', this.formData.registrationDocument);
     if (this.formData.addressProof) formData.append('AddressProof', this.formData.addressProof);
 
+//  // 🔹 Map registration type to correct field
+//   switch(this.formData.registrationType) {
+//     case 'PAN Card':
+//       formData.append('Pan', this.formData.registrationNumber || '');
+//       break;
+//     case 'GST Registration':
+//       formData.append('GSTIN', this.formData.registrationNumber || '');
+//       break;
+//     case 'Udyam Registration':
+//       formData.append('UdyamNumber', this.formData.registrationNumber || '');
+//       break;
+//     case 'Aadhar Card':
+//       formData.append('AadhaarNumber', this.formData.registrationNumber || '');
+//       formData.append('AadhaarVerified', 'true');
+//       break;
+//     case 'E-Shram Card':
+//       formData.append('EShramNumber', this.formData.registrationNumber || '');
+//       formData.append('EShramVerified', 'true');
+//       break;
+//     default:
+//       break;
+//   }
 
 
 
     formData.append('Line1', this.formData.line1 || '');
     formData.append('Line2', this.formData.line2 || '');
-    formData.append('Locality', this.formData.locality || '');
+    // formData.append('Locality', this.formData.locality || '');
+    formData.append('AreaId', this.formData.areaId?.toString() || '');
+
     formData.append('Landmark', this.formData.landmark || '');
 
     formData.append('StateId', this.formData.stateId?.toString() || '');
     formData.append('CityId', this.formData.cityId?.toString() || '');
     formData.append('PinCode', this.formData.pinCode || '');
-
-    formData.append('AreaType', this.formData.areaType || '');
-    formData.append('ServiceCityId', this.formData.cityId?.toString() || '');
-    formData.append('RadiusKm', this.formData.radiusKm?.toString() || '');
-    formData.append('Pincodes', this.formData.pincodes || '');
-
-
 
     // Step 3
     formData.append('SelfOverview', this.formData.selfOverview || '');
@@ -211,7 +242,16 @@ export class RegisterComponent {
     formData.append('Achievements', this.formData.achievements || '');
     if (this.formData.profilePicture)
       formData.append('ProfilePicture', this.formData.profilePicture);
+    // Convert selected area IDs into serviceAreas array
+    this.formData.serviceAreas = (this.formData.selectedAreaIds || []).map((id: number) => ({
+      areaId: id,
+      cityId: this.formData.cityId
+    }));
 
+    (this.formData.serviceAreas || []).forEach((area: any, index: number) => {
+      formData.append(`ServiceAreas[${index}].AreaId`, area.areaId.toString());
+      formData.append(`ServiceAreas[${index}].CityId`, area.cityId.toString());
+    });
 
 
     this.service.submitRegistration(formData).subscribe({
@@ -259,27 +299,20 @@ export class RegisterComponent {
     //   this.errors.subCategoryIds = 'Select at least one service subCategoory';
     // }
     // 🔹 SUBCATEGORY VALIDATION
-if (this.formData.hasSubCategories) {
-  if (!this.formData.subCategoryIds?.length) {
-    this.errors.subCategoryIds = 'Select at least one service subcategory';
-  }
-}
+    if (this.formData.hasSubCategories) {
+      if (!this.formData.subCategoryIds?.length) {
+        this.errors.subCategoryIds = 'Select at least one service subcategory';
+      }
+    }
 
 
-    // if (!this.formData.coverageArea?.trim()) {
-    //   this.errors.coverageArea = 'Coverage area is required';
-    // }
-    // if (!this.formData.password?.trim()) {
-    //   this.errors.password = 'password is required';
-    // }
-// 🔹 PASSWORD (Min 6, 1 uppercase, 1 number, 1 special char)
-if (!this.formData.password?.trim()) {
-  this.errors.password = 'Password is required';
-}
-else if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/.test(this.formData.password)) {
-  this.errors.password =
-    'Password must be at least 6 characters and include 1 uppercase letter, 1 number, and 1 special character';
-}
+    if (!this.formData.password?.trim()) {
+      this.errors.password = 'Password is required';
+    }
+    else if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/.test(this.formData.password)) {
+      this.errors.password =
+        'Password must be at least 6 characters and include 1 uppercase letter, 1 number, and 1 special character';
+    }
 
     if (!this.formData.professionalType?.trim()) {
       this.errors.professionalType = 'Select professional type';
@@ -309,18 +342,22 @@ else if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/.test(this.formData.passwor
     if (!this.formData.line1?.trim()) {
       this.errors.line1 = 'Line 1 is required';
     }
-    // if (!this.formData.state?.trim()) {
-    //   this.errors.state = 'State is required';
-    // }
-    // if (!this.formData.city?.trim()) {
-    //   this.errors.city = 'City  is required';
-    // }
-    // if (!this.formData.line1?.trim()) {
-    //   this.errors.line1 = 'Line 1 is required';
-    // }
-    // if (!this.formData.line1?.trim()) {
-    //   this.errors.line1 = 'Line 1 is required';
-    // }
+    if (!this.formData.stateId) {
+      this.errors.stateId = 'Select state';
+    }
+
+    if (!this.formData.cityId) {
+      this.errors.city = 'Select city';
+    }
+
+    if (!this.formData.pinCode?.trim()) {
+      this.errors.pinCode = 'PIN Code is required';
+    } else if (!/^\d{6}$/.test(this.formData.pinCode)) {
+      this.errors.pinCode = 'PIN Code must be exactly 6 digits';
+    }
+
+
+
     return Object.keys(this.errors).length === 0;
   }
 

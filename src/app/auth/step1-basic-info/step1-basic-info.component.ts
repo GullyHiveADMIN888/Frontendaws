@@ -173,7 +173,7 @@ toggleSubCategory(subId: number) {
 
 
 onInputFieldChange(field: string, value: any, event?: Event) {
-
+ this.formData[field] = value; 
   if (field === 'mobile') {
     const input = event?.target as HTMLInputElement;
 
@@ -251,10 +251,10 @@ onSendOTP() {
 
 
 onNextClick() {
-  // if (!this.isMobileVerified) {
-  //   alert('⚠️ Please verify your mobile number before continuing');
-  //   return;
-  // }
+  if (!this.isMobileVerified) {
+    alert('⚠️ Please verify your mobile number before continuing');
+    return;
+  }
 
   this.next.emit(); // go to next step
 }
@@ -280,36 +280,74 @@ onNextClick() {
 //     }
 //   }
 // }
+// ngOnChanges(changes: SimpleChanges) {
+//   if (changes['formData'] && this.formData) {
+
+//     // --- CATEGORY + SUBCATEGORIES ---
+//     const catId = this.formData.serviceCategoryId;
+//     if (catId) {
+//       this.authService.getSubCategories(catId).subscribe(res => {
+//         this.subCategories = res;
+
+//         // Notify parent if subcategories exist
+//         this.inputChange.emit({ field: 'hasSubCategories', value: res.length > 0 });
+
+//         // Keep selected subcategories
+//         if (!this.formData.subCategoryIds) {
+//           this.formData.subCategoryIds = [];
+//         }
+//       });
+//     }
+
+//     // --- PROFESSIONAL TYPE ---
+//     if (this.formData.professionalType) {
+//       // Just emit the value to make sure the parent is aware (optional)
+//       this.inputChange.emit({
+//         field: 'professionalType',
+//         value: this.formData.professionalType
+//       });
+//     }
+//   }
+// }
+
 ngOnChanges(changes: SimpleChanges) {
   if (changes['formData'] && this.formData) {
 
-    // --- CATEGORY + SUBCATEGORIES ---
+    // ✅ Restore Category + Subcategories
     const catId = this.formData.serviceCategoryId;
     if (catId) {
       this.authService.getSubCategories(catId).subscribe(res => {
         this.subCategories = res;
 
-        // Notify parent if subcategories exist
-        this.inputChange.emit({ field: 'hasSubCategories', value: res.length > 0 });
+        this.inputChange.emit({
+          field: 'hasSubCategories',
+          value: res.length > 0
+        });
 
-        // Keep selected subcategories
         if (!this.formData.subCategoryIds) {
           this.formData.subCategoryIds = [];
         }
       });
     }
 
-    // --- PROFESSIONAL TYPE ---
+    // ✅ Restore Professional Type
     if (this.formData.professionalType) {
-      // Just emit the value to make sure the parent is aware (optional)
       this.inputChange.emit({
         field: 'professionalType',
         value: this.formData.professionalType
       });
     }
+
+    // ✅ Restore Profile Preview
+    if (this.formData.profilePicture && !this.profilePreview) {
+      if (typeof this.formData.profilePicture === 'string') {
+        this.profilePreview = this.formData.profilePicture;
+      } else {
+        this.generatePreview(this.formData.profilePicture);
+      }
+    }
   }
 }
-
 
 
 
