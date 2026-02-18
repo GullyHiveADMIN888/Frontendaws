@@ -260,55 +260,6 @@ onNextClick() {
 }
 
 
-// // form data not resert when back s
-// ngOnChanges(changes: SimpleChanges) {
-//   if (changes['formData']) {
-//     // Reload selected category
-//     const catId = this.formData.serviceCategoryId;
-//     if (catId) {
-//       this.authService.getSubCategories(catId).subscribe(res => {
-//         this.subCategories = res;
-
-//         // Tell parent if subcategories exist
-//         this.inputChange.emit({ field: 'hasSubCategories', value: res.length > 0 });
-
-//         // Keep selected subcategories if already present
-//         if (!this.formData.subCategoryIds) {
-//           this.formData.subCategoryIds = [];
-//         }
-//       });
-//     }
-//   }
-// }
-// ngOnChanges(changes: SimpleChanges) {
-//   if (changes['formData'] && this.formData) {
-
-//     // --- CATEGORY + SUBCATEGORIES ---
-//     const catId = this.formData.serviceCategoryId;
-//     if (catId) {
-//       this.authService.getSubCategories(catId).subscribe(res => {
-//         this.subCategories = res;
-
-//         // Notify parent if subcategories exist
-//         this.inputChange.emit({ field: 'hasSubCategories', value: res.length > 0 });
-
-//         // Keep selected subcategories
-//         if (!this.formData.subCategoryIds) {
-//           this.formData.subCategoryIds = [];
-//         }
-//       });
-//     }
-
-//     // --- PROFESSIONAL TYPE ---
-//     if (this.formData.professionalType) {
-//       // Just emit the value to make sure the parent is aware (optional)
-//       this.inputChange.emit({
-//         field: 'professionalType',
-//         value: this.formData.professionalType
-//       });
-//     }
-//   }
-// }
 
 ngOnChanges(changes: SimpleChanges) {
   if (changes['formData'] && this.formData) {
