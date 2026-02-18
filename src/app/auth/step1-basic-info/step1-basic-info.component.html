@@ -102,13 +102,27 @@
       Service Category <span class="text-orange-600">*</span>
     </label>
    
-    <select aria-label="Service Category" class="w-full px-4 py-3 border border-gray-300 rounded-lg"
+    <!-- <select aria-label="Service Category" class="w-full px-4 py-3 border border-gray-300 rounded-lg"
       [value]="formData.serviceCategoryId || ''" (change)="onCategoryChange($any($event.target).value)">
       <option value="">Select Category</option>
       <option *ngFor="let cat of parentCategories" [value]="cat.id">
         {{ cat.name }}
       </option>
-    </select>
+    </select> -->
+    <select
+  [(ngModel)]="formData.serviceCategoryId"
+  (ngModelChange)="onCategoryChange($event)"
+  name="serviceCategoryId"
+  class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+
+  <option [ngValue]="null">Select Category</option>
+
+  <option *ngFor="let cat of parentCategories"
+          [ngValue]="cat.id">
+    {{ cat.name }}
+  </option>
+</select>
+
 
     <p *ngIf="errors?.serviceCategoryId" class="text-red-500 text-sm mt-1 font-inter">
       {{ errors.serviceCategoryId }}
@@ -172,7 +186,7 @@
             Professional Type <span class="text-orange-600">*</span>
           </label>
 
-          <select aria-label="Professional Type" [value]="formData?.professionalType || ''"
+          <!-- <select aria-label="Professional Type" [value]="formData?.professionalType || ''"
             (change)="onInputFieldChange('professionalType', $any($event.target).value)"
             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent appearance-none cursor-pointer font-inter bg-white">
             <option value="">Select Professional Type</option>
@@ -180,7 +194,19 @@
             <option *ngFor="let type of professionalTypes" [value]="type.value">
               {{ type.label }}
             </option>
-          </select>
+          </select> -->
+<select
+  [(ngModel)]="formData.professionalType"
+  name="professionalType"
+  class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+
+  <option [ngValue]="null">Select Professional Type</option>
+
+  <option *ngFor="let type of professionalTypes"
+          [ngValue]="type.value">
+    {{ type.label }}
+  </option>
+</select>
 
           <p *ngIf="errors?.professionalType" class="text-red-500 text-sm mt-1 font-inter">
             {{ errors.professionalType }}
@@ -192,16 +218,17 @@
       <div class="flex justify-end pt-6 border-t border-gray-200">
 
         <button type="button" (click)="onNextClick()"
-       
+       [class.opacity-50]="!isMobileVerified"
+    [class.cursor-not-allowed]="!isMobileVerified"
           class="px-8 py-3 bg-orange-600 text-white rounded-lg transition-colors font-medium font-inter">
           Continue to Legal Identity
         </button>
 
-      <!-- </div>
+      </div>
       <p *ngIf="!isMobileVerified" class="text-sm text-gray-500 mt-2 font-inter text-right">
         Please verify your mobile number to continue
       </p>
-    </div> -->
+    </div>
 
     <!-- [class.opacity-50]="!isMobileVerified"
   [class.cursor-not-allowed]="!isMobileVerified" -->
