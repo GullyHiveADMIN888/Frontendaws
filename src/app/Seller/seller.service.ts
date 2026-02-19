@@ -98,6 +98,10 @@ export interface PublicProfile {
   linkedin?: string;
   addressCityId?: number;
   addressStateId?: number;
+  areaName?: string,
+ // areaId?: string
+ areaId?: number
+
 
 }
 
@@ -361,7 +365,7 @@ export class SellerService {
   // 🔹 Get cities
   getCities(): Observable<any[]> {
     return this.http.get<any[]>(
-      `${this.apiUrl}/cities`,
+      `${environment.apiBaseUrl}/auth/cities`,
       { headers: this.getHeaders() }
     );
   }
@@ -477,5 +481,8 @@ export class SellerService {
   }
 
 
+ getAreasByCity(cityId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiBaseUrl}/auth/areas/${cityId}`);
+  }
 
 }
