@@ -82,6 +82,10 @@
       <i [class]="showCurrent ? 'ri-eye-off-line' : 'ri-eye-line'"></i>
     </button>
   </div>
+  <p *ngIf="currentPasswordRequired" class="text-sm text-red-500 mt-1">
+  Current password is required
+</p>
+
 </div>
 
 
@@ -99,6 +103,7 @@
       (ngModelChange)="validatePasswords()"
     />
 
+
     <button
       type="button"
       (click)="showNew = !showNew"
@@ -107,7 +112,9 @@
       <i [class]="showNew ? 'ri-eye-off-line' : 'ri-eye-line'"></i>
     </button>
   </div>
-
+<p *ngIf="weakPassword" class="text-sm text-red-500 mt-1">
+  {{ passwordErrorMessage }}
+</p>
   <p *ngIf="sameAsCurrent" class="text-sm text-red-500 mt-1">
     New password must be different from current password
   </p>
@@ -155,12 +162,21 @@
         </button>
         <button
           type="submit"
-          [disabled]="passwordForm.invalid"
+        
+
           class="px-4 py-2 bg-orange-600 text-white rounded-lg"
         >
           Update Password
         </button>
       </div>
+
+       <!-- [disabled]="
+  passwordForm.invalid ||
+  passwordMismatch ||
+  sameAsCurrent ||
+  weakPassword ||
+  currentPasswordRequired
+" -->
 
     </form>
   </div>
@@ -192,6 +208,8 @@
     <input
       [(ngModel)]="bankDetails.bankName"
       name="bankName"
+      (input)="onBankNameInput($event)"
+      maxlength="50"
       class="w-full border rounded-lg px-3 py-2"
     />
     <p *ngIf="errors?.bankName" class="text-red-500 text-sm mt-1">
@@ -205,6 +223,8 @@
     <input
       [(ngModel)]="bankDetails.accountNumber"
       name="accountNumber"
+       (input)="onAccountNumberInput($event)"
+       maxlength="18"
       class="w-full border rounded-lg px-3 py-2"
     />
     <p *ngIf="errors?.accountNumber" class="text-red-500 text-sm mt-1">
@@ -218,6 +238,8 @@
     <input
       [(ngModel)]="bankDetails.ifsc"
       name="ifsc"
+      (input)="onIfscInput($event)"
+       maxlength="11"
       class="w-full border rounded-lg px-3 py-2"
     />
     <p *ngIf="errors?.ifsc" class="text-red-500 text-sm mt-1">
@@ -232,6 +254,7 @@
           [(ngModel)]="bankDetails.address"
           name="address"
           rows="2"
+          maxlength="500"
           class="w-full border rounded-lg px-3 py-2"
         ></textarea>
   </div>

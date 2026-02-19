@@ -53,7 +53,7 @@
         <input type="text" [value]="formData?.fullName || ''"
           (input)="onInputFieldChange('fullName', $any($event.target).value)"
           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-          placeholder="Enter your full name" />
+          placeholder="Enter your full name"  maxlength="50"/>
         <p *ngIf="errors?.fullName" class="text-red-500 text-sm mt-1 font-inter">
           {{ errors.fullName }}
         </p>
@@ -67,7 +67,7 @@
         <input type="email" [value]="formData?.email || ''"
           (input)="onInputFieldChange('email', $any($event.target).value)"
           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-          placeholder="your.email@example.com" />
+          placeholder="your.email@example.com"  maxlength="50"/>
         <p *ngIf="errors?.email" class="text-red-500 text-sm mt-1 font-inter">
           {{ errors.email }}
         </p>
@@ -97,27 +97,32 @@
     </div>
 
 
-   
+
     <label class="block text-sm font-medium text-gray-700 mb-1 font-inter">
       Service Category <span class="text-orange-600">*</span>
     </label>
+   
     <!-- <select aria-label="Service Category" class="w-full px-4 py-3 border border-gray-300 rounded-lg"
-      (change)="onCategoryChange($any($event.target).value)">
+      [value]="formData.serviceCategoryId || ''" (change)="onCategoryChange($any($event.target).value)">
       <option value="">Select Category</option>
       <option *ngFor="let cat of parentCategories" [value]="cat.id">
         {{ cat.name }}
       </option>
     </select> -->
     <select
-  aria-label="Service Category"
-  class="w-full px-4 py-3 border border-gray-300 rounded-lg"
-  [value]="formData.serviceCategoryId || ''"
-  (change)="onCategoryChange($any($event.target).value)">
-  <option value="">Select Category</option>
-  <option *ngFor="let cat of parentCategories" [value]="cat.id">
+  [(ngModel)]="formData.serviceCategoryId"
+  (ngModelChange)="onCategoryChange($event)"
+  name="serviceCategoryId"
+  class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+
+  <option [ngValue]="null">Select Category</option>
+
+  <option *ngFor="let cat of parentCategories"
+          [ngValue]="cat.id">
     {{ cat.name }}
   </option>
 </select>
+
 
     <p *ngIf="errors?.serviceCategoryId" class="text-red-500 text-sm mt-1 font-inter">
       {{ errors.serviceCategoryId }}
@@ -152,7 +157,7 @@
 
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      
+
         <div class="relative">
           <label class="block text-sm font-medium mb-2 font-inter">
             Password *
@@ -160,18 +165,18 @@
           <input [type]="showPassword ? 'text' : 'password'" [value]="formData?.password || ''"
             (input)="onInputFieldChange('password', $any($event.target).value)"
             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-            placeholder="Enter password" />
+            placeholder="Enter password" minlength="6"  maxlength="34"/>
           <button type="button" (click)="togglePasswordVisibility()"
             class="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none flex items-center justify-center">
             <i class="ri-eye-line pt-5" *ngIf="!showPassword"></i>
             <i class="ri-eye-off-line pt-5" *ngIf="showPassword"></i>
           </button>
-           <p *ngIf="errors?.password" class="text-red-500 text-sm mt-1 font-inter">
-          {{ errors.password }}
-        </p>
+          <p *ngIf="errors?.password" class="text-red-500 text-sm mt-1 font-inter">
+            {{ errors.password }}
+          </p>
         </div>
 
-       
+
 
 
 
@@ -180,8 +185,8 @@
           <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
             Professional Type <span class="text-orange-600">*</span>
           </label>
-        
-          <select aria-label="Professional Type" [value]="formData?.professionalType || ''"
+
+          <!-- <select aria-label="Professional Type" [value]="formData?.professionalType || ''"
             (change)="onInputFieldChange('professionalType', $any($event.target).value)"
             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent appearance-none cursor-pointer font-inter bg-white">
             <option value="">Select Professional Type</option>
@@ -189,7 +194,19 @@
             <option *ngFor="let type of professionalTypes" [value]="type.value">
               {{ type.label }}
             </option>
-          </select>
+          </select> -->
+<select
+  [(ngModel)]="formData.professionalType"
+  name="professionalType"
+  class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+
+  <option [ngValue]="null">Select Professional Type</option>
+
+  <option *ngFor="let type of professionalTypes"
+          [ngValue]="type.value">
+    {{ type.label }}
+  </option>
+</select>
 
           <p *ngIf="errors?.professionalType" class="text-red-500 text-sm mt-1 font-inter">
             {{ errors.professionalType }}
@@ -199,23 +216,20 @@
 
       <!-- Navigation -->
       <div class="flex justify-end pt-6 border-t border-gray-200">
-        
-        <button
-  type="button"
-  (click)="onNextClick()"
- [class.opacity-50]="!isMobileVerified"
-  [class.cursor-not-allowed]="!isMobileVerified"
-  class="px-8 py-3 bg-orange-600 text-white rounded-lg transition-colors font-medium font-inter"
->
-  Continue to Legal Identity
-</button>
 
-        </div>
+        <button type="button" (click)="onNextClick()"
+         [class.opacity-50]="!isMobileVerified"
+         [class.cursor-not-allowed]="!isMobileVerified"
+          class="px-8 py-3 bg-orange-600 text-white rounded-lg transition-colors font-medium font-inter">
+          Continue to Legal Identity
+        </button>
+
+      </div>
       <p *ngIf="!isMobileVerified" class="text-sm text-gray-500 mt-2 font-inter text-right">
-  Please verify your mobile number to continue
-</p>
-    </div>  
-    
-  <!-- [class.opacity-50]="!isMobileVerified"
+        Please verify your mobile number to continue
+      </p>
+    </div>
+
+    <!-- [class.opacity-50]="!isMobileVerified"
   [class.cursor-not-allowed]="!isMobileVerified" -->
   </div>

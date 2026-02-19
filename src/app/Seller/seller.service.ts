@@ -1,11 +1,9 @@
-
-
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, map,BehaviorSubject  } from 'rxjs';
+import { Observable, map, BehaviorSubject } from 'rxjs';
 // import { environment } from '../../environments/environment';
  import { environment } from '../../environments/environment.prod';
-
+// import { environment } from '../../environments/environment';
 // --- Dashboard & Stats ---
 export interface SellerStats {
   totalLeads: number;
@@ -39,7 +37,7 @@ export interface Lead {
   email?: string;
   leadPrice?: string;
   unlockedCount?: string;
-  committedCount?: string;  
+  committedCount?: string;
   priceBreakdown?: { [key: string]: number }; // parsed JSON
   basePrice?: string;
   visitingPrice?: string;
@@ -54,11 +52,11 @@ export interface DashboardData {
   email: string;
   stats: SellerStats;
   recentLeads: Lead[];
-   profilePictureUrl?: string; // ← add this
-    // ✅ Wallet balances
-  totalBalance?: number;      
-  cashableBalance?: number;    
-  nonCashableBalance?: number; 
+  profilePictureUrl?: string; // ← add this
+  // ✅ Wallet balances
+  totalBalance?: number;
+  cashableBalance?: number;
+  nonCashableBalance?: number;
 }
 
 
@@ -72,14 +70,14 @@ export interface PublicProfile {
   status: string;
   baseCity: string;
   profilePictureUrl?: string;
- // Ratings & stats
+  // Ratings & stats
   avgRating: number;
   ratingCount: number;
   totalJobsCompleted: number;
   totalDisputes: number;
   disputeRate: number;
 
-   // ✅ Address (primary)
+  // ✅ Address (primary)
   addressId?: number;
   addressLabel?: string;
   addressLine1?: string;
@@ -95,12 +93,16 @@ export interface PublicProfile {
   services?: string[];
   portfolioImages?: string[];
   reviews?: Review[];
- addressState?: string;
+  addressState?: string;
   website?: string;
   linkedin?: string;
   addressCityId?: number;
-addressStateId?: number;
- 
+  addressStateId?: number;
+  areaName?: string,
+ // areaId?: string
+ areaId?: number
+
+
 }
 
 
@@ -144,7 +146,7 @@ export interface Referral {
   referred_user_id: number;
   source: string;
   created_at: string;
-   // optional UI fields
+  // optional UI fields
   name?: string;
   avatar?: string;
   joinedDate?: string;
@@ -194,8 +196,8 @@ export interface WalletTransaction {
   balance_after?: number;
   created_at?: string;
   cashable_balance?: number;
-    non_cashable_balance?: number;
-      total_balance: number;
+  non_cashable_balance?: number;
+  total_balance: number;
 }
 
 
@@ -206,12 +208,12 @@ export interface WalletTransaction {
 })
 export class SellerService {
   private apiUrl = `${environment.apiBaseUrl}/seller`;
-  
- // BehaviorSubject will store sellerId and emit it to subscribers
+
+  // BehaviorSubject will store sellerId and emit it to subscribers
   private sellerIdSubject = new BehaviorSubject<number | null>(null);
   sellerId$ = this.sellerIdSubject.asObservable(); // Observable for components
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // --- Auth Headers ---
   private getHeaders(): HttpHeaders {
@@ -221,6 +223,9 @@ export class SellerService {
     });
   }
 
+
+
+
   // --- Dashboard ---
   getDashboardData(): Observable<DashboardData> {
     return this.http
@@ -228,42 +233,30 @@ export class SellerService {
         `${this.apiUrl}/dashboard`,
         { headers: this.getHeaders() }
       )
-    // .pipe(map(res => res.data));
+      // .pipe(map(res => res.data));
       .pipe(
         map(res => {
           // Save sellerId globally
           this.sellerIdSubject.next(res.data.sellerId);
-           // Prepend base URL to profile picture if it exists
-        if (res.data.profilePictureUrl) {
-          res.data.profilePictureUrl = environment.assetUrl + res.data.profilePictureUrl;
-        }
+          // Prepend base URL to profile picture if it exists
+          if (res.data.profilePictureUrl) {
+            res.data.profilePictureUrl = environment.assetUrl + res.data.profilePictureUrl;
+          }
 
           return res.data;
         })
       );
   }
 
-  
-  // --- All Leads ---
-  // getLeads(): Observable<Lead[]> {
-  //   const providerId = Number(localStorage.getItem('userId'));
-  //   return this.http
-  //     .get<{ success: boolean; data: Lead[] }>(
-  //       `${this.apiUrl}/leads`,
-  //       { headers: this.getHeaders() }
-  //     )
-  //     .pipe(map(res => res.data));
-  // }
 
-
-getLeads(): Observable<Lead[]> {
-  return this.http
-    .get<{ success: boolean; data: Lead[] }>(
-      `${this.apiUrl}/leads`, // no userId needed
-      { headers: this.getHeaders() } // token carries userId
-    )
-    .pipe(map(res => res.data));
-}
+  getLeads(): Observable<Lead[]> {
+    return this.http
+      .get<{ success: boolean; data: Lead[] }>(
+        `${this.apiUrl}/leads`, // no userId needed
+        { headers: this.getHeaders() } // token carries userId
+      )
+      .pipe(map(res => res.data));
+  }
 
 
   // 🔹 Buy Lead
@@ -276,77 +269,69 @@ getLeads(): Observable<Lead[]> {
     );
   }
 
-// getPublicProfile(sellerId: number) {
-//   return this.http.get<{ success: boolean; data: PublicProfile }>(
-//       `${this.apiUrl}/completeProfile/${sellerId}`,
-//       { headers: this.getHeaders() }
-//     )
-//     .pipe(map(res => res.data));
-// }
 
 
+  getPublicProfile(sellerId: number) {
+    return this.http
+      .get<{ success: boolean; data: PublicProfile }>(
+        `${this.apiUrl}/completeProfile/${sellerId}`,
+        { headers: this.getHeaders() }
+      )
+      .pipe(
+        map(res => {
+          const profile = res.data;
 
-getPublicProfile(sellerId: number) {
-  return this.http
-    .get<{ success: boolean; data: PublicProfile }>(
-      `${this.apiUrl}/completeProfile/${sellerId}`,
+          if (profile.profilePictureUrl) {
+            profile.profilePictureUrl = environment.assetUrl + profile.profilePictureUrl;
+          }
+
+          return profile;
+        })
+      );
+  }
+
+  sharableProfile(sellerId: number) {
+    return this.http
+      .get<{ success: boolean; data: PublicProfile }>(
+        `${this.apiUrl}/sharableeProfile/${sellerId}`
+      )
+      .pipe(
+        map(res => {
+          const profile = res.data;
+
+          if (profile.profilePictureUrl) {
+            profile.profilePictureUrl = environment.assetUrl + profile.profilePictureUrl;
+          }
+
+          console.log('Sharable profile data:', profile); // Debug log
+          return profile;
+        })
+      );
+  }
+
+  updateProfile(sellerId: number, payload: FormData) {
+    return this.http.post(`${this.apiUrl}/updateProfile/${sellerId}`, payload, {
+      headers: this.getHeaders() // Do NOT set Content-Type; browser handles multipart
+    });
+  }
+
+
+  // Pass sellerId here
+  getMyResponses(sellerId: number): Observable<{ success: boolean, data: Response[] }> {
+    return this.http.get<{ success: boolean, data: Response[] }>(
+      `${this.apiUrl}/responses/seller/${sellerId}`,
       { headers: this.getHeaders() }
-    )
-    .pipe(
-      map(res => {
-        const profile = res.data;
-
-        if (profile.profilePictureUrl) {
-          profile.profilePictureUrl = environment.assetUrl  + profile.profilePictureUrl;
-        }
-
-        return profile;
-      })
     );
-}
-
-sharableProfile(sellerId: number) {
-  return this.http
-    .get<{ success: boolean; data: PublicProfile }>(
-      `${this.apiUrl}/sharableeProfile/${sellerId}`
-    )
-    .pipe(
-      map(res => {
-        const profile = res.data;
-
-        if (profile.profilePictureUrl) {
-          profile.profilePictureUrl = environment.assetUrl  + profile.profilePictureUrl;
-        }
-
-        console.log('Sharable profile data:', profile); // Debug log
-        return profile;
-      })
-    );
-}
-
-updateProfile(sellerId: number, payload: FormData) {
-  return this.http.post(`${this.apiUrl}/updateProfile/${sellerId}`, payload, {
-    headers: this.getHeaders() // Do NOT set Content-Type; browser handles multipart
-  });
-}
+  }
 
 
-   // Pass sellerId here
- getMyResponses(sellerId: number): Observable<{ success: boolean, data: Response[] }> {
-  return this.http.get<{ success: boolean, data: Response[] }>(
-    `${this.apiUrl}/responses/seller/${sellerId}`,
-    { headers: this.getHeaders() }
-  );
-}
-
-
-// Helps
- getHelpFaqs(): Observable<{ categories: HelpCategory[]; faqs: HelpFaq[] }> {
+  // Helps
+  getHelpFaqs(): Observable<{ categories: HelpCategory[]; faqs: HelpFaq[] }> {
     return this.http
       .get<{ success: boolean; categories: HelpCategory[]; faqs: HelpFaq[] }>
       (
         `${this.apiUrl}/faqs`,
-         { headers: this.getHeaders() }
+        { headers: this.getHeaders() }
       )
       .pipe(
         map(res => ({
@@ -356,43 +341,43 @@ updateProfile(sellerId: number, payload: FormData) {
       );
   }
 
- // Fetch referrals
-getReferrals(sellerId: number): Observable<Referral[]> {
-  return this.http.get<{ success: boolean; data: Referral[] }>(
-    `${this.apiUrl}/refer/${sellerId}`,
-    { headers: this.getHeaders() }
-  ).pipe(map(res => res.data));
-}
+  // Fetch referrals
+  getReferrals(sellerId: number): Observable<Referral[]> {
+    return this.http.get<{ success: boolean; data: Referral[] }>(
+      `${this.apiUrl}/refer/${sellerId}`,
+      { headers: this.getHeaders() }
+    ).pipe(map(res => res.data));
+  }
 
   // Service Categories APIs
-getParentCategories(): Observable<any[]> {
-  return this.http.get<any[]>(
-     `${environment.apiBaseUrl}/auth/parents`,
-  );
-}
- //`${environment.apiBaseUrl}/parents`
-getSubCategories(parentId: number): Observable<any[]> {
-  return this.http.get<any[]>(
-    `${environment.apiBaseUrl}/auth/${parentId}/children/`
-  );
-}
+  getParentCategories(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${environment.apiBaseUrl}/auth/parents`,
+    );
+  }
+  //`${environment.apiBaseUrl}/parents`
+  getSubCategories(parentId: number): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${environment.apiBaseUrl}/auth/${parentId}/children/`
+    );
+  }
 
- // 🔹 Get cities
+  // 🔹 Get cities
   getCities(): Observable<any[]> {
     return this.http.get<any[]>(
-      `${this.apiUrl}/cities`,
+      `${environment.apiBaseUrl}/auth/cities`,
       { headers: this.getHeaders() }
     );
   }
 
-getProviderServices(providerId: number): Observable<ProviderServicesResponse> {
-  return this.http
-    .get<{ success: boolean; data: ProviderServicesResponse }>(
-      `${this.apiUrl}/services/${providerId}`,
-      { headers: this.getHeaders() }
-    )
-    .pipe(map(res => res.data));
-}
+  getProviderServices(providerId: number): Observable<ProviderServicesResponse> {
+    return this.http
+      .get<{ success: boolean; data: ProviderServicesResponse }>(
+        `${this.apiUrl}/services/${providerId}`,
+        { headers: this.getHeaders() }
+      )
+      .pipe(map(res => res.data));
+  }
 
 
   // 🔹 Update services + area
@@ -404,104 +389,100 @@ getProviderServices(providerId: number): Observable<ProviderServicesResponse> {
     );
   }
 
-getStates(): Observable<any[]> {
-  return this.http.get<any[]>(`${environment.apiBaseUrl}/auth/states`);
-}
+  getStates(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiBaseUrl}/auth/states`);
+  }
 
-getCitiess(stateId: number): Observable<any[]> {
-  return this.http.get<any[]>(`${environment.apiBaseUrl}/auth/cities/${stateId}`);
-}
+  getCitiess(stateId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiBaseUrl}/auth/cities/${stateId}`);
+  }
 
-changePassword(sellerId: number, data: any) {
-  return this.http.post(
-    `${this.apiUrl}/change-password/${sellerId}`,
-    data
-  );
-}
-
-
-
-// GET
-getBankDetails(sellerId: number) {
-  return this.http.get<any>(
-    `${this.apiUrl}/bank-details/${sellerId}`,
-    { headers: this.getHeaders() }
-  );
-}
-
-// SAVE / UPDATE
-saveBankDetails(payload: any) {
-  return this.http.post(
-    `${this.apiUrl}/bank-details`,
-    payload,
-    { headers: this.getHeaders() }
-  );
-}
-
-// DELETE
-deleteBankDetails(sellerId: number) {
-  return this.http.delete(
-    `${this.apiUrl}/bank-details/${sellerId}`,
-    { headers: this.getHeaders() }
-  );
-}
-
-// Buy Leads
-buyLeads(leadId: number) {
-  const providerId = Number(localStorage.getItem('userId'));
-  //  const providerId = 42;
-
-  return this.http.post(
-    `${this.apiUrl}/buy`,
-    {
-      leadId: leadId,
-      providerId: providerId
-    },
-    {
-      headers: this.getHeaders()
-    }
-  );
-}
-
-sendQuote(payload: any) {
-  return this.http.post(
-    `${this.apiUrl}/quotes`,
-    payload,
-    { headers: this.getHeaders() }
-  );
-}
+  changePassword(sellerId: number, data: any) {
+    return this.http.post(
+      `${this.apiUrl}/change-password/${sellerId}`,
+      data
+    );
+  }
 
 
 
-getQuestionsBySubCategory(subCategoryId: number) {
-  return this.http.get<{ success: boolean; data: any[] }>(
-    `${this.apiUrl}/by-subcategory/${subCategoryId}`
-  );
-}
+  // GET
+  getBankDetails(sellerId: number) {
+    return this.http.get<any>(
+      `${this.apiUrl}/bank-details/${sellerId}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  // SAVE / UPDATE
+  saveBankDetails(payload: any) {
+    return this.http.post(
+      `${this.apiUrl}/bank-details`,
+      payload,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  // DELETE
+  deleteBankDetails(sellerId: number) {
+    return this.http.delete(
+      `${this.apiUrl}/bank-details/${sellerId}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  // Buy Leads
+  buyLeads(leadId: number) {
+    const providerId = Number(localStorage.getItem('userId'));
+    //  const providerId = 42;
+
+    return this.http.post(
+      `${this.apiUrl}/buy`,
+      {
+        leadId: leadId,
+        providerId: providerId
+      },
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
+
+  sendQuote(payload: any) {
+    return this.http.post(
+      `${this.apiUrl}/quotes`,
+      payload,
+      { headers: this.getHeaders() }
+    );
+  }
 
 
 
-// ───────── Wallet APIs ─────────
-// getWallets(userId: number): Observable<WalletTransaction[]> {
-//   return this.http.get<{ success: boolean; data: WalletTransaction[] }>(
-//     `${this.apiUrl}/wallets/${userId}`, 
-//     { headers: this.getHeaders() }
-//   ).pipe(
-//     map(res => res.data)
-//   );
-// }
-
- 
-getWalletTransactions(sellerId: number): Observable<WalletTransaction[]> {
-  return this.http.get<{ success: boolean; data: WalletTransaction[] }>(
-    `${this.apiUrl}/wallet_transactions/${sellerId}`,
-    { headers: this.getHeaders() }
-  ).pipe(
-    map(res => res.data)
-  );
-}
+  getQuestionsBySubCategory(subCategoryId: number) {
+    return this.http.get<{ success: boolean; data: any[] }>(
+      `${this.apiUrl}/by-subcategory/${subCategoryId}`
+    );
+  }
 
 
+
+
+  getWalletTransactions(sellerId: number): Observable<WalletTransaction[]> {
+    return this.http.get<{ success: boolean; data: WalletTransaction[] }>(
+      `${this.apiUrl}/wallet_transactions/${sellerId}`,
+      { headers: this.getHeaders() }
+    ).pipe(
+      map(res => res.data)
+    );
+  }
+
+  clearSession() {
+    this.sellerIdSubject.next(null);
+  }
+
+
+ getAreasByCity(cityId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiBaseUrl}/auth/areas/${cityId}`);
+  }
 
 }
-

@@ -153,6 +153,10 @@ passwordData = {
   confirmPassword: ''
 };
 
+currentPasswordRequired = false;
+passwordErrorMessage = '';
+weakPassword = false;
+
 openChangePassword() {
   this.showChangePasswordModal = true;
 }
@@ -166,24 +170,7 @@ closeChangePassword() {
   };
 }
 
-// changePassword() {
-//    this.validatePasswords();
-//   if (this.passwordMismatch || this.sameAsCurrent) {
-//     alert('Passwords do not match');
-//     return;
-//   }
 
-//   // 🔥 Call API here
-//   this.sellerService.changePassword(this.passwordData).subscribe({
-//     next: () => {
-//       alert('Password updated successfully');
-//       this.closeChangePassword();
-//     },
-//     error: () => {
-//       alert('Failed to update password');
-//     }
-//   });
-// }
 changePassword() {
   this.validatePasswords();
 
@@ -197,9 +184,7 @@ changePassword() {
   }
 
   const payload = {
-    // currentPassword: this.passwordData.currentPassword,
-    // newPassword: this.passwordData.newPassword
-    oldPassword: this.passwordData.currentPassword, // ✅ map correctly
+    oldPassword: this.passwordData.currentPassword, 
     newPassword: this.passwordData.newPassword
   };
 
@@ -211,22 +196,12 @@ changePassword() {
         this.closeChangePassword();
       },
       error: (err) => {
-        alert(err?.error?.message || 'Failed to update password');
+        alert(err?.error?.message || 'Old Password is Wrong, Failed to update password');
       }
     });
 }
 
-// onSettingClick(item: SettingItem) {
-//   if (item.title === 'Password & Security') {
-//     this.openChangePassword();   // 🔐 popup
-//   } 
-//   if (item.title === 'Services & Pricingssss') {
-//   this.openAddBankDetails();
-// }
-//   else {
-//     this.navigateTo(item.link);  // ➡️ normal navigation
-//   }
-// }
+
 onSettingClick(item: SettingItem) {
   if (item.title === 'Password & Security') {
     this.openChangePassword(); // 🔐 open modal
@@ -239,20 +214,63 @@ onSettingClick(item: SettingItem) {
   }
 }
 
+// validatePasswords() {
+//   const { currentPassword, newPassword, confirmPassword } = this.passwordData;
+
+//   this.passwordMismatch =
+//     !!newPassword &&
+//     !!confirmPassword &&
+//     newPassword !== confirmPassword;
+
+//   this.sameAsCurrent =
+//     !!currentPassword &&
+//     !!newPassword &&
+//     currentPassword === newPassword;
+// }
+
 validatePasswords() {
+
   const { currentPassword, newPassword, confirmPassword } = this.passwordData;
 
-  this.passwordMismatch =
-    !!newPassword &&
-    !!confirmPassword &&
-    newPassword !== confirmPassword;
+  // Reset all errors
+  this.passwordMismatch = false;
+  this.sameAsCurrent = false;
+  this.weakPassword = false;
+  this.passwordErrorMessage = '';
+  this.currentPasswordRequired = false;
 
-  this.sameAsCurrent =
-    !!currentPassword &&
-    !!newPassword &&
-    currentPassword === newPassword;
+  // 🔴 Current Password Required
+  if (!currentPassword?.trim()) {
+    this.currentPasswordRequired = true;
+  }
+
+  // 🔴 New Password Required
+  if (!newPassword?.trim()) {
+    this.weakPassword = true;
+    this.passwordErrorMessage = 'New password is required';
+    return;
+  }
+
+  // 🔐 Strong Password Regex
+  const strongPasswordRegex =
+    /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/;
+
+  if (!strongPasswordRegex.test(newPassword)) {
+    this.weakPassword = true;
+    this.passwordErrorMessage =
+      'Password must be at least 6 characters and include 1 uppercase letter, 1 number, and 1 special character';
+  }
+
+  // ❌ New must not equal current
+  if (currentPassword && newPassword === currentPassword) {
+    this.sameAsCurrent = true;
+  }
+
+  // ❌ Confirm must match
+  if (confirmPassword && newPassword !== confirmPassword) {
+    this.passwordMismatch = true;
+  }
 }
-
 
 
 openAddBankDetails() {
@@ -305,23 +323,43 @@ openEditBankDetails(existingData: any) {
   this.showBankDetailsModal = true;
 }
 
-// Submit function
 saveBankDetails() {
   this.errors = {};
 
-  if (!this.bankDetails.bankName) {
+  const bankName = this.bankDetails.bankName?.trim();
+  const accountNumber = this.bankDetails.accountNumber?.trim();
+  const ifsc = this.bankDetails.ifsc?.trim();
+
+  // ✅ Bank Name
+  if (!bankName) {
     this.errors.bankName = 'Bank Name is required';
+  } 
+  else if (bankName.length < 3) {
+    this.errors.bankName = 'Bank Name must be at least 3 characters';
   }
-  if (!this.bankDetails.accountNumber) {
+  else if (!/^[A-Za-z\s]+$/.test(bankName)) {
+    this.errors.bankName = 'Bank Name should contain only letters';
+  }
+
+  // ✅ Account Number
+  if (!accountNumber) {
     this.errors.accountNumber = 'Account Number is required';
   }
-  if (!this.bankDetails.ifsc) {
+  else if (!/^\d{9,18}$/.test(accountNumber)) {
+    this.errors.accountNumber = 'Account Number must be 9 to 18 digits';
+  }
+
+  // ✅ IFSC Validation (Indian format)
+  if (!ifsc) {
     this.errors.ifsc = 'IFSC Code is required';
+  }
+  else if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc)) {
+    this.errors.ifsc = 'Invalid IFSC Code format';
   }
 
   if (Object.keys(this.errors).length > 0) return;
 
-  const payload = {
+   const payload = {
     id: this.bankDetails.id,         // null → insert, value → update
     sellerId: this.sellerId,         // ✅ always from logged user
     bankAccountName: this.bankDetails.bankName,
@@ -340,6 +378,66 @@ saveBankDetails() {
     }
   });
 }
+onBankNameInput(event: Event) {
+  const keyboardEvent = event as KeyboardEvent;
+
+  // Allow A-Z, a-z, Hindi characters and basic editing keys
+  const regex = /^[a-zA-Z\u0900-\u097F\s]$/;
+  if (!regex.test(keyboardEvent.key) &&
+      !['Backspace','Tab','ArrowLeft','ArrowRight','Delete'].includes(keyboardEvent.key)) {
+    keyboardEvent.preventDefault();
+  }
+}
+
+// onBankNameInput(event: any) {
+//   const value = event.target.value;
+
+//   // Allow English letters, Hindi letters (Devanagari), and spaces
+//   const filteredValue = value.replace(/[^A-Za-z\u0900-\u097F\s]/g, '');
+
+//   this.bankDetails.bankName = filteredValue;
+//   this.clearError('bankName');
+// }
+
+onAccountNumberInput(event: Event) {
+  const keyboardEvent = event as KeyboardEvent;
+
+  // Only numbers allowed
+  if (!/^[0-9]$/.test(keyboardEvent.key) &&
+      !['Backspace','Tab','ArrowLeft','ArrowRight','Delete'].includes(keyboardEvent.key)) {
+    keyboardEvent.preventDefault();
+  }
+}
+
+// onAccountNumberInput(event: any) {
+//   const value = event.target.value.replace(/[^0-9]/g, '');
+//   this.bankDetails.accountNumber = value;
+//   this.clearError('accountNumber');
+// }
+
+onIfscInput(event: Event) {
+  const keyboardEvent = event as KeyboardEvent;
+
+  // Only uppercase letters and numbers
+  if (!/^[A-Z0-9]$/.test(keyboardEvent.key) &&
+      !['Backspace','Tab','ArrowLeft','ArrowRight','Delete'].includes(keyboardEvent.key)) {
+    keyboardEvent.preventDefault();
+  }
+}
+
+// onIfscInput(event: any) {
+//   let value = event.target.value;
+
+//   // Convert to uppercase
+//   value = value.toUpperCase();
+
+//   // Allow only A-Z and 0-9
+//   value = value.replace(/[^A-Z0-9]/g, '');
+
+//   this.bankDetails.ifsc = value;
+//   this.clearError('ifsc');
+// }
+
 
 deleteBankDetails() {
   this.sellerService.deleteBankDetails(this.sellerId).subscribe({

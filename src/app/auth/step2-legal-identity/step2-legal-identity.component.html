@@ -21,7 +21,7 @@
       type="text"
       [value]="formData.businessName"
       (input)="onInput('businessName', $any($event.target).value)"
-      class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"
+      class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"  maxlength="50"
     />
      <p class="text-red-500 text-sm" *ngIf="errors.businessName">{{ errors.businessName }}</p> 
   </div>
@@ -30,58 +30,100 @@
   <div class="grid md:grid-cols-2 gap-6 mb-6">
 
     <div>
-      <!-- <label class="block text-sm font-medium mb-2">Registration Type *</label> -->
          <label class="block text-sm font-medium mb-2">Identity Proof Type *</label>
+     
       <select
-        [value]="formData.registrationType"
-        (change)="onInput('registrationType', $any($event.target).value)"
-        class="w-full px-4 py-3 border rounded-lg bg-white">
-        <option value="">Select</option>
-        <option *ngFor="let t of registrationTypes" [value]="t">{{ t }}</option>
-      </select>
-       <p class="text-red-500 text-sm" *ngIf="errors.registrationType">{{ errors.registrationType }}</p>
+  [(ngModel)]="formData.registrationType"
+  name="registrationType"
+  class="w-full px-4 py-3 border rounded-lg bg-white">
+
+  <option [ngValue]="null">Select</option>
+
+  <option *ngFor="let t of registrationTypes"
+          [ngValue]="t">
+    {{ t }}
+  </option>
+</select>
+
+      <p class="text-red-500 text-sm" *ngIf="errors.registrationType">{{ errors.registrationType }}</p>
     </div>
 
     <div>
-      <!-- <label class="block text-sm font-medium mb-2">Registration Number *</label> -->
          <label class="block text-sm font-medium mb-2">Identity Proof Number *</label>
       <input
         type="text"
         [value]="formData.registrationNumber"
         (input)="onInput('registrationNumber', $any($event.target).value)"
-        class="w-full px-4 py-3 border rounded-lg" />
+        class="w-full px-4 py-3 border rounded-lg"  maxlength="15" />
        <p class="text-red-500 text-sm" *ngIf="errors.registrationNumber">{{ errors.registrationNumber }}</p>
     </div>
 
   </div>
 
+ 
+
+
   <!-- File Uploads -->
-  <div class="grid md:grid-cols-2 gap-6 mb-6">
+<div class="grid md:grid-cols-2 gap-6 mb-6">
 
-    <!-- Registration Doc -->
-    <div>
-      <!-- <label class="block text-sm font-medium mb-2">Registration Document *</label> -->
-         <label class="block text-sm font-medium mb-2">Identity Proof Document *</label> 
-      <input type="file" hidden id="regDoc" (change)="handleFileChange('registrationDocument', $event)">
-      <label for="regDoc" class="block border-2 border-dashed p-6 rounded-lg text-center cursor-pointer">
-        <img *ngIf="regDocPreview" [src]="regDocPreview" class="h-32 mx-auto object-cover rounded">
-        <i *ngIf="!regDocPreview" class="ri-upload-cloud-line text-4xl text-gray-400"></i>
-      </label>
-       <p class="text-red-500 text-sm" *ngIf="errors.registrationDocument">{{ errors.registrationDocument }}</p> 
-    </div>
+  <!-- Registration Doc -->
+  <div>
+    <label class="block text-sm font-medium mb-2">Identity Proof Document *</label> 
+    <input type="file"
+           hidden
+           id="regDoc"
+           accept=".pdf,.doc,.docx,image/*"
+           (change)="handleFileChange('registrationDocument', $event)">
 
-    <!-- Address Proof -->
-    <div>
-      <label class="block text-sm font-medium mb-2">Address Proof *</label>
-      <input type="file" hidden id="addrDoc" (change)="handleFileChange('addressProof', $event)">
-      <label for="addrDoc" class="block border-2 border-dashed p-6 rounded-lg text-center cursor-pointer">
-        <img *ngIf="addressProofPreview" [src]="addressProofPreview" class="h-32 mx-auto object-cover rounded">
-        <i *ngIf="!addressProofPreview" class="ri-upload-cloud-line text-4xl text-gray-400"></i>
-      </label>
-       <p class="text-red-500 text-sm" *ngIf="errors.addressProof">{{ errors.addressProof }}</p> 
-    </div>
+    <label for="regDoc" class="block border-2 border-dashed p-6 rounded-lg text-center cursor-pointer">
+      
+      <!-- Image Preview -->
+      <img *ngIf="regDocPreview && regDocPreview.startsWith('data:image')" 
+           [src]="regDocPreview" 
+           class="h-32 mx-auto object-cover rounded">
 
+      <!-- PDF/DOC File Name -->
+      <span *ngIf="regDocPreview && !regDocPreview.startsWith('data:image')">
+        {{ regDocPreview }}
+      </span>
+
+      <!-- Default Upload Icon -->
+      <i *ngIf="!regDocPreview" class="ri-upload-cloud-line text-4xl text-gray-400"></i>
+    </label>
+
+    <p class="text-red-500 text-sm" *ngIf="errors.registrationDocument">{{ errors.registrationDocument }}</p> 
   </div>
+
+  <!-- Address Proof -->
+  <div>
+    <label class="block text-sm font-medium mb-2">Address Proof *</label>
+    <input type="file"
+           hidden
+           id="addrDoc"
+           accept=".pdf,.doc,.docx,image/*"
+           (change)="handleFileChange('addressProof', $event)">
+
+    <label for="addrDoc" class="block border-2 border-dashed p-6 rounded-lg text-center cursor-pointer">
+      
+      <!-- Image Preview -->
+      <img *ngIf="addressProofPreview && addressProofPreview.startsWith('data:image')" 
+           [src]="addressProofPreview" 
+           class="h-32 mx-auto object-cover rounded">
+
+      <!-- PDF/DOC File Name -->
+      <span *ngIf="addressProofPreview && !addressProofPreview.startsWith('data:image')">
+        {{ addressProofPreview }}
+      </span>
+
+      <!-- Default Upload Icon -->
+      <i *ngIf="!addressProofPreview" class="ri-upload-cloud-line text-4xl text-gray-400"></i>
+    </label>
+
+    <p class="text-red-500 text-sm" *ngIf="errors.addressProof">{{ errors.addressProof }}</p> 
+  </div>
+
+</div>
+
 
   <!-- Address -->
   <div class="border-t pt-6 mt-6">
@@ -108,7 +150,7 @@
      placeholder="Line 1"
     [value]="formData.line1 || ''"
     (input)="onInput('line1', $any($event.target).value)"
-    class="w-full px-4 py-3 border rounded-lg"
+    class="w-full px-4 py-3 border rounded-lg"  maxlength="50"
   />
   <p *ngIf="errors.line1" class="text-red-500 text-sm mt-1">{{ errors.line1 }}</p>
   </div>
@@ -119,43 +161,71 @@
        placeholder="Line 2"
         [value]="formData.line2 || ''"
         (input)="onInput('line2', $any($event.target).value)"
-        class="w-full px-4 py-3 border rounded-lg" />
+        class="w-full px-4 py-3 border rounded-lg"  maxlength="50" />
     </div>
   </div>   
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
   <!-- State -->
  <div>
     <label class="block text-sm font-medium mb-2">State *</label>
-    <select [value]="formData.stateId || ''" (change)="onInput('stateId', $any($event.target).value)"
-      class="w-full px-4 py-3 border rounded-lg bg-white">
-      <option value="">Select State</option>
-      <option *ngFor="let s of states" [value]="s.id">{{ s.name }}</option>
-    </select>
+  <select
+  [(ngModel)]="formData.stateId"
+  (ngModelChange)="onStateChange($event)"
+  name="stateId"
+  class="w-full px-4 py-3 border rounded-lg bg-white">
+
+  <option [ngValue]="null">Select State</option>
+
+  <option *ngFor="let s of states"
+          [ngValue]="s.id">
+    {{ s.name }}
+  </option>
+</select>
+
+
+   
     <p *ngIf="errors?.stateId" class="text-red-500 text-sm mt-1">{{ errors.stateId }}</p>
   </div>
 
   <!-- City -->
   <div>
     <label class="block text-sm font-medium mb-2">City *</label>
-   <select [value]="formData.cityId || ''" [disabled]="!cities.length" (change)="onInput('city', $any($event.target).value)" class="w-full px-4 py-3 border rounded-lg bg-white">
-  <option value="">Select City</option>
-  <option *ngFor="let c of cities" [value]="c.id">{{ c.name }}</option>
+  
+<select
+  [(ngModel)]="formData.cityId"
+  (ngModelChange)="onCityChange($event)"
+  name="cityId"
+  class="w-full px-4 py-3 border rounded-lg bg-white"
+  [disabled]="!cities.length">
+
+  <option [ngValue]="null">Select City</option>
+
+  <option *ngFor="let c of cities"
+          [ngValue]="c.id">
+    {{ c.name }}
+  </option>
 </select>
-    <p *ngIf="errors?.city" class="text-red-500 text-sm mt-1">{{ errors.city }}</p>
+   
+<p *ngIf="errors?.city" class="text-red-500 text-sm mt-1">{{ errors.city }}</p>
   </div>
 </div>
 
     
   <div class="grid md:grid-cols-2 gap-6 mt-6">
-  <div>
-    <label class="block text-sm font-medium mb-2">Locality</label>
-    <input
-      placeholder="Locality"
-      [value]="formData.locality || ''"
-      (input)="onInput('locality', $any($event.target).value)"
-      class="w-full px-4 py-3 border rounded-lg"
-    />
-  </div>
+ 
+<div>
+  <label class="block text-sm font-medium mb-2">Locality *</label>
+  <select [(ngModel)]="formData.areaId" 
+          name="areaId"
+          class="w-full px-4 py-3 border rounded-lg bg-white"
+          [disabled]="!areas.length">
+    <option [ngValue]="null">Select Locality</option>
+    <option *ngFor="let area of areas" [ngValue]="area.id">
+      {{ area.area_name }}
+    </option>
+  </select>
+  <p *ngIf="errors.areaId" class="text-red-500 text-sm mt-1">{{ errors.areaId }}</p>
+</div>
 
   <div>
     <label class="block text-sm font-medium mb-2">Landmark</label>
@@ -163,30 +233,36 @@
       placeholder="Landmark"
       [value]="formData.landmark || ''"
       (input)="onInput('landmark', $any($event.target).value)"
-      class="w-full px-4 py-3 border rounded-lg"
+      class="w-full px-4 py-3 border rounded-lg"  maxlength="20"
     />
   </div>
 </div>
 
-     <div class="grid md:grid-cols-2 gap-6 mt-6">
-      <!-- <div>
-      <label class="block text-sm font-medium mb-2">Plot/House Number *</label>
-      <input placeholder="Plot/House Number" [value]="formData.plotNumber"
-        (input)="onInput('plotNumber', $any($event.target).value)"
-        class="w-full px-4 py-3 border rounded-lg" />
-        </div> -->
 
-       <div>
-         <label class="block text-sm font-medium mb-2">PIN Code *</label> 
-      <input placeholder="PIN Code" maxlength="6"
-        [value]="formData.pinCode"
-        (input)="onInput('pinCode', $any($event.target).value)"
-        class="w-full px-4 py-3 border rounded-lg" />
-        </div>
-    </div>
+
+
+     <div class="grid md:grid-cols-2 gap-6 mt-6">
+     
+    <div>
+  <label class="block text-sm font-medium mb-2">PIN Code *</label> 
+  <input 
+    type="text" 
+    placeholder="PIN Code" 
+    maxlength="6"
+    [value]="formData.pinCode"
+    (input)="onPinCodeInput($event)"
+    class="w-full px-4 py-3 border rounded-lg" 
+  />
+  <p *ngIf="errors.pinCode" class="text-red-500 text-sm mt-1">{{ errors.pinCode }}</p>
+</div>
+
+</div>
 
 <!-- Provider Service Area -->
-<div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12 border border-gray-100 mt-8">
+
+<div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12 border border-gray-100 mt-8 w-full">
+
+  <!-- Header -->
   <div class="flex items-center mb-8">
     <div class="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center mr-4">
       <i class="ri-map-pin-line text-2xl text-white"></i>
@@ -197,52 +273,60 @@
     </div>
   </div>
 
-  <!-- Area Type -->
-  <div class="mb-4">
-    <label class="block text-sm font-medium text-gray-700 mb-2">Area Type</label>
-    <select
-      [value]="formData.areaType || ''"
-      (change)="onInput('areaType', $any($event.target).value)"
-      class="w-full px-4 py-3 border rounded-lg">
-      <option value="">Select Type</option>
-      <option value="city_radius">City</option>
-      <option value="polygon">Radius</option>
-      <option value="pincode_list">Pincode</option>
-    </select>
-  </div>
+  <!-- Dropdown with Checkbox -->
+  <div class="relative w-full">
+    <label class="block text-sm font-medium mb-2">Service Areas *</label>
 
-  <!-- City Dropdown -->
-  <div *ngIf="formData.areaType === 'city_radius'" class="mb-4">
-    <label class="block text-sm font-medium text-gray-700 mb-2">Select City</label>
-    <select
-      [value]="formData.cityId || ''"
-      (change)="onInput('cityId', $any($event.target).value)"
-      class="w-full px-4 py-3 border rounded-lg">
-      <option value="">Select City</option>
-      <option *ngFor="let city of cities" [value]="city.id">{{ city.name }}</option>
-    </select>
-  </div> 
+    <!-- Dropdown Button -->
+    <div class="border rounded-lg px-4 py-3 cursor-pointer bg-white flex justify-between items-center"
+         (click)="toggleDropdown()">
+      <span>
+        {{ getSelectedAreaNames() || 'Select Service Areas' }}
+      </span>
+      <i class="ri-arrow-down-s-line text-xl"></i>
+    </div>
 
-  <!-- Radius Input -->
-  <div *ngIf="formData.areaType === 'polygon'" class="mb-4">
-    <label class="block text-sm font-medium text-gray-700 mb-2">Radius (km)</label>
-    <input type="number"
-      [value]="formData.radiusKm || ''"
-      (input)="onInput('radiusKm', $any($event.target).value)"
-      class="w-full px-4 py-3 border rounded-lg"
-      placeholder="Enter radius in km" />
-  </div>
+  
+    <!-- Dropdown List -->
+<div *ngIf="dropdownOpen"
+     class="absolute z-10 mt-2 w-full bg-white border rounded-lg shadow-lg max-h-72 overflow-y-auto">
 
-  <!-- Pincodes -->
-  <div *ngIf="formData.areaType === 'pincode_list'" class="mb-4">
-    <label class="block text-sm font-medium text-gray-700 mb-2">Pincodes</label>
+  <!-- 🔍 Search Box -->
+  <div class="p-3 border-b sticky top-0 bg-white">
     <input type="text"
-      [value]="formData.pincodes || ''"
-      (input)="onInput('pincodes', $any($event.target).value)"
-      class="w-full px-4 py-3 border rounded-lg"
-      placeholder="Comma separated pincodes" />
+           [(ngModel)]="searchText"
+           placeholder="Search area..."
+           class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
   </div>
+
+  <!-- Checkbox List -->
+  <div *ngFor="let area of filteredAreas()" 
+       class="flex items-center px-4 py-2 hover:bg-gray-100">
+
+    <input type="checkbox"
+           [checked]="isSelected(area.id)"
+           (change)="onAreaChange($event, area.id)"
+           class="mr-3 w-4 h-4">
+
+    <label>{{ area.area_name }}</label>
+  </div>
+
+  <!-- No Data -->
+  <div *ngIf="filteredAreas().length === 0"
+       class="text-center py-4 text-gray-500">
+    No areas found
+  </div>
+
 </div>
+
+    <!-- Error -->
+    <p *ngIf="errors?.selectedAreaIds" class="text-red-500 text-sm mt-1">
+      {{ errors.selectedAreaIds }}
+    </p>
+  </div>
+
+</div>
+
 
   <!-- Navigation -->
   <div class="flex justify-between mt-8">

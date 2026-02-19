@@ -7,6 +7,9 @@ import { AuthService } from '../auth.service';
 
 import { Auth, signInWithPhoneNumber, ConfirmationResult } from '@angular/fire/auth';
 
+// from data not reset when back 
+import { SimpleChanges } from '@angular/core';
+
 @Component({
   selector: 'app-step1-basic-info',
   standalone: true,
@@ -95,14 +98,24 @@ export class Step1BasicInfoComponent {
   this.formData.subCategoryIds = [];
   this.subCategories = [];
 
-  if (id) {
-    this.authService.getSubCategories(id).subscribe(res => {
-      this.subCategories = res;
+  // if (id) {
+  //   this.authService.getSubCategories(id).subscribe(res => {
+  //     this.subCategories = res;
 
-      // Optional: preselect or reset subcategories
-      this.inputChange.emit({ field: 'subCategoryIds', value: this.formData.subCategoryIds });
-    });
-  }
+  //     // Optional: preselect or reset subcategories
+  //     this.inputChange.emit({ field: 'subCategoryIds', value: this.formData.subCategoryIds });
+  //   });
+  // }
+  this.authService.getSubCategories(id).subscribe(res => {
+  this.subCategories = res;
+
+  // Tell parent whether subcategories exist
+  this.inputChange.emit({
+    field: 'hasSubCategories',
+    value: res.length > 0
+  });
+});
+
 }
 
 toggleSubCategory(subId: number) {
@@ -160,7 +173,7 @@ toggleSubCategory(subId: number) {
 
 
 onInputFieldChange(field: string, value: any, event?: Event) {
-
+ this.formData[field] = value; 
   if (field === 'mobile') {
     const input = event?.target as HTMLInputElement;
 
@@ -246,6 +259,47 @@ onNextClick() {
   this.next.emit(); // go to next step
 }
 
- 
+
+
+ngOnChanges(changes: SimpleChanges) {
+  if (changes['formData'] && this.formData) {
+
+    // ✅ Restore Category + Subcategories
+    const catId = this.formData.serviceCategoryId;
+    if (catId) {
+      this.authService.getSubCategories(catId).subscribe(res => {
+        this.subCategories = res;
+
+        this.inputChange.emit({
+          field: 'hasSubCategories',
+          value: res.length > 0
+        });
+
+        if (!this.formData.subCategoryIds) {
+          this.formData.subCategoryIds = [];
+        }
+      });
+    }
+
+    // ✅ Restore Professional Type
+    if (this.formData.professionalType) {
+      this.inputChange.emit({
+        field: 'professionalType',
+        value: this.formData.professionalType
+      });
+    }
+
+    // ✅ Restore Profile Preview
+    if (this.formData.profilePicture && !this.profilePreview) {
+      if (typeof this.formData.profilePicture === 'string') {
+        this.profilePreview = this.formData.profilePicture;
+      } else {
+        this.generatePreview(this.formData.profilePicture);
+      }
+    }
+  }
+}
+
+
 
 }
