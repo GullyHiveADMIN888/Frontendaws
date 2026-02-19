@@ -11,7 +11,7 @@ export class WalletTransactionService {
   private apiUrl = `${environment.apiBaseUrl}/admin/wallet-transactions`;
   private userApiUrl = `${environment.apiBaseUrl}/admin/users`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getWalletTransactions(query: WalletTransactionFilter): Observable<PagedResult<WalletTransaction>> {
     let params = new HttpParams()
@@ -45,18 +45,24 @@ export class WalletTransactionService {
     if (query.sortOrder) {
       params = params.set('sortOrder', query.sortOrder);
     }
+    if (query.txnType) {
+      params = params.set('txnType', query.txnType);
+    }
+    if (query.direction) {
+      params = params.set('direction', query.direction);
+    }
 
     return this.http.get<PagedResult<WalletTransaction>>(this.apiUrl, { params });
   }
 
   searchUsers(searchTerm?: string, limit: number = 20): Observable<User[]> {
     let params = new HttpParams().set('limit', limit.toString());
-    
+
     if (searchTerm && searchTerm.trim()) {
       params = params.set('search', searchTerm.trim());
     }
 
-    return this.http.get<{success: boolean, data: User[]}>(`${this.userApiUrl}/search`, { params })
+    return this.http.get<{ success: boolean, data: User[] }>(`${this.userApiUrl}/search`, { params })
       .pipe(
         map(response => response.data || []),
         catchError((error: any) => {
