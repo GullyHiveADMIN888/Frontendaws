@@ -44,6 +44,7 @@ export class SubCategoryMasterComponent implements OnInit {
 
   // UI state properties
   loading: boolean = true;
+  initialLoading = true;
   error: string | null = null;
   searchTerm: string = '';
 
@@ -98,10 +99,12 @@ export class SubCategoryMasterComponent implements OnInit {
         this.filteredSubCategories = [...data];
         this.calculateStats();
         this.loading = false;
+        this.initialLoading = false; 
       },
       error: (err) => {
         this.error = 'Failed to load sub-categories. Please try again.';
         this.loading = false;
+        this.initialLoading = false; 
         console.error('Error fetching sub-categories:', err);
       }
     });

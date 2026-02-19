@@ -17,6 +17,7 @@ export class CityMasterComponent implements OnInit {
 
   // UI state properties
   loading: boolean = true;
+  initialLoading = true;
   statesLoading: boolean = true;
   error: string | null = null;
   searchTerm: string = '';
@@ -256,10 +257,13 @@ export class CityMasterComponent implements OnInit {
         this.filteredCities = [...this.cities];
         this.calculateStats();
         this.loading = false;
+        this.initialLoading = false;
+
       },
       error: (err) => {
         this.error = 'Failed to load cities. Please try again.';
         this.loading = false;
+        this.initialLoading = false;
         console.error('Error fetching cities:', err);
       }
     });

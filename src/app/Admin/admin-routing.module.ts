@@ -21,6 +21,7 @@ import { EmailTemplateComponent } from './email-template/email-template.componen
 import { LeadPricingConfigComponent } from './lead-pricing-config/lead-pricing-config.component';
 import { LeadPricingEngineComponent } from './lead-pricing-engine/lead-pricing-engine.component';
 import { WalletTransactionComponent } from './wallet-transaction/wallet-transaction.component';
+import { LeadAssignmentComponent } from './lead-assignment/lead-assignment.component';
 
 const routes: Routes = [
   { 
@@ -107,6 +108,10 @@ const routes: Routes = [
   {
     path: 'wallet-transactions',
     component: WalletTransactionComponent
+  },
+  {
+    path: 'lead-assignment',
+    component: LeadAssignmentComponent
   },
   { 
     path: '**', 
