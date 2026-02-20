@@ -352,10 +352,6 @@
         Close
       </button>
 
-      <!-- <button *ngIf="!selectedLead?.isPurchased" (click)="buyLead()"
-        class="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg shadow">
-        Buy Lead
-      </button> -->
       <button 
   [disabled]="selectedLead.isPurchased"
   class="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 font-semibold rounded-lg shadow"
