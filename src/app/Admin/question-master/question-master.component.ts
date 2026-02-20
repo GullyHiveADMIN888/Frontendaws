@@ -38,6 +38,7 @@ export class QuestionMasterComponent implements OnInit {
   subCategories: SubCategory[] = []; // For modal - specific to selected category
 
   // UI state properties
+  initialLoading = true;
   loading: boolean = true;
   categoriesLoading: boolean = true;
   subCategoriesLoading: boolean = false;
@@ -100,12 +101,15 @@ export class QuestionMasterComponent implements OnInit {
         
         // Then fetch questions
         this.fetchQuestions();
+
+        
       },
       error: (err) => {
         console.error('Error fetching categories:', err);
         this.categories = [];
         this.categoriesLoading = false;
         this.fetchQuestions();
+        this.initialLoading = false; 
       }
     });
   }
@@ -490,10 +494,12 @@ export class QuestionMasterComponent implements OnInit {
       next: (data) => {
         // Load subcategories for all questions
         this.loadSubCategoriesForQuestions(data);
+        this.initialLoading = false; 
       },
       error: (err) => {
         this.error = 'Failed to load questions. Please try again.';
         this.loading = false;
+        this.initialLoading = false; 
         console.error('Error fetching questions:', err);
       }
     });

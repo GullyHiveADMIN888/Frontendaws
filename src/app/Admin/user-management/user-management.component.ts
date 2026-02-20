@@ -51,6 +51,7 @@ export class UserManagementComponent implements OnInit {
   sortDesc: boolean = true;
 
   // UI State
+  initialLoading = true;
   loading = false;
   expandedUserId: number | null = null;
   selectedUsers: Set<number> = new Set();
@@ -161,6 +162,7 @@ export class UserManagementComponent implements OnInit {
         console.error('Error loading users:', error);
         this.showMessage('Failed to load users', 'error');
         this.loading = false;
+        this.initialLoading = false;
       }
     });
   }
@@ -184,9 +186,11 @@ export class UserManagementComponent implements OnInit {
         if (response.success) {
           this.stats = response.data;
         }
+        this.initialLoading = false;
       },
       error: (error) => {
         console.error('Error loading stats:', error);
+        this.initialLoading = false;
       }
     });
   }
