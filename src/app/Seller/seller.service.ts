@@ -36,7 +36,7 @@ export interface Lead {
   phone?: string;
   email?: string;
   leadPrice?: string;
-  unlockedCount?: string;
+  unlockedCount?: number;
   committedCount?: string;
   priceBreakdown?: { [key: string]: number }; // parsed JSON
   basePrice?: string;
@@ -259,16 +259,31 @@ export class SellerService {
   }
 
 
-  // 🔹 Buy Lead
-  buyLead(leadId: number): Observable<any> {
-    const sellerId = Number(localStorage.getItem('sellerId'));
+  // // 🔹 Buy Lead
+  // buyLead(leadId: number): Observable<any> {
+  //   const sellerId = Number(localStorage.getItem('sellerId'));
 
-    return this.http.post(
-      `${this.apiUrl}/leads/${leadId}/buy?sellerId=${sellerId}`,
-      {}
-    );
-  }
+  //   return this.http.post(
+  //     `${this.apiUrl}/leads/${leadId}/buy?sellerId=${sellerId}`,
+  //     {}
+  //   );
+  // }
 
+// 🔹 Buy Lead
+buyLead(leadId: number): Observable<any> {
+  const providerId = Number(localStorage.getItem('userId'));
+
+  return this.http.post(
+    `${this.apiUrl}/buy`,
+    {
+      leadId: leadId,
+      providerId: providerId
+    },
+    {
+      headers: this.getHeaders()
+    }
+  );
+}
 
 
   getPublicProfile(sellerId: number) {
@@ -435,7 +450,9 @@ export class SellerService {
   buyLeads(leadId: number) {
     const providerId = Number(localStorage.getItem('userId'));
     //  const providerId = 42;
-
+console.log("BUY DEBUG:");
+  console.log("leadId:", leadId);
+  console.log("providerId:", providerId);
     return this.http.post(
       `${this.apiUrl}/buy`,
       {

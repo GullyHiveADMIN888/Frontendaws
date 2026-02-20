@@ -75,7 +75,7 @@ loadLeads() {
           priceBreakdown: priceBreakdown,
          isPurchased: l.isPurchased ?? false,
      //  isPurchased: l.isPurchased === true || l.isPurchased === 'true',
-
+ unlockedCount: Number(l.unlockedCount ?? 0),
         } as Lead;
       });
 
@@ -184,7 +184,7 @@ closeSendQuoteModal() {
 
 handleSendQuote(lead: any) {
   this.selectedLead = lead;
-
+console.log(lead.isPurchased);
   if (lead.isPurchased) {
     this.quoteAmount = '';
     this.quoteMessage = '';
@@ -218,14 +218,19 @@ closeConfirmModal() {
   const lead = this.selectedLead;
   if (!lead) return;
 
-  this.sellerService.buyLeads(lead.id).subscribe({
+  this.sellerService.buyLead(lead.id).subscribe({
     next: (res: any) => {
       // ✅ Mark as purchased locally
       lead.isPurchased = true;
       lead.leadPrice = `₹${res.pplPrice}`;
-   if (res.leadType) {
-        lead.leadType = res.leadType; // e.g., 'standard' or 'confirmed'
-      }
+
+        // ✅ ADD THIS LINE
+ lead.unlockedCount = (lead.unlockedCount ?? 0) + 1;
+
+    
+  //  if (res.leadType) {
+  //       lead.leadType = res.leadType; // e.g., 'standard' or 'confirmed'
+  //     }
 
       // ✅ Close modal
       this.showPaymentModal = false;
@@ -247,6 +252,70 @@ closeConfirmModal() {
     }
   });
 }
+
+
+
+
+// confirmBuyLead() {
+//   const lead = this.selectedLead;
+//   if (!lead) return;
+
+//   this.sellerService.buyLead(lead.id).subscribe({
+//     next: () => {
+//       // Fetch the updated lead from backend without refreshing the page
+//       this.sellerService.getLeadById(lead.id).subscribe({
+//         next: (updatedLead: Lead) => {
+//           // 1️⃣ Update the selectedLead modal
+//           this.selectedLead = updatedLead;
+
+//           // 2️⃣ Update the lead in the leads list
+//           const index = this.leads.findIndex(l => l.id === lead.id);
+//           if (index > -1) {
+//             this.leads[index] = updatedLead;
+//           }
+
+//           // 3️⃣ Update the wallet balance
+//           this.totalBalance = updatedLead.totalBalance ?? this.totalBalance;
+
+//           // 4️⃣ Update dashboard counts if needed
+//           this.refreshDashboardCounts(); 
+
+//           // 5️⃣ Close payment modal and open send quote modal
+//           this.showPaymentModal = false;
+//           this.showConfirmModal = false;
+//           this.showSendQuoteModal = true;
+
+//           alert(`Lead purchased successfully for ₹${updatedLead.leadPrice}`);
+//         },
+//         error: (err) => {
+//           console.error('Failed to fetch updated lead', err);
+//           alert('Lead purchased but failed to refresh its details.');
+//           this.showPaymentModal = false;
+//           this.showConfirmModal = false;
+//           this.showSendQuoteModal = true;
+//         }
+//       });
+//     },
+//     error: (err) => {
+//       console.error('Failed to buy lead', err);
+//       const message = err?.error?.message || 'Failed to purchase lead. Please try again.';
+//       alert(message);
+//       this.showConfirmModal = false;
+//     }
+//   });
+// }
+
+
+// refreshDashboardCounts() {
+//   this.sellerService.getDashboardData().subscribe(d => {
+//    this.totalBalance = d.totalBalance ?? 0; // if undefined, assign 0
+
+//     // this.totalLeads = d.totalLeads ;
+//     // this.totalResponses = d.totalResponses;
+//     // this.acceptedResponses = d.acceptedResponses;
+//     // this.pendingResponses = d.pendingResponses;
+//   });
+// }
 
 
 
