@@ -21,6 +21,7 @@ export class AuditLogComponent implements OnInit {
   totalPages = 0;
   expandedRowId: number | null = null;
   loading = false;
+  initialLoading = true;
   
   // Filter form
   filterForm!: FormGroup;
@@ -170,10 +171,12 @@ export class AuditLogComponent implements OnInit {
         this.totalPages = Math.ceil(this.totalCount / this.pageSize);
         this.calculateStats();
         this.loading = false;
+        this.initialLoading = false;
       },
       error: (error) => {
         console.error('Error loading audit logs:', error);
         this.loading = false;
+        this.initialLoading = false;
       }
     });
   }

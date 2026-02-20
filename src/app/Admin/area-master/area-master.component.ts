@@ -48,6 +48,7 @@ export class AreaMasterComponent implements OnInit {
 
   // UI state properties
   loading: boolean = true;
+  initialLoading = true;
   statesLoading: boolean = true;
   citiesLoading: boolean = false;
   filterLoading: boolean = false;
@@ -106,6 +107,7 @@ export class AreaMasterComponent implements OnInit {
         this.states = [];
         this.statesLoading = false;
         this.loadPaginatedAreas();
+        
       }
     });
   }
@@ -190,6 +192,7 @@ export class AreaMasterComponent implements OnInit {
     
     this.calculateStats();
     this.loading = false;
+    this.initialLoading = false;
     
     console.log('Pagination updated:', {
       currentPage: this.currentPage,

@@ -103,34 +103,6 @@ onCategoryChange(categoryId: number) {
     });
   });
 }
-// onCategoryChange(categoryId: number) {
-
-//   this.editCategoryId = categoryId;
-
-//   // ✅ HARD RESET
-//   this.editSubCategoryIds = [];
-//   this.subCategoryQuestions = [];
-//   this.selectedQuestions = [];
-
-//   // Fetch subcategories
-//   this.sellerService.getSubCategories(categoryId).subscribe(subs => {
-
-//     this.subCategories = subs;
-
-//     // Check if provider already has services in this category
-//     const existingService = this.services.find(s => s.categoryId === categoryId);
-
-//     if (existingService) {
-
-//       this.editSubCategoryIds = [...existingService.subCategoryIds];
-
-//       // ✅ Load questions for each subcategory
-//       this.editSubCategoryIds.forEach(subId => {
-//         this.loadQuestionsForSubCategory(subId, true);
-//       });
-//     }
-//   });
-// }
 
 
 isSubCategorySelected(subId: number): boolean {
@@ -246,46 +218,6 @@ openEditServices() {
   });
 }
 
-// openEditServices() {
-//   if (!this.sellerId) return;
-
-//   this.sellerService.getProviderServices(this.sellerId).subscribe({
-//     next: (data) => {
-//       this.services = data.providerServices ?? [];
-//       this.parentCategories = data.categories ?? [];
-//       this.cities = data.cities ?? [];
-//       this.serviceArea = {
-//         type: data.serviceArea?.type ?? '',
-//         cityId: data.serviceArea?.cityId,
-//         radiusKm: data.serviceArea?.radiusKm,
-//         pincodes: Array.isArray(data.serviceArea?.pincodes)
-//           ? [...data.serviceArea.pincodes]
-//           : []
-//       };
-
-//       // Reset category/subcategory selections
-//       this.editCategoryId = null;
-//       this.subCategories = [];
-//       this.editSubCategoryIds = [];
-//       this.subCategoryQuestions = [];
-//       this.selectedQuestions = [];
-
-//       // Preload only if there is a selected category
-//       if (this.services.length > 0) {
-//         const firstService = this.services[0];
-//         if (firstService.categoryId) {
-//           this.editCategoryId = firstService.categoryId;
-//           this.editSubCategoryIds = [...firstService.subCategoryIds];
-//           this.onCategoryChange(this.editCategoryId, true); // true = preload questions
-//         }
-//       }
-
-//       this.showServicesModal = true;
-//     },
-//     error: err => console.error(err)
-//   });
-// }
-
 
 
 
@@ -295,31 +227,6 @@ closeServicesModal() {
 }
 
 
-// saveServicesAndArea() {
-//   if (!this.sellerId) return;
-
-//   const payload = {
-//     services: this.services,
-//     serviceArea: this.serviceArea,
-//     questions: this.subCategoryQuestions
-//   .filter(q => !this.selectedQuestions.includes(q.id))
-//   .map(({ id, subCategoryId }) => ({
-//     categoryId: this.editCategoryId!,
-//     subCategoryId,
-//     questionId: id,
-//     isChecked: false
-//   }))
-
-//   };
-
-//   this.sellerService.updateServicesAndArea(this.sellerId, payload).subscribe({
-//     next: () => {
-//       console.log('Saved successfully');
-//       this.showServicesModal = false;
-//     },
-//     error: err => console.error(err)
-//   });
-// }
 saveServicesAndArea() {
   if (!this.sellerId) return;
 
@@ -393,35 +300,6 @@ selectedQuestions: number[] = [];  // question IDs checked by user
 serviceProviderQuestions: number[] = []; // existing checked questions from backend
 
 
-
-// toggleSubCategory(subId: number) {
-
-//   const index = this.editSubCategoryIds.indexOf(subId);
-
-//   if (index > -1) {
-
-//     // ✅ Remove subcategory
-//     this.editSubCategoryIds.splice(index, 1);
-
-//     // Get question ids to remove
-//     const removedQuestionIds = this.subCategoryQuestions
-//       .filter(q => q.subCategoryId === subId)
-//       .map(q => q.id);
-
-//     // Remove questions
-//     this.subCategoryQuestions =
-//       this.subCategoryQuestions.filter(q => q.subCategoryId !== subId);
-
-//     // Remove selections
-//     this.selectedQuestions =
-//       this.selectedQuestions.filter(id => !removedQuestionIds.includes(id));
-
-//   } else {
-
-//     this.editSubCategoryIds.push(subId);
-//     this.loadQuestionsForSubCategory(subId);
-//   }
-// }
 
 // New array to track only edited services
 updatedServices: { categoryId: number; subCategoryIds: number[] }[] = [];

@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
 // import { environment } from '../../environments/environment';
  import { environment } from '../../environments/environment.prod';
-
+// import { environment } from '../../environments/environment';
 // --- Dashboard & Stats ---
 export interface SellerStats {
   totalLeads: number;
@@ -36,7 +36,7 @@ export interface Lead {
   phone?: string;
   email?: string;
   leadPrice?: string;
-  unlockedCount?: string;
+  unlockedCount?: number;
   committedCount?: string;
   priceBreakdown?: { [key: string]: number }; // parsed JSON
   basePrice?: string;
@@ -98,6 +98,10 @@ export interface PublicProfile {
   linkedin?: string;
   addressCityId?: number;
   addressStateId?: number;
+  areaName?: string,
+ // areaId?: string
+ areaId?: number
+
 
 }
 
@@ -255,16 +259,31 @@ export class SellerService {
   }
 
 
-  // 🔹 Buy Lead
-  buyLead(leadId: number): Observable<any> {
-    const sellerId = Number(localStorage.getItem('sellerId'));
+  // // 🔹 Buy Lead
+  // buyLead(leadId: number): Observable<any> {
+  //   const sellerId = Number(localStorage.getItem('sellerId'));
 
-    return this.http.post(
-      `${this.apiUrl}/leads/${leadId}/buy?sellerId=${sellerId}`,
-      {}
-    );
-  }
+  //   return this.http.post(
+  //     `${this.apiUrl}/leads/${leadId}/buy?sellerId=${sellerId}`,
+  //     {}
+  //   );
+  // }
 
+// 🔹 Buy Lead
+buyLead(leadId: number): Observable<any> {
+  const providerId = Number(localStorage.getItem('userId'));
+
+  return this.http.post(
+    `${this.apiUrl}/buy`,
+    {
+      leadId: leadId,
+      providerId: providerId
+    },
+    {
+      headers: this.getHeaders()
+    }
+  );
+}
 
 
   getPublicProfile(sellerId: number) {
@@ -361,7 +380,7 @@ export class SellerService {
   // 🔹 Get cities
   getCities(): Observable<any[]> {
     return this.http.get<any[]>(
-      `${this.apiUrl}/cities`,
+      `${environment.apiBaseUrl}/auth/cities`,
       { headers: this.getHeaders() }
     );
   }
@@ -431,7 +450,9 @@ export class SellerService {
   buyLeads(leadId: number) {
     const providerId = Number(localStorage.getItem('userId'));
     //  const providerId = 42;
-
+console.log("BUY DEBUG:");
+  console.log("leadId:", leadId);
+  console.log("providerId:", providerId);
     return this.http.post(
       `${this.apiUrl}/buy`,
       {
@@ -477,5 +498,8 @@ export class SellerService {
   }
 
 
+ getAreasByCity(cityId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiBaseUrl}/auth/areas/${cityId}`);
+  }
 
 }

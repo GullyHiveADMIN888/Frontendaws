@@ -21,6 +21,7 @@ export class ServicePackageMasterComponent implements OnInit {
   groupedSubCategories: {categoryId: number, categoryName: string, subcategories: ServiceSubCategory[]}[] = [];
 
   // UI state properties
+  initialLoading = true;
   loading: boolean = true;
   error: string | null = null;
   searchTerm: string = '';
@@ -393,10 +394,12 @@ export class ServicePackageMasterComponent implements OnInit {
           this.filteredPackages = [...data];
           this.calculateStats();
           this.loading = false;
+          this.initialLoading = false; 
         },
         error: (err) => {
           this.error = 'Failed to load service packages. Please try again.';
           this.loading = false;
+          this.initialLoading = false; 
           console.error('Error fetching service packages:', err);
         }
       });
