@@ -605,16 +605,7 @@ this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
   this.error = '';
 }
 
-// closeForgotPasswordModal() {
-//   this.showForgotPasswordModal = false;
-//    this.showOtpModal = false;
-//   this.otp = Array(6).fill('');
-//   this.timer = 60;
-//   this.canResend = false;
-//   this.error = '';
-//   this.otpMobile = '';
-//   this.stopTimer();
-// }
+
 closeForgotPasswordModal() {
   this.showForgotPasswordModal = false;
   this.showOtpModal = false;
@@ -632,30 +623,9 @@ closeForgotPasswordModal() {
   this.authService.clearRecaptcha();
 }
 
-// async sendOtp() {
-//   if (this.forgotPasswordForm.invalid) return;
-
-//   this.isSendingOtp = true;
-//   const mobile = this.forgotPasswordForm.value.mobile;
-
-//   try {
-//     await this.authService.sendOtp(mobile);
-
-//     this.otpMobile = `+91${mobile}`;
-//     this.showOtpModal = true;
-//     this.showForgotPasswordModal = false;
-
-//     this.startTimer();
-//     setTimeout(() => this.focusInput(0), 0);
-//   } catch (e: any) {
-//     alert(e.message);
-//   } finally {
-//     this.isSendingOtp = false;
-//   }
-// }
 async sendOtp() {
   if (this.forgotPasswordForm.invalid) return;
-
+  this.error = ''; // 🔥 Clear old error
   const mobile = this.forgotPasswordForm.value.mobile;
   this.isSendingOtp = true;
 
@@ -670,15 +640,18 @@ async sendOtp() {
       return;
     }
 
-    // 🔥 STEP 2: Send OTP via Firebase
-    await this.authService.sendOtp(mobile);
-
+  
     this.otpMobile = `+91${mobile}`;
     this.showOtpModal = true;
     this.showForgotPasswordModal = false;
 
+      // 🔥 STEP 2: Send OTP via Firebase
+    await this.authService.sendOtp(mobile);
+
+
     this.startTimer();
     setTimeout(() => this.focusInput(0), 0);
+
 
   } catch (e: any) {
     this.error = e.message || 'Failed to send OTP';

@@ -46,6 +46,7 @@ export class LeadPricingEngineComponent implements OnInit, OnDestroy {
   };
 
   // ============= UI STATE =============
+  initialLoading = true;
   loading = false;
   expandedEngineId: number | null = null;
   showCreateModal = false;
@@ -134,6 +135,7 @@ export class LeadPricingEngineComponent implements OnInit, OnDestroy {
           this.totalCount = result.totalCount;
           this.totalPages = Math.ceil(this.totalCount / this.pageSize);
           this.loading = false;
+          this.initialLoading = false; 
 
           // Load config names for all unique config IDs in the result
           this.loadConfigNamesForEngines();
@@ -142,6 +144,7 @@ export class LeadPricingEngineComponent implements OnInit, OnDestroy {
           console.error('Error loading pricing engines:', error);
           this.showMessage('Failed to load pricing engines', 'error');
           this.loading = false;
+          this.initialLoading = false;
         }
       });
   }
