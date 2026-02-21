@@ -1,113 +1,116 @@
-export interface LeadAssignment {
+export interface Lead {
     id: number;
-    leadId: number;
-    providerId: number;
-    offerWave: number;
-    offerStatus: string;
-    offerExpiresAt?: string;
-    offeredAt: string;
-    respondedAt?: string;
-    committedAt?: string;
-    unlockedAt?: string;
-    dismissedAt?: string;
-    pplPrice?: number;
-    isFreeLead: boolean;
-    hasQuote: boolean;
-    lastQuoteId?: number;
-    leadStatus?: string;
-    createdAt: string;
-    updatedAt: string;
-
-    // Provider (User) fields
-    providerDisplayName: string;
-    providerEmail: string;
-    providerPhone: string;
-
-    // Lead fields
+    customerUserId?: number;
     leadType: string;
-    leadDescription?: string;
+    description: string;
     budgetMin?: number;
     budgetMax?: number;
-    timePreference: string;
+    timePreference?: string;
     scheduledStart?: string;
     scheduledEnd?: string;
     isInstant: boolean;
     leadQualityScore?: number;
-    source?: string;
+    source: string;
     flowType: string;
-    confirmedStatus?: string;
-
-    // Category fields
+    confirmedStatus: string;
     categoryId?: number;
     categoryName?: string;
-
-    // Subcategory fields
     subcategoryId?: number;
     subcategoryName?: string;
-
-    // City fields
     cityId?: number;
     cityName?: string;
-
-    // Area fields
     areaId?: number;
     areaName?: string;
     pincode?: string;
-
-    // Customer fields
-    customerUserId?: number;
     customerDisplayName?: string;
     customerEmail?: string;
     customerPhone?: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
-export interface LeadAssignmentFilter {
+export interface LeadFilter {
     pageNumber: number;
     pageSize: number;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
     searchTerm?: string;
-    providerId?: number;
-    cityId?: number;
-    areaId?: number;
     categoryId?: number;
     subcategoryId?: number;
-    offerStatus?: string;
+    cityId?: number;
+    areaId?: number;
     leadType?: string;
-    leadStatus?: string;
     flowType?: string;
+    confirmedStatus?: string;
+    customerUserId?: number;
     startDate?: string;
     endDate?: string;
-    sortBy?: string;
-    sortOrder?: string;
 }
 
-// export interface Provider {
-//     id: number;
-//     displayName: string;
-//     email: string;
-//     phone: string;
-// }
+export interface CreateLeadDto {
+    customerUserId?: number;
+    leadType: string;
+    description: string;
+    budgetMin?: number;
+    budgetMax?: number;
+    timePreference?: string;
+    scheduledStart?: string;
+    scheduledEnd?: string;
+    isInstant: boolean;
+    source: string;
+    flowType: string;
+    categoryId?: number;
+    subcategoryId?: number;
+    cityId?: number;
+    areaId?: number;
+    pincode?: string;
+    confirmedStatus: string | null;
+}
+
+export interface UpdateLeadDto {
+    customerUserId?: number;
+    leadType: string;
+    description: string;
+    budgetMin?: number;
+    budgetMax?: number;
+    timePreference?: string;
+    scheduledStart?: string;
+    scheduledEnd?: string;
+    isInstant: boolean;
+    source: string;
+    flowType: string;
+    confirmedStatus: string | null;
+    categoryId?: number;
+    subcategoryId?: number;
+    cityId?: number;
+    areaId?: number;
+    pincode?: string;
+}
 
 export interface Category {
     id: number;
     name: string;
+    isActive: boolean;
 }
 
 export interface Subcategory {
     id: number;
     name: string;
     categoryId: number;
+    isActive: boolean;
 }
 
 export interface City {
     id: number;
     name: string;
+    state: string;
 }
 
 export interface Area {
     id: number;
     areaName: string;
-    pincode: string;
     cityId: number;
+    pincode?: string;
 }
 
 export interface PagedResult<T> {
@@ -115,6 +118,13 @@ export interface PagedResult<T> {
     totalCount: number;
     pageNumber: number;
     pageSize: number;
+}
+
+export interface Customer {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
 }
 
 export interface ManualAssignment {
