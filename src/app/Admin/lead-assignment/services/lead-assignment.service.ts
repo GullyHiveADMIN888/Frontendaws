@@ -10,7 +10,9 @@ import {
     Category,
     Subcategory,
     City,
-    Area
+    Area,
+    ManualAssignment
+
 } from '../models/lead-assignment.model';
 import { environment } from '../../../../environments/environment.prod';
 
@@ -82,22 +84,22 @@ export class LeadAssignmentService {
         return this.http.get<Provider>(`${this.providersApiUrl}/${id}`);
     }
 
-    searchProviders(searchTerm?: string, limit: number = 20): Observable<Provider[]> {
-        let params = new HttpParams().set('limit', limit.toString());
+    // searchProviders(searchTerm?: string, limit: number = 20): Observable<Provider[]> {
+    //     let params = new HttpParams().set('limit', limit.toString());
 
-        if (searchTerm && searchTerm.trim()) {
-            params = params.set('search', searchTerm.trim());
-        }
+    //     if (searchTerm && searchTerm.trim()) {
+    //         params = params.set('search', searchTerm.trim());
+    //     }
 
-        return this.http.get<{ success: boolean, data: Provider[] }>(`${this.providersApiUrl}/search`, { params })
-            .pipe(
-                map(response => response.data || []),
-                catchError((error: any) => {
-                    console.error('Error in provider search:', error);
-                    return of([]);
-                })
-            );
-    }
+    //     return this.http.get<{ success: boolean, data: Provider[] }>(`${this.providersApiUrl}/search`, { params })
+    //         .pipe(
+    //             map(response => response.data || []),
+    //             catchError((error: any) => {
+    //                 console.error('Error in provider search:', error);
+    //                 return of([]);
+    //             })
+    //         );
+    // }
 
     // Search categories
     searchCategories(searchTerm?: string, limit: number = 20): Observable<Category[]> {
@@ -214,4 +216,63 @@ export class LeadAssignmentService {
         };
         return colors[type?.toLowerCase()] || 'bg-gray-100 text-gray-800';
     }
+
+    // Manual Assignment
+assignToProvider(assignment: ManualAssignment): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/assign`, assignment);
+}
+
+getAvailableProviders(
+    categoryId?: number,
+    subcategoryId?: number,
+    cityId?: number,
+    areaId?: number,
+    detailed: boolean = false
+): Observable<Provider[]> {
+    let params = new HttpParams();
+    if (categoryId) params = params.set('categoryId', categoryId.toString());
+    if (subcategoryId) params = params.set('subcategoryId', subcategoryId.toString());
+    if (cityId) params = params.set('cityId', cityId.toString());
+    if (areaId) params = params.set('areaId', areaId.toString());
+    if (detailed) params = params.set('detailed', 'true');
+
+    return this.http.get<Provider[]>(`${this.providersApiUrl}/available`, { params });
+}
+
+// Update the existing searchProviders method to handle different response formats
+searchProviders(searchTerm?: string, limit: number = 20): Observable<Provider[]> {
+    let params = new HttpParams().set('limit', limit.toString());
+
+    if (searchTerm && searchTerm.trim()) {
+        params = params.set('search', searchTerm.trim());
+    }
+
+    return this.http.get<Provider[] | { success: boolean; data: Provider[] }>(
+        `${this.providersApiUrl}/search`, 
+        { params }
+    ).pipe(
+        map(response => {
+            if (Array.isArray(response)) {
+                return response;
+            } else if (response && 'data' in response) {
+                return response.data || [];
+            }
+            return [];
+        }),
+        catchError((error) => {
+            console.error('Error in provider search:', error);
+            return of([]);
+        })
+    );
+}
+
+getProviderTierColor(tier: string): string {
+    const colors: { [key: string]: string } = {
+        'bronze': 'bg-amber-100 text-amber-800',
+        'silver': 'bg-gray-200 text-gray-800',
+        'gold': 'bg-yellow-100 text-yellow-800',
+        'platinum': 'bg-purple-100 text-purple-800'
+    };
+    return colors[tier?.toLowerCase()] || 'bg-gray-100 text-gray-800';
+}
 }

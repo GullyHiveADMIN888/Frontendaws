@@ -1,6 +1,5 @@
-// components/lead-assignment/lead-assignment.component.ts
 import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   LeadAssignment,
   Provider,
@@ -9,7 +8,8 @@ import {
   City,
   Area,
   LeadAssignmentFilter,
-  PagedResult
+  PagedResult,
+  ManualAssignment
 } from './models/lead-assignment.model';
 import { LeadAssignmentService } from './services/lead-assignment.service';
 import { CityService } from './services/city.service';
@@ -74,6 +74,16 @@ export class LeadAssignmentComponent implements OnInit {
   leadStatuses: string[] = [];
   flowTypes: string[] = [];
 
+  // Manual Assignment Properties
+  showAssignmentModal = false;
+  selectedAssignmentForAssignment: LeadAssignment | null = null;
+  availableProviders: Provider[] = [];
+  selectedAssignmentProvider: Provider | null = null;
+  filteredAssignmentProviders: Provider[] = [];
+  showAssignmentProviderDropdown = false;
+  loadingAssignmentProviders = false;
+  assignmentForm!: FormGroup;
+
   @ViewChild('providerSearchInput') providerSearchInputElement!: ElementRef;
   @ViewChild('providerDropdown') providerDropdown!: ElementRef;
   @ViewChild('citySearchInput') citySearchInputElement!: ElementRef;
@@ -81,6 +91,12 @@ export class LeadAssignmentComponent implements OnInit {
   @ViewChild('categorySearchInput') categorySearchInputElement!: ElementRef;
   @ViewChild('categoryDropdown') categoryDropdown!: ElementRef;
   @ViewChild('filterCategoryDropdown') filterCategoryDropdown!: ElementRef;
+  @ViewChild('assignmentProviderSearchInput') assignmentProviderSearchInputElement!: ElementRef;
+  @ViewChild('assignmentProviderDropdown') assignmentProviderDropdown!: ElementRef;
+
+  initialLoading: boolean = true;
+  loadingSubcategories: boolean = false;
+  loadingAreas: boolean = false;
 
   constructor(
     private leadService: LeadAssignmentService,
@@ -91,24 +107,15 @@ export class LeadAssignmentComponent implements OnInit {
   ngOnInit(): void {
     this.loadFilterOptions();
     this.initFilterForm();
+    this.initAssignmentForm();
     this.setupProviderSearch();
     this.setupCitySearch();
     this.setupCategorySearch();
+    this.setupAssignmentProviderSearch();
     this.loadAssignments();
   }
 
-  loadFilterOptions(): void {
-    // Load static options
-    this.leadService.getOfferStatuses().subscribe(statuses => this.offerStatuses = statuses);
-    this.leadService.getLeadTypes().subscribe(types => this.leadTypes = types);
-    this.leadService.getLeadStatuses().subscribe(statuses => this.leadStatuses = statuses);
-    this.leadService.getFlowTypes().subscribe(types => this.flowTypes = types);
-
-    // Load dynamic options
-    this.leadService.getCategories().subscribe(categories => this.categories = categories);
-    this.leadService.getCities().subscribe(cities => this.cities = cities);
-  }
-
+  // Initialize Filter Form
   initFilterForm(): void {
     const today = new Date();
     const thirtyDaysAgo = new Date();
@@ -121,8 +128,8 @@ export class LeadAssignmentComponent implements OnInit {
       citySearch: [''],
       cityId: [''],
       areaId: [''],
-      categorySearch: [''], // Add category search
-      categoryId: [''], // Add category ID
+      categorySearch: [''],
+      categoryId: [''],
       subcategoryId: [{ value: '', disabled: true }],
       offerStatus: [''],
       leadType: [''],
@@ -145,312 +152,33 @@ export class LeadAssignmentComponent implements OnInit {
     });
   }
 
-  // Setup category search
-  setupCategorySearch(): void {
-    this.filterForm.get('categorySearch')?.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        tap(searchTerm => {
-          if (searchTerm && this.selectedFilterCategory) {
-            if (searchTerm !== this.selectedFilterCategory.name) {
-              this.clearFilterCategorySelection();
-            }
-          }
-
-          if (!searchTerm || !searchTerm.trim()) {
-            this.filteredCategories = [];
-            this.showCategoryDropdown = false;
-            this.clearFilterCategorySelection();
-          }
-        })
-      )
-      .subscribe(searchTerm => {
-        if (searchTerm && searchTerm.trim()) {
-          this.searchCategories(searchTerm);
-        }
-      });
-  }
-
-  // Search categories
-  searchCategories(searchTerm: string): void {
-    this.loadingCategories = true;
-    this.categorySearchError = false;
-
-    this.leadService.searchCategories(searchTerm.trim(), 10).subscribe({
-      next: (categories) => {
-        this.filteredCategories = categories;
-        this.loadingCategories = false;
-        if (categories.length > 0) {
-          this.showCategoryDropdown = true;
-        }
-      },
-      error: (error) => {
-        console.error('Error searching categories:', error);
-        this.loadingCategories = false;
-        this.categorySearchError = true;
-        this.filteredCategories = [];
-      }
+  // Initialize Assignment Form
+  initAssignmentForm(): void {
+    this.assignmentForm = this.fb.group({
+      providerSearch: [''],
+      providerId: ['', Validators.required],
+      offerWave: [1, [Validators.required, Validators.min(1)]],
+      pplPrice: [''],
+      isFreeLead: [false],
+      offerExpiresAt: [''],
+      notes: ['']
     });
   }
 
-  // Category search input handlers
-  onCategorySearchInput(): void {
-    const searchTerm = this.filterForm.get('categorySearch')?.value;
+  // Load Filter Options
+  loadFilterOptions(): void {
+    // Load static options
+    this.leadService.getOfferStatuses().subscribe(statuses => this.offerStatuses = statuses);
+    this.leadService.getLeadTypes().subscribe(types => this.leadTypes = types);
+    this.leadService.getLeadStatuses().subscribe(statuses => this.leadStatuses = statuses);
+    this.leadService.getFlowTypes().subscribe(types => this.flowTypes = types);
 
-    if (searchTerm && searchTerm.trim()) {
-      if (this.selectedFilterCategory) {
-        if (searchTerm !== this.selectedFilterCategory.name) {
-          this.clearFilterCategorySelection();
-        }
-      }
-      this.showCategoryDropdown = true;
-    } else {
-      this.filteredCategories = [];
-      this.showCategoryDropdown = false;
-      this.clearFilterCategorySelection();
-    }
+    // Load dynamic options
+    this.leadService.getCategories().subscribe(categories => this.categories = categories);
+    this.leadService.getCities().subscribe(cities => this.cities = cities);
   }
 
-  onCategorySearchClick(): void {
-    const searchTerm = this.filterForm.get('categorySearch')?.value;
-    if (searchTerm && searchTerm.trim() && this.filteredCategories.length > 0) {
-      this.showCategoryDropdown = true;
-    }
-  }
-
-  onCategoryInputKeydown(event: KeyboardEvent): void {
-    switch (event.key) {
-      case 'ArrowDown':
-        event.preventDefault();
-        setTimeout(() => {
-          const firstItem = document.querySelector('.category-dropdown-item');
-          if (firstItem instanceof HTMLElement) firstItem.focus();
-        });
-        break;
-      case 'Escape':
-        this.showCategoryDropdown = false;
-        break;
-      case 'Enter':
-        if (this.filteredCategories.length === 1 && !this.selectedFilterCategory) {
-          this.selectFilterCategory(this.filteredCategories[0]);
-        }
-        break;
-    }
-  }
-
-  selectFilterCategory(category: Category): void {
-    console.log('Category selected:', category);
-    this.selectedFilterCategory = category;
-    this.filterForm.patchValue({
-        categoryId: category.id,
-        categorySearch: category.name
-    }, { emitEvent: true }); 
-    this.showCategoryDropdown = false;
-    this.filteredCategories = [];
-}
-
-  clearFilterCategorySelection(): void {
-    console.log('Clearing category selection');
-    this.selectedFilterCategory = null;
-    this.filterForm.patchValue({
-        categoryId: null,
-        categorySearch: ''
-    }, { emitEvent: true }); 
-    this.filteredCategories = [];
-    this.showCategoryDropdown = false;
-}
-
-
-
-  // Add these methods to handle subcategory control state
-enableSubcategoryControl(): void {
-    this.filterForm.get('subcategoryId')?.enable({ emitEvent: false });
-}
-
-disableSubcategoryControl(): void {
-    this.filterForm.get('subcategoryId')?.disable({ emitEvent: false });
-    this.filterForm.patchValue({ subcategoryId: '' }, { emitEvent: false });
-}
-  loadingSubcategories: boolean = false;
-  //  load Subcategories by category
-loadSubcategories(categoryId?: number): void {
-    console.log('Loading subcategories for category ID:', categoryId);
-    
-    if (categoryId) {
-        this.loadingSubcategories = true;
-        this.disableSubcategoryControl(); // Disable while loading
-        
-        this.leadService.getSubcategoriesByCategory(categoryId).subscribe({
-            next: (subcategories) => {
-                console.log('Subcategories API response:', subcategories);
-                this.subcategories = subcategories;
-                this.loadingSubcategories = false;
-                
-                if (subcategories && subcategories.length > 0) {
-                    this.enableSubcategoryControl();
-                    console.log('Subcategories loaded successfully:', subcategories.length);
-                } else {
-                    console.log('No subcategories found for category ID:', categoryId);
-                    this.disableSubcategoryControl();
-                }
-            },
-            error: (error) => {
-                console.error('Error loading subcategories:', error);
-                this.subcategories = [];
-                this.loadingSubcategories = false;
-                this.disableSubcategoryControl();
-            }
-        });
-    } else {
-        console.log('No category ID provided, clearing subcategories');
-        this.subcategories = [];
-        this.loadingSubcategories = false;
-        this.disableSubcategoryControl();
-    }
-}
-
-  // Setup city search
-  setupCitySearch(): void {
-    this.filterForm.get('citySearch')?.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        tap(searchTerm => {
-          if (searchTerm && this.selectedCity) {
-            if (searchTerm !== this.selectedCity.name) {
-              this.clearCitySelection();
-            }
-          }
-
-          if (!searchTerm || !searchTerm.trim()) {
-            this.filteredCities = [];
-            this.showCityDropdown = false;
-            this.clearCitySelection();
-          }
-        })
-      )
-      .subscribe(searchTerm => {
-        if (searchTerm && searchTerm.trim()) {
-          this.searchCities(searchTerm);
-        }
-      });
-  }
-
-  // Search cities
-  searchCities(searchTerm: string): void {
-    this.loadingCities = true;
-    this.citySearchError = false;
-
-    this.cityService.searchCities(searchTerm.trim(), 10).subscribe({
-      next: (cities) => {
-        this.filteredCities = cities;
-        this.loadingCities = false;
-        if (cities.length > 0) {
-          this.showCityDropdown = true;
-        }
-      },
-      error: (error) => {
-        console.error('Error searching cities:', error);
-        this.loadingCities = false;
-        this.citySearchError = true;
-        this.filteredCities = [];
-      }
-    });
-  }
-
-  // City search input handlers
-  onCitySearchInput(): void {
-    const searchTerm = this.filterForm.get('citySearch')?.value;
-
-    if (searchTerm && searchTerm.trim()) {
-      if (this.selectedCity) {
-        if (searchTerm !== this.selectedCity.name) {
-          this.clearCitySelection();
-        }
-      }
-      this.showCityDropdown = true;
-    } else {
-      this.filteredCities = [];
-      this.showCityDropdown = false;
-      this.clearCitySelection();
-    }
-  }
-
-  onCitySearchClick(): void {
-    const searchTerm = this.filterForm.get('citySearch')?.value;
-    if (searchTerm && searchTerm.trim() && this.filteredCities.length > 0) {
-      this.showCityDropdown = true;
-    }
-  }
-
-  onCityInputKeydown(event: KeyboardEvent): void {
-    switch (event.key) {
-      case 'ArrowDown':
-        event.preventDefault();
-        setTimeout(() => {
-          const firstItem = document.querySelector('.city-dropdown-item');
-          if (firstItem instanceof HTMLElement) firstItem.focus();
-        });
-        break;
-      case 'Escape':
-        this.showCityDropdown = false;
-        break;
-      case 'Enter':
-        if (this.filteredCities.length === 1 && !this.selectedCity) {
-          this.selectCity(this.filteredCities[0]);
-        }
-        break;
-    }
-  }
-
-  selectCity(city: City): void {
-    this.selectedCity = city;
-    this.filterForm.patchValue({
-      cityId: city.id,
-      citySearch: city.name
-    });
-    this.showCityDropdown = false;
-    this.filteredCities = [];
-    this.loadAreas(city.id);
-    this.applyFilters();
-  }
-
-  clearCitySelection(): void {
-    this.selectedCity = null;
-    this.filterForm.patchValue({
-      cityId: null,
-      citySearch: ''
-    });
-    this.filteredCities = [];
-    this.showCityDropdown = false;
-    this.areas = [];
-    this.applyFilters();
-  }
-
-  loadingAreas: boolean = false;
-  //  load Areas 
-  loadAreas(cityId?: number): void {
-    if (cityId) {
-      this.loadingAreas = true;
-      this.leadService.getAreasByCity(cityId).subscribe({
-        next: (areas) => {
-          this.areas = areas;
-          this.loadingAreas = false;
-        },
-        error: (error) => {
-          console.error('Error loading areas:', error);
-          this.areas = [];
-          this.loadingAreas = false;
-        }
-      });
-    } else {
-      this.areas = [];
-      this.loadingAreas = false;
-    }
-  }
-
-  // Setup provider search
+  // Setup Provider Search
   setupProviderSearch(): void {
     this.filterForm.get('providerSearch')?.valueChanges
       .pipe(
@@ -503,7 +231,302 @@ loadSubcategories(categoryId?: number): void {
       });
   }
 
-  // Provider search handlers
+  // Setup Assignment Provider Search
+  setupAssignmentProviderSearch(): void {
+    this.assignmentForm.get('providerSearch')?.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(searchTerm => {
+          if (searchTerm && this.selectedAssignmentProvider) {
+            const currentDisplay = `${this.selectedAssignmentProvider.displayName} (${this.selectedAssignmentProvider.email})`;
+            if (searchTerm !== currentDisplay) {
+              this.clearAssignmentProviderSelection();
+            }
+          }
+
+          if (!searchTerm?.trim()) {
+            this.filteredAssignmentProviders = [];
+            this.showAssignmentProviderDropdown = false;
+            this.clearAssignmentProviderSelection();
+          }
+        }),
+        switchMap(searchTerm => {
+          if (!searchTerm?.trim()) {
+            this.loadingAssignmentProviders = false;
+            return of([]);
+          }
+
+          this.loadingAssignmentProviders = true;
+          return this.leadService.searchProviders(searchTerm.trim(), 10).pipe(
+            catchError(error => {
+              console.error('Error searching providers:', error);
+              this.loadingAssignmentProviders = false;
+              return of([]);
+            })
+          );
+        })
+      )
+      .subscribe({
+        next: (providers) => {
+          this.filteredAssignmentProviders = providers;
+          this.loadingAssignmentProviders = false;
+          this.showAssignmentProviderDropdown = providers.length > 0;
+        },
+        error: (error) => {
+          console.error('Error in provider search:', error);
+          this.loadingAssignmentProviders = false;
+        }
+      });
+  }
+
+  // Setup Category Search
+  setupCategorySearch(): void {
+    this.filterForm.get('categorySearch')?.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(searchTerm => {
+          if (searchTerm && this.selectedFilterCategory) {
+            if (searchTerm !== this.selectedFilterCategory.name) {
+              this.clearFilterCategorySelection();
+            }
+          }
+
+          if (!searchTerm || !searchTerm.trim()) {
+            this.filteredCategories = [];
+            this.showCategoryDropdown = false;
+            this.clearFilterCategorySelection();
+          }
+        })
+      )
+      .subscribe(searchTerm => {
+        if (searchTerm && searchTerm.trim()) {
+          this.searchCategories(searchTerm);
+        }
+      });
+  }
+
+  // Setup City Search
+  setupCitySearch(): void {
+    this.filterForm.get('citySearch')?.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(searchTerm => {
+          if (searchTerm && this.selectedCity) {
+            if (searchTerm !== this.selectedCity.name) {
+              this.clearCitySelection();
+            }
+          }
+
+          if (!searchTerm || !searchTerm.trim()) {
+            this.filteredCities = [];
+            this.showCityDropdown = false;
+            this.clearCitySelection();
+          }
+        })
+      )
+      .subscribe(searchTerm => {
+        if (searchTerm && searchTerm.trim()) {
+          this.searchCities(searchTerm);
+        }
+      });
+  }
+
+  // Search Categories
+  searchCategories(searchTerm: string): void {
+    this.loadingCategories = true;
+    this.categorySearchError = false;
+
+    this.leadService.searchCategories(searchTerm.trim(), 10).subscribe({
+      next: (categories) => {
+        this.filteredCategories = categories;
+        this.loadingCategories = false;
+        if (categories.length > 0) {
+          this.showCategoryDropdown = true;
+        }
+      },
+      error: (error) => {
+        console.error('Error searching categories:', error);
+        this.loadingCategories = false;
+        this.categorySearchError = true;
+        this.filteredCategories = [];
+      }
+    });
+  }
+
+  // Search Cities
+  searchCities(searchTerm: string): void {
+    this.loadingCities = true;
+    this.citySearchError = false;
+
+    this.cityService.searchCities(searchTerm.trim(), 10).subscribe({
+      next: (cities) => {
+        this.filteredCities = cities;
+        this.loadingCities = false;
+        if (cities.length > 0) {
+          this.showCityDropdown = true;
+        }
+      },
+      error: (error) => {
+        console.error('Error searching cities:', error);
+        this.loadingCities = false;
+        this.citySearchError = true;
+        this.filteredCities = [];
+      }
+    });
+  }
+
+  // Load Subcategories
+  loadSubcategories(categoryId?: number): void {
+    console.log('Loading subcategories for category ID:', categoryId);
+    
+    if (categoryId) {
+      this.loadingSubcategories = true;
+      this.disableSubcategoryControl();
+      
+      this.leadService.getSubcategoriesByCategory(categoryId).subscribe({
+        next: (subcategories) => {
+          console.log('Subcategories API response:', subcategories);
+          this.subcategories = subcategories;
+          this.loadingSubcategories = false;
+          
+          if (subcategories && subcategories.length > 0) {
+            this.enableSubcategoryControl();
+            console.log('Subcategories loaded successfully:', subcategories.length);
+          } else {
+            console.log('No subcategories found for category ID:', categoryId);
+            this.disableSubcategoryControl();
+          }
+        },
+        error: (error) => {
+          console.error('Error loading subcategories:', error);
+          this.subcategories = [];
+          this.loadingSubcategories = false;
+          this.disableSubcategoryControl();
+        }
+      });
+    } else {
+      console.log('No category ID provided, clearing subcategories');
+      this.subcategories = [];
+      this.loadingSubcategories = false;
+      this.disableSubcategoryControl();
+    }
+  }
+
+  // Load Areas
+  loadAreas(cityId?: number): void {
+    if (cityId) {
+      this.loadingAreas = true;
+      this.leadService.getAreasByCity(cityId).subscribe({
+        next: (areas) => {
+          this.areas = areas;
+          this.loadingAreas = false;
+        },
+        error: (error) => {
+          console.error('Error loading areas:', error);
+          this.areas = [];
+          this.loadingAreas = false;
+        }
+      });
+    } else {
+      this.areas = [];
+      this.loadingAreas = false;
+    }
+  }
+
+  // Category Search Input Handlers
+  onCategorySearchInput(): void {
+    const searchTerm = this.filterForm.get('categorySearch')?.value;
+
+    if (searchTerm && searchTerm.trim()) {
+      if (this.selectedFilterCategory) {
+        if (searchTerm !== this.selectedFilterCategory.name) {
+          this.clearFilterCategorySelection();
+        }
+      }
+      this.showCategoryDropdown = true;
+    } else {
+      this.filteredCategories = [];
+      this.showCategoryDropdown = false;
+      this.clearFilterCategorySelection();
+    }
+  }
+
+  onCategorySearchClick(): void {
+    const searchTerm = this.filterForm.get('categorySearch')?.value;
+    if (searchTerm && searchTerm.trim() && this.filteredCategories.length > 0) {
+      this.showCategoryDropdown = true;
+    }
+  }
+
+  onCategoryInputKeydown(event: KeyboardEvent): void {
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        setTimeout(() => {
+          const firstItem = document.querySelector('.category-dropdown-item');
+          if (firstItem instanceof HTMLElement) firstItem.focus();
+        });
+        break;
+      case 'Escape':
+        this.showCategoryDropdown = false;
+        break;
+      case 'Enter':
+        if (this.filteredCategories.length === 1 && !this.selectedFilterCategory) {
+          this.selectFilterCategory(this.filteredCategories[0]);
+        }
+        break;
+    }
+  }
+
+  // City Search Input Handlers
+  onCitySearchInput(): void {
+    const searchTerm = this.filterForm.get('citySearch')?.value;
+
+    if (searchTerm && searchTerm.trim()) {
+      if (this.selectedCity) {
+        if (searchTerm !== this.selectedCity.name) {
+          this.clearCitySelection();
+        }
+      }
+      this.showCityDropdown = true;
+    } else {
+      this.filteredCities = [];
+      this.showCityDropdown = false;
+      this.clearCitySelection();
+    }
+  }
+
+  onCitySearchClick(): void {
+    const searchTerm = this.filterForm.get('citySearch')?.value;
+    if (searchTerm && searchTerm.trim() && this.filteredCities.length > 0) {
+      this.showCityDropdown = true;
+    }
+  }
+
+  onCityInputKeydown(event: KeyboardEvent): void {
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        setTimeout(() => {
+          const firstItem = document.querySelector('.city-dropdown-item');
+          if (firstItem instanceof HTMLElement) firstItem.focus();
+        });
+        break;
+      case 'Escape':
+        this.showCityDropdown = false;
+        break;
+      case 'Enter':
+        if (this.filteredCities.length === 1 && !this.selectedCity) {
+          this.selectCity(this.filteredCities[0]);
+        }
+        break;
+    }
+  }
+
+  // Provider Search Input Handlers
   onProviderInputClick(): void {
     const searchTerm = this.filterForm.get('providerSearch')?.value;
     if (searchTerm?.trim() && !this.selectedProvider && this.filteredProviders.length > 0) {
@@ -531,32 +554,135 @@ loadSubcategories(categoryId?: number): void {
     }
   }
 
+  // Assignment Provider Search Handlers
+  onAssignmentProviderInputClick(): void {
+    const searchTerm = this.assignmentForm.get('providerSearch')?.value;
+    if (searchTerm?.trim() && !this.selectedAssignmentProvider && this.filteredAssignmentProviders.length > 0) {
+      this.showAssignmentProviderDropdown = true;
+    }
+  }
+
+  onAssignmentProviderInputKeydown(event: KeyboardEvent): void {
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        setTimeout(() => {
+          const firstItem = document.querySelector('.assignment-provider-dropdown-item');
+          if (firstItem instanceof HTMLElement) firstItem.focus();
+        });
+        break;
+      case 'Escape':
+        this.showAssignmentProviderDropdown = false;
+        break;
+      case 'Enter':
+        if (this.filteredAssignmentProviders.length === 1 && !this.selectedAssignmentProvider) {
+          this.selectAssignmentProvider(this.filteredAssignmentProviders[0]);
+        }
+        break;
+    }
+  }
+
+  // Selection Methods
+  selectFilterCategory(category: Category): void {
+    console.log('Category selected:', category);
+    this.selectedFilterCategory = category;
+    this.filterForm.patchValue({
+      categoryId: category.id,
+      categorySearch: category.name
+    }, { emitEvent: true });
+    this.showCategoryDropdown = false;
+    this.filteredCategories = [];
+  }
+
+  selectCity(city: City): void {
+    this.selectedCity = city;
+    this.filterForm.patchValue({
+      cityId: city.id,
+      citySearch: city.name
+    });
+    this.showCityDropdown = false;
+    this.filteredCities = [];
+    this.loadAreas(city.id);
+    this.applyFilters();
+  }
+
   selectProvider(provider: Provider): void {
     this.selectedProvider = provider;
-
     this.filterForm.patchValue({
       providerId: provider.id,
       providerSearch: `${provider.displayName} (${provider.email})`
     }, { emitEvent: false });
-
     this.showProviderDropdown = false;
     this.filteredProviders = [];
+    this.applyFilters();
+  }
+
+  selectAssignmentProvider(provider: Provider): void {
+    this.selectedAssignmentProvider = provider;
+    this.assignmentForm.patchValue({
+      providerId: provider.id,
+      providerSearch: `${provider.displayName || provider.businessName} (${provider.email})`
+    }, { emitEvent: false });
+    this.showAssignmentProviderDropdown = false;
+    this.filteredAssignmentProviders = [];
+  }
+
+  // Clear Selection Methods
+  clearFilterCategorySelection(): void {
+    console.log('Clearing category selection');
+    this.selectedFilterCategory = null;
+    this.filterForm.patchValue({
+      categoryId: null,
+      categorySearch: ''
+    }, { emitEvent: true });
+    this.filteredCategories = [];
+    this.showCategoryDropdown = false;
+  }
+
+  clearCitySelection(): void {
+    this.selectedCity = null;
+    this.filterForm.patchValue({
+      cityId: null,
+      citySearch: ''
+    });
+    this.filteredCities = [];
+    this.showCityDropdown = false;
+    this.areas = [];
     this.applyFilters();
   }
 
   clearProviderSelection(): void {
     this.selectedProvider = null;
-
     this.filterForm.patchValue({
       providerId: '',
       providerSearch: ''
     }, { emitEvent: false });
-
     this.filteredProviders = [];
     this.showProviderDropdown = false;
     this.applyFilters();
   }
 
+  clearAssignmentProviderSelection(): void {
+    this.selectedAssignmentProvider = null;
+    this.assignmentForm.patchValue({
+      providerId: '',
+      providerSearch: ''
+    }, { emitEvent: false });
+    this.filteredAssignmentProviders = [];
+    this.showAssignmentProviderDropdown = false;
+  }
+
+  // Control Methods
+  enableSubcategoryControl(): void {
+    this.filterForm.get('subcategoryId')?.enable({ emitEvent: false });
+  }
+
+  disableSubcategoryControl(): void {
+    this.filterForm.get('subcategoryId')?.disable({ emitEvent: false });
+    this.filterForm.patchValue({ subcategoryId: '' }, { emitEvent: false });
+  }
+
+  // Date Formatting Methods
   formatDateForInput(date: Date): string {
     return date.toISOString().split('T')[0];
   }
@@ -579,9 +705,7 @@ loadSubcategories(categoryId?: number): void {
     return dateTime.toISOString();
   }
 
-
-  initialLoading: boolean = true; 
-
+  // Load Assignments
   loadAssignments(): void {
     this.loading = true;
 
@@ -620,6 +744,7 @@ loadSubcategories(categoryId?: number): void {
     });
   }
 
+  // Calculate Statistics
   calculateStats(): void {
     this.totalOffered = this.assignments.filter(a => a.offerStatus?.toLowerCase() === 'offered').length;
     this.totalAccepted = this.assignments.filter(a => a.offerStatus?.toLowerCase() === 'committed').length;
@@ -629,7 +754,62 @@ loadSubcategories(categoryId?: number): void {
     ).length;
   }
 
-  // Close dropdowns when clicking outside
+  // Modal Methods
+  openAssignmentModal(assignment: LeadAssignment): void {
+    this.selectedAssignmentForAssignment = assignment;
+    this.showAssignmentModal = true;
+    this.resetAssignmentForm();
+  }
+
+  closeAssignmentModal(): void {
+    this.showAssignmentModal = false;
+    this.selectedAssignmentForAssignment = null;
+    this.resetAssignmentForm();
+    this.filteredAssignmentProviders = [];
+    this.selectedAssignmentProvider = null;
+  }
+
+  resetAssignmentForm(): void {
+    this.assignmentForm.reset({
+      offerWave: 1,
+      isFreeLead: false
+    });
+  }
+
+  // Assignment Method
+  assignToProvider(): void {
+    if (!this.selectedAssignmentForAssignment || this.assignmentForm.invalid) {
+      Object.keys(this.assignmentForm.controls).forEach(key => {
+        this.assignmentForm.get(key)?.markAsTouched();
+      });
+      return;
+    }
+
+    const formValue = this.assignmentForm.value;
+    const assignment: ManualAssignment = {
+      leadId: this.selectedAssignmentForAssignment.leadId,
+      providerId: formValue.providerId,
+      offerWave: formValue.offerWave,
+      pplPrice: formValue.pplPrice ? Number(formValue.pplPrice) : undefined,
+      isFreeLead: formValue.isFreeLead,
+      offerExpiresAt: formValue.offerExpiresAt ? new Date(formValue.offerExpiresAt).toISOString() : undefined,
+      notes: formValue.notes
+    };
+
+    this.leadService.assignToProvider(assignment).subscribe({
+      next: (response) => {
+        this.closeAssignmentModal();
+        alert('Lead assigned successfully!');
+        this.loadAssignments();
+      },
+      error: (error) => {
+        console.error('Error assigning lead:', error);
+        alert(error.error?.error || 'Failed to assign lead');
+      }
+    });
+  }
+
+  // Click Outside Handler
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event): void {
     // Provider dropdown
@@ -651,17 +831,29 @@ loadSubcategories(categoryId?: number): void {
       return;
     }
 
+    // Assignment provider dropdown
+    if (this.assignmentProviderSearchInputElement?.nativeElement?.contains(event.target) ||
+      this.assignmentProviderDropdown?.nativeElement?.contains(event.target)) {
+      return;
+    }
+
     this.showProviderDropdown = false;
     this.showCityDropdown = false;
     this.showCategoryDropdown = false;
+    this.showAssignmentProviderDropdown = false;
   }
 
+  // Utility Methods
   getOfferStatusColor(status: string): string {
     return this.leadService.getOfferStatusColor(status);
   }
 
   getLeadTypeColor(type: string): string {
     return this.leadService.getLeadTypeColor(type);
+  }
+
+  getProviderTierColor(tier: string): string {
+    return this.leadService.getProviderTierColor(tier);
   }
 
   formatCurrency(amount?: number, currency: string = 'INR'): string {
