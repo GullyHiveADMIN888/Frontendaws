@@ -36,6 +36,7 @@ import { LeadPricingEngineComponent } from './lead-pricing-engine/lead-pricing-e
 import { SubscriptionMasterComponent} from './subscription-master/subscription-master.component';
 import { WalletTransactionComponent } from './wallet-transaction/wallet-transaction.component';
 import { LeadAssignmentComponent } from './lead-assignment/lead-assignment.component';
+import { LeadListComponent } from './lead/lead.component';
 
 @NgModule({
   declarations: [
@@ -66,7 +67,8 @@ import { LeadAssignmentComponent } from './lead-assignment/lead-assignment.compo
     LeadPricingEngineComponent,
     SubscriptionMasterComponent,
     WalletTransactionComponent,
-    LeadAssignmentComponent
+    LeadAssignmentComponent,
+    LeadListComponent
   ],
   imports: [
     CommonModule,
