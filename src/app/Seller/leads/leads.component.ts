@@ -85,7 +85,7 @@ export class LeadsComponent implements OnInit {
             isPurchased: l.isPurchased ?? false,
             //  isPurchased: l.isPurchased === true || l.isPurchased === 'true',
             unlockedCount: Number(l.unlockedCount ?? 0),
-            CommittedCount:  Number(l.committedCount ?? 0),
+          //  CommittedCount:  Number(l.committedCount ?? 0),
             lead_Id: l.leadId,
              areaName: l.areaName ?? '',
              areaId: l.areaId ?? null
