@@ -95,12 +95,12 @@
                bg-orange-50 text-orange-700 border border-orange-200">
                   <i class="ri-lock-unlock-line"></i>
 
-                  {{ lead.unlockedCount || 0 }} Unlocked
+                  <!-- {{ lead.unlockedCount || 0 }} Unlocked -->
 
-<!-- {{ lead.leadType === 'standard' 
+{{ lead.leadType === 'standard' 
       ? (lead.unlockedCount || 0) + ' Unlocked' 
-      : (lead.leadType === 'confirmed' ? (lead.CommittedCount || 0) + ' Confirmed' : '') 
-  }} -->
+      : (lead.leadType === 'confirmed' ? (lead.committedCount || 0) + ' Confirmed' : '') 
+  }}
 
                 </span>
 
@@ -696,23 +696,6 @@
       </button>
     </div>
 
-    <!-- Lead Info -->
-    <!-- <div class="border rounded-xl p-4 bg-gray-50 mb-4">
-      <p class="font-semibold">{{ selectedLead?.serviceName }}</p>
-      <p class="text-sm text-gray-600">
-        {{ selectedLead?.serviceSubCategoryName }}
-      </p>
-      <p class="text-sm text-gray-600">
-        {{ selectedLead?.leadType }}
-      </p>
-      <p class="text-sm text-gray-600">
-        {{ selectedLead?.budget }}
-      </p>
-      <p class="text-sm text-gray-500 mt-1">
-        <i class="ri-map-pin-line"></i>
-        {{ selectedLead?.location }}
-      </p>
-    </div> -->
     <div class="border rounded-xl p-4 bg-gray-50 mb-4">
       <div class="flex justify-between items-start gap-4">
 
@@ -763,8 +746,36 @@
 
       <div>
         <label class="text-sm text-gray-600">Message</label>
-        <textarea rows="3" [(ngModel)]="quoteMessage" class="w-full border rounded-lg px-3 py-2 mt-1"
-          placeholder="Write message to customer"></textarea>
+        <!-- <textarea rows="3" [(ngModel)]="quoteMessage" class="w-full border rounded-lg px-3 py-2 mt-1"
+          placeholder="Write message to customer"></textarea> -->
+
+          <textarea
+  #messageRef="ngModel"
+  name="quoteMessage"
+  rows="3"
+  [(ngModel)]="quoteMessage"
+  required
+  minlength="150"
+  maxlength="2000"
+  class="w-full border rounded-lg px-3 py-2 mt-1"
+  placeholder="Write message to customer">
+</textarea>
+
+<!-- Character Counter -->
+<div class="flex justify-between text-xs mt-1">
+  <span class="text-red-500" *ngIf="messageRef.invalid && messageRef.touched">
+    <span *ngIf="messageRef.errors?.['required']">
+      Message is required
+    </span>
+    <span *ngIf="messageRef.errors?.['minlength']">
+      Minimum 150 characters required
+    </span>
+  </span>
+
+  <span class="text-gray-500">
+    {{ quoteMessage?.length || 0 }}/2000
+  </span>
+</div>
       </div>
     </div>
 

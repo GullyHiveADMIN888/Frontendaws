@@ -85,7 +85,7 @@ export class LeadsComponent implements OnInit {
             isPurchased: l.isPurchased ?? false,
             //  isPurchased: l.isPurchased === true || l.isPurchased === 'true',
             unlockedCount: Number(l.unlockedCount ?? 0),
-          //  CommittedCount:  Number(l.committedCount ?? 0),
+            committedCount:  Number(l.committedCount ?? 0),
             lead_Id: l.leadId,
              areaName: l.areaName ?? '',
              areaId: l.areaId ?? null
@@ -330,28 +330,71 @@ export class LeadsComponent implements OnInit {
 
 
 
-  sendQuote() {
-    if (!this.selectedLead) return;
+  // sendQuote() {
+  //   if (!this.selectedLead) return;
 
-    const payload = {
-      leadId: this.selectedLead.leadId,
-      priceMin: this.quoteAmount,          // bind input
-      priceMax: this.quoteAmount,          // or different field if needed
-      notes: this.quoteMessage,
-      validUntil: null                     // optional
-    };
+  //   const payload = {
+  //     leadId: this.selectedLead.leadId,
+  //     priceMin: this.quoteAmount,          // bind input
+  //     priceMax: this.quoteAmount,          // or different field if needed
+  //     notes: this.quoteMessage,
+  //     validUntil: null                     // optional
+  //   };
 
-    this.sellerService.sendQuote(payload).subscribe({
-      next: () => {
-        alert('Quote sent successfully');
-        this.closeSendQuoteModal();
-      },
-      error: (err) => {
-        alert(err?.error?.message || 'Failed to send quote');
-      }
-    });
+  //   this.sellerService.sendQuote(payload).subscribe({
+  //     next: () => {
+  //       alert('Quote sent successfully');
+  //       this.closeSendQuoteModal();
+  //     },
+  //     error: (err) => {
+  //       alert(err?.error?.message || 'Failed to send quote');
+  //     }
+  //   });
+  // }
+  isSendingQuote = false;
+
+sendQuote() {
+  if (!this.selectedLead) return;
+
+  const message = this.quoteMessage?.trim() || '';
+  const amount = Number(this.quoteAmount);
+
+  // ✅ Message validation
+  if (message.length < 150 || message.length > 2000) {
+    alert('Message must be between 150 and 2000 characters.');
+    return;
   }
 
+  // ✅ Amount validation
+  if (!amount || amount <= 0) {
+    alert('Please enter a valid quote amount.');
+    return;
+  }
+
+  const payload = {
+    leadId: this.selectedLead.leadId,
+    priceMin: amount,
+    priceMax: amount,
+    notes: message,
+    validUntil: null
+  };
+
+  this.isSendingQuote = true; // add this property
+
+  this.sellerService.sendQuote(payload).subscribe({
+    next: () => {
+      alert('Quote sent successfully');
+      this.closeSendQuoteModal();
+      this.quoteAmount = '';
+      this.quoteMessage = '';
+      this.isSendingQuote = false;
+    },
+    error: (err) => {
+      alert(err?.error?.message || 'Failed to send quote');
+      this.isSendingQuote = false;
+    }
+  });
+}
 
   // Allow only digits and one dot, with proper navigation keys
   allowDecimal(event: KeyboardEvent) {
