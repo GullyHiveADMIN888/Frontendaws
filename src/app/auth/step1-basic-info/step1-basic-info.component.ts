@@ -251,10 +251,10 @@ onSendOTP() {
 
 
 onNextClick() {
-  if (!this.isMobileVerified) {
-    alert('⚠️ Please verify your mobile number before continuing');
-    return;
-  }
+  // if (!this.isMobileVerified) {
+  //   alert('⚠️ Please verify your mobile number before continuing');
+  //   return;
+  // }
 
   this.next.emit(); // go to next step
 }
