@@ -186,6 +186,12 @@ onInputFieldChange(field: string, value: any, event?: Event) {
 //     this.errors.mobile = err.message || 'OTP failed';
 //   }
 // }
+
+
+
+
+
+  //...otp recapcta 
 onSendOTP() {
   const mobile = this.formData?.mobile;
 
@@ -226,7 +232,7 @@ onSendOTP() {
     }
   });
 }
-
+//......
 
 onNextClick() {
   if (!this.isMobileVerified) {
