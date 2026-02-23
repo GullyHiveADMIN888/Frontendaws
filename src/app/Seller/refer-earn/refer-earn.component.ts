@@ -24,7 +24,7 @@ export class ReferEarnComponent implements OnInit {
       const id = params.get('sellerId');
       if (id) {
         this.sellerId = +id;
-        this.referralLink = `https://servicehub.com/join?ref=${this.referralCode}`;
+        this.referralLink = `https://gullyhivefrontend-z698.onrender.com/#/join?ref=${this.referralCode}`;
         this.loadReferralsAndEarnings();
       }
     });

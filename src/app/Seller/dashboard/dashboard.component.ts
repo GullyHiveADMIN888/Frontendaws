@@ -12,6 +12,8 @@ import { SellerService,  ProviderService, ProviderServicesResponse } from '../se
 export class DashboardComponent implements OnInit {
   user: any;
    sellerId!: number;
+  // UI state properties
+  initialLoading = true;// For modal loading state
 
   constructor(private sellerService: SellerService) {}
 
@@ -24,38 +26,90 @@ coverageArea = {
   cityId: null as number | null,
   areaIds: [] as number[]
 };
+// ngOnInit() {
+//   this.sellerService.getDashboardData().subscribe(d => {
+//     this.user = d;
+//     this.sellerId = d.sellerId;
+
+//     // Leads
+//     this.sellerService.getLeads().subscribe(leads => {
+//       this.totalLeads = leads.length;
+//     });
+
+//     // Responses (NOW sellerId exists)
+//     this.sellerService.getMyResponses(this.sellerId).subscribe(res => {
+//       const responses = res.data;
+//       this.totalResponses = responses.length;
+//       this.acceptedResponses = responses.filter(r => r.status === 'accepted').length;
+//       this.pendingResponses = responses.filter(r => r.status === 'pending').length;
+//         this.totalBalance = d.totalBalance || 0;
+//     });
+
+//     // Load services
+//   //  this.loadProviderServices(this.sellerId);
+//   });
+// }
 ngOnInit() {
-  this.sellerService.getDashboardData().subscribe(d => {
-    this.user = d;
-    this.sellerId = d.sellerId;
+  this.initialLoading = true;
 
-    // Leads
-    this.sellerService.getLeads().subscribe(leads => {
-      this.totalLeads = leads.length;
-    });
+  this.sellerService.getDashboardData().subscribe({
+    next: (d) => {
+      this.user = d;
+      this.sellerId = d.sellerId;
+      this.totalBalance = d.totalBalance || 0;
 
-    // Responses (NOW sellerId exists)
-    this.sellerService.getMyResponses(this.sellerId).subscribe(res => {
-      const responses = res.data;
-      this.totalResponses = responses.length;
-      this.acceptedResponses = responses.filter(r => r.status === 'accepted').length;
-      this.pendingResponses = responses.filter(r => r.status === 'pending').length;
-        this.totalBalance = d.totalBalance || 0;
-    });
+      // Leads
+      this.sellerService.getLeads().subscribe({
+        next: (leads) => {
+          this.totalLeads = leads.length;
 
-    // Load services
-  //  this.loadProviderServices(this.sellerId);
+          // Responses (call after leads)
+          this.sellerService.getMyResponses(this.sellerId).subscribe({
+            next: (res) => {
+              const responses = res.data;
+
+              this.totalResponses = responses.length;
+              this.acceptedResponses =
+                responses.filter(r => r.status === 'accepted').length;
+              this.pendingResponses =
+                responses.filter(r => r.status === 'pending').length;
+
+              // 🔥 STOP LOADER HERE
+              this.initialLoading = false;
+            },
+            error: (err) => {
+              console.error(err);
+              this.initialLoading = false;
+            }
+          });
+        },
+        error: (err) => {
+          console.error(err);
+          this.initialLoading = false;
+        }
+      });
+    },
+    error: (err) => {
+      console.error(err);
+      this.initialLoading = false;
+    }
   });
 }
 
-
   loadDashboardData(): void {
+
+ 
     this.sellerService.getDashboardData().subscribe({
       next: dashboard => {
         console.log('Dashboard data:', dashboard);
         this.user = dashboard; // 👈 STORE FULL DASHBOARD
+          this.initialLoading = false;
       },
-      error: err => console.error('Failed to load dashboard data', err)
+      error: err => 
+      {
+          this.initialLoading = false;
+        console.error('Failed to load dashboard data', err)
+      }
     });
   }
 

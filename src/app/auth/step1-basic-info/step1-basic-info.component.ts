@@ -55,39 +55,6 @@ export class Step1BasicInfoComponent {
   }
 }
 
-//   onCategoryChange(categoryId: number) {
-//   if (!categoryId) return;
-
-//   const id = Number(categoryId);
-
-//   this.formData.serviceCategoryId = id;
-//   this.inputChange.emit({ field: 'serviceCategoryId', value: id });
-
-//   this.formData.subCategoryIds = [];
-//   this.subCategories = [];
-
-//   this.authService.getSubCategories(id).subscribe(res => {
-//     this.subCategories = res;
-//   });
-// }
-
-
-  // toggleSubCategory(subId: number) {
-  //   if (!this.formData.subCategoryIds) {
-  //     this.formData.subCategoryIds = [];
-  //   }
-
-  //   const index = this.formData.subCategoryIds.indexOf(subId);
-
-  //   if (index > -1) {
-  //     this.formData.subCategoryIds.splice(index, 1);
-  //   } else {
-  //     this.formData.subCategoryIds.push(subId);
-  //   }
-
-  //   // Emit changes
-  //   this.inputChange.emit({ field: 'subCategoryIds', value: this.formData.subCategoryIds });
-  // }
 
   onCategoryChange(categoryId: number) {
   const id = Number(categoryId);
