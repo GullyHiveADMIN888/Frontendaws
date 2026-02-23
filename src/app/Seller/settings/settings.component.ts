@@ -90,11 +90,17 @@ ngOnInit(): void {
             description: 'Update your personal information and profile picture',  
             link: ['/seller/completeProfile', this.sellerId] // ✅ array for routerLink
           },
+          // { 
+          //   icon: 'ri-briefcase-line', 
+          //   title: 'Business Details', 
+          //   description: 'Manage your business information and credentials', 
+          //   link: ['/seller/settings/business'] 
+          // },
           { 
-            icon: 'ri-briefcase-line', 
-            title: 'Business Details', 
+            icon: 'ri-lock-line', 
+            title: 'Legal Identity Address Proof', 
             description: 'Manage your business information and credentials', 
-            link: ['/seller/settings/business'] 
+            link: ['/seller/leagelIdentity/business', this.sellerId] 
           },
           { 
             icon: 'ri-tools-line', 
@@ -214,19 +220,6 @@ onSettingClick(item: SettingItem) {
   }
 }
 
-// validatePasswords() {
-//   const { currentPassword, newPassword, confirmPassword } = this.passwordData;
-
-//   this.passwordMismatch =
-//     !!newPassword &&
-//     !!confirmPassword &&
-//     newPassword !== confirmPassword;
-
-//   this.sameAsCurrent =
-//     !!currentPassword &&
-//     !!newPassword &&
-//     currentPassword === newPassword;
-// }
 
 validatePasswords() {
 
@@ -389,16 +382,6 @@ onBankNameInput(event: Event) {
   }
 }
 
-// onBankNameInput(event: any) {
-//   const value = event.target.value;
-
-//   // Allow English letters, Hindi letters (Devanagari), and spaces
-//   const filteredValue = value.replace(/[^A-Za-z\u0900-\u097F\s]/g, '');
-
-//   this.bankDetails.bankName = filteredValue;
-//   this.clearError('bankName');
-// }
-
 onAccountNumberInput(event: Event) {
   const keyboardEvent = event as KeyboardEvent;
 
@@ -409,11 +392,6 @@ onAccountNumberInput(event: Event) {
   }
 }
 
-// onAccountNumberInput(event: any) {
-//   const value = event.target.value.replace(/[^0-9]/g, '');
-//   this.bankDetails.accountNumber = value;
-//   this.clearError('accountNumber');
-// }
 
 onIfscInput(event: Event) {
   const keyboardEvent = event as KeyboardEvent;
@@ -424,20 +402,6 @@ onIfscInput(event: Event) {
     keyboardEvent.preventDefault();
   }
 }
-
-// onIfscInput(event: any) {
-//   let value = event.target.value;
-
-//   // Convert to uppercase
-//   value = value.toUpperCase();
-
-//   // Allow only A-Z and 0-9
-//   value = value.replace(/[^A-Z0-9]/g, '');
-
-//   this.bankDetails.ifsc = value;
-//   this.clearError('ifsc');
-// }
-
 
 deleteBankDetails() {
   this.sellerService.deleteBankDetails(this.sellerId).subscribe({
