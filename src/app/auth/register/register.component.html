@@ -90,3 +90,43 @@
 
 
 </div>
+
+<!-- 🔥 Verification Modal -->
+<div *ngIf="showVerificationModal"
+     class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+  <div class="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
+
+    <h2 class="text-xl font-bold mb-4 text-center">
+      Verify Your Account
+    </h2>
+
+    <div class="space-y-4">
+
+      <!-- Mobile -->
+      <div class="border p-3 rounded-lg">
+        <p class="text-sm text-gray-600">Mobile Number</p>
+        <p class="font-semibold">{{ formData.mobile }}</p>
+        <button
+          (click)="openMobileVerification()"
+          class="mt-2 w-full bg-orange-600 text-white py-2 rounded-lg">
+          Verify Mobile
+        </button>
+      </div>
+
+      <!-- Email -->
+      <div class="border p-3 rounded-lg">
+        <p class="text-sm text-gray-600">Email Address</p>
+        <p class="font-semibold">{{ formData.email }}</p>
+        <button
+         
+          class="mt-2 w-full bg-blue-600 text-white py-2 rounded-lg">
+          Verify Email
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+ <!-- (click)="openEmailVerification()" -->

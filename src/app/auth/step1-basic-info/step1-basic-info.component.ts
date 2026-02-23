@@ -162,27 +162,6 @@ onInputFieldChange(field: string, value: any, event?: Event) {
 }
 
 
-// async onSendOTP() {
-//   const mobile = this.formData?.mobile;
-
-//   if (!mobile) {
-//     this.errors.mobile = 'Mobile number is required';
-//     return;
-//   }
-
-//   if (!/^\d{10}$/.test(mobile)) {
-//     this.errors.mobile = 'Mobile number must be 10 digits';
-//     return;
-//   }
-
-//   try {
-//     await this.authService.sendOtp(mobile);
-//     this.sendOTP.emit(); // open OTP modal
-//   } catch (err: any) {
-//     this.errors.mobile = err.message || 'OTP failed';
-//   }
-// }
-
 
 
 
@@ -233,7 +212,36 @@ onNextClick() {
   this.next.emit(); // go to next step
 }
 
+// onNextClick() {
+//   const mobile = this.formData?.mobile;
 
+//   if (!mobile) {
+//     this.errors.mobile = 'Mobile number is required';
+//     return;
+//   }
+
+//   if (!/^\d{10}$/.test(mobile)) {
+//     this.errors.mobile = 'Mobile number must be 10 digits';
+//     return;
+//   }
+
+//   // 🔥 Only check mobile existence
+//   this.authService.checkMobileExists(mobile).subscribe({
+//     next: (response) => {
+
+//       if (response.exists) {
+//         this.errors.mobile = 'Mobile number already registered';
+//         return;
+//       }
+
+//       // ✅ Mobile not exists → go next
+//       this.next.emit();
+//     },
+//     error: () => {
+//       this.errors.mobile = 'Something went wrong';
+//     }
+//   });
+// }
 
 ngOnChanges(changes: SimpleChanges) {
   if (changes['formData'] && this.formData) {

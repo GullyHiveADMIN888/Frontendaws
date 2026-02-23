@@ -142,20 +142,32 @@ updatePasswordByMobile(data: { mobile: string; newPassword: string }) {
 
  
 
-/** 🔹 Verify OTP */
-  async verifyOtp(otp: string) {
-    if (!this.confirmationResult) {
-      throw new Error('OTP not requested');
-    }
-    return this.confirmationResult.confirm(otp);
+// /** 🔹 Verify OTP */
+//   async verifyOtp(otp: string) {
+//     if (!this.confirmationResult) {
+//       throw new Error('OTP not requested');
+//     }
+//     return this.confirmationResult.confirm(otp);
 
-  //   const result = await this.confirmationResult.confirm(otp);
-  // // 🔥 CLEAR after success
-  // this.clearRecaptcha();
-  // return result;
+//   //   const result = await this.confirmationResult.confirm(otp);
+//   // // 🔥 CLEAR after success
+//   // this.clearRecaptcha();
+//   // return result;
 
+//   }
+
+async verifyOtp(otp: string) {
+  if (!this.confirmationResult) {
+    throw new Error('OTP not requested');
   }
 
+  const result = await this.confirmationResult.confirm(otp);
+
+  // 🔥 VERY IMPORTANT
+  this.clearRecaptcha();
+
+  return result;
+}
 private async initRecaptcha(): Promise<void> {
   if (!isPlatformBrowser(this.platformId)) return;
 
