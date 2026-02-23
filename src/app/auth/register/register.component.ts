@@ -103,10 +103,10 @@ export class RegisterComponent {
     }
 
     // 🔴 Mobile NOT verified → STOP + ALERT
-    // if (!this.isMobileVerified) {
-    //   alert('Please verify your mobile number before continuing.');
-    //   return;
-    // }
+    if (!this.isMobileVerified) {
+      alert('Please verify your mobile number before continuing.');
+      return;
+    }
 
 
     // ✅ All good → go to Legal Identity
