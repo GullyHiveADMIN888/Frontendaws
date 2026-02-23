@@ -199,7 +199,13 @@ async resendOtp(mobile: string): Promise<void> {
 //   this.confirmationResult = undefined;
 // }
 
-
+clearRecaptcha() {
+  if ((window as any).grecaptcha && this.recaptchaWidgetId !== null) {
+    const container = document.getElementById('recaptcha-container');
+    if (container) container.innerHTML = ''; // clear old captcha
+    this.recaptchaWidgetId = null;
+  }
+}
 recaptchaWidgetId: number | null = null;
 
 renderRecaptcha(containerId: string) {
@@ -211,7 +217,7 @@ renderRecaptcha(containerId: string) {
     }
 
     this.recaptchaWidgetId = (window as any).grecaptcha.render(containerId, {
-      sitekey: 'YOUR_SITE_KEY',
+      sitekey: '6LdjF3UsAAAAAAfgT8V_UObHMZ7uy6izvSDb19Cq',
       size: 'invisible',
       callback: (response: any) => {
         console.log('Captcha verified', response);
@@ -220,13 +226,7 @@ renderRecaptcha(containerId: string) {
   }
 }
 
-clearRecaptcha() {
-  if ((window as any).grecaptcha && this.recaptchaWidgetId !== null) {
-    const container = document.getElementById('recaptcha-container');
-    if (container) container.innerHTML = ''; // clear old captcha
-    this.recaptchaWidgetId = null;
-  }
-}
+
 
 resetRecaptcha() {
   if ((window as any).grecaptcha && this.recaptchaWidgetId !== null) {
