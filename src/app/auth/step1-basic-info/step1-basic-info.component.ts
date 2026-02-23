@@ -33,6 +33,7 @@ export class Step1BasicInfoComponent {
   parentCategories: any[] = [];
   subCategories: any[] = [];
 
+ 
   //..otp
 
 @Input() isMobileVerified = false;
@@ -55,39 +56,6 @@ export class Step1BasicInfoComponent {
   }
 }
 
-//   onCategoryChange(categoryId: number) {
-//   if (!categoryId) return;
-
-//   const id = Number(categoryId);
-
-//   this.formData.serviceCategoryId = id;
-//   this.inputChange.emit({ field: 'serviceCategoryId', value: id });
-
-//   this.formData.subCategoryIds = [];
-//   this.subCategories = [];
-
-//   this.authService.getSubCategories(id).subscribe(res => {
-//     this.subCategories = res;
-//   });
-// }
-
-
-  // toggleSubCategory(subId: number) {
-  //   if (!this.formData.subCategoryIds) {
-  //     this.formData.subCategoryIds = [];
-  //   }
-
-  //   const index = this.formData.subCategoryIds.indexOf(subId);
-
-  //   if (index > -1) {
-  //     this.formData.subCategoryIds.splice(index, 1);
-  //   } else {
-  //     this.formData.subCategoryIds.push(subId);
-  //   }
-
-  //   // Emit changes
-  //   this.inputChange.emit({ field: 'subCategoryIds', value: this.formData.subCategoryIds });
-  // }
 
   onCategoryChange(categoryId: number) {
   const id = Number(categoryId);
@@ -214,6 +182,12 @@ onInputFieldChange(field: string, value: any, event?: Event) {
 //     this.errors.mobile = err.message || 'OTP failed';
 //   }
 // }
+
+
+
+
+
+  //...otp recapcta 
 onSendOTP() {
   const mobile = this.formData?.mobile;
 
@@ -227,13 +201,13 @@ onSendOTP() {
     return;
   }
 
-  // 🔥 Call API
+
+  // 🔥 Call API to check mobile
   this.authService.checkMobileExists(mobile).subscribe({
     next: (response) => {
-
       if (response.exists) {
         this.errors.mobile = 'Mobile number already registered';
-        return; // ❌ Stop here
+        return;
       }
 
       // ✅ If mobile NOT exists → send OTP
@@ -248,7 +222,7 @@ onSendOTP() {
     }
   });
 }
-
+//......
 
 onNextClick() {
   if (!this.isMobileVerified) {

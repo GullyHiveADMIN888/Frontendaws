@@ -1,4 +1,5 @@
 <div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12 border border-gray-100">
+ 
   <div class="flex items-center mb-8">
     <div class="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center mr-4">
       <i class="ri-user-line text-2xl text-white"></i>
@@ -218,8 +219,8 @@
       <div class="flex justify-end pt-6 border-t border-gray-200">
 
         <button type="button" (click)="onNextClick()"
-         [class.opacity-50]="!isMobileVerified"
-         [class.cursor-not-allowed]="!isMobileVerified"
+[class.opacity-50]="!isMobileVerified"
+  [class.cursor-not-allowed]="!isMobileVerified"
           class="px-8 py-3 bg-orange-600 text-white rounded-lg transition-colors font-medium font-inter">
           Continue to Legal Identity
         </button>
@@ -232,4 +233,5 @@
 
     <!-- [class.opacity-50]="!isMobileVerified"
   [class.cursor-not-allowed]="!isMobileVerified" -->
+  </div>
   </div>
