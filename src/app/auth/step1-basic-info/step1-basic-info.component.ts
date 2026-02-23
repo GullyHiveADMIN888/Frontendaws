@@ -33,11 +33,7 @@ export class Step1BasicInfoComponent {
   parentCategories: any[] = [];
   subCategories: any[] = [];
 
-  //...otp recapcta 
-    ngOnDestroy() {
-    this.authService.clearRecaptcha();
-  }
-//....
+ 
   //..otp
 
 @Input() isMobileVerified = false;
@@ -205,12 +201,6 @@ onSendOTP() {
     return;
   }
 
-  // ✅ Handle reCAPTCHA safely
-  if (!this.authService.recaptchaWidgetId) {
-    this.authService.renderRecaptcha('recaptcha-container');
-  } else {
-    this.authService.resetRecaptcha();
-  }
 
   // 🔥 Call API to check mobile
   this.authService.checkMobileExists(mobile).subscribe({
