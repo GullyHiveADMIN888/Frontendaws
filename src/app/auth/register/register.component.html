@@ -92,17 +92,15 @@
 </div>
 
 <!-- 🔥 Verification Modal -->
-<div *ngIf="showVerificationModal"
-     class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-
+<!-- Verification Modal -->
+<div *ngIf="showVerificationModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
   <div class="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
 
     <h2 class="text-xl font-bold mb-4 text-center">
       Verify Your Account
     </h2>
 
-    <div class="space-y-4">
-
+    <div *ngIf="!showOtpModal">
       <!-- Mobile -->
       <div class="border p-3 rounded-lg">
         <p class="text-sm text-gray-600">Mobile Number</p>
@@ -124,7 +122,15 @@
           Verify Email
         </button>
       </div>
+    </div>
 
+    <!-- Show OTP input -->
+    <div *ngIf="showOtpModal">
+      <app-otp-verification
+        [mobile]="formData.mobile"
+        (onVerified)="onOTPVerified()"
+        (onBack)="showOtpModal = false">
+      </app-otp-verification>
     </div>
 
   </div>

@@ -154,7 +154,8 @@ verificationType: 'mobile' | 'email' | null = null;
   onOTPVerified() {
     this.isMobileVerified = true;
     this.showOtpModal = false;
-    this.currentStep = 1;
+  //  this.currentStep = 1;
+    this.showVerificationModal = false; // close modal completely if desired
   }
 
 
@@ -391,6 +392,18 @@ else if (!/^[A-Za-z\u0900-\u097F\s.-]+$/.test(name)) {
     return Object.keys(this.errors).length === 0;
   }
 
+// async openMobileVerification() {
+//   this.verificationType = 'mobile';
+//   this.showOtpModal = true;
+
+//   try {
+//     await this.service.sendOtp(this.formData?.mobile);
+//   } catch (err) {
+//     console.error(err);
+//     alert('Failed to send OTP');
+//   }
+// }
+
 async openMobileVerification() {
   this.verificationType = 'mobile';
   this.showOtpModal = true;
@@ -407,8 +420,9 @@ async openMobileVerification() {
 //   this.verificationType = 'email';
 //   this.showOtpModal = true;
 
-//   // Optional: call API to send Email OTP
-//   this.service.sendEmailOtp(this.formData.email).subscribe();
+//   this.service.sendEmailOtp(this.formData.email).subscribe({
+//     next: () => {},
+//     error: (err) => alert('Failed to send email OTP')
+//   });
 // }
-
 }
