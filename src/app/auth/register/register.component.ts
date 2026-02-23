@@ -78,6 +78,12 @@ export class RegisterComponent {
   //...
 
 
+  //last otp
+  showVerificationModal = false;
+verificationType: 'mobile' | 'email' | null = null;
+  //...
+
+
   onInputChange(event: { field: string; value: any }) {
     this.formData[event.field] = event.value;
 
@@ -103,10 +109,10 @@ export class RegisterComponent {
     }
 
     // 🔴 Mobile NOT verified → STOP + ALERT
-    if (!this.isMobileVerified) {
-      alert('Please verify your mobile number before continuing.');
-      return;
-    }
+    // if (!this.isMobileVerified) {
+    //   alert('Please verify your mobile number before continuing.');
+    //   return;
+    // }
 
 
     // ✅ All good → go to Legal Identity
@@ -253,6 +259,10 @@ export class RegisterComponent {
         console.log('Backend response:', res);
         this.isSubmitting = false;
         this.submitSuccess = true; // show success message
+
+        // 🔥 OPEN VERIFICATION POPUP
+  this.showVerificationModal = true;
+
       },
       error: (err) => {
         console.error('Registration error:', err);
@@ -381,7 +391,24 @@ else if (!/^[A-Za-z\u0900-\u097F\s.-]+$/.test(name)) {
     return Object.keys(this.errors).length === 0;
   }
 
+async openMobileVerification() {
+  this.verificationType = 'mobile';
+  this.showOtpModal = true;
 
+  try {
+    await this.service.sendOtp(this.formData?.mobile);
+  } catch (err) {
+    console.error(err);
+    alert('Failed to send OTP');
+  }
+}
 
+// openEmailVerification() {
+//   this.verificationType = 'email';
+//   this.showOtpModal = true;
+
+//   // Optional: call API to send Email OTP
+//   this.service.sendEmailOtp(this.formData.email).subscribe();
+// }
 
 }
