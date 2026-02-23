@@ -1,0 +1,947 @@
+<div class="min-h-screen bg-gray-50">
+
+    <!-- Full Page Loading Overlay -->
+    <div *ngIf="initialLoading" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+        <div class="text-center">
+            <div class="mb-8">
+                <svg class="w-24 h-24 mx-auto text-blue-600 animate-pulse" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Loading Wallets</h2>
+            <div class="flex items-center justify-center space-x-2 mb-4">
+                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+            </div>
+            <p class="text-gray-600 text-sm">Please wait while we fetch wallet data...</p>
+        </div>
+    </div>
+
+    <app-admin-header></app-admin-header>
+    <div class="max-w-7xl mx-auto my-12">
+        <!-- Header with Action Buttons -->
+        <div class="mb-8 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+                    Wallet Management
+                </h1>
+                <p class="text-gray-600">
+                    View and manage user wallets across the system
+                </p>
+            </div>
+            <div class="flex gap-3">
+                <!-- <button (click)="openBulkUpdateModal()"
+                    class="bg-gradient-to-r from-purple-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md flex items-center gap-2">
+                    <i class="mr-2">💰</i>
+                    Bulk Update
+                </button> -->
+                <button (click)="openCreateModal()"
+                    class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md flex items-center gap-2">
+                    <i class="mr-2">➕</i>
+                    Create Wallet
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Total Users with Wallets</p>
+                        <h3 class="text-2xl font-bold text-gray-800">{{totalCount}}</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
+                        <i class="text-blue-600 text-xl">👥</i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-green-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Total Cashable Balance</p>
+                        <h3 class="text-2xl font-bold text-green-600">{{formatCurrency(totalCashableBalance)}}</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center">
+                        <i class="text-green-600 text-xl">💵</i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-orange-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Total Non-Cashable Balance</p>
+                        <h3 class="text-2xl font-bold text-orange-600">{{formatCurrency(totalNonCashableBalance)}}</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-orange-50 flex items-center justify-center">
+                        <i class="text-orange-600 text-xl">🎁</i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-purple-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Total Combined Balance</p>
+                        <h3 class="text-2xl font-bold text-purple-600">{{formatCurrency(totalCombinedBalance)}}</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
+                        <i class="text-purple-600 text-xl">💰</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters Card -->
+        <div class="bg-white rounded-xl shadow mb-6 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">Filters</h3>
+            </div>
+
+            <div class="p-6">
+                <!-- Main Filter Form -->
+                <form [formGroup]="filterForm">
+                    <!-- Filters Row 1 -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <!-- Search Term -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Search Users</label>
+                            <input type="text" placeholder="Search by name, email, or phone"
+                                formControlName="searchTerm"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        </div>
+
+                        <!-- Wallet Type -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Wallet Type</label>
+                            <select formControlName="walletType"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">All Types</option>
+                                <option *ngFor="let type of walletTypes" [value]="type">{{type | titlecase}}</option>
+                            </select>
+                        </div>
+
+                        <!-- Wallet Amount Type -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Amount Type</label>
+                            <select formControlName="walletAmountType"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">All Amount Types</option>
+                                <option *ngFor="let type of walletAmountTypes" [value]="type">{{type | titlecase}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Filters Row 2 - User Search -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <!-- User Search -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Specific User</label>
+                            <div class="relative" #userDropdown>
+                                <div class="relative">
+                                    <input #userSearchInput type="text" placeholder="Search user by name or email..."
+                                        formControlName="userSearch" (input)="onUserSearchInput()"
+                                        (click)="onUserSearchClick()" (keydown)="onUserInputKeydown($event)"
+                                        class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        autocomplete="off" />
+
+                                    <button *ngIf="selectedUser" (click)="clearUserSelection()"
+                                        (mousedown)="$event.preventDefault()" type="button"
+                                        class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 focus:outline-none">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+
+                                    <div *ngIf="!selectedUser"
+                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                        <i class="text-lg">🔍</i>
+                                    </div>
+                                </div>
+
+                                <!-- Loading State -->
+                                <div *ngIf="loadingUsers"
+                                    class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                                    <div class="flex items-center justify-center p-4">
+                                        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2">
+                                        </div>
+                                        <span class="text-sm text-gray-600">Searching users...</span>
+                                    </div>
+                                </div>
+
+                                <!-- Dropdown Results -->
+                                <div *ngIf="showUserDropdown && !loadingUsers && filteredUsers.length > 0"
+                                    class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                                    <div class="py-1">
+                                        <div *ngFor="let user of filteredUsers; let i = index"
+                                            (click)="selectUser(user)" (keydown.enter)="selectUser(user)" tabindex="0"
+                                            class="user-dropdown-item px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors focus:outline-none focus:bg-gray-100 border-b border-gray-100 last:border-b-0">
+                                            <div class="flex items-start">
+                                                <div class="flex-shrink-0 mt-1 mr-3">
+                                                    <div
+                                                        class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                        <i class="text-blue-600 text-sm">👤</i>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <div class="font-medium text-gray-900">{{ user.name ||
+                                                        'Unknown' }}</div>
+                                                    <div class="text-sm text-gray-500">{{ user.email || 'No email' }}
+                                                    </div>
+                                                    <div class="text-xs text-gray-400 mt-1">
+                                                        <span *ngIf="user.phone">📞 {{ user.phone }}</span>
+                                                        <span *ngIf="!user.phone">📞 N/A</span>
+                                                        <span class="mx-1">•</span>
+                                                        <span>ID: {{ user.id }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- No Results -->
+                                <div *ngIf="showUserDropdown && filteredUsers.length === 0 && !loadingUsers"
+                                    class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                                    <div class="p-4 text-center">
+                                        <div class="w-10 h-10 mx-auto mb-2 text-gray-400">
+                                            <i class="text-4xl">😕</i>
+                                        </div>
+                                        <p class="text-sm text-gray-600">No users found</p>
+                                        <p class="text-xs text-gray-400 mt-1">Try a different search term</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" formControlName="userId" />
+                        </div>
+
+                        <!-- Empty placeholders for alignment -->
+                        <div></div>
+                        <div></div>
+                    </div>
+
+                    <!-- Date-Time Filters -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Start Date & Time -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">From Date (Wallet
+                                Created)</label>
+                            <input type="date" formControlName="startDate"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        </div>
+
+                        <!-- End Date & Time -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">To Date (Wallet Created)</label>
+                            <input type="date" formControlName="endDate"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Active Filters Display -->
+                <div *ngIf="getActiveFilters() > 0" class="mt-4 flex flex-wrap gap-2">
+                    <span class="text-xs text-gray-500 mr-2">Active filters:</span>
+                    <span *ngIf="filterForm.get('searchTerm')?.value"
+                        class="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">
+                        Search: {{filterForm.get('searchTerm')?.value}}
+                    </span>
+                    <span *ngIf="selectedUser"
+                        class="inline-flex items-center px-2 py-1 rounded text-xs bg-green-100 text-green-800">
+                        User: {{selectedUser.name || 'Unknown'}} (ID: {{selectedUser.id}})
+                    </span>
+                    <span *ngIf="filterForm.get('walletType')?.value"
+                        class="inline-flex items-center px-2 py-1 rounded text-xs bg-purple-100 text-purple-800">
+                        Wallet Type: {{filterForm.get('walletType')?.value | titlecase}}
+                    </span>
+                    <span *ngIf="filterForm.get('walletAmountType')?.value"
+                        class="inline-flex items-center px-2 py-1 rounded text-xs bg-orange-100 text-orange-800">
+                        Amount Type: {{filterForm.get('walletAmountType')?.value | titlecase}}
+                    </span>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-gray-200">
+                    <button (click)="resetFilters()"
+                        class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg font-medium hover:bg-gray-200 transition-colors border border-gray-300">
+                        <i class="mr-2">🔄</i> Reset All Filters
+                    </button>
+                    <button (click)="applyFilters()"
+                        class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wallets Card -->
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-lg font-semibold text-gray-800">User Wallets</h2>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                        {{wallets.length}} Users
+                    </span>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div *ngIf="loading" class="p-8 text-center">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+                <p class="text-gray-600">Loading wallets...</p>
+            </div>
+
+            <!-- Wallets Table -->
+            <div *ngIf="!loading && wallets.length > 0" class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                User</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Contact</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Cashable Wallet</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Non-Cashable Wallet</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Total Balance</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <ng-container *ngFor="let wallet of wallets">
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center">
+                                        <div
+                                            class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                            <i class="text-blue-600">👤</i>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">{{ wallet.userDisplayName ||
+                                                'Unknown' }}</div>
+                                            <div class="text-xs text-gray-500">ID: {{ wallet.userId }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-900">{{ wallet.userEmail || 'N/A' }}</div>
+                                    <div class="text-xs text-gray-500">{{ wallet.userPhone || 'N/A' }}</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div *ngIf="wallet.cashableWallet; else noCashable">
+                                        <div class="text-sm font-medium text-green-600">
+                                            {{ formatCurrency(wallet.cashableWallet.balance,
+                                            wallet.cashableWallet.currency) }}
+                                        </div>
+                                        <div class="text-xs text-gray-500">
+                                            Updated: {{ wallet.cashableWallet.updatedAt | date:'dd MMM yyyy' }}
+                                        </div>
+                                    </div>
+                                    <ng-template #noCashable>
+                                        <span class="text-sm text-gray-400 italic">No cashable wallet</span>
+                                    </ng-template>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div *ngIf="wallet.nonCashableWallet; else noNonCashable">
+                                        <div class="text-sm font-medium text-orange-600">
+                                            {{ formatCurrency(wallet.nonCashableWallet.balance,
+                                            wallet.nonCashableWallet.currency) }}
+                                        </div>
+                                        <div class="text-xs text-gray-500">
+                                            Updated: {{ wallet.nonCashableWallet.updatedAt | date:'dd MMM yyyy' }}
+                                        </div>
+                                    </div>
+                                    <ng-template #noNonCashable>
+                                        <span class="text-sm text-gray-400 italic">No non-cashable wallet</span>
+                                    </ng-template>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-lg font-bold text-purple-600">
+                                        {{ formatCurrency(wallet.totalBalance) }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button (click)="toggleRow(wallet.userId)"
+                                            class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                                            title="View Details">
+                                            <i class="text-lg">{{ expandedRowId === wallet.userId ? '📖' : '👁️' }}</i>
+                                        </button>
+                                        <button (click)="openEditModal(wallet)"
+                                            class="text-green-600 hover:text-green-900 p-2 rounded-lg hover:bg-green-50 transition-colors"
+                                            title="Edit Wallet">
+                                            <i class="text-lg">✏️</i>
+                                        </button>
+                                        <button (click)="openDeleteModal(wallet)"
+                                            class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                                            title="Delete Wallet">
+                                            <i class="text-lg">🗑️</i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Expanded Row - Wallet Details -->
+                            <tr *ngIf="expandedRowId === wallet.userId">
+                                <td colspan="6" class="bg-gray-50 p-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <!-- User Information -->
+                                        <div>
+                                            <div class="flex items-center justify-between mb-3">
+                                                <h4 class="font-semibold text-gray-800 flex items-center">
+                                                    <i class="mr-2">👤</i> User Information
+                                                </h4>
+                                            </div>
+                                            <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                                <dl class="grid grid-cols-2 gap-3 text-sm">
+                                                    <dt class="text-gray-500">User ID:</dt>
+                                                    <dd class="text-gray-900">{{ wallet.userId }}</dd>
+
+                                                    <dt class="text-gray-500">Display Name:</dt>
+                                                    <dd class="text-gray-900">{{ wallet.userDisplayName || 'N/A' }}</dd>
+
+                                                    <dt class="text-gray-500">Email:</dt>
+                                                    <dd class="text-gray-900">{{ wallet.userEmail || 'N/A' }}</dd>
+
+                                                    <dt class="text-gray-500">Phone:</dt>
+                                                    <dd class="text-gray-900">{{ wallet.userPhone || 'N/A' }}</dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+
+                                        <!-- Wallets Summary -->
+                                        <div>
+                                            <div class="flex items-center justify-between mb-3">
+                                                <h4 class="font-semibold text-gray-800 flex items-center">
+                                                    <i class="mr-2">💰</i> Wallets Summary
+                                                </h4>
+                                            </div>
+                                            <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                                <dl class="grid grid-cols-2 gap-3 text-sm">
+                                                    <dt class="text-gray-500">Cashable Balance:</dt>
+                                                    <dd class="text-green-600 font-medium">
+                                                        {{ wallet.cashableWallet ?
+                                                        formatCurrency(wallet.cashableWallet.balance,
+                                                        wallet.cashableWallet.currency) : 'N/A' }}
+                                                    </dd>
+
+                                                    <dt class="text-gray-500">Non-Cashable Balance:</dt>
+                                                    <dd class="text-orange-600 font-medium">
+                                                        {{ wallet.nonCashableWallet ?
+                                                        formatCurrency(wallet.nonCashableWallet.balance,
+                                                        wallet.nonCashableWallet.currency) : 'N/A' }}
+                                                    </dd>
+
+                                                    <dt class="text-gray-500 font-semibold">Total Balance:</dt>
+                                                    <dd class="text-purple-600 font-bold">
+                                                        {{ formatCurrency(wallet.totalBalance) }}
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+
+                                        <!-- Cashable Wallet Details -->
+                                        <div *ngIf="wallet.cashableWallet">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <h4 class="font-semibold text-gray-800 flex items-center">
+                                                    <i class="mr-2">💵</i> Cashable Wallet Details
+                                                </h4>
+                                            </div>
+                                            <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                                <dl class="grid grid-cols-2 gap-3 text-sm">
+                                                    <dt class="text-gray-500">Wallet ID:</dt>
+                                                    <dd class="text-gray-900">#{{ wallet.cashableWallet.id }}</dd>
+
+                                                    <dt class="text-gray-500">Balance:</dt>
+                                                    <dd class="text-green-600 font-medium">
+                                                        {{ formatCurrency(wallet.cashableWallet.balance,
+                                                        wallet.cashableWallet.currency) }}
+                                                    </dd>
+
+                                                    <dt class="text-gray-500">Currency:</dt>
+                                                    <dd class="text-gray-900">{{ wallet.cashableWallet.currency }}</dd>
+
+                                                    <dt class="text-gray-500">Created:</dt>
+                                                    <dd class="text-gray-900">{{ wallet.cashableWallet.createdAt |
+                                                        date:'dd MMM yyyy, hh:mm a' }}</dd>
+
+                                                    <dt class="text-gray-500">Last Updated:</dt>
+                                                    <dd class="text-gray-900">{{ wallet.cashableWallet.updatedAt |
+                                                        date:'dd MMM yyyy, hh:mm a' }}</dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+
+                                        <!-- Non-Cashable Wallet Details -->
+                                        <div *ngIf="wallet.nonCashableWallet">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <h4 class="font-semibold text-gray-800 flex items-center">
+                                                    <i class="mr-2">🎁</i> Non-Cashable Wallet Details
+                                                </h4>
+                                            </div>
+                                            <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                                <dl class="grid grid-cols-2 gap-3 text-sm">
+                                                    <dt class="text-gray-500">Wallet ID:</dt>
+                                                    <dd class="text-gray-900">#{{ wallet.nonCashableWallet.id }}</dd>
+
+                                                    <dt class="text-gray-500">Balance:</dt>
+                                                    <dd class="text-orange-600 font-medium">
+                                                        {{ formatCurrency(wallet.nonCashableWallet.balance,
+                                                        wallet.nonCashableWallet.currency) }}
+                                                    </dd>
+
+                                                    <dt class="text-gray-500">Currency:</dt>
+                                                    <dd class="text-gray-900">{{ wallet.nonCashableWallet.currency }}
+                                                    </dd>
+
+                                                    <dt class="text-gray-500">Created:</dt>
+                                                    <dd class="text-gray-900">{{ wallet.nonCashableWallet.createdAt |
+                                                        date:'dd MMM yyyy, hh:mm a' }}</dd>
+
+                                                    <dt class="text-gray-500">Last Updated:</dt>
+                                                    <dd class="text-gray-900">{{ wallet.nonCashableWallet.updatedAt |
+                                                        date:'dd MMM yyyy, hh:mm a' }}</dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+
+                                        <!-- Action Buttons for Expanded Row -->
+                                        <div class="md:col-span-2 flex justify-end gap-3 mt-2">
+                                            <button (click)="openSingleWalletEditModal(wallet, 'cashable')"
+                                                *ngIf="wallet.cashableWallet"
+                                                class="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium">
+                                                <i class="mr-1">✏️</i> Edit Cashable
+                                            </button>
+                                            <button (click)="openSingleWalletEditModal(wallet, 'non_cashable')"
+                                                *ngIf="wallet.nonCashableWallet"
+                                                class="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors text-sm font-medium">
+                                                <i class="mr-1">✏️</i> Edit Non-Cashable
+                                            </button>
+                                            <button (click)="openSingleWalletDeleteModal(wallet, 'cashable')"
+                                                *ngIf="wallet.cashableWallet"
+                                                class="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium">
+                                                <i class="mr-1">🗑️</i> Delete Cashable
+                                            </button>
+                                            <button (click)="openSingleWalletDeleteModal(wallet, 'non_cashable')"
+                                                *ngIf="wallet.nonCashableWallet"
+                                                class="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium">
+                                                <i class="mr-1">🗑️</i> Delete Non-Cashable
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Close Button -->
+                                    <div class="mt-4 text-right">
+                                        <button (click)="toggleRow(wallet.userId)"
+                                            class="text-gray-600 hover:text-gray-800 text-sm font-medium flex items-center ml-auto">
+                                            <i class="mr-1">↑</i> Collapse Details
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div *ngIf="!loading && wallets.length === 0" class="p-12 text-center">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="text-gray-400 text-3xl">💰</i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">No Wallets Found</h3>
+                <p class="text-gray-600 mb-6">No wallets match your current filters.</p>
+                <button (click)="resetFilters()"
+                    class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
+                    <i class="mr-2">🔄</i> Reset Filters
+                </button>
+            </div>
+
+            <!-- Pagination -->
+            <div *ngIf="!loading && wallets.length > 0"
+                class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                <div class="text-sm text-gray-500">
+                    Showing <span class="font-medium">{{getStartIndex()}}</span> to
+                    <span class="font-medium">{{getEndIndex()}}</span> of
+                    <span class="font-medium">{{totalCount}}</span> users
+                </div>
+                <div class="flex items-center gap-2">
+                    <button (click)="changePage(-1)" [disabled]="pageNumber === 1"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="mr-1">←</i> Previous
+                    </button>
+                    <div class="flex items-center gap-1">
+                        <button *ngFor="let page of getPageNumbers()" (click)="goToPage(page)"
+                            [class]="page === pageNumber ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'"
+                            class="px-3 py-1 rounded text-sm">
+                            {{page}}
+                        </button>
+                    </div>
+                    <button (click)="changePage(1)" [disabled]="pageNumber * pageSize >= totalCount"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        Next <i class="ml-1">→</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Wallet Modal - Update the form section -->
+    <div *ngIf="showCreateModal"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
+            <div class="flex items-center justify-between p-5 border-b">
+                <h3 class="text-xl font-semibold text-gray-900">Create New Wallet</h3>
+                <button (click)="closeCreateModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <form [formGroup]="walletForm" class="space-y-4">
+                    <!-- User Search -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">User *</label>
+                        <div class="relative" #createUserDropdown>
+                            <div class="relative">
+                                <input #createUserSearchInput type="text" placeholder="Search user by name or email..."
+                                    formControlName="userSearch" (input)="onCreateUserSearchInput()"
+                                    (click)="onCreateUserSearchClick()" (keydown)="onCreateUserInputKeydown($event)"
+                                    class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    [class.border-red-500]="walletForm.get('userId')?.invalid && (walletForm.get('userId')?.touched || walletForm.get('userId')?.dirty)"
+                                    autocomplete="off" />
+
+                                <button *ngIf="selectedCreateUser" (click)="clearCreateUserSelection()"
+                                    (mousedown)="$event.preventDefault()" type="button"
+                                    class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 focus:outline-none">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+
+                                <div *ngIf="!selectedCreateUser"
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                    <i class="text-lg">🔍</i>
+                                </div>
+                            </div>
+
+                            <!-- Loading State -->
+                            <div *ngIf="loadingCreateUsers"
+                                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                                <div class="flex items-center justify-center p-4">
+                                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600 mr-2">
+                                    </div>
+                                    <span class="text-sm text-gray-600">Searching users...</span>
+                                </div>
+                            </div>
+
+                            <!-- Dropdown Results -->
+                            <div *ngIf="showCreateUserDropdown && !loadingCreateUsers && filteredCreateUsers.length > 0"
+                                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                                <div class="py-1">
+                                    <div *ngFor="let user of filteredCreateUsers; let i = index"
+                                        (click)="selectCreateUser(user)" (keydown.enter)="selectCreateUser(user)"
+                                        tabindex="0"
+                                        class="create-user-dropdown-item px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors focus:outline-none focus:bg-gray-100 border-b border-gray-100 last:border-b-0">
+                                        <div class="flex items-start">
+                                            <div class="flex-shrink-0 mt-1 mr-3">
+                                                <div
+                                                    class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                                    <i class="text-purple-600 text-sm">👤</i>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="font-medium text-gray-900">{{ user.name || 'Unknown' }}
+                                                </div>
+                                                <div class="text-sm text-gray-500">{{ user.email || 'No email' }}</div>
+                                                <div class="text-xs text-gray-400 mt-1">
+                                                    <span *ngIf="user.phone">📞 {{ user.phone }}</span>
+                                                    <span *ngIf="!user.phone">📞 N/A</span>
+                                                    <span class="mx-1">•</span>
+                                                    <span>ID: {{ user.id }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- No Results -->
+                            <div *ngIf="showCreateUserDropdown && filteredCreateUsers.length === 0 && !loadingCreateUsers"
+                                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                                <div class="p-4 text-center">
+                                    <div class="w-10 h-10 mx-auto mb-2 text-gray-400">
+                                        <i class="text-4xl">😕</i>
+                                    </div>
+                                    <p class="text-sm text-gray-600">No users found</p>
+                                    <p class="text-xs text-gray-400 mt-1">Try a different search term</p>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" formControlName="userId" />
+                        <div *ngIf="walletForm.get('userId')?.invalid && (walletForm.get('userId')?.touched || walletForm.get('userId')?.dirty)"
+                            class="text-xs text-red-500 mt-1">
+                            User is required
+                        </div>
+                    </div>
+
+                    <!-- Wallet Type and Amount Type - Fixed -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Wallet Type *</label>
+                            <select formControlName="walletType"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                [class.border-red-500]="walletForm.get('walletType')?.invalid && (walletForm.get('walletType')?.touched || walletForm.get('walletType')?.dirty)">
+                                <option [ngValue]="null" disabled selected>Select Type</option>
+                                <option *ngFor="let type of walletTypes" [ngValue]="type">{{type | titlecase}}</option>
+                            </select>
+                            <div *ngIf="walletForm.get('walletType')?.invalid && (walletForm.get('walletType')?.touched || walletForm.get('walletType')?.dirty)"
+                                class="text-xs text-red-500 mt-1">
+                                Wallet type is required
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Amount Type *</label>
+                            <select formControlName="walletAmountType"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                [class.border-red-500]="walletForm.get('walletAmountType')?.invalid && (walletForm.get('walletAmountType')?.touched || walletForm.get('walletAmountType')?.dirty)">
+                                <option [ngValue]="null" disabled selected>Select Amount Type</option>
+                                <option *ngFor="let type of walletAmountTypes" [ngValue]="type">{{type | titlecase}}
+                                </option>
+                            </select>
+                            <div *ngIf="walletForm.get('walletAmountType')?.invalid && (walletForm.get('walletAmountType')?.touched || walletForm.get('walletAmountType')?.dirty)"
+                                class="text-xs text-red-500 mt-1">
+                                Amount type is required
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Balance and Currency -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Balance *</label>
+                            <input type="number" formControlName="balance" step="0.01"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                [class.border-red-500]="walletForm.get('balance')?.invalid && (walletForm.get('balance')?.touched || walletForm.get('balance')?.dirty)" />
+                            <div *ngIf="walletForm.get('balance')?.invalid && (walletForm.get('balance')?.touched || walletForm.get('balance')?.dirty)"
+                                class="text-xs text-red-500 mt-1">
+                                <span *ngIf="walletForm.get('balance')?.errors?.['required']">Balance is required</span>
+                                <span *ngIf="walletForm.get('balance')?.errors?.['min']">Balance cannot be
+                                    negative</span>
+                                <span *ngIf="walletForm.get('balance')?.errors?.['max']">Balance cannot exceed
+                                    100,000</span>
+                                <span *ngIf="walletForm.get('balance')?.errors?.['pattern']">Balance must be a valid
+                                    number</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
+                            <select formControlName="currency"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                <option *ngFor="let curr of currencies" [value]="curr">{{curr}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="flex items-center justify-end gap-3 p-5 border-t">
+                <button (click)="closeCreateModal()"
+                    class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+                    Cancel
+                </button>
+                <button (click)="createWallet()" [disabled]="isSubmitting || walletForm.invalid"
+                    class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-700 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50">
+                    {{ isSubmitting ? 'Creating...' : 'Create Wallet' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Update Modal - Update the form section -->
+    <div *ngIf="showBulkUpdateModal && selectedBulkUser"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
+            <div class="flex items-center justify-between p-5 border-b">
+                <h3 class="text-xl font-semibold text-gray-900">Bulk Update Wallets</h3>
+                <button (click)="closeBulkUpdateModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+                    <p class="text-sm text-blue-800">
+                        <span class="font-semibold">User:</span> {{ selectedBulkUser.userDisplayName }}
+                    </p>
+                    <p class="text-xs text-blue-600 mt-1">Email: {{ selectedBulkUser.userEmail }} | Phone: {{
+                        selectedBulkUser.userPhone || 'N/A' }}</p>
+                </div>
+
+                <form [formGroup]="bulkUpdateForm" class="space-y-4">
+                    <!-- Cashable Wallet -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Cashable Balance
+                            <span class="text-xs text-gray-500 ml-2">(Leave empty to keep unchanged)</span>
+                        </label>
+                        <input type="number" formControlName="cashableBalance" step="0.01"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            [class.border-red-500]="bulkUpdateForm.get('cashableBalance')?.invalid && bulkUpdateForm.get('cashableBalance')?.dirty" />
+                        <div *ngIf="bulkUpdateForm.get('cashableBalance')?.invalid && bulkUpdateForm.get('cashableBalance')?.dirty"
+                            class="text-xs text-red-500 mt-1">
+                            <span *ngIf="bulkUpdateForm.get('cashableBalance')?.errors?.['min']">Balance cannot be
+                                negative</span>
+                            <span *ngIf="bulkUpdateForm.get('cashableBalance')?.errors?.['max']">Balance cannot exceed
+                                100,000</span>
+                            <span *ngIf="bulkUpdateForm.get('cashableBalance')?.errors?.['pattern']">Balance must be a
+                                valid number</span>
+                        </div>
+                    </div>
+
+                    <!-- Non-Cashable Wallet -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Non-Cashable Balance
+                            <span class="text-xs text-gray-500 ml-2">(Leave empty to keep unchanged)</span>
+                        </label>
+                        <input type="number" formControlName="nonCashableBalance" step="0.01"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            [class.border-red-500]="bulkUpdateForm.get('nonCashableBalance')?.invalid && bulkUpdateForm.get('nonCashableBalance')?.dirty" />
+                        <div *ngIf="bulkUpdateForm.get('nonCashableBalance')?.invalid && bulkUpdateForm.get('nonCashableBalance')?.dirty"
+                            class="text-xs text-red-500 mt-1">
+                            <span *ngIf="bulkUpdateForm.get('nonCashableBalance')?.errors?.['min']">Balance cannot be
+                                negative</span>
+                            <span *ngIf="bulkUpdateForm.get('nonCashableBalance')?.errors?.['max']">Balance cannot
+                                exceed
+                                100,000</span>
+                            <span *ngIf="bulkUpdateForm.get('nonCashableBalance')?.errors?.['pattern']">Balance must be
+                                a
+                                valid number</span>
+                        </div>
+                    </div>
+
+                    <!-- Currency -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
+                        <select formControlName="currency"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <option *ngFor="let curr of currencies" [value]="curr">{{curr}}</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="flex items-center justify-end gap-3 p-5 border-t">
+                <button (click)="closeBulkUpdateModal()"
+                    class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+                    Cancel
+                </button>
+                <button (click)="bulkUpdateWallets()" [disabled]="isSubmitting || (bulkUpdateForm.invalid)"
+                    class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-700 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50">
+                    {{ isSubmitting ? 'Updating...' : 'Update Wallets' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Single Wallet Edit Modal - Update the form section -->
+    <div *ngIf="showSingleEditModal && selectedSingleWallet"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
+            <div class="flex items-center justify-between p-5 border-b">
+                <h3 class="text-xl font-semibold text-gray-900">Edit {{ selectedEditType | titlecase }} Wallet</h3>
+                <button (click)="closeSingleEditModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+                    <p class="text-sm text-blue-800">
+                        <span class="font-semibold">User:</span> {{ selectedSingleWallet.userDisplayName }}<br>
+                        <span class="font-mono text-xs">Wallet ID: #{{ getWalletDetails(selectedSingleWallet,
+                            selectedEditType)?.id }}</span>
+                    </p>
+                </div>
+
+                <form [formGroup]="singleEditForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Balance *</label>
+                        <input type="number" formControlName="balance" step="0.01"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            [class.border-red-500]="singleEditForm.get('balance')?.invalid && (singleEditForm.get('balance')?.touched || singleEditForm.get('balance')?.dirty)" />
+                        <div *ngIf="singleEditForm.get('balance')?.invalid && (singleEditForm.get('balance')?.touched || singleEditForm.get('balance')?.dirty)"
+                            class="text-xs text-red-500 mt-1">
+                            <span *ngIf="singleEditForm.get('balance')?.errors?.['required']">Balance is required</span>
+                            <span *ngIf="singleEditForm.get('balance')?.errors?.['min']">Balance cannot be
+                                negative</span>
+                            <span *ngIf="singleEditForm.get('balance')?.errors?.['max']">Balance cannot exceed
+                                100,000</span>
+                            <span *ngIf="singleEditForm.get('balance')?.errors?.['pattern']">Balance must be a valid
+                                number</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
+                        <select formControlName="currency"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <option *ngFor="let curr of currencies" [value]="curr">{{curr}}</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Amount Type</label>
+                        <select formControlName="walletAmountType"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            [class.border-red-500]="singleEditForm.get('walletAmountType')?.invalid && (singleEditForm.get('walletAmountType')?.touched || singleEditForm.get('walletAmountType')?.dirty)">
+                            <option value="">Select Type</option>
+                            <option *ngFor="let type of walletAmountTypes" [value]="type">{{type | titlecase}}</option>
+                        </select>
+                        <div *ngIf="singleEditForm.get('walletAmountType')?.invalid && (singleEditForm.get('walletAmountType')?.touched || singleEditForm.get('walletAmountType')?.dirty)"
+                            class="text-xs text-red-500 mt-1">
+                            Amount type is required
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="flex items-center justify-end gap-3 p-5 border-t">
+                <button (click)="closeSingleEditModal()"
+                    class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+                    Cancel
+                </button>
+                <button (click)="updateSingleWallet()" [disabled]="isSubmitting || singleEditForm.invalid"
+                    class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-700 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50">
+                    {{ isSubmitting ? 'Updating...' : 'Update Wallet' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <app-admin-footer></app-admin-footer>
+</div>
