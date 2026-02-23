@@ -37,6 +37,7 @@ import { SubscriptionMasterComponent} from './subscription-master/subscription-m
 import { WalletTransactionComponent } from './wallet-transaction/wallet-transaction.component';
 import { LeadAssignmentComponent } from './lead-assignment/lead-assignment.component';
 import { LeadListComponent } from './lead/lead.component';
+import { WalletListComponent } from './wallet/wallet.component';
 
 @NgModule({
   declarations: [
@@ -68,7 +69,8 @@ import { LeadListComponent } from './lead/lead.component';
     SubscriptionMasterComponent,
     WalletTransactionComponent,
     LeadAssignmentComponent,
-    LeadListComponent
+    LeadListComponent,
+    WalletListComponent
   ],
   imports: [
     CommonModule,
