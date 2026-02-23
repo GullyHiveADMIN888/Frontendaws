@@ -193,46 +193,14 @@ async resendOtp(mobile: string): Promise<void> {
     this.recaptchaVerifier!
   );
 }
-// clearRecaptcha() {
-//   this.recaptchaVerifier?.clear();
-//   this.recaptchaVerifier = undefined;
-//   this.confirmationResult = undefined;
-// }
-
 clearRecaptcha() {
-  if ((window as any).grecaptcha && this.recaptchaWidgetId !== null) {
-    const container = document.getElementById('recaptcha-container');
-    if (container) container.innerHTML = ''; // clear old captcha
-    this.recaptchaWidgetId = null;
-  }
-}
-recaptchaWidgetId: number | null = null;
-
-renderRecaptcha(containerId: string) {
-  if ((window as any).grecaptcha) {
-    // If already rendered, reset
-    if (this.recaptchaWidgetId !== null) {
-      (window as any).grecaptcha.reset(this.recaptchaWidgetId);
-      return;
-    }
-
-    this.recaptchaWidgetId = (window as any).grecaptcha.render(containerId, {
-      sitekey: '6LdjF3UsAAAAAAfgT8V_UObHMZ7uy6izvSDb19Cq',
-      size: 'invisible',
-      callback: (response: any) => {
-        console.log('Captcha verified', response);
-      }
-    });
-  }
+  this.recaptchaVerifier?.clear();
+  this.recaptchaVerifier = undefined;
+  this.confirmationResult = undefined;
 }
 
 
 
-resetRecaptcha() {
-  if ((window as any).grecaptcha && this.recaptchaWidgetId !== null) {
-    (window as any).grecaptcha.reset(this.recaptchaWidgetId);
-  }
-}
 
 }
 
