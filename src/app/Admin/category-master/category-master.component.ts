@@ -39,6 +39,7 @@ export class CategoryMasterComponent implements OnInit {
   filteredCategories: ServiceCategory[] = [];
 
   // UI state properties
+  initialLoading = true;
   loading: boolean = true;
   error: string | null = null;
   searchTerm: string = '';
@@ -242,10 +243,12 @@ export class CategoryMasterComponent implements OnInit {
         this.filteredCategories = [...data];
         this.calculateStats();
         this.loading = false;
+        this.initialLoading = false;
       },
       error: (err) => {
         this.error = 'Failed to load categories. Please try again.';
         this.loading = false;
+        this.initialLoading = false;
         console.error('Error fetching categories:', err);
       }
     });

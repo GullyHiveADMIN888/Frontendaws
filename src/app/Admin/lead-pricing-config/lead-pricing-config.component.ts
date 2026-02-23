@@ -41,6 +41,7 @@ export class LeadPricingConfigComponent implements OnInit {
 
   // UI state
   loading: boolean = true;
+  initialLoading = true;
   error: string | null = null;
   showAlert: boolean = false;
   alertMessage: string = '';
@@ -161,12 +162,14 @@ export class LeadPricingConfigComponent implements OnInit {
           console.log('Loaded configs:', this.configs.length);
           this.calculateStats();
           this.loading = false;
+          this.initialLoading = false; 
         },
         error: (err) => {
           console.error('Error in applyFilters:', err);
           console.error('Error response:', err.error);
           this.error = 'Failed to load pricing configurations. Please try again.';
           this.loading = false;
+          this.initialLoading = false; 
           this.showMessage('Failed to load configurations', 'error');
         }
       });

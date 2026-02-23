@@ -29,6 +29,7 @@ export class SubscriptionMasterComponent implements OnInit {
   totalPages: number = 0;
 
   // UI state properties
+  initialLoading = true;
   loading: boolean = false;
   error: string | null = null;
   searchTerm: string = '';
@@ -652,10 +653,12 @@ export class SubscriptionMasterComponent implements OnInit {
         this.totalPages = Math.ceil(this.totalCount / this.pageSize);
         this.calculateStats();
         this.loading = false;
+        this.initialLoading = false; 
       },
       error: (err) => {
         this.error = 'Failed to load subscription plans. Please try again.';
         this.loading = false;
+        this.initialLoading = false; 
         console.error('Error fetching plans:', err);
       }
     });

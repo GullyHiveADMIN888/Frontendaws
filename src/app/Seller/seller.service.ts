@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
-// import { environment } from '../../environments/environment';
- import { environment } from '../../environments/environment.prod';
-
+  import { environment } from '../../environments/environment.prod';
+ // import { environment } from '../../environments/environment';
 // --- Dashboard & Stats ---
 export interface SellerStats {
   totalLeads: number;
@@ -36,12 +35,15 @@ export interface Lead {
   phone?: string;
   email?: string;
   leadPrice?: string;
-  unlockedCount?: string;
-  committedCount?: string;
+  unlockedCount?: number;
+  committedCount?: number;
   priceBreakdown?: { [key: string]: number }; // parsed JSON
   basePrice?: string;
   visitingPrice?: string;
   providerPrice?: number;
+  areaName?: string;
+  areaId?: number;
+   leadId: number;
 
 }
 
@@ -98,6 +100,10 @@ export interface PublicProfile {
   linkedin?: string;
   addressCityId?: number;
   addressStateId?: number;
+  areaName?: string,
+ // areaId?: string
+ areaId?: number
+
 
 }
 
@@ -160,12 +166,14 @@ export interface ProviderService {
 
 export interface ProviderServicesResponse {
   providerServices: ProviderService[];
-  serviceArea: {
-    type: 'city_radius' | 'polygon' | 'pincode_list';
-    cityId?: number;
-    radiusKm?: number;
-    pincodes: string[];
-  };
+
+serviceAreas: {
+  cityId: number;
+  areaId: number;
+  areaName: string;
+}[];
+
+
   categories: any[];
   subCategories: any[];
   cities: any[];
@@ -254,17 +262,21 @@ export class SellerService {
       .pipe(map(res => res.data));
   }
 
+// 🔹 Buy Lead
+buyLead(leadId: number): Observable<any> {
+  const providerId = Number(localStorage.getItem('userId'));
 
-  // 🔹 Buy Lead
-  buyLead(leadId: number): Observable<any> {
-    const sellerId = Number(localStorage.getItem('sellerId'));
-
-    return this.http.post(
-      `${this.apiUrl}/leads/${leadId}/buy?sellerId=${sellerId}`,
-      {}
-    );
-  }
-
+  return this.http.post(
+    `${this.apiUrl}/buy`,
+    {
+      leadId: leadId,
+      providerId: providerId
+    },
+    {
+      headers: this.getHeaders()
+    }
+  );
+}
 
 
   getPublicProfile(sellerId: number) {
@@ -361,7 +373,7 @@ export class SellerService {
   // 🔹 Get cities
   getCities(): Observable<any[]> {
     return this.http.get<any[]>(
-      `${this.apiUrl}/cities`,
+      `${environment.apiBaseUrl}/auth/cities`,
       { headers: this.getHeaders() }
     );
   }
@@ -374,7 +386,9 @@ export class SellerService {
       )
       .pipe(map(res => res.data));
   }
-
+   getAreasByCity(cityId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiBaseUrl}/auth/areas/${cityId}`);
+  }
 
   // 🔹 Update services + area
   updateServicesAndArea(providerId: number, payload: any) {
@@ -431,7 +445,9 @@ export class SellerService {
   buyLeads(leadId: number) {
     const providerId = Number(localStorage.getItem('userId'));
     //  const providerId = 42;
-
+console.log("BUY DEBUG:");
+  console.log("leadId:", leadId);
+  console.log("providerId:", providerId);
     return this.http.post(
       `${this.apiUrl}/buy`,
       {
@@ -477,5 +493,6 @@ export class SellerService {
   }
 
 
+ 
 
 }

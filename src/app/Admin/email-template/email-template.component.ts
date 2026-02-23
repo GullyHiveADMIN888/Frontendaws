@@ -14,6 +14,7 @@ export class EmailTemplateComponent implements OnInit, OnDestroy {
   selectedTemplate: EmailTemplate | null = null;
   emailForm: FormGroup;
   isLoading = false;
+  initialLoading = true;
   isLoadingTemplate = false;
   previewHtml = '';
   message = '';
@@ -32,6 +33,8 @@ export class EmailTemplateComponent implements OnInit, OnDestroy {
   ) {
     this.emailForm = this.createForm();
   }
+
+  
 
   ngOnInit() {
     // Subscribe to template changes
@@ -68,12 +71,15 @@ export class EmailTemplateComponent implements OnInit, OnDestroy {
       next: (templates) => {
         this.templates = templates;
         this.isLoading = false;
+        this.initialLoading = false; 
+
         console.log('Loaded templates:', templates);
       },
       error: (error) => {
         console.error('Error loading templates:', error);
         this.showMessage('Failed to load templates', 'error');
         this.isLoading = false;
+        this.initialLoading = false;
       }
     });
   }

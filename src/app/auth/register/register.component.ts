@@ -41,37 +41,33 @@ export class RegisterComponent {
     mobile: '',
     serviceCategory: [],
     coverageArea: '',
-    professionalType: '',
+   
     businessName: '',
-    registrationType: '',
+    registrationType: null,
     registrationNumber: '',
     selfOverview: '',
     skillsBackground: '',
     achievements: '',
     businessAddress: '',
-    state: '',
-    city: '',
-    // plotNumber: '',
+  //  state: '',
+  //  city: '',
     pinCode: '',
     role: '',
     password: '',
     registrationDocument: File,
     addressProof: File,
-
-
-
-
     // Step 2 - Business Address
     line1: '',
     line2: '',
 
     locality: '',
     landmark: '',
-
-    areaId: '',
+    stateId : null,
+    areaId: null,
     cityId: null as number | null,
-   
-
+    // professionalType: '',
+   serviceCategoryId: null,
+  professionalType: null,
   };
 
   errors: any = {};
@@ -101,19 +97,17 @@ export class RegisterComponent {
     //this.showOTP = false;
   }
   goNextFromStep1() {
-    // if (this.validateStep1()) {
-    //   this.currentStep = 3; // OTP
-    // }
     // 🔴 Step validation first
     if (!this.validateStep1()) {
       return;
     }
 
     // 🔴 Mobile NOT verified → STOP + ALERT
-    if (!this.isMobileVerified) {
-      alert('Please verify your mobile number before continuing.');
-      return;
-    }
+    // if (!this.isMobileVerified) {
+    //   alert('Please verify your mobile number before continuing.');
+    //   return;
+    // }
+
 
     // ✅ All good → go to Legal Identity
     this.currentStep = 3;
@@ -174,7 +168,7 @@ export class RegisterComponent {
     formData.append('Email', this.formData.email || '');
     formData.append('Mobile', this.formData.mobile || '');
     formData.append('ProfessionalType', this.formData.professionalType || '');
-    formData.append('ServiceCategory', JSON.stringify(this.formData.serviceCategory || []));
+  //  formData.append('ServiceCategory', JSON.stringify(this.formData.serviceCategory || []));
 
 
     // ✅ Service Category IDs
@@ -190,11 +184,11 @@ export class RegisterComponent {
     formData.append('RegistrationType', this.formData.registrationType || '');
     formData.append('RegistrationNumber', this.formData.registrationNumber || '');
     // Instead of sending state name:
-    formData.append('State', this.formData.stateId?.toString() || '');
-    formData.append('City', this.formData.cityId?.toString() || '');
+   // formData.append('State', this.formData.stateId?.toString() || '');
+   // formData.append('City', this.formData.cityId?.toString() || '');
 
     // formData.append('PlotNumber', this.formData.plotNumber || '');
-    formData.append('PinCode', this.formData.pinCode || '');
+  //  formData.append('PinCode', this.formData.pinCode || '');
    // formData.append('Role', 'Seller');
     formData.append('Password', this.formData.password || '');
     if (this.formData.registrationDocument) formData.append('RegistrationDocument', this.formData.registrationDocument);
@@ -276,9 +270,21 @@ export class RegisterComponent {
   validateStep1(): boolean {
     this.errors = {};
 
-    if (!this.formData.fullName?.trim()) {
-      this.errors.fullName = 'Full Name is required';
-    }
+    // if (!this.formData.fullName?.trim()) {
+    //   this.errors.fullName = 'Full Name is required';
+    // }
+    const name = this.formData.fullName?.trim();
+
+if (!name) {
+  this.errors.fullName = 'Full Name is required';
+} 
+else if (name.length < 3) {
+  this.errors.fullName = 'Full Name must be at least 3 characters';
+} 
+else if (!/^[A-Za-z\u0900-\u097F\s.-]+$/.test(name)) {
+  this.errors.fullName = 'Full Name contains invalid characters';
+}
+
 
     if (!this.formData.email?.trim()) {
       this.errors.email = 'Email is required';

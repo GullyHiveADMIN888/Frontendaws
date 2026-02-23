@@ -1,0 +1,1467 @@
+// src/app/Admin/lead/lead-list.component.ts
+import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
+import { LeadService } from './services/lead.service';
+import {
+    Lead,
+    LeadFilter,
+    PagedResult,
+    Category,
+    Subcategory,
+    City,
+    Area,
+    Customer,
+    CreateLeadDto,
+    UpdateLeadDto,
+    ManualAssignment,
+    Provider
+} from './models/lead.model';
+import { of } from 'rxjs';
+import Swal from 'sweetalert2';
+
+@Component({
+    selector: 'app-lead-list',
+    templateUrl: './lead-list.component.html',
+    styleUrls: ['./lead-list.component.css']
+})
+export class LeadListComponent implements OnInit {
+    Math = Math;
+
+    leads: Lead[] = [];
+    selectedLead: Lead | null = null;
+    totalCount = 0;
+    pageNumber = 1;
+    pageSize = 25;
+    totalPages = 0;
+    expandedRowId: number | null = null;
+    loading = false;
+    initialLoading = true;
+
+    // Modal states
+    showViewModal = false;
+    showCreateModal = false;
+    showEditModal = false;
+    showAssignmentModal = false;
+
+    // Stats
+    totalB2cLeads = 0;
+    totalB2bLeads = 0;
+    totalInstantLeads = 0;
+
+    // Filter form
+    filterForm!: FormGroup;
+    
+    // Create/Edit form
+    leadForm!: FormGroup;
+    isSubmitting = false;
+
+    // Assignment form
+    assignmentForm!: FormGroup;
+    selectedLeadForAssignment: Lead | null = null;
+
+    // Provider search properties for assignment
+    filteredAssignmentProviders: Provider[] = [];
+    showAssignmentProviderDropdown = false;
+    selectedAssignmentProvider: Provider | null = null;
+    loadingAssignmentProviders = false;
+    providerSearchError = false;
+
+    // Category search properties
+    filteredCategories: Category[] = [];
+    showCategoryDropdown = false;
+    selectedCategory: Category | null = null;
+    loadingCategories = false;
+    categorySearchError = false;
+
+    // City search properties
+    filteredCities: City[] = [];
+    showCityDropdown = false;
+    selectedCity: City | null = null;
+    loadingCities = false;
+    citySearchError = false;
+
+    // Customer search properties
+    filteredCustomers: Customer[] = [];
+    showCustomerDropdown = false;
+    selectedCustomer: Customer | null = null;
+    loadingCustomers = false;
+    customerSearchError = false;
+
+    // Filter options
+    categories: Category[] = [];
+    subcategories: Subcategory[] = [];
+    cities: City[] = [];
+    areas: Area[] = [];
+    leadTypes: string[] = [];
+    flowTypes: string[] = [];
+    confirmedStatuses: string[] = [];
+    timePreferences: string[] = [];
+    sources: string[] = [];
+
+    @ViewChild('categorySearchInput') categorySearchInputElement!: ElementRef;
+    @ViewChild('categoryDropdown') categoryDropdown!: ElementRef;
+    @ViewChild('citySearchInput') citySearchInputElement!: ElementRef;
+    @ViewChild('cityDropdown') cityDropdown!: ElementRef;
+    @ViewChild('customerSearchInput') customerSearchInputElement!: ElementRef;
+    @ViewChild('customerDropdown') customerDropdown!: ElementRef;
+    @ViewChild('assignmentProviderSearchInput') assignmentProviderSearchInputElement!: ElementRef;
+    @ViewChild('assignmentProviderDropdown') assignmentProviderDropdown!: ElementRef;
+
+    constructor(
+        private fb: FormBuilder,
+        private leadService: LeadService
+    ) { }
+
+    ngOnInit(): void {
+        this.loadFilterOptions();
+        this.initFilterForm();
+        this.initLeadForm();
+        this.initAssignmentForm();
+        this.setupCategorySearch();
+        this.setupCitySearch();
+        this.setupCustomerSearch();
+        this.setupAssignmentProviderSearch();
+        this.loadLeads();
+    }
+
+    loadFilterOptions(): void {
+        // Load static options
+        this.leadService.getLeadTypes().subscribe({
+            next: (types) => this.leadTypes = types,
+            error: (error) => console.error('Error loading lead types:', error)
+        });
+        
+        this.leadService.getFlowTypes().subscribe({
+            next: (types) => this.flowTypes = types,
+            error: (error) => console.error('Error loading flow types:', error)
+        });
+
+        this.leadService.getTimePreferences().subscribe({
+            next: (prefs) => this.timePreferences = prefs,
+            error: (error) => console.error('Error loading time preferences:', error)
+        });
+
+        this.leadService.getSources().subscribe({
+            next: (sources) => this.sources = sources,
+            error: (error) => console.error('Error loading sources:', error)
+        });
+
+        // Load dynamic options
+        this.leadService.getCategories().subscribe({
+            next: (categories) => this.categories = categories,
+            error: (error) => console.error('Error loading categories:', error)
+        });
+        
+        this.leadService.getCities().subscribe({
+            next: (cities) => this.cities = cities,
+            error: (error) => console.error('Error loading cities:', error)
+        });
+    }
+
+    initFilterForm(): void {
+        const today = new Date();
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+
+        this.filterForm = this.fb.group({
+            searchTerm: [''],
+            categorySearch: [''],
+            categoryId: [''],
+            subcategoryId: [{ value: '', disabled: true }],
+            citySearch: [''],
+            cityId: [''],
+            areaId: [''],
+            leadType: [''],
+            flowType: [''],
+            confirmedStatus: [''],
+            startDate: [this.formatDateForInput(thirtyDaysAgo)],
+            startTime: ['00:00'],
+            endDate: [this.formatDateForInput(today)],
+            endTime: ['23:59']
+        });
+
+        // Subscribe to category changes to load subcategories
+        this.filterForm.get('categoryId')?.valueChanges.subscribe(categoryId => {
+            this.loadSubcategories(categoryId);
+        });
+
+        // Subscribe to city changes to load areas
+        this.filterForm.get('cityId')?.valueChanges.subscribe(cityId => {
+            this.loadAreas(cityId);
+        });
+    }
+
+    initLeadForm(): void {
+        this.leadForm = this.fb.group({
+            customerSearch: [''],
+            customerUserId: [''],
+            leadType: ['', Validators.required],
+            description: ['', Validators.required],
+            budgetMin: [''],
+            budgetMax: [''],
+            timePreference: [''],
+            scheduledStart: [''],
+            scheduledEnd: [''],
+            isInstant: [false],
+            source: ['', Validators.required],
+            flowType: ['', Validators.required],
+            categorySearch: [''],
+            categoryId: [''],
+            subcategoryId: [{ value: '', disabled: true }],
+            citySearch: [''],
+            cityId: [''],
+            areaId: [''],
+            pincode: ['']
+        });
+
+        // Subscribe to category changes in form
+        this.leadForm.get('categoryId')?.valueChanges.subscribe(categoryId => {
+            this.loadFormSubcategories(categoryId);
+        });
+
+        // Subscribe to city changes in form
+        this.leadForm.get('cityId')?.valueChanges.subscribe(cityId => {
+            this.loadFormAreas(cityId);
+        });
+    }
+
+    initAssignmentForm(): void {
+        this.assignmentForm = this.fb.group({
+            providerSearch: [''],
+            providerId: ['', Validators.required],
+            offerWave: [1, [Validators.required, Validators.min(1)]],
+            pplPrice: [''],
+            isFreeLead: [false],
+            offerExpiresAt: [''],
+            notes: ['']
+        });
+    }
+
+    // Setup Assignment Provider Search
+    setupAssignmentProviderSearch(): void {
+        this.assignmentForm.get('providerSearch')?.valueChanges
+            .pipe(
+                debounceTime(300),
+                distinctUntilChanged(),
+                switchMap(searchTerm => {
+                    if (!searchTerm?.trim()) {
+                        this.loadingAssignmentProviders = false;
+                        return of([]);
+                    }
+
+                    this.loadingAssignmentProviders = true;
+                    this.providerSearchError = false;
+
+                    return this.leadService.searchProviders(searchTerm.trim(), 10).pipe(
+                        catchError(error => {
+                            console.error('Error searching providers:', error);
+                            this.providerSearchError = true;
+                            this.loadingAssignmentProviders = false;
+                            return of([]);
+                        })
+                    );
+                })
+            )
+            .subscribe({
+                next: (providers) => {
+                    this.filteredAssignmentProviders = providers;
+                    this.loadingAssignmentProviders = false;
+                    this.showAssignmentProviderDropdown = providers.length > 0;
+                },
+                error: (error) => {
+                    console.error('Error in provider search:', error);
+                    this.loadingAssignmentProviders = false;
+                    this.providerSearchError = true;
+                }
+            });
+    }
+
+    // Assignment Provider Search Handlers
+    onAssignmentProviderInputClick(): void {
+        const searchTerm = this.assignmentForm.get('providerSearch')?.value;
+        if (searchTerm?.trim() && !this.selectedAssignmentProvider && this.filteredAssignmentProviders.length > 0) {
+            this.showAssignmentProviderDropdown = true;
+        }
+    }
+
+    onAssignmentProviderInputKeydown(event: KeyboardEvent): void {
+        switch (event.key) {
+            case 'ArrowDown':
+                event.preventDefault();
+                setTimeout(() => {
+                    const firstItem = document.querySelector('.assignment-provider-dropdown-item');
+                    if (firstItem instanceof HTMLElement) firstItem.focus();
+                });
+                break;
+            case 'Escape':
+                this.showAssignmentProviderDropdown = false;
+                break;
+            case 'Enter':
+                if (this.filteredAssignmentProviders.length === 1 && !this.selectedAssignmentProvider) {
+                    this.selectAssignmentProvider(this.filteredAssignmentProviders[0]);
+                }
+                break;
+        }
+    }
+
+    selectAssignmentProvider(provider: Provider): void {
+        this.selectedAssignmentProvider = provider;
+        this.assignmentForm.patchValue({
+            providerId: provider.id,
+            providerSearch: `${provider.displayName || provider.businessName} (${provider.email})`
+        }, { emitEvent: false });
+        this.showAssignmentProviderDropdown = false;
+        this.filteredAssignmentProviders = [];
+    }
+
+    clearAssignmentProviderSelection(): void {
+        this.selectedAssignmentProvider = null;
+        this.assignmentForm.patchValue({
+            providerId: '',
+            providerSearch: ''
+        }, { emitEvent: false });
+        this.filteredAssignmentProviders = [];
+        this.showAssignmentProviderDropdown = false;
+    }
+
+    // Setup customer search
+    setupCustomerSearch(): void {
+        this.leadForm.get('customerSearch')?.valueChanges
+            .pipe(
+                debounceTime(300),
+                distinctUntilChanged()
+            )
+            .subscribe(searchTerm => {
+                if (searchTerm && searchTerm.trim()) {
+                    this.searchCustomers(searchTerm);
+                } else {
+                    this.filteredCustomers = [];
+                    this.showCustomerDropdown = false;
+                }
+            });
+    }
+
+    searchCustomers(searchTerm: string): void {
+        this.loadingCustomers = true;
+        this.customerSearchError = false;
+
+        this.leadService.searchCustomers(searchTerm.trim(), 10).subscribe({
+            next: (customers) => {
+                this.filteredCustomers = customers;
+                this.loadingCustomers = false;
+                if (customers && customers.length > 0) {
+                    this.showCustomerDropdown = true;
+                } else {
+                    this.showCustomerDropdown = false;
+                }
+            },
+            error: (error) => {
+                console.error('Error searching customers:', error);
+                this.loadingCustomers = false;
+                this.customerSearchError = true;
+                this.filteredCustomers = [];
+            }
+        });
+    }
+
+    onCustomerSearchInput(): void {
+        const searchTerm = this.leadForm.get('customerSearch')?.value;
+        if (searchTerm && searchTerm.trim()) {
+            if (this.selectedCustomer && searchTerm !== this.getCustomerDisplayName(this.selectedCustomer)) {
+                this.clearCustomerSelection();
+            }
+            this.showCustomerDropdown = true;
+        } else {
+            this.filteredCustomers = [];
+            this.showCustomerDropdown = false;
+            this.clearCustomerSelection();
+        }
+    }
+
+    onCustomerSearchClick(): void {
+        const searchTerm = this.leadForm.get('customerSearch')?.value;
+        if (searchTerm && searchTerm.trim() && this.filteredCustomers.length > 0) {
+            this.showCustomerDropdown = true;
+        }
+    }
+
+    onCustomerInputKeydown(event: KeyboardEvent): void {
+        switch (event.key) {
+            case 'ArrowDown':
+                event.preventDefault();
+                setTimeout(() => {
+                    const firstItem = document.querySelector('.customer-dropdown-item');
+                    if (firstItem instanceof HTMLElement) firstItem.focus();
+                });
+                break;
+            case 'Escape':
+                this.showCustomerDropdown = false;
+                break;
+            case 'Enter':
+                if (this.filteredCustomers.length === 1 && !this.selectedCustomer) {
+                    this.selectCustomer(this.filteredCustomers[0]);
+                }
+                break;
+        }
+    }
+
+    selectCustomer(customer: Customer): void {
+        this.selectedCustomer = customer;
+        this.leadForm.patchValue({
+            customerUserId: customer.id,
+            customerSearch: this.getCustomerDisplayName(customer)
+        }, { emitEvent: false });
+        this.showCustomerDropdown = false;
+        this.filteredCustomers = [];
+    }
+
+    clearCustomerSelection(): void {
+        this.selectedCustomer = null;
+        this.leadForm.patchValue({
+            customerUserId: null,
+            customerSearch: ''
+        }, { emitEvent: false });
+        this.filteredCustomers = [];
+        this.showCustomerDropdown = false;
+    }
+
+    getCustomerDisplayName(customer: Customer): string {
+        if (!customer) return '';
+        const displayName = customer.name || 'Unknown';
+        const email = customer.email ? ` (${customer.email})` : '';
+        return `${displayName}${email}`;
+    }
+
+    // Setup category search
+    setupCategorySearch(): void {
+        this.filterForm.get('categorySearch')?.valueChanges
+            .pipe(
+                debounceTime(300),
+                distinctUntilChanged()
+            )
+            .subscribe(searchTerm => {
+                if (searchTerm && searchTerm.trim()) {
+                    this.searchCategories(searchTerm);
+                } else {
+                    this.filteredCategories = [];
+                    this.showCategoryDropdown = false;
+                }
+            });
+    }
+
+    searchCategories(searchTerm: string): void {
+        this.loadingCategories = true;
+        this.categorySearchError = false;
+
+        this.leadService.searchCategories(searchTerm.trim(), 10).subscribe({
+            next: (categories) => {
+                this.filteredCategories = categories;
+                this.loadingCategories = false;
+                if (categories.length > 0) {
+                    this.showCategoryDropdown = true;
+                }
+            },
+            error: (error) => {
+                console.error('Error searching categories:', error);
+                this.loadingCategories = false;
+                this.categorySearchError = true;
+                this.filteredCategories = [];
+            }
+        });
+    }
+
+    onCategorySearchInput(): void {
+        const searchTerm = this.filterForm.get('categorySearch')?.value;
+        if (searchTerm && searchTerm.trim()) {
+            if (this.selectedCategory && searchTerm !== this.selectedCategory.name) {
+                this.clearCategorySelection();
+            }
+            this.showCategoryDropdown = true;
+        } else {
+            this.filteredCategories = [];
+            this.showCategoryDropdown = false;
+            this.clearCategorySelection();
+        }
+    }
+
+    onCategorySearchClick(): void {
+        const searchTerm = this.filterForm.get('categorySearch')?.value;
+        if (searchTerm && searchTerm.trim() && this.filteredCategories.length > 0) {
+            this.showCategoryDropdown = true;
+        }
+    }
+
+    onCategoryInputKeydown(event: KeyboardEvent): void {
+        switch (event.key) {
+            case 'ArrowDown':
+                event.preventDefault();
+                setTimeout(() => {
+                    const firstItem = document.querySelector('.category-dropdown-item');
+                    if (firstItem instanceof HTMLElement) firstItem.focus();
+                });
+                break;
+            case 'Escape':
+                this.showCategoryDropdown = false;
+                break;
+            case 'Enter':
+                if (this.filteredCategories.length === 1 && !this.selectedCategory) {
+                    this.selectCategory(this.filteredCategories[0]);
+                }
+                break;
+        }
+    }
+
+    selectCategory(category: Category): void {
+        this.selectedCategory = category;
+        this.filterForm.patchValue({
+            categoryId: category.id,
+            categorySearch: category.name
+        }, { emitEvent: true });
+        this.showCategoryDropdown = false;
+        this.filteredCategories = [];
+    }
+
+    clearCategorySelection(): void {
+        this.selectedCategory = null;
+        this.filterForm.patchValue({
+            categoryId: null,
+            categorySearch: ''
+        }, { emitEvent: true });
+        this.filteredCategories = [];
+        this.showCategoryDropdown = false;
+        this.subcategories = [];
+    }
+
+    // Form category search methods
+    onFormCategorySearchInput(): void {
+        const searchTerm = this.leadForm.get('categorySearch')?.value;
+        if (searchTerm && searchTerm.trim()) {
+            this.searchFormCategories(searchTerm);
+            this.showCategoryDropdown = true;
+        } else {
+            this.filteredCategories = [];
+            this.showCategoryDropdown = false;
+        }
+    }
+
+    searchFormCategories(searchTerm: string): void {
+        this.loadingCategories = true;
+        this.leadService.searchCategories(searchTerm.trim(), 10).subscribe({
+            next: (categories) => {
+                this.filteredCategories = categories;
+                this.loadingCategories = false;
+            },
+            error: (error) => {
+                console.error('Error searching categories:', error);
+                this.loadingCategories = false;
+                this.filteredCategories = [];
+            }
+        });
+    }
+
+    selectFormCategory(category: Category): void {
+        this.leadForm.patchValue({
+            categoryId: category.id,
+            categorySearch: category.name
+        }, { emitEvent: true });
+        this.showCategoryDropdown = false;
+        this.filteredCategories = [];
+    }
+
+    // Subcategory methods
+    loadingSubcategories = false;
+
+    loadSubcategories(categoryId?: number): void {
+        if (categoryId) {
+            this.loadingSubcategories = true;
+            this.disableSubcategoryControl();
+
+            this.leadService.getSubcategoriesByCategory(categoryId).subscribe({
+                next: (subcategories) => {
+                    this.subcategories = subcategories;
+                    this.loadingSubcategories = false;
+                    if (subcategories && subcategories.length > 0) {
+                        this.enableSubcategoryControl();
+                    } else {
+                        this.disableSubcategoryControl();
+                    }
+                },
+                error: (error) => {
+                    console.error('Error loading subcategories:', error);
+                    this.subcategories = [];
+                    this.loadingSubcategories = false;
+                    this.disableSubcategoryControl();
+                }
+            });
+        } else {
+            this.subcategories = [];
+            this.loadingSubcategories = false;
+            this.disableSubcategoryControl();
+        }
+    }
+
+    loadFormSubcategories(categoryId?: number): void {
+        if (categoryId) {
+            this.loadingSubcategories = true;
+            this.leadForm.get('subcategoryId')?.disable({ emitEvent: false });
+
+            this.leadService.getSubcategoriesByCategory(categoryId).subscribe({
+                next: (subcategories) => {
+                    this.subcategories = subcategories;
+                    this.loadingSubcategories = false;
+                    if (subcategories && subcategories.length > 0) {
+                        this.leadForm.get('subcategoryId')?.enable({ emitEvent: false });
+                    } else {
+                        this.leadForm.get('subcategoryId')?.disable({ emitEvent: false });
+                        this.leadForm.patchValue({ subcategoryId: '' }, { emitEvent: false });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error loading subcategories:', error);
+                    this.subcategories = [];
+                    this.loadingSubcategories = false;
+                    this.leadForm.get('subcategoryId')?.disable({ emitEvent: false });
+                    this.leadForm.patchValue({ subcategoryId: '' }, { emitEvent: false });
+                }
+            });
+        } else {
+            this.subcategories = [];
+            this.loadingSubcategories = false;
+            this.leadForm.get('subcategoryId')?.disable({ emitEvent: false });
+            this.leadForm.patchValue({ subcategoryId: '' }, { emitEvent: false });
+        }
+    }
+
+    enableSubcategoryControl(): void {
+        this.filterForm.get('subcategoryId')?.enable({ emitEvent: false });
+    }
+
+    disableSubcategoryControl(): void {
+        this.filterForm.get('subcategoryId')?.disable({ emitEvent: false });
+        this.filterForm.patchValue({ subcategoryId: '' }, { emitEvent: false });
+    }
+
+    // Setup city search
+    setupCitySearch(): void {
+        this.filterForm.get('citySearch')?.valueChanges
+            .pipe(
+                debounceTime(300),
+                distinctUntilChanged()
+            )
+            .subscribe(searchTerm => {
+                if (searchTerm && searchTerm.trim()) {
+                    this.searchCities(searchTerm);
+                } else {
+                    this.filteredCities = [];
+                    this.showCityDropdown = false;
+                }
+            });
+    }
+
+    searchCities(searchTerm: string): void {
+        this.loadingCities = true;
+        this.citySearchError = false;
+
+        this.leadService.getCities().subscribe({
+            next: (cities) => {
+                this.filteredCities = cities.filter(c =>
+                    c.name?.toLowerCase().includes(searchTerm.toLowerCase())
+                ).slice(0, 10);
+                this.loadingCities = false;
+                if (this.filteredCities.length > 0) {
+                    this.showCityDropdown = true;
+                } else {
+                    this.showCityDropdown = false;
+                }
+            },
+            error: (error) => {
+                console.error('Error searching cities:', error);
+                this.loadingCities = false;
+                this.citySearchError = true;
+                this.filteredCities = [];
+            }
+        });
+    }
+
+    onCitySearchInput(): void {
+        const searchTerm = this.filterForm.get('citySearch')?.value;
+        
+        if (searchTerm && searchTerm.trim()) {
+            if (this.selectedCity && searchTerm !== this.selectedCity.name) {
+                this.clearCitySelection();
+            }
+            this.searchCities(searchTerm);
+            this.showCityDropdown = true;
+        } else {
+            this.filteredCities = [];
+            this.showCityDropdown = false;
+            this.clearCitySelection();
+        }
+    }
+
+    onCitySearchClick(): void {
+        const searchTerm = this.filterForm.get('citySearch')?.value;
+        if (searchTerm && searchTerm.trim() && this.filteredCities.length > 0) {
+            this.showCityDropdown = true;
+        }
+    }
+
+    onCityInputKeydown(event: KeyboardEvent): void {
+        switch (event.key) {
+            case 'ArrowDown':
+                event.preventDefault();
+                setTimeout(() => {
+                    const firstItem = document.querySelector('.city-dropdown-item');
+                    if (firstItem instanceof HTMLElement) firstItem.focus();
+                });
+                break;
+            case 'Escape':
+                this.showCityDropdown = false;
+                break;
+            case 'Enter':
+                if (this.filteredCities.length === 1 && !this.selectedCity) {
+                    this.selectCity(this.filteredCities[0]);
+                }
+                break;
+        }
+    }
+
+    selectCity(city: City): void {
+        this.selectedCity = city;
+        this.filterForm.patchValue({
+            cityId: city.id,
+            citySearch: city.name
+        });
+        this.showCityDropdown = false;
+        this.filteredCities = [];
+        this.loadAreas(city.id);
+    }
+
+    clearCitySelection(): void {
+        this.selectedCity = null;
+        this.filterForm.patchValue({
+            cityId: null,
+            citySearch: ''
+        });
+        this.filteredCities = [];
+        this.showCityDropdown = false;
+        this.areas = [];
+    }
+
+    // Form city search methods
+    onFormCitySearchInput(): void {
+        const searchTerm = this.leadForm.get('citySearch')?.value;
+        
+        if (searchTerm && searchTerm.trim()) {
+            this.searchFormCities(searchTerm);
+            this.showCityDropdown = true;
+        } else {
+            this.filteredCities = [];
+            this.showCityDropdown = false;
+        }
+    }
+
+    searchFormCities(searchTerm: string): void {
+        this.loadingCities = true;
+        this.leadService.getCities().subscribe({
+            next: (cities) => {
+                this.filteredCities = cities.filter(c =>
+                    c.name?.toLowerCase().includes(searchTerm.toLowerCase())
+                ).slice(0, 10);
+                this.loadingCities = false;
+            },
+            error: (error) => {
+                console.error('Error searching cities:', error);
+                this.loadingCities = false;
+                this.filteredCities = [];
+            }
+        });
+    }
+
+    selectFormCity(city: City): void {
+        this.leadForm.patchValue({
+            cityId: city.id,
+            citySearch: city.name
+        });
+        this.showCityDropdown = false;
+        this.filteredCities = [];
+        this.loadFormAreas(city.id);
+    }
+
+    loadingAreas = false;
+
+    loadAreas(cityId?: number): void {
+        if (cityId) {
+            this.loadingAreas = true;
+            this.leadService.getAreasByCity(cityId).subscribe({
+                next: (areas) => {
+                    this.areas = areas;
+                    this.loadingAreas = false;
+                },
+                error: (error) => {
+                    console.error('Error loading areas:', error);
+                    this.areas = [];
+                    this.loadingAreas = false;
+                }
+            });
+        } else {
+            this.areas = [];
+            this.loadingAreas = false;
+        }
+    }
+
+    loadFormAreas(cityId?: number): void {
+        if (cityId) {
+            this.loadingAreas = true;
+            this.leadService.getAreasByCity(cityId).subscribe({
+                next: (areas) => {
+                    this.areas = areas;
+                    this.loadingAreas = false;
+                },
+                error: (error) => {
+                    console.error('Error loading areas:', error);
+                    this.areas = [];
+                    this.loadingAreas = false;
+                }
+            });
+        } else {
+            this.areas = [];
+            this.loadingAreas = false;
+        }
+    }
+
+    formatDateForInput(date: Date): string {
+        return date.toISOString().split('T')[0];
+    }
+
+    formatDateTimeForInput(date?: string): string {
+        if (!date) return '';
+        const d = new Date(date);
+        return d.toISOString().slice(0, 16);
+    }
+
+    getStartDateTime(): string | undefined {
+        const startDate = this.filterForm.get('startDate')?.value;
+        const startTime = this.filterForm.get('startTime')?.value || '00:00';
+        if (!startDate) return undefined;
+        const dateTime = new Date(startDate + 'T' + startTime + ':00');
+        return dateTime.toISOString();
+    }
+
+    getEndDateTime(): string | undefined {
+        const endDate = this.filterForm.get('endDate')?.value;
+        const endTime = this.filterForm.get('endTime')?.value || '23:59';
+        if (!endDate) return undefined;
+        const dateTime = new Date(endDate + 'T' + endTime + ':00');
+        return dateTime.toISOString();
+    }
+
+    loadLeads(): void {
+        this.loading = true;
+
+        const formValues = this.filterForm.value;
+        const filter: LeadFilter = {
+            searchTerm: formValues.searchTerm || undefined,
+            categoryId: formValues.categoryId || undefined,
+            subcategoryId: formValues.subcategoryId || undefined,
+            cityId: formValues.cityId || undefined,
+            areaId: formValues.areaId || undefined,
+            leadType: formValues.leadType || undefined,
+            flowType: formValues.flowType || undefined,
+            confirmedStatus: formValues.confirmedStatus || undefined,
+            startDate: this.getStartDateTime(),
+            endDate: this.getEndDateTime(),
+            pageNumber: this.pageNumber,
+            pageSize: this.pageSize
+        };
+
+        this.leadService.getLeads(filter).subscribe({
+            next: (res: PagedResult<Lead>) => {
+                this.leads = res.items;
+                this.totalCount = res.totalCount;
+                this.totalPages = Math.ceil(this.totalCount / this.pageSize);
+                this.calculateStats();
+                this.loading = false;
+                this.initialLoading = false;
+            },
+            error: (error) => {
+                console.error('Error loading leads:', error);
+                this.loading = false;
+                this.initialLoading = false;
+            }
+        });
+    }
+
+    calculateStats(): void {
+        this.totalB2cLeads = this.leads.filter(l => l.leadType === 'b2c').length;
+        this.totalB2bLeads = this.leads.filter(l => l.leadType === 'b2b').length;
+        this.totalInstantLeads = this.leads.filter(l => l.isInstant).length;
+    }
+
+    @HostListener('document:click', ['$event'])
+    onClickOutside(event: Event): void {
+        // Category dropdown
+        if (this.categorySearchInputElement?.nativeElement?.contains(event.target) ||
+            this.categoryDropdown?.nativeElement?.contains(event.target)) {
+            return;
+        }
+
+        // City dropdown
+        if (this.citySearchInputElement?.nativeElement?.contains(event.target) ||
+            this.cityDropdown?.nativeElement?.contains(event.target)) {
+            return;
+        }
+
+        // Customer dropdown
+        if (this.customerSearchInputElement?.nativeElement?.contains(event.target) ||
+            this.customerDropdown?.nativeElement?.contains(event.target)) {
+            return;
+        }
+
+        // Assignment provider dropdown
+        if (this.assignmentProviderSearchInputElement?.nativeElement?.contains(event.target) ||
+            this.assignmentProviderDropdown?.nativeElement?.contains(event.target)) {
+            return;
+        }
+
+        this.showCategoryDropdown = false;
+        this.showCityDropdown = false;
+        this.showCustomerDropdown = false;
+        this.showAssignmentProviderDropdown = false;
+    }
+
+    // Modal methods
+    openViewModal(lead: Lead): void {
+        this.selectedLead = lead;
+        this.showViewModal = true;
+    }
+
+    closeViewModal(): void {
+        this.showViewModal = false;
+        this.selectedLead = null;
+    }
+
+    openCreateModal(): void {
+        this.resetLeadForm();
+        this.showCreateModal = true;
+    }
+
+    closeCreateModal(): void {
+        this.showCreateModal = false;
+        this.resetLeadForm();
+    }
+
+    openEditModal(lead: Lead): void {
+        this.selectedLead = lead;
+        this.populateEditForm(lead);
+        this.showEditModal = true;
+    }
+
+    closeEditModal(): void {
+        this.showEditModal = false;
+        this.selectedLead = null;
+        this.resetLeadForm();
+    }
+
+    // Assignment Modal Methods
+    openAssignmentModal(lead: Lead): void {
+        this.selectedLeadForAssignment = lead;
+        this.showAssignmentModal = true;
+        this.resetAssignmentForm();
+    }
+
+    closeAssignmentModal(): void {
+        this.showAssignmentModal = false;
+        this.selectedLeadForAssignment = null;
+        this.resetAssignmentForm();
+        this.filteredAssignmentProviders = [];
+        this.selectedAssignmentProvider = null;
+    }
+
+    resetAssignmentForm(): void {
+        this.assignmentForm.reset({
+            offerWave: 1,
+            isFreeLead: false
+        });
+    }
+
+    // Assign to Provider
+    assignToProvider(): void {
+        if (!this.selectedLeadForAssignment || this.assignmentForm.invalid) {
+            Object.keys(this.assignmentForm.controls).forEach(key => {
+                this.assignmentForm.get(key)?.markAsTouched();
+            });
+            return;
+        }
+
+        const formValue = this.assignmentForm.value;
+        const assignment: ManualAssignment = {
+            leadId: this.selectedLeadForAssignment.id,
+            providerId: formValue.providerId,
+            offerWave: formValue.offerWave,
+            pplPrice: formValue.pplPrice ? Number(formValue.pplPrice) : undefined,
+            isFreeLead: formValue.isFreeLead,
+            offerExpiresAt: formValue.offerExpiresAt ? new Date(formValue.offerExpiresAt).toISOString() : undefined,
+            notes: formValue.notes
+        };
+
+        this.leadService.assignToProvider(assignment).subscribe({
+            next: (response) => {
+                this.closeAssignmentModal();
+                Swal.fire('Success!', 'Lead assigned to provider successfully.', 'success');
+                this.loadLeads();
+            },
+            error: (error) => {
+                console.error('Error assigning lead:', error);
+                Swal.fire('Error!', error.error?.error || 'Failed to assign lead', 'error');
+            }
+        });
+    }
+
+    resetLeadForm(): void {
+        this.leadForm.reset({
+            isInstant: false,
+            source: 'manual'
+        });
+        this.clearCustomerSelection();
+        this.selectedCategory = null;
+        this.selectedCity = null;
+        this.subcategories = [];
+        this.areas = [];
+    }
+
+    populateEditForm(lead: Lead): void {
+        this.leadForm.patchValue({
+            customerUserId: lead.customerUserId,
+            customerSearch: lead.customerDisplayName ? `${lead.customerDisplayName}${lead.customerEmail ? ' (' + lead.customerEmail + ')' : ''}` : '',
+            leadType: lead.leadType,
+            description: lead.description,
+            budgetMin: lead.budgetMin,
+            budgetMax: lead.budgetMax,
+            timePreference: lead.timePreference,
+            scheduledStart: this.formatDateTimeForInput(lead.scheduledStart),
+            scheduledEnd: this.formatDateTimeForInput(lead.scheduledEnd),
+            isInstant: lead.isInstant,
+            source: lead.source,
+            flowType: lead.flowType,
+            categorySearch: lead.categoryName,
+            categoryId: lead.categoryId,
+            citySearch: lead.cityName,
+            cityId: lead.cityId,
+            pincode: lead.pincode
+        });
+
+        if (lead.customerUserId) {
+            this.selectedCustomer = {
+                id: lead.customerUserId,
+                name: lead.customerDisplayName || '',
+                email: lead.customerEmail || '',
+                phone: lead.customerPhone || ''
+            };
+        }
+
+        if (lead.categoryId && lead.categoryName) {
+            this.selectedCategory = {
+                id: lead.categoryId,
+                name: lead.categoryName,
+                isActive: true
+            };
+        }
+
+        if (lead.cityId && lead.cityName) {
+            this.selectedCity = {
+                id: lead.cityId,
+                name: lead.cityName,
+                state: ''
+            };
+        }
+
+        if (lead.categoryId) {
+            this.loadFormSubcategoriesWithValue(lead.categoryId, lead.subcategoryId);
+        }
+
+        if (lead.cityId) {
+            this.loadFormAreasWithValue(lead.cityId, lead.areaId);
+        }
+    }
+
+    loadFormSubcategoriesWithValue(categoryId: number, subcategoryId?: number): void {
+        this.loadingSubcategories = true;
+        this.leadForm.get('subcategoryId')?.disable({ emitEvent: false });
+
+        this.leadService.getSubcategoriesByCategory(categoryId).subscribe({
+            next: (subcategories) => {
+                this.subcategories = subcategories;
+                this.loadingSubcategories = false;
+                
+                if (subcategories && subcategories.length > 0) {
+                    this.leadForm.get('subcategoryId')?.enable({ emitEvent: false });
+                    
+                    if (subcategoryId) {
+                        const subcategoryExists = subcategories.some(s => s.id === subcategoryId);
+                        if (subcategoryExists) {
+                            setTimeout(() => {
+                                this.leadForm.patchValue({
+                                    subcategoryId: subcategoryId
+                                }, { emitEvent: false });
+                            }, 100);
+                        }
+                    }
+                } else {
+                    this.leadForm.get('subcategoryId')?.disable({ emitEvent: false });
+                    this.leadForm.patchValue({ subcategoryId: null }, { emitEvent: false });
+                }
+            },
+            error: (error) => {
+                console.error('Error loading subcategories:', error);
+                this.subcategories = [];
+                this.loadingSubcategories = false;
+                this.leadForm.get('subcategoryId')?.disable({ emitEvent: false });
+                this.leadForm.patchValue({ subcategoryId: null }, { emitEvent: false });
+            }
+        });
+    }
+
+    loadFormAreasWithValue(cityId: number, areaId?: number): void {
+        this.loadingAreas = true;
+        
+        this.leadService.getAreasByCity(cityId).subscribe({
+            next: (areas) => {
+                this.areas = areas;
+                this.loadingAreas = false;
+                
+                if (areaId) {
+                    const areaExists = areas.some(a => a.id === areaId);
+                    if (areaExists) {
+                        setTimeout(() => {
+                            this.leadForm.patchValue({
+                                areaId: areaId
+                            }, { emitEvent: false });
+                        }, 100);
+                    }
+                }
+            },
+            error: (error) => {
+                console.error('Error loading areas:', error);
+                this.areas = [];
+                this.loadingAreas = false;
+            }
+        });
+    }
+
+    createLead(): void {
+        if (this.leadForm.invalid) {
+            Object.keys(this.leadForm.controls).forEach(key => {
+                this.leadForm.get(key)?.markAsTouched();
+            });
+            return;
+        }
+
+        this.isSubmitting = true;
+        const formValue = this.leadForm.value;
+
+        const confirmedStatus = formValue.flowType === 'confirmed' ? 'draft' : null;
+
+        const dto: CreateLeadDto = {
+            customerUserId: formValue.customerUserId || undefined,
+            leadType: formValue.leadType,
+            description: formValue.description,
+            budgetMin: formValue.budgetMin ? Number(formValue.budgetMin) : undefined,
+            budgetMax: formValue.budgetMax ? Number(formValue.budgetMax) : undefined,
+            timePreference: formValue.timePreference || undefined,
+            scheduledStart: formValue.scheduledStart ? new Date(formValue.scheduledStart).toISOString() : undefined,
+            scheduledEnd: formValue.scheduledEnd ? new Date(formValue.scheduledEnd).toISOString() : undefined,
+            isInstant: formValue.isInstant,
+            source: formValue.source,
+            flowType: formValue.flowType,
+            confirmedStatus: confirmedStatus,
+            categoryId: formValue.categoryId || undefined,
+            subcategoryId: formValue.subcategoryId || undefined,
+            cityId: formValue.cityId || undefined,
+            areaId: formValue.areaId || undefined,
+            pincode: formValue.pincode || undefined
+        };
+
+        this.leadService.createLead(dto).subscribe({
+            next: (response) => {
+                this.isSubmitting = false;
+                this.closeCreateModal();
+                Swal.fire('Success!', 'Lead created successfully.', 'success');
+                this.loadLeads();
+            },
+            error: (error) => {
+                this.isSubmitting = false;
+                console.error('Error creating lead:', error);
+                Swal.fire('Error!', error.error?.error || 'Failed to create lead', 'error');
+            }
+        });
+    }
+
+    updateLead(): void {
+        if (!this.selectedLead) return;
+
+        if (this.leadForm.invalid) {
+            Object.keys(this.leadForm.controls).forEach(key => {
+                this.leadForm.get(key)?.markAsTouched();
+            });
+            return;
+        }
+
+        this.isSubmitting = true;
+        const formValue = this.leadForm.value;
+
+        const confirmedStatus = formValue.flowType === 'confirmed' ? 'draft' : null;
+
+        const dto: UpdateLeadDto = {
+            customerUserId: formValue.customerUserId || undefined,
+            leadType: formValue.leadType,
+            description: formValue.description,
+            budgetMin: formValue.budgetMin ? Number(formValue.budgetMin) : undefined,
+            budgetMax: formValue.budgetMax ? Number(formValue.budgetMax) : undefined,
+            timePreference: formValue.timePreference || undefined,
+            scheduledStart: formValue.scheduledStart ? new Date(formValue.scheduledStart).toISOString() : undefined,
+            scheduledEnd: formValue.scheduledEnd ? new Date(formValue.scheduledEnd).toISOString() : undefined,
+            isInstant: formValue.isInstant,
+            source: formValue.source,
+            flowType: formValue.flowType,
+            confirmedStatus: confirmedStatus,
+            categoryId: formValue.categoryId || undefined,
+            subcategoryId: formValue.subcategoryId || undefined,
+            cityId: formValue.cityId || undefined,
+            areaId: formValue.areaId || undefined,
+            pincode: formValue.pincode || undefined
+        };
+
+        this.leadService.updateLead(this.selectedLead.id, dto).subscribe({
+            next: (response) => {
+                this.isSubmitting = false;
+                this.closeEditModal();
+                Swal.fire('Success!', 'Lead updated successfully.', 'success');
+                this.loadLeads();
+            },
+            error: (error) => {
+                this.isSubmitting = false;
+                console.error('Error updating lead:', error);
+                Swal.fire('Error!', error.error?.error || 'Failed to update lead', 'error');
+            }
+        });
+    }
+
+    getLeadTypeColor(type: string): string {
+        return this.leadService.getLeadTypeColor(type);
+    }
+
+    getFlowTypeColor(type: string): string {
+        return this.leadService.getFlowTypeColor(type);
+    }
+
+    getConfirmedStatusColor(status: string): string {
+        return this.leadService.getConfirmedStatusColor(status);
+    }
+
+    getProviderTierColor(tier: string): string {
+        return this.leadService.getProviderTierColor(tier);
+    }
+
+    formatCurrency(amount?: number, currency: string = 'INR'): string {
+        if (!amount) return 'N/A';
+        return new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: currency,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount);
+    }
+
+    formatDate(dateString?: string): string {
+        if (!dateString) return 'N/A';
+        return new Date(dateString).toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        });
+    }
+
+    formatDateTime(dateString?: string): string {
+        if (!dateString) return 'N/A';
+        return new Date(dateString).toLocaleString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    toggleRow(id: number): void {
+        this.expandedRowId = this.expandedRowId === id ? null : id;
+    }
+
+    applyFilters(): void {
+        this.pageNumber = 1;
+        this.loadLeads();
+    }
+
+    resetFilters(): void {
+        const today = new Date();
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+
+        this.filterForm.reset({
+            searchTerm: '',
+            categorySearch: '',
+            categoryId: '',
+            subcategoryId: '',
+            citySearch: '',
+            cityId: '',
+            areaId: '',
+            leadType: '',
+            flowType: '',
+            confirmedStatus: '',
+            startDate: this.formatDateForInput(thirtyDaysAgo),
+            startTime: '00:00',
+            endDate: this.formatDateForInput(today),
+            endTime: '23:59'
+        });
+
+        this.clearCategorySelection();
+        this.clearCitySelection();
+        this.areas = [];
+        this.subcategories = [];
+        this.pageNumber = 1;
+        this.loadLeads();
+    }
+
+    setDateRange(range: 'today' | 'yesterday' | 'last7days' | 'last30days' | 'thismonth' | 'lastmonth'): void {
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        let startDate: Date = today;
+        let endDate: Date = today;
+
+        switch (range) {
+            case 'today':
+                startDate = today;
+                endDate = today;
+                break;
+            case 'yesterday':
+                startDate = yesterday;
+                endDate = yesterday;
+                break;
+            case 'last7days':
+                startDate = new Date(today);
+                startDate.setDate(startDate.getDate() - 7);
+                endDate = today;
+                break;
+            case 'last30days':
+                startDate = new Date(today);
+                startDate.setDate(startDate.getDate() - 30);
+                endDate = today;
+                break;
+            case 'thismonth':
+                startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                endDate = today;
+                break;
+            case 'lastmonth':
+                startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+                break;
+        }
+
+        this.filterForm.patchValue({
+            startDate: this.formatDateForInput(startDate),
+            startTime: '00:00',
+            endDate: this.formatDateForInput(endDate),
+            endTime: '23:59'
+        });
+
+        this.applyFilters();
+    }
+
+    changePage(delta: number): void {
+        const newPage = this.pageNumber + delta;
+        if (newPage >= 1 && newPage <= this.totalPages) {
+            this.pageNumber = newPage;
+            this.loadLeads();
+        }
+    }
+
+    goToPage(page: number): void {
+        if (page >= 1 && page <= this.totalPages) {
+            this.pageNumber = page;
+            this.loadLeads();
+        }
+    }
+
+    getStartIndex(): number {
+        return ((this.pageNumber - 1) * this.pageSize) + 1;
+    }
+
+    getEndIndex(): number {
+        const end = this.pageNumber * this.pageSize;
+        return Math.min(end, this.totalCount);
+    }
+
+    getPageNumbers(): number[] {
+        const pages: number[] = [];
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, this.pageNumber - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
+
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            pages.push(i);
+        }
+        return pages;
+    }
+
+    getActiveFilters(): number {
+        let count = 0;
+        const formValues = this.filterForm.value;
+
+        if (formValues.searchTerm) count++;
+        if (formValues.categoryId) count++;
+        if (formValues.subcategoryId) count++;
+        if (formValues.cityId) count++;
+        if (formValues.areaId) count++;
+        if (formValues.leadType) count++;
+        if (formValues.flowType) count++;
+        if (formValues.confirmedStatus) count++;
+        if (formValues.startDate) count++;
+        if (formValues.endDate) count++;
+
+        return count;
+    }
+
+    deleteLead(id: number): void {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You won\'t be able to revert this!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.leadService.deleteLead(id).subscribe({
+                    next: (response) => {
+                        if (response.success) {
+                            Swal.fire('Deleted!', 'Lead has been deleted.', 'success');
+                            this.loadLeads();
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error deleting lead:', error);
+                        Swal.fire('Error!', error.error?.error || 'Failed to delete lead', 'error');
+                    }
+                });
+            }
+        });
+    }
+}

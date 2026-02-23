@@ -34,6 +34,7 @@ export class WalletTransactionComponent implements OnInit {
   selectedUser: User | null = null;
   loadingUsers = false;
   searchError = false;
+  initialLoading = true;
   
   // Filter options
   walletTypes: string[] = [];
@@ -67,14 +68,13 @@ export class WalletTransactionComponent implements OnInit {
 
   loadTransactionTypes(): void {
     this.transactionTypes = [
+      'payment_topup',
       'lead_purchase',
+      'lead_refund',
       'partner_earning',
-      'refund',
-      'cancellation',
-      'withdrawal',
-      'deposit',
-      'bonus',
-      'commission'
+      'admin_adjustment',
+      'job_payout',
+      'job_payout_reverse'
     ];
     
   }
@@ -180,7 +180,7 @@ export class WalletTransactionComponent implements OnInit {
     const filter: WalletTransactionFilter = {
       searchTerm: formValues.searchTerm || undefined,
       userId: formValues.userId || undefined,
-      email: formValues.email || undefined,
+      // email: formValues.email || undefined,
       walletType: formValues.walletType || undefined,
       walletAmountType: formValues.walletAmountType || undefined,
       txnType: formValues.txnType || undefined, 
@@ -191,7 +191,7 @@ export class WalletTransactionComponent implements OnInit {
       pageSize: this.pageSize
     };
 
-    console.log('Applying filters:', filter); 
+    // console.log('Applying filters:', filter); 
 
     this.walletService.getWalletTransactions(filter).subscribe({
       next: (res: PagedResult<WalletTransaction>) => {
@@ -200,10 +200,12 @@ export class WalletTransactionComponent implements OnInit {
         this.totalPages = Math.ceil(this.totalCount / this.pageSize);
         this.calculateTotals();
         this.loading = false;
+        this.initialLoading = false;
       },
       error: (error) => {
         console.error('Error loading transactions:', error);
         this.loading = false;
+        this.initialLoading = false;
       }
     });
   }
@@ -219,12 +221,12 @@ export class WalletTransactionComponent implements OnInit {
     
     this.netBalance = this.totalCredits - this.totalDebits;
     
-    console.log('Totals calculated:', { 
-      credits: this.totalCredits, 
-      debits: this.totalDebits, 
-      netBalance: this.netBalance,
-      transactions: this.transactions 
-    });
+    // console.log('Totals calculated:', { 
+    //   credits: this.totalCredits, 
+    //   debits: this.totalDebits, 
+    //   netBalance: this.netBalance,
+    //   transactions: this.transactions 
+    // });
   }
 
   getTransactionIcon(direction: string, txnType: string): string {
