@@ -7,13 +7,26 @@
     <h1 class="text-3xl font-bold mb-4">Leads</h1>
 
     <!-- FILTERS -->
-    <div class="flex gap-3 mb-4">
-      <button *ngFor="let s of ['all','new','responded','viewed']" (click)="setFilter(s)"
+    <!-- <div class="flex gap-3 mb-4">
+      <button *ngFor="let s of ['all','new','unlocked','confirmed','responded','viewed']" (click)="setFilter(s)"
         class="px-4 py-2 rounded-lg font-medium"
         [ngClass]="filterStatus === s ? 'bg-orange-600 text-white' : 'bg-gray-100'">
         {{ s | titlecase }}
       </button>
-    </div>
+    </div> -->
+    <div class="flex gap-3 mb-4">
+  <button 
+    *ngFor="let s of statuses"
+    (click)="setFilter(s.value)"
+    class="px-4 py-2 rounded-lg font-medium"
+    [ngClass]="filterStatus === s.value 
+      ? 'bg-orange-600 text-white' 
+      : 'bg-gray-100'">
+
+    {{ s.label }}
+
+  </button>
+</div>
 
     <!-- TOP BAR -->
     <div class="flex justify-between items-center mb-6">
@@ -79,10 +92,16 @@
 
                 <!-- UNLOCKED COUNT -->
                 <span class="flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full
-         bg-orange-50 text-orange-700 border border-orange-200">
+               bg-orange-50 text-orange-700 border border-orange-200">
                   <i class="ri-lock-unlock-line"></i>
 
-                  {{ lead.unlockedCount || 0 }} Unlocked
+                  <!-- {{ lead.unlockedCount || 0 }} Unlocked -->
+
+{{ lead.leadType === 'standard' 
+      ? (lead.unlockedCount || 0) + ' Unlocked' 
+      : (lead.leadType === 'confirmed' ? (lead.committedCount || 0) + ' Confirmed' : '') 
+  }}
+
                 </span>
 
 
@@ -103,6 +122,7 @@
               <span class="flex items-center gap-1">
                 <i class="ri-map-pin-line text-orange-500"></i>
                 {{ lead.location }}
+                   <span *ngIf="lead?.areaName">({{ lead?.areaName }})</span> 
               </span>
 
               <span class="flex items-center gap-1">
@@ -200,7 +220,6 @@
       <div>
         <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
           {{ selectedLead.serviceName }}
-
           <span class="flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full
            bg-orange-50 text-orange-700 border border-orange-200">
             <i class="ri-lock-unlock-line"></i>
@@ -215,6 +234,8 @@
         <p class="text-sm text-gray-500 mt-1 flex items-center">
           <i class="ri-map-pin-line mr-1"></i>
           {{ selectedLead.location }}
+            <span *ngIf="selectedLead.areaName">({{ selectedLead.areaName }})</span>
+
         </p>
       </div>
 
@@ -402,7 +423,9 @@
 
           <p class="text-sm text-gray-500 mt-1 flex items-center">
             <i class="ri-map-pin-line mr-1"></i>
-            {{ selectedLead?.location }}
+            {{ selectedLead?.location }}   
+        <span *ngIf="selectedLead?.areaName">({{ selectedLead?.areaName }})</span> 
+
           </p>
         </div>
 
@@ -551,14 +574,7 @@
     Cancel
   </button>
 
-  <!-- <button
-    (click)="closePaymentModal()"
-    class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100"
-  >
-    ₹{{ totalBalance ?? 'NA' }}
-  </button> -->
-
-
+  
 
    <button
     class="px-3 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md flex flex-col items-center justify-center min-w-[160px]
@@ -680,23 +696,6 @@
       </button>
     </div>
 
-    <!-- Lead Info -->
-    <!-- <div class="border rounded-xl p-4 bg-gray-50 mb-4">
-      <p class="font-semibold">{{ selectedLead?.serviceName }}</p>
-      <p class="text-sm text-gray-600">
-        {{ selectedLead?.serviceSubCategoryName }}
-      </p>
-      <p class="text-sm text-gray-600">
-        {{ selectedLead?.leadType }}
-      </p>
-      <p class="text-sm text-gray-600">
-        {{ selectedLead?.budget }}
-      </p>
-      <p class="text-sm text-gray-500 mt-1">
-        <i class="ri-map-pin-line"></i>
-        {{ selectedLead?.location }}
-      </p>
-    </div> -->
     <div class="border rounded-xl p-4 bg-gray-50 mb-4">
       <div class="flex justify-between items-start gap-4">
 
@@ -712,7 +711,8 @@
 
           <p class="text-sm text-gray-500 mt-1 flex items-center gap-1">
             <i class="ri-map-pin-line"></i>
-            {{ selectedLead?.location }}
+            {{ selectedLead?.location }}   
+              <span *ngIf="selectedLead?.areaName">({{ selectedLead?.areaName }})</span> 
           </p>
         </div>
 
@@ -746,8 +746,36 @@
 
       <div>
         <label class="text-sm text-gray-600">Message</label>
-        <textarea rows="3" [(ngModel)]="quoteMessage" class="w-full border rounded-lg px-3 py-2 mt-1"
-          placeholder="Write message to customer"></textarea>
+        <!-- <textarea rows="3" [(ngModel)]="quoteMessage" class="w-full border rounded-lg px-3 py-2 mt-1"
+          placeholder="Write message to customer"></textarea> -->
+
+          <textarea
+  #messageRef="ngModel"
+  name="quoteMessage"
+  rows="3"
+  [(ngModel)]="quoteMessage"
+  required
+  minlength="150"
+  maxlength="2000"
+  class="w-full border rounded-lg px-3 py-2 mt-1"
+  placeholder="Write message to customer">
+</textarea>
+
+<!-- Character Counter -->
+<div class="flex justify-between text-xs mt-1">
+  <span class="text-red-500" *ngIf="messageRef.invalid && messageRef.touched">
+    <span *ngIf="messageRef.errors?.['required']">
+      Message is required
+    </span>
+    <span *ngIf="messageRef.errors?.['minlength']">
+      Minimum 150 characters required
+    </span>
+  </span>
+
+  <span class="text-gray-500">
+    {{ quoteMessage?.length || 0 }}/2000
+  </span>
+</div>
       </div>
     </div>
 
