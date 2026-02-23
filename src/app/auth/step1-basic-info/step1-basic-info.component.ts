@@ -203,45 +203,45 @@ onSendOTP() {
 }
 //......
 
+// onNextClick() {
+//   if (!this.isMobileVerified) {
+//     alert('⚠️ Please verify your mobile number before continuing');
+//     return;
+//   }
+
+//   this.next.emit(); // go to next step
+// }
+
 onNextClick() {
-  if (!this.isMobileVerified) {
-    alert('⚠️ Please verify your mobile number before continuing');
+  const mobile = this.formData?.mobile;
+
+  if (!mobile) {
+    this.errors.mobile = 'Mobile number is required';
     return;
   }
 
-  this.next.emit(); // go to next step
+  if (!/^\d{10}$/.test(mobile)) {
+    this.errors.mobile = 'Mobile number must be 10 digits';
+    return;
+  }
+
+  // 🔥 Only check mobile existence
+  this.authService.checkMobileExists(mobile).subscribe({
+    next: (response) => {
+
+      if (response.exists) {
+        this.errors.mobile = 'Mobile number already registered';
+        return;
+      }
+
+      // ✅ Mobile not exists → go next
+      this.next.emit();
+    },
+    error: () => {
+      this.errors.mobile = 'Something went wrong';
+    }
+  });
 }
-
-// onNextClick() {
-//   const mobile = this.formData?.mobile;
-
-//   if (!mobile) {
-//     this.errors.mobile = 'Mobile number is required';
-//     return;
-//   }
-
-//   if (!/^\d{10}$/.test(mobile)) {
-//     this.errors.mobile = 'Mobile number must be 10 digits';
-//     return;
-//   }
-
-//   // 🔥 Only check mobile existence
-//   this.authService.checkMobileExists(mobile).subscribe({
-//     next: (response) => {
-
-//       if (response.exists) {
-//         this.errors.mobile = 'Mobile number already registered';
-//         return;
-//       }
-
-//       // ✅ Mobile not exists → go next
-//       this.next.emit();
-//     },
-//     error: () => {
-//       this.errors.mobile = 'Something went wrong';
-//     }
-//   });
-// }
 
 ngOnChanges(changes: SimpleChanges) {
   if (changes['formData'] && this.formData) {
