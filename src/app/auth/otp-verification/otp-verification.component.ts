@@ -164,40 +164,13 @@ onInputChange(event: Event, index: number) {
 //     this.isVerifying = false;
 //   }
 // }
-// async onVerify() {
-//   const otpValue = this.otp.join('');
 
-//   if (otpValue.length !== 6) {
-//     this.error = 'Enter full OTP';
-//     return;
-//   }
-
-//   this.isVerifying = true;
-
-//   try {
-//     // Step 1: Verify OTP with Firebase (or your backend)
-//     await this.authService.verifyOtp(otpValue);
-
-//     // Step 2: Update backend with userId + phone
-//     const userId = this.authService.getUserId(); // from localStorage
-//     const phone = this.mobile; // pass the number currently being verified
-//     if (userId && phone) {
-//       await this.authService.verifyMobileOnServer(userId, phone).toPromise();
-//     }
-
-//     // Step 3: Emit success
-//     this.onVerified.emit();
-//   } catch {
-//     this.error = 'Invalid OTP';
-//   } finally {
-//     this.isVerifying = false;
-//   }
-// }
 async onVerify() {
   const otpValue = this.otp.join('');
 
   if (otpValue.length !== 6) {
     this.error = 'Enter full OTP';
+     alert(this.error); // show alert if OTP is incomplete
     return;
   }
 
@@ -214,11 +187,14 @@ async onVerify() {
       await this.authService.verifyMobileOnServer(userId, phone).toPromise();
       console.log('verifyMobileOnServer completed');
     }
+       // ✅ Success alert
+    alert('OTP verified successfully!');
 
     this.onVerified.emit();
   } catch (err) {
     console.error('Error during OTP verification:', err);
     this.error = 'Invalid OTP';
+     alert(this.error);
   } finally {
     this.isVerifying = false;
   }
