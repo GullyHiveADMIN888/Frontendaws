@@ -81,7 +81,7 @@ export class RegisterComponent {
   showOtpModal = false;
   isMobileVerified = false;
   //...
-
+  successMessage = '';
 
   //last otp
   showVerificationModal = false;
@@ -162,7 +162,8 @@ verificationType: 'mobile' | 'email' | null = null;
     this.isMobileVerified = true;
     this.showOtpModal = false;
   //  this.currentStep = 1;
-    this.showVerificationModal = false; // close modal completely if desired
+   // this.showVerificationModal = false; // close modal completely if desired
+     this.successMessage = 'Mobile number verified successfully!';
   }
 
 
@@ -440,6 +441,7 @@ closeVerificationModal() {
 }
   // Back from OTP
 handleOtpBack() {
+  
   this.showOtpModal = false; // hide OTP
   this.service.clearRecaptcha(); // 🔥 clear Firebase state
 }
