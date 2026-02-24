@@ -12,6 +12,7 @@ import { RouterModule } from '@angular/router';
 // For identity type validation
 import { ViewChild } from '@angular/core';
 
+
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -23,6 +24,7 @@ import { ViewChild } from '@angular/core';
     Step2LegalIdentityComponent,
     Step3ProfessionalDetailsComponent,
     OTPVerificationComponent,
+    
 
   ],
   templateUrl: './register.component.html'
@@ -86,6 +88,8 @@ export class RegisterComponent {
 verificationType: 'mobile' | 'email' | null = null;
   //...
 
+
+  
 
   onInputChange(event: { field: string; value: any }) {
     this.formData[event.field] = event.value;
@@ -178,7 +182,6 @@ verificationType: 'mobile' | 'email' | null = null;
     formData.append('Email', this.formData.email || '');
     formData.append('Mobile', this.formData.mobile || '');
     formData.append('ProfessionalType', this.formData.professionalType || '');
-  //  formData.append('ServiceCategory', JSON.stringify(this.formData.serviceCategory || []));
 
 
     // ✅ Service Category IDs
@@ -187,46 +190,15 @@ verificationType: 'mobile' | 'email' | null = null;
       formData.append('SubCategoryIds[]', id.toString());
     });
 
-   // if (this.formData.profilePicture) formData.append('ProfilePicture', this.formData.profilePicture);
-
+   
     // Step 2
     formData.append('BusinessName', this.formData.businessName || '');
     formData.append('RegistrationType', this.formData.registrationType || '');
     formData.append('RegistrationNumber', this.formData.registrationNumber || '');
-    // Instead of sending state name:
-   // formData.append('State', this.formData.stateId?.toString() || '');
-   // formData.append('City', this.formData.cityId?.toString() || '');
-
-    // formData.append('PlotNumber', this.formData.plotNumber || '');
-  //  formData.append('PinCode', this.formData.pinCode || '');
-   // formData.append('Role', 'Seller');
+   
     formData.append('Password', this.formData.password || '');
     if (this.formData.registrationDocument) formData.append('RegistrationDocument', this.formData.registrationDocument);
     if (this.formData.addressProof) formData.append('AddressProof', this.formData.addressProof);
-
-//  // 🔹 Map registration type to correct field
-//   switch(this.formData.registrationType) {
-//     case 'PAN Card':
-//       formData.append('Pan', this.formData.registrationNumber || '');
-//       break;
-//     case 'GST Registration':
-//       formData.append('GSTIN', this.formData.registrationNumber || '');
-//       break;
-//     case 'Udyam Registration':
-//       formData.append('UdyamNumber', this.formData.registrationNumber || '');
-//       break;
-//     case 'Aadhar Card':
-//       formData.append('AadhaarNumber', this.formData.registrationNumber || '');
-//       formData.append('AadhaarVerified', 'true');
-//       break;
-//     case 'E-Shram Card':
-//       formData.append('EShramNumber', this.formData.registrationNumber || '');
-//       formData.append('EShramVerified', 'true');
-//       break;
-//     default:
-//       break;
-//   }
-
 
 
     formData.append('Line1', this.formData.line1 || '');
@@ -258,21 +230,45 @@ verificationType: 'mobile' | 'email' | null = null;
     });
 
 
-    this.service.submitRegistration(formData).subscribe({
-      next: (res) => {
-        console.log('Backend response:', res);
-        this.isSubmitting = false;
-        this.submitSuccess = true; // show success message
+    // this.service.submitRegistration(formData).subscribe({
+    //   next: (res: RegistrationResponse) => {
+    //     console.log('Backend response:', res);
 
-        // 🔥 OPEN VERIFICATION POPUP
-  this.showVerificationModal = true;
+    //       // Save userId in AuthService / localStorage
+    // if (res && res.userId) {
+    //   this.authService.saveAuth(res.token, res.role, res.name, res.userId);
+    // } else {
+    //   console.warn('userId not returned from backend!');
+    // }
+  this.service.submitRegistration(formData).subscribe({
+  next: async (res) => {  // TypeScript now knows `res: RegistrationResponse`
+    console.log('Backend response:', res);
 
-      },
-      error: (err) => {
-        console.error('Registration error:', err);
-        this.isSubmitting = false;
+    if (res.userId) {
+      this.service.saveAuth(res.token, res.role, res.name, res.userId);
+
+      // Optional: call server verification for mobile
+      const userId = this.service.getUserId();
+      const phone = this.formData.mobile;
+
+      if (userId && phone) {
+        console.log('Calling verifyMobileOnServer...');
+        await this.service.verifyMobileOnServer(userId, phone).toPromise();
+        console.log('verifyMobileOnServer completed');
       }
-    });
+    } else {
+      console.warn('userId not returned from backend!');
+    }
+
+    this.isSubmitting = false;
+    this.submitSuccess = true;
+    this.showVerificationModal = true;
+  },
+  error: (err) => {
+    console.error('Registration error:', err);
+    this.isSubmitting = false;
+  }
+});
   }
 
 
