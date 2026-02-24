@@ -27,7 +27,10 @@ import { ViewChild } from '@angular/core';
   ],
   templateUrl: './register.component.html'
 })
+
+
 export class RegisterComponent {
+
 
   currentStep = 1;
 
@@ -425,4 +428,23 @@ async openMobileVerification() {
 //     error: (err) => alert('Failed to send email OTP')
 //   });
 // }
+
+closeVerificationModal() {
+
+  // Close UI
+  this.showVerificationModal = false;
+  this.showOtpModal = false;
+
+  // Optional: clear mobile/email
+  this.formData.mobile = '';
+  this.formData.email = '';
+
+  // 🔥 CLEAR FIREBASE STATE SAFELY
+  this.service.clearRecaptcha();
+}
+  // Back from OTP
+handleOtpBack() {
+  this.showOtpModal = false; // hide OTP
+  this.service.clearRecaptcha(); // 🔥 clear Firebase state
+}
 }

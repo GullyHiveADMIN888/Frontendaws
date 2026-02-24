@@ -138,6 +138,32 @@ onInputChange(event: Event, index: number) {
   }
 
 
+// async onVerify() {
+//   const otpValue = this.otp.join('');
+
+//   if (otpValue.length !== 6) {
+//     this.error = 'Enter full OTP';
+//     return;
+//   }
+
+//   this.isVerifying = true;
+
+//   try {
+//     await this.authService.verifyOtp(otpValue);
+
+//      // 🔥 Step 2: Update backend
+//     const userId = this.authService.getUserId(); // from localStorage
+//     if (userId) {
+//       await this.authService.verifyMobileOnServer(userId).toPromise();
+//     }
+
+//     this.onVerified.emit();
+//   } catch {
+//     this.error = 'Invalid OTP';
+//   } finally {
+//     this.isVerifying = false;
+//   }
+// }
 async onVerify() {
   const otpValue = this.otp.join('');
 
@@ -149,7 +175,17 @@ async onVerify() {
   this.isVerifying = true;
 
   try {
+    // Step 1: Verify OTP with Firebase (or your backend)
     await this.authService.verifyOtp(otpValue);
+
+    // Step 2: Update backend with userId + phone
+    const userId = this.authService.getUserId(); // from localStorage
+    const phone = this.mobile; // pass the number currently being verified
+    if (userId && phone) {
+      await this.authService.verifyMobileOnServer(userId, phone).toPromise();
+    }
+
+    // Step 3: Emit success
     this.onVerified.emit();
   } catch {
     this.error = 'Invalid OTP';
@@ -157,7 +193,6 @@ async onVerify() {
     this.isVerifying = false;
   }
 }
-
 
 async onResend() {
   this.timer = 60;
