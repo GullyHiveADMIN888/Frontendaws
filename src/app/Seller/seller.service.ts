@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
   import { environment } from '../../environments/environment.prod';
-//  import { environment } from '../../environments/environment';
+ // import { environment } from '../../environments/environment';
 // --- Dashboard & Stats ---
 export interface SellerStats {
   totalLeads: number;
@@ -492,6 +492,17 @@ console.log("BUY DEBUG:");
     this.sellerIdSubject.next(null);
   }
 
+  getLegalIdentity(providerId: number) {
+  return this.http.get(
+    `${this.apiUrl}/legal-identity/${providerId}`
+  );
+}
+updateLegalIdentity(providerId: number, formData: FormData) {
+  return this.http.put(
+    `${this.apiUrl}/legal-identity/${providerId}`,
+    formData
+  );
+}
 
  
 
