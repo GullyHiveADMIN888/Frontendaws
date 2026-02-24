@@ -15,7 +15,13 @@ import { Auth, signInWithPhoneNumber, ConfirmationResult, RecaptchaVerifier } fr
 // For seller not call by url
   import { CanActivate,  ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
-
+interface RegistrationResponse {
+  userId: string;      // or number if your backend returns numeric IDs
+  token: string;
+  role: string;
+  name?: string;       // optional
+  [key: string]: any;  // allows other fields if backend returns extra data
+}
 
 @Injectable({ providedIn: 'root' })
 
@@ -56,11 +62,13 @@ canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean 
 
   // Register
   
-submitRegistration(formData: FormData) {
-  return this.http.post(`${this.apiUrl}/register`, formData);
+// submitRegistration(formData: FormData) {
+//   return this.http.post(`${this.apiUrl}/register`, formData);
+// }
+
+submitRegistration(formData: FormData): Observable<RegistrationResponse> {
+  return this.http.post<RegistrationResponse>(`${this.apiUrl}/register`, formData);
 }
-
-
 
 
 
