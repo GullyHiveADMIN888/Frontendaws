@@ -295,3 +295,104 @@
     </form>
   </div>
 </div>
+
+
+
+<!-- LEGAL IDENTITY MODAL -->
+<div *ngIf="showLegalIdentityModal"
+     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+
+  <div class="bg-white w-full max-w-lg rounded-xl shadow-xl p-6 relative">
+
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold">Edit Legal Identity</h2>
+      <button (click)="showLegalIdentityModal=false">
+        <i class="ri-close-line text-2xl"></i>
+      </button>
+    </div>
+
+    <!-- Identity Type -->
+    <div class="mb-4">
+     <label class="block text-sm font-medium mb-2">Identity Type</label>
+<select [(ngModel)]="legalIdentityData.registrationType"
+        class="w-full border px-4 py-2 rounded-lg">
+  <option [ngValue]="null">Select</option>
+  <option *ngFor="let t of registrationTypes" [ngValue]="t">{{ t }}</option>
+</select>
+    </div>
+
+    <!-- Identity Number -->
+  <!-- Identity Number -->
+<div class="mb-4">
+  <label class="block text-sm font-medium mb-2">Identity Number</label>
+  <input type="text"
+         [(ngModel)]="legalIdentityData.registrationNumber"
+         class="w-full border px-4 py-2 rounded-lg"
+         placeholder="Enter identity number"/>
+</div>
+    <!-- Existing Documents -->
+    <!-- <div class="grid grid-cols-2 gap-4 mb-4">
+
+      <div>
+        <p class="text-sm font-medium">Registration Document</p>
+        <a *ngIf="legalIdentityData.registrationDocumentUrl"
+           [href]="legalIdentityData.registrationDocumentUrl"
+           target="_blank"
+           class="text-orange-600 text-sm">
+           View
+        </a>
+      </div>
+
+      <div>
+        <p class="text-sm font-medium">Address Proof</p>
+        <a *ngIf="legalIdentityData.addressProofUrl"
+           [href]="legalIdentityData.addressProofUrl"
+           target="_blank"
+           class="text-orange-600 text-sm">
+           View
+        </a>
+      </div>
+
+    </div> -->
+ <!-- Registration Document -->
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-2">Registration Document</label>
+      <input type="file"
+             accept=".pdf,.doc,.docx,image/*"
+             (change)="handleFileChange('registrationDocumentFile', $event)"/>
+      <div *ngIf="legalIdentityData.registrationDocumentUrl" class="mt-2">
+        <p class="text-sm">Existing: <a [href]="legalIdentityData.registrationDocumentUrl" target="_blank">{{ legalIdentityData.registrationDocumentUrl | slice: -20 }}</a></p>
+      </div>
+      <div *ngIf="legalIdentityData.registrationDocumentFile" class="mt-2">
+        <p class="text-sm">New file selected: {{ legalIdentityData.registrationDocumentFile.name }}</p>
+      </div>
+    </div>
+
+    <!-- Address Proof Document -->
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-2">Address Proof</label>
+      <input type="file"
+             accept=".pdf,.doc,.docx,image/*"
+             (change)="handleFileChange('addressProofFile', $event)"/>
+      <div *ngIf="legalIdentityData.addressProofUrl" class="mt-2">
+        <p class="text-sm">Existing: <a [href]="legalIdentityData.addressProofUrl" target="_blank">{{ legalIdentityData.addressProofUrl | slice: -20 }}</a></p>
+      </div>
+      <div *ngIf="legalIdentityData.addressProofFile" class="mt-2">
+        <p class="text-sm">New file selected: {{ legalIdentityData.addressProofFile.name }}</p>
+      </div>
+    </div>
+    <!-- Actions -->
+    <div class="flex justify-end gap-2">
+      <button class="px-4 py-2 border rounded"
+              (click)="showLegalIdentityModal=false">
+        Cancel
+      </button>
+
+      <button class="px-4 py-2 bg-orange-600 text-white rounded"
+              (click)="updateLegalIdentity()">
+        Update
+      </button>
+    </div>
+
+  </div>
+</div>
