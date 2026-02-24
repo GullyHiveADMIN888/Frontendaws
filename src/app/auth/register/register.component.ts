@@ -54,8 +54,6 @@ export class RegisterComponent {
     skillsBackground: '',
     achievements: '',
     businessAddress: '',
-  //  state: '',
-  //  city: '',
     pinCode: '',
     role: '',
     password: '',
@@ -73,6 +71,8 @@ export class RegisterComponent {
     // professionalType: '',
    serviceCategoryId: null,
   professionalType: null,
+  howToKnowId: null, 
+  howToKnowOther: '',
   };
 
   errors: any = {};
@@ -228,6 +228,12 @@ verificationType: 'mobile' | 'email' | null = null;
     (this.formData.serviceAreas || []).forEach((area: any, index: number) => {
       formData.append(`ServiceAreas[${index}].AreaId`, area.areaId.toString());
       formData.append(`ServiceAreas[${index}].CityId`, area.cityId.toString());
+
+      formData.append('HowToKnowId', this.formData.howToKnowId?.toString() || '');
+
+if (this.formData.howToKnowId === 6) {
+  formData.append('HowToKnowOther', this.formData.howToKnowOther || '');
+}
     });
 
 
@@ -388,21 +394,19 @@ else if (!/^[A-Za-z\u0900-\u097F\s.-]+$/.test(name)) {
     if (!this.formData.skillsBackground || this.formData.skillsBackground.trim().length < 50) {
       this.errors.skillsBackground = 'Minimum 50 characters required';
     }
+  if (!this.formData.howToKnowId) {
+    this.errors.howToKnowId = 'Please select an option';
+  }
+
+  // ShowOtherInput logic should be checked via the selected ID
+  if (this.formData.howToKnowId === 6 && (!this.formData.howToKnowOther || this.formData.howToKnowOther.trim() === '')) {
+    this.errors.howToKnowOther = 'Please specify how you heard about us';
+  }
 
     return Object.keys(this.errors).length === 0;
   }
 
-// async openMobileVerification() {
-//   this.verificationType = 'mobile';
-//   this.showOtpModal = true;
 
-//   try {
-//     await this.service.sendOtp(this.formData?.mobile);
-//   } catch (err) {
-//     console.error(err);
-//     alert('Failed to send OTP');
-//   }
-// }
 
 async openMobileVerification() {
   this.verificationType = 'mobile';
