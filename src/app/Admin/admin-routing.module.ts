@@ -23,6 +23,7 @@ import { LeadPricingEngineComponent } from './lead-pricing-engine/lead-pricing-e
 import { WalletTransactionComponent } from './wallet-transaction/wallet-transaction.component';
 import { LeadAssignmentComponent } from './lead-assignment/lead-assignment.component';
 import { LeadListComponent } from './lead/lead.component';
+import { WalletListComponent } from './wallet/wallet.component';
 
 const routes: Routes = [
   { 
@@ -109,6 +110,10 @@ const routes: Routes = [
   {
     path: 'wallet-transactions',
     component: WalletTransactionComponent
+  },
+  {
+    path: 'wallets',
+    component: WalletListComponent
   },
   {
     path: 'lead-assignment',
