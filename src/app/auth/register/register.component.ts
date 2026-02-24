@@ -161,6 +161,7 @@ verificationType: 'mobile' | 'email' | null = null;
   onOTPVerified() {
     this.isMobileVerified = true;
     this.showOtpModal = false;
+    this.showVerificationModal = false;
   //  this.currentStep = 1;
    // this.showVerificationModal = false; // close modal completely if desired
      this.successMessage = 'Mobile number verified successfully!';
@@ -247,29 +248,53 @@ if (this.formData.howToKnowId === 6) {
     // } else {
     //   console.warn('userId not returned from backend!');
     // }
-  this.service.submitRegistration(formData).subscribe({
-  next: async (res) => {  // TypeScript now knows `res: RegistrationResponse`
+
+
+
+//   this.service.submitRegistration(formData).subscribe({
+//   next: async (res) => {  // TypeScript now knows `res: RegistrationResponse`
+//     console.log('Backend response:', res);
+
+//     if (res.userId) {
+//       this.service.saveAuth(res.token, res.role, res.name, res.userId);
+
+//       // Optional: call server verification for mobile
+//       const userId = this.service.getUserId();
+//       const phone = this.formData.mobile;
+
+//       if (userId && phone) {
+//         console.log('Calling verifyMobileOnServer...');
+//         await this.service.verifyMobileOnServer(userId, phone).toPromise();
+//         console.log('verifyMobileOnServer completed');
+//       }
+//     } else {
+//       console.warn('userId not returned from backend!');
+//     }
+
+//     this.isSubmitting = false;
+//     this.submitSuccess = true;
+//     this.showVerificationModal = true;
+//   },
+//   error: (err) => {
+//     console.error('Registration error:', err);
+//     this.isSubmitting = false;
+//   }
+// });
+
+this.service.submitRegistration(formData).subscribe({
+  next: (res) => {
     console.log('Backend response:', res);
 
     if (res.userId) {
       this.service.saveAuth(res.token, res.role, res.name, res.userId);
 
-      // Optional: call server verification for mobile
-      const userId = this.service.getUserId();
-      const phone = this.formData.mobile;
-
-      if (userId && phone) {
-        console.log('Calling verifyMobileOnServer...');
-        await this.service.verifyMobileOnServer(userId, phone).toPromise();
-        console.log('verifyMobileOnServer completed');
-      }
-    } else {
-      console.warn('userId not returned from backend!');
+      this.isSubmitting = false;
+      this.submitSuccess = true;
+      // 👉 ONLY open verification modal here
+      this.showVerificationModal = true;
     }
 
     this.isSubmitting = false;
-    this.submitSuccess = true;
-    this.showVerificationModal = true;
   },
   error: (err) => {
     console.error('Registration error:', err);
