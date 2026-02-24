@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
- // import { environment } from '../../environments/environment';
-  import { environment } from '../../environments/environment.prod';
+ //import { environment } from '../../environments/environment';
+ import { environment } from '../../environments/environment.prod';
 
 
 
@@ -13,14 +13,14 @@ import { isPlatformBrowser } from '@angular/common';
 import { Auth, signInWithPhoneNumber, ConfirmationResult, RecaptchaVerifier } from '@angular/fire/auth';
 
 // For seller not call by url
-  import { CanActivate,  ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
 interface RegistrationResponse {
-  userId: string;      // or number if your backend returns numeric IDs
+  userId: string;
   token: string;
   role: string;
-  name?: string;       // optional
-  [key: string]: any;  // allows other fields if backend returns extra data
+  name?: string;
+  [key: string]: any;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -30,17 +30,17 @@ interface RegistrationResponse {
 export class AuthService implements CanActivate {
   private apiUrl = `${environment.apiBaseUrl}/auth`;
 
-   public recaptchaVerifier?: RecaptchaVerifier;
+  public recaptchaVerifier?: RecaptchaVerifier;
   private confirmationResult?: ConfirmationResult;
 
 
 
   constructor(private http: HttpClient, private router: Router, public auth: Auth,
-    @Inject(PLATFORM_ID) private platformId: Object) {}
+    @Inject(PLATFORM_ID) private platformId: Object) { }
 
- 
-// For seller not call by url
-canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+
+  // For seller not call by url
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     const token = localStorage.getItem('token');
 
     if (!token) {
@@ -61,25 +61,25 @@ canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean 
   }
 
   // Register
-  
-// submitRegistration(formData: FormData) {
-//   return this.http.post(`${this.apiUrl}/register`, formData);
-// }
 
-submitRegistration(formData: FormData): Observable<RegistrationResponse> {
-  return this.http.post<RegistrationResponse>(`${this.apiUrl}/register`, formData);
-}
+  // submitRegistration(formData: FormData) {
+  //   return this.http.post(`${this.apiUrl}/register`, formData);
+  // }
+
+  submitRegistration(formData: FormData): Observable<RegistrationResponse> {
+    return this.http.post<RegistrationResponse>(`${this.apiUrl}/register`, formData);
+  }
 
 
 
 
   // auth.service.ts
-saveAuth(token: string, role: string, name?: string, userId?: string) {
-  localStorage.setItem('token', token);
-  localStorage.setItem('role', role);
-  localStorage.setItem('userId', userId || ''); // Store ID
-  if (name) localStorage.setItem('name', name);
-}
+  saveAuth(token: string, role: string, name?: string, userId?: string) {
+    localStorage.setItem('token', token);
+    localStorage.setItem('role', role);
+    localStorage.setItem('userId', userId || ''); // Store ID
+    if (name) localStorage.setItem('name', name);
+  }
 
 
 
@@ -103,136 +103,138 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
     return localStorage.getItem('role');
   }
   // getter for userId
-getUserId(): string | null {
-  return localStorage.getItem('userId');
-}
+  getUserId(): string | null {
+    return localStorage.getItem('userId');
+  }
 
   isLoggedIn() {
     return !!localStorage.getItem('token');
   }
   // Service Categories APIs
-getParentCategories(): Observable<any[]> {
-  return this.http.get<any[]>(
-     `${this.apiUrl}/parents`,
-  );
-}
- //`${environment.apiBaseUrl}/parents`
-getSubCategories(parentId: number): Observable<any[]> {
-  return this.http.get<any[]>(
-    `${this.apiUrl}/${parentId}/children`
-  );
-}
+  getParentCategories(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.apiUrl}/parents`,
+    );
+  }
+  //`${environment.apiBaseUrl}/parents`
+  getSubCategories(parentId: number): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.apiUrl}/${parentId}/children`
+    );
+  }
 
-// AuthService.ts
-getStates(): Observable<any[]> {
-  return this.http.get<any[]>(`${this.apiUrl}/states`);
-}
 
-getCities(stateId: number): Observable<any[]> {
-  return this.http.get<any[]>(`${this.apiUrl}/cities/${stateId}`);
-}
+  getStates(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/states`);
+  }
 
-getAreasByCity(cityId: number): Observable<any[]> {
+  getCities(stateId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/cities/${stateId}`);
+  }
+
+  getAreasByCity(cityId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/areas/${cityId}`);
   }
-  
-
-checkMobileExists(mobile: string) {
-  return this.http.get<{ exists: boolean }>(
-    `${this.apiUrl}/check-mobile`,
-    { params: { mobile } }
-  );
-}
-// AuthService.ts
-updatePasswordByMobile(data: { mobile: string; newPassword: string }) {
-  return this.http.post(`${this.apiUrl}/update-password`, data).toPromise();
-}
-
- 
-
-// /** 🔹 Verify OTP */
-//   async verifyOtp(otp: string) {
-//     if (!this.confirmationResult) {
-//       throw new Error('OTP not requested');
-//     }
-//     return this.confirmationResult.confirm(otp);
-
-//   //   const result = await this.confirmationResult.confirm(otp);
-//   // // 🔥 CLEAR after success
-//   // this.clearRecaptcha();
-//   // return result;
-
-//   }
-
-async verifyOtp(otp: string) {
-  if (!this.confirmationResult) {
-    throw new Error('OTP not requested');
+  getHowKnow(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/how-to-know`);
   }
 
-  const result = await this.confirmationResult.confirm(otp);
-
-  // 🔥 VERY IMPORTANT
-  this.clearRecaptcha();
-
-  return result;
-}
-private async initRecaptcha(): Promise<void> {
-  if (!isPlatformBrowser(this.platformId)) return;
-
-  if (this.recaptchaVerifier) {
-    return; // ✅ already rendered
+  checkMobileExists(mobile: string) {
+    return this.http.get<{ exists: boolean }>(
+      `${this.apiUrl}/check-mobile`,
+      { params: { mobile } }
+    );
+  }
+  // AuthService.ts
+  updatePasswordByMobile(data: { mobile: string; newPassword: string }) {
+    return this.http.post(`${this.apiUrl}/update-password`, data).toPromise();
   }
 
-  this.recaptchaVerifier = new RecaptchaVerifier(
-    this.auth,
-    'recaptcha-container',
-    { size: 'invisible' }
-  );
 
-  await this.recaptchaVerifier.render();
-}
-async sendOtp(mobile: string): Promise<void> {
-  await this.initRecaptcha();
 
-  const phoneNumber = `+91${mobile}`;
-  this.confirmationResult = await signInWithPhoneNumber(
-    this.auth,
-    phoneNumber,
-    this.recaptchaVerifier!
-  );
-}
-async resendOtp(mobile: string): Promise<void> {
-  if (!this.recaptchaVerifier) {
-    throw new Error('reCAPTCHA not initialized');
+  // /** 🔹 Verify OTP */
+  //   async verifyOtp(otp: string) {
+  //     if (!this.confirmationResult) {
+  //       throw new Error('OTP not requested');
+  //     }
+  //     return this.confirmationResult.confirm(otp);
+
+  //   //   const result = await this.confirmationResult.confirm(otp);
+  //   // // 🔥 CLEAR after success
+  //   // this.clearRecaptcha();
+  //   // return result;
+
+  //   }
+
+  async verifyOtp(otp: string) {
+    if (!this.confirmationResult) {
+      throw new Error('OTP not requested');
+    }
+
+    const result = await this.confirmationResult.confirm(otp);
+
+    // 🔥 VERY IMPORTANT
+    this.clearRecaptcha();
+
+    return result;
+  }
+  private async initRecaptcha(): Promise<void> {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    if (this.recaptchaVerifier) {
+      return; // ✅ already rendered
+    }
+
+    this.recaptchaVerifier = new RecaptchaVerifier(
+      this.auth,
+      'recaptcha-container',
+      { size: 'invisible' }
+    );
+
+    await this.recaptchaVerifier.render();
+  }
+  async sendOtp(mobile: string): Promise<void> {
+    await this.initRecaptcha();
+
+    const phoneNumber = `+91${mobile}`;
+    this.confirmationResult = await signInWithPhoneNumber(
+      this.auth,
+      phoneNumber,
+      this.recaptchaVerifier!
+    );
+  }
+  async resendOtp(mobile: string): Promise<void> {
+    if (!this.recaptchaVerifier) {
+      throw new Error('reCAPTCHA not initialized');
+    }
+
+    const phoneNumber = `+91${mobile}`;
+    this.confirmationResult = await signInWithPhoneNumber(
+      this.auth,
+      phoneNumber,
+      this.recaptchaVerifier!
+    );
+  }
+  clearRecaptcha() {
+    this.recaptchaVerifier?.clear();
+    this.recaptchaVerifier = undefined;
+    this.confirmationResult = undefined;
   }
 
-  const phoneNumber = `+91${mobile}`;
-  this.confirmationResult = await signInWithPhoneNumber(
-    this.auth,
-    phoneNumber,
-    this.recaptchaVerifier!
-  );
-}
-clearRecaptcha() {
-  this.recaptchaVerifier?.clear();
-  this.recaptchaVerifier = undefined;
-  this.confirmationResult = undefined;
-}
+  // verifyMobileOnServer(userId: string, phone: string) {
+  //   return this.http.post(`${this.apiUrl}/verify-mobile`, {
+  //     userId,
+  //     phone
+  //   });
+  // }
 
-// verifyMobileOnServer(userId: string, phone: string) {
-//   return this.http.post(`${this.apiUrl}/verify-mobile`, {
-//     userId,
-//     phone
-//   });
-// }
+  verifyMobileOnServer(userId: string, phone: string) {
+    console.log('verifyMobileOnServer called with:', userId, phone);
 
-verifyMobileOnServer(userId: string, phone: string) {
-  console.log('verifyMobileOnServer called with:', userId, phone);
-
-  return this.http.post(`${this.apiUrl}/verify-mobile`, {
-    userId,
-    phone
-  });
-}
+    return this.http.post(`${this.apiUrl}/verify-mobile`, {
+      userId,
+      phone
+    });
+  }
 }
 
