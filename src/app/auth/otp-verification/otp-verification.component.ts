@@ -39,6 +39,7 @@ export class OTPVerificationComponent implements OnInit, OnDestroy {
   isVerifying = false;
   error = '';
 
+
   private timerSubscription: Subscription | null = null;
 
   ngOnInit() {
@@ -175,6 +176,8 @@ async onVerify() {
   }
 
   this.isVerifying = true;
+   this.error = '';
+
 
   try {
     await this.authService.verifyOtp(otpValue);
@@ -187,14 +190,13 @@ async onVerify() {
       await this.authService.verifyMobileOnServer(userId, phone).toPromise();
       console.log('verifyMobileOnServer completed');
     }
-       // ✅ Success alert
-    alert('OTP verified successfully!');
-
+      
     this.onVerified.emit();
+   
+
   } catch (err) {
     console.error('Error during OTP verification:', err);
     this.error = 'Invalid OTP';
-     alert(this.error);
   } finally {
     this.isVerifying = false;
   }
