@@ -211,13 +211,20 @@ clearRecaptcha() {
   this.confirmationResult = undefined;
 }
 
+// verifyMobileOnServer(userId: string, phone: string) {
+//   return this.http.post(`${this.apiUrl}/verify-mobile`, {
+//     userId,
+//     phone
+//   });
+// }
+
 verifyMobileOnServer(userId: string, phone: string) {
+  console.log('verifyMobileOnServer called with:', userId, phone);
+
   return this.http.post(`${this.apiUrl}/verify-mobile`, {
     userId,
     phone
   });
 }
-
-
 }
 
