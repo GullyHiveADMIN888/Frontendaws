@@ -495,6 +495,36 @@ handleOtpBack() {
   this.showOtpModal = false; // hide OTP
   this.service.clearRecaptcha(); // 🔥 clear Firebase state
 }
+// openEmailVerification() {
+//   if (!this.formData.email || !this.formData.userId) {
+//     alert('Email or User ID missing!');
+//     return;
+//   }
+
+//   this.verificationType = 'email';
+//   this.showOtpModal = true;
+
+//   this.service.sendEmailOtp({
+//     userId: this.formData.userId,
+//     email: this.formData.email,
+//     fullName: this.formData.fullName
+//   }).subscribe({
+//     next: (res: any) => {
+//       this.formData.emailOtpToken = res.token;
+//       console.log('Email OTP sent, token:', res.token);
+//     },
+//     error: () => {
+//       alert('Failed to send email OTP');
+//       this.showOtpModal = false;
+//     }
+//   });
+// }
+// onOTPVerifiedEmail(event: { otp: string }) {
+//   alert('Email verified successfully!');
+//   this.showOtpModal = false;
+//   this.showVerificationModal = false;
+//   this.formData.isEmailVerified = true; // mark as verified
+// }
 openEmailVerification() {
   if (!this.formData.email || !this.formData.userId) {
     alert('Email or User ID missing!');
@@ -502,7 +532,6 @@ openEmailVerification() {
   }
 
   this.verificationType = 'email';
-  this.showOtpModal = true;
 
   this.service.sendEmailOtp({
     userId: this.formData.userId,
@@ -510,21 +539,25 @@ openEmailVerification() {
     fullName: this.formData.fullName
   }).subscribe({
     next: (res: any) => {
+      console.log('Email OTP sent response:', res);
+
       this.formData.emailOtpToken = res.token;
-      console.log('Email OTP sent, token:', res.token);
+
+      if (!res.token) {
+        alert('OTP token not received from server');
+        return;
+      }
+
+      // ✅ Open modal ONLY after success
+      this.showOtpModal = true;
     },
-    error: () => {
+    error: (err) => {
+      console.error('Send email OTP error:', err);
       alert('Failed to send email OTP');
-      this.showOtpModal = false;
     }
   });
 }
-// onOTPVerifiedEmail(event: { otp: string }) {
-//   alert('Email verified successfully!');
-//   this.showOtpModal = false;
-//   this.showVerificationModal = false;
-//   this.formData.isEmailVerified = true; // mark as verified
-// }
+
 onOTPVerifiedEmail(event: { otp: string }) {
   if (this.verificationType === 'email') {
     if (!this.formData.emailOtpToken) {

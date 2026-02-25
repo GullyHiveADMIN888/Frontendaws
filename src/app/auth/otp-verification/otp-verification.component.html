@@ -4,10 +4,19 @@
     <div class="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
       <i class="ri-smartphone-line text-4xl text-orange-600"></i>
     </div>
-    <h2 class="text-3xl font-bold text-gray-900 mb-2 font-poppins">Verify Mobile Number</h2>
+    <!-- <h2 class="text-3xl font-bold text-gray-900 mb-2 font-poppins">Verify Mobile Number</h2>
     <p class="text-gray-600 font-inter">
       We've sent a 6-digit OTP to <span class="font-semibold text-gray-900">{{ mobile }}</span>
-    </p>
+    </p> -->
+    <h2>
+  {{ email ? 'Verify Email Address' : 'Verify Mobile Number' }}
+</h2>
+
+<p>
+  We've sent a 6-digit OTP to 
+  <span *ngIf="email">{{ email }}</span>
+  <span *ngIf="!email">{{ mobile }}</span>
+</p>
   </div>
 
   <div class="space-y-6">
@@ -64,9 +73,11 @@
         <i class="ri-arrow-left-line mr-2"></i>
         Back
       </button>
+      <!-- (click)="onVerify()" -->
       <button
         type="button"
-        (click)="onVerify()"
+        
+        (click)="email ? verifyEmailOtp() : onVerify()"
         [disabled]="isVerifying || otp.join('').length !== 6"
         class="flex-1 px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium font-inter whitespace-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
