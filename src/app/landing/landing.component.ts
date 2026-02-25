@@ -847,7 +847,7 @@ onPaste(event: ClipboardEvent) {
 //     this.isVerifying = false;
 //   }
 // }
-async onVerify() {
+async onVerify1() {
   const otpValue = this.otp.join('');
   if (otpValue.length !== 6) return;
 
