@@ -858,7 +858,7 @@
 
   <!-- STEP 2: OTP COMPONENT -->
   <ng-template #otpStep>
-    <div *ngIf="showOtpModals">
+    <div *ngIf="showOtpModal">
       <app-otp-verification
         [mobile]="verificationData.phone"
         (onVerified)="onOTPVerified()"
