@@ -53,8 +53,6 @@ forgotPasswordForm: FormGroup;
 isSendingOtp = false;
 showOtpModal = false;
 otpMobile = '';
- showOtpModals = false;
-// OTP Modal state
 
 otp: string[] = Array(6).fill('');
 timer = 30;
@@ -87,6 +85,7 @@ recaptchaVerifier!: RecaptchaVerifier;
 
 showVerificationModal: boolean = false;
 verificationType: 'mobile' | 'email' | null = null;
+verificationTypes: 'forgot' | 'login' | null = null;
 pendingLoginResponse: any = null;
 
 verificationData = {
@@ -420,6 +419,117 @@ passwordError = '';
     this.currentTestimonial = (this.currentTestimonial - 1 + this.testimonials.length) % this.testimonials.length;
   }
 
+
+  
+
+startTimer() {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    this.timerSubscription = interval(1000).subscribe(() => {
+      if (this.timer > 0) {
+        this.timer--;
+      } else {
+        this.canResend = true;
+        this.stopTimer();
+      }
+    });
+  }
+
+stopTimer() {
+    this.timerSubscription?.unsubscribe();
+  }
+
+focusNext(index: number) {
+  const input = this.otpInputs?.toArray()[index];
+  if (input) {
+    // Remove non-digits from input
+    input.nativeElement.value = input.nativeElement.value.replace(/\D/g, '').slice(-1);
+    this.otp[index] = input.nativeElement.value; // optional if you want
+  }
+
+  // Move to next box
+  if (this.otp[index] && index < this.otp.length - 1) {
+    this.focusInput(index + 1);
+  }
+}
+
+
+
+trackByIndex(index: number) {
+  return index;
+}
+
+
+
+
+focusInput(index: number) {
+    const input = this.otpInputs?.toArray()[index];
+    if (input) input.nativeElement.focus();
+  }
+
+
+onInputChange(event: Event, index: number) {
+  const input = event.target as HTMLInputElement;
+  const value = input.value.replace(/\D/g, '').slice(-1);
+
+  // ✅ STORE the digit
+  this.otp[index] = value;
+  this.error = '';
+
+  // Move forward
+  if (value && index < 5) {
+    this.focusInput(index + 1);
+  }
+}
+
+ onKeyDown(event: KeyboardEvent, index: number) {
+
+
+  // ⬅️ Move left
+  if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    if (index > 0) {
+      this.focusInput(index - 1);
+    }
+    return;
+  }
+
+  // ➡️ Move right
+  if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    if (index < 5) {
+      this.focusInput(index + 1);
+    }
+    return;
+  }
+
+  if (event.key === 'Backspace') {
+    if (this.otp[index]) {
+      // Clear current box
+      this.otp[index] = '';
+    } else if (index > 0) {
+      // Go to previous box
+      this.focusInput(index - 1);
+      this.otp[index - 1] = '';
+    }
+  }
+}
+
+
+onPaste(event: ClipboardEvent) {
+    event.preventDefault();
+    const clipboardData = event.clipboardData;
+    if (!clipboardData) return;
+
+    const pastedData = clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    pastedData.split('').forEach((char, i) => {
+      this.otp[i] = char;
+    });
+
+    setTimeout(() => this.focusInput(Math.min(pastedData.length, 5)), 0);
+  }
+
+
   // ========== .NET CORE 8 API LOGIN INTEGRATION ==========
 
 onLoginSubmit(event: Event): void {
@@ -456,14 +566,7 @@ onLoginSubmit(event: Event): void {
   password: this.loginForm.value.password
 };
 
-// this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
-//   .subscribe({
-//     next: res => this.handleLoginSuccess(res),
-//     error: err => this.handleLoginError(err)
-//   });
 
- 
-  
 
   // Handle remember me functionality
   if (isPlatformBrowser(this.platformId)) {
@@ -507,11 +610,11 @@ onLoginSubmit(event: Event): void {
   email: response.email
 };
   console.log('verificationData set:', this.verificationData); //
-    this.pendingLoginResponse = response; // store full response if needed
+    this.pendingLoginResponse = response; 
     this.showLoginModal=false;
     this.showVerificationModal = true;
 
-    return; // ⛔ STOP here (no redirect)
+    return; 
   }
 
   // ✅ 2️⃣ If verified → normal login
@@ -629,6 +732,8 @@ closeForgotPasswordModal() {
 async sendOtp() {
   if (this.forgotPasswordForm.invalid) return;
   this.error = ''; // 🔥 Clear old error
+   this.verificationTypes = 'forgot';  // ✅ IMPORTANT
+
   const mobile = this.forgotPasswordForm.value.mobile;
   this.isSendingOtp = true;
 
@@ -663,9 +768,6 @@ async sendOtp() {
   }
 }
 
-
-
-
 async onResend() {
   if (!this.canResend) return;
 
@@ -683,115 +785,29 @@ async onResend() {
 
 
 
-startTimer() {
-    if (!isPlatformBrowser(this.platformId)) return;
+// async onVerify() {
+//   const otpValue = this.otp.join('');
+//   if (otpValue.length !== 6) return;
 
-    this.timerSubscription = interval(1000).subscribe(() => {
-      if (this.timer > 0) {
-        this.timer--;
-      } else {
-        this.canResend = true;
-        this.stopTimer();
-      }
-    });
-  }
+//   this.isVerifying = true;
+//   this.error = '';
 
-stopTimer() {
-    this.timerSubscription?.unsubscribe();
-  }
+//   try {
+//     // 1️⃣ Verify OTP via Firebase
+//     await this.authService.verifyOtp(otpValue);
 
-focusNext(index: number) {
-  const input = this.otpInputs?.toArray()[index];
-  if (input) {
-    // Remove non-digits from input
-    input.nativeElement.value = input.nativeElement.value.replace(/\D/g, '').slice(-1);
-    this.otp[index] = input.nativeElement.value; // optional if you want
-  }
+//     // ✅ CLOSE OTP MODAL
+//     this.showOtpModal = false;
 
-  // Move to next box
-  if (this.otp[index] && index < this.otp.length - 1) {
-    this.focusInput(index + 1);
-  }
-}
+//     // ✅ OPEN PASSWORD POPUP
+//     this.showPasswordPopup = true;
 
-
-
-trackByIndex(index: number) {
-  return index;
-}
-
-
-
-
-focusInput(index: number) {
-    const input = this.otpInputs?.toArray()[index];
-    if (input) input.nativeElement.focus();
-  }
-
-
-onInputChange(event: Event, index: number) {
-  const input = event.target as HTMLInputElement;
-  const value = input.value.replace(/\D/g, '').slice(-1);
-
-  // ✅ STORE the digit
-  this.otp[index] = value;
-  this.error = '';
-
-  // Move forward
-  if (value && index < 5) {
-    this.focusInput(index + 1);
-  }
-}
-
- onKeyDown(event: KeyboardEvent, index: number) {
-
-
-  // ⬅️ Move left
-  if (event.key === 'ArrowLeft') {
-    event.preventDefault();
-    if (index > 0) {
-      this.focusInput(index - 1);
-    }
-    return;
-  }
-
-  // ➡️ Move right
-  if (event.key === 'ArrowRight') {
-    event.preventDefault();
-    if (index < 5) {
-      this.focusInput(index + 1);
-    }
-    return;
-  }
-
-  if (event.key === 'Backspace') {
-    if (this.otp[index]) {
-      // Clear current box
-      this.otp[index] = '';
-    } else if (index > 0) {
-      // Go to previous box
-      this.focusInput(index - 1);
-      this.otp[index - 1] = '';
-    }
-  }
-}
-
-
-onPaste(event: ClipboardEvent) {
-    event.preventDefault();
-    const clipboardData = event.clipboardData;
-    if (!clipboardData) return;
-
-    const pastedData = clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
-    pastedData.split('').forEach((char, i) => {
-      this.otp[i] = char;
-    });
-
-    setTimeout(() => this.focusInput(Math.min(pastedData.length, 5)), 0);
-  }
-
-
-
+//   } catch (e: any) {
+//     this.error = e.message || 'OTP verification failed';
+//   } finally {
+//     this.isVerifying = false;
+//   }
+// }
 async onVerify() {
   const otpValue = this.otp.join('');
   if (otpValue.length !== 6) return;
@@ -800,14 +816,34 @@ async onVerify() {
   this.error = '';
 
   try {
-    // 1️⃣ Verify OTP via Firebase
+    // 1️⃣ Verify Firebase OTP
     await this.authService.verifyOtp(otpValue);
 
-    // ✅ CLOSE OTP MODAL
     this.showOtpModal = false;
 
-    // ✅ OPEN PASSWORD POPUP
-    this.showPasswordPopup = true;
+    // 🔥 DIFFERENT FLOW BASED ON TYPE
+    if (this.verificationTypes === 'forgot') {
+
+      // 👉 Open password popup
+      this.showPasswordPopup = true;
+
+    } 
+    else if (this.verificationTypes === 'login') {
+
+      // 👉 Call backend to mark mobile verified
+      await this.authService.verifyMobileOnServer(
+        this.pendingLoginResponse.userId,
+        this.verificationData.phone
+      ).toPromise();
+
+      // 👉 Close verification modal
+      this.showVerificationModal = false;
+
+      // 👉 Open login modal again
+      this.showLoginModal = true;
+
+      alert('Mobile verified successfully. Please login again.');
+    }
 
   } catch (e: any) {
     this.error = e.message || 'OTP verification failed';
@@ -815,7 +851,6 @@ async onVerify() {
     this.isVerifying = false;
   }
 }
-
 
 async submitNewPassword() {
   this.passwordError = '';
@@ -854,13 +889,14 @@ closePasswordPopup() {
 
 async openMobileVerification() {
   this.verificationType = 'mobile';
+  this.verificationTypes = 'login';   
   this.otpMobile = this.verificationData?.phone;
 
   try {
     await this.authService.sendOtp(this.verificationData?.phone);
 
     // Show OTP step inside verification modal
-    this.showOtpModals = true;
+    this.showOtpModal = true;
   } catch (err) {
     console.error(err);
     alert('Failed to send OTP');
@@ -883,13 +919,13 @@ closeVerificationModal() {
   // Back from OTP
 handleOtpBack() {
   
-  this.showOtpModals = false; // hide OTP
+  this.showOtpModal = false; // hide OTP
   this.authService.clearRecaptcha(); // 🔥 clear Firebase state
      this.showLoginModal=true;
 }
    /* OTP VERIFIED */
   onOTPVerified() {
-    this.showOtpModals = false;
+    this.showOtpModal = false;
     this.showVerificationModal = false;
   //  this.currentStep = 1;
     // this.successMessage = 'Mobile number verified successfully!';
@@ -897,41 +933,7 @@ handleOtpBack() {
   }
 
 
-  async onVerifys() {
-  const otpValue = this.otp.join('');
 
-  if (otpValue.length !== 6) {
-    this.error = 'Enter full OTP';
-     alert(this.error); // show alert if OTP is incomplete
-    return;
-  }
-
-  this.isVerifying = true;
-   this.error = '';
-
-
-  try {
-    await this.authService.verifyOtp(otpValue);
-
-    const userId = this.authService.getUserId();
-    const phone = this.verificationData?.phone; // or wherever you store the phone number
-
-    if (userId && phone) {
-      console.log('Calling verifyMobileOnServer...');
-      await this.authService.verifyMobileOnServer(userId, phone).toPromise();
-      console.log('verifyMobileOnServer completed');
-    }
-      
- //   this.onVerified.emit();
-   
-
-  } catch (err) {
-    console.error('Error during OTP verification:', err);
-    this.error = 'Invalid OTP';
-  } finally {
-    this.isVerifying = false;
-  }
-}
 
 }
 
