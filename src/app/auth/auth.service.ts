@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
- //import { environment } from '../../environments/environment';
-  import { environment } from '../../environments/environment.prod';
+// import { environment } from '../../environments/environment';
+ import { environment } from '../../environments/environment.prod';
 
 
 
@@ -145,6 +145,12 @@ export class AuthService implements CanActivate {
       { params: { mobile } }
     );
   }
+   checkEmailExists(email: string) {
+    return this.http.get<{ exists: boolean }>(
+      `${this.apiUrl}/check-email`,
+      { params: { email } }
+    );
+  }
   // AuthService.ts
   updatePasswordByMobile(data: { mobile: string; newPassword: string }) {
     return this.http.post(`${this.apiUrl}/update-password`, data).toPromise();
@@ -236,5 +242,15 @@ export class AuthService implements CanActivate {
       phone
     });
   }
+  // 🔹 Send Email OTP
+  sendEmailOtp(payload: { userId: number; email: string; fullName: string }): Observable<{ token: string }> {
+    return this.http.post<{ token: string }>(`${this.apiUrl}/send-email-otp`, payload);
+  }
+
+  // 🔹 Verify Email OTP
+  verifyEmailOtp(payload: { otp: string; token: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/verify-email-otp`, payload);
+  }
+
 }
 

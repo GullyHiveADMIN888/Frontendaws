@@ -201,7 +201,7 @@
       </div>
 
       <!-- EMAIL -->
-      <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+      <!-- <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
         <div>
           <p class="text-xs text-gray-500">Email Address</p>
           <p class="font-semibold text-gray-800">{{ formData.email }}</p>
@@ -211,8 +211,37 @@
           class="min-w-[90px] bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
           Verify
         </button>
-      </div>
+      </div> -->
+
+
+<!-- EMAIL -->
+<!-- EMAIL -->
+<div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+  <div>
+    <p class="text-xs text-gray-500">Email Address</p>
+    <p class="font-semibold text-gray-800">{{ formData.email }}</p>
+  </div>
+
+  <button
+    (click)="openEmailVerification()"
+    class="min-w-[90px] bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
+    Verify
+  </button>
+</div>
+
+<!-- OTP MODAL -->
+<app-otp-verification
+  *ngIf="showOtpModal && verificationType === 'email'"
+  [email]="formData.email"
+  [otpToken]="formData.emailOtpToken"
+  (onVerifiedEmail)="onOTPVerifiedEmail($event)"
+  (onBack)="handleOtpBack()">
+</app-otp-verification>
+
+
     </div>
+
+
   </ng-container>
 
   <!-- STEP 2: OTP COMPONENT -->
@@ -223,6 +252,7 @@
         (onVerified)="onOTPVerified()"
         (onBack)="handleOtpBack()">
       </app-otp-verification>
+  
     </div>
   </ng-template>
 

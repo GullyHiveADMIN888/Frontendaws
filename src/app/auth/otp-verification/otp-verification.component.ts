@@ -31,6 +31,9 @@ export class OTPVerificationComponent implements OnInit, OnDestroy {
   @Output() onVerified = new EventEmitter<void>();
   @Output() onBack = new EventEmitter<void>();
 
+  @Input() otpToken!: string; // JWT token for email verification
+  @Input() email?: string;        // JWT for email
+ @Output() onVerifiedEmail = new EventEmitter<{ otp: string }>();
   @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
   otp: string[] = Array(6).fill('');
@@ -194,5 +197,19 @@ async onResend() {
   trackByIndex(index: number) {
   return index;
 }
+// Email OTP
+async verifyEmailOtp() {
+  const otpValue = this.otp.join('');
+  if (otpValue.length !== 6) { alert('Enter full OTP'); return; }
+  if (!this.email || !this.otpToken) { alert('Email or token missing'); return; }
 
+  this.isVerifying = true;
+  try {
+    await this.authService.verifyEmailOtp({ otp: otpValue, token: this.otpToken }).toPromise();
+    alert('Email verified successfully!');
+    this.onVerifiedEmail.emit({ otp: otpValue });
+  } catch (err: any) {
+    this.error = err?.message || 'Invalid OTP';
+  } finally { this.isVerifying = false; }
+}
 }
