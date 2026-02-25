@@ -914,7 +914,7 @@ closePasswordPopup() {
 
 async openMobileVerification() {
   this.verificationType = 'mobile';
-  this.showOtpModal = true;
+  this.showOtpModals = true;
 
   try {
     await this.authService.sendOtp(this.verificationData?.phone);
