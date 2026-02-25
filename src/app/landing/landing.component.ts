@@ -847,7 +847,9 @@ onPaste(event: ClipboardEvent) {
 //     this.isVerifying = false;
 //   }
 // }
-async onVerify1() {
+
+
+async onVerify() {
   const otpValue = this.otp.join('');
   if (otpValue.length !== 6) return;
 
@@ -870,6 +872,9 @@ async onVerify1() {
     this.isVerifying = false;
   }
 }
+
+
+
 
 async submitNewPassword() {
   this.passwordError = '';
@@ -919,12 +924,12 @@ async openMobileVerification() {
   }
 }
 
-
+showOtpModals = false;
 closeVerificationModal() {
 
   // Close UI
   this.showVerificationModal = false;
-  this.showOtpModal = false;
+  this.showOtpModals = false;
    this.showLoginModal=true;
   // Optional: clear mobile/email
   this.verificationData.phone = '';
@@ -936,7 +941,7 @@ closeVerificationModal() {
   // Back from OTP
 handleOtpBack() {
   
-  this.showOtpModal = false; // hide OTP
+  this.showOtpModals = false; // hide OTP
   this.authService.clearRecaptcha(); // 🔥 clear Firebase state
      this.showLoginModal=true;
 }

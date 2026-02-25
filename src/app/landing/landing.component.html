@@ -756,7 +756,7 @@
       </ng-template>
     </div>
 
-    <button (click)="onVerify1()" [disabled]="isVerifying || otp.join('').length !== 6"
+    <button (click)="onVerify()" [disabled]="isVerifying || otp.join('').length !== 6"
       class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-inter">
       {{ isVerifying ? 'Verifying...' : 'Verify & Continue' }}
     </button>
@@ -858,7 +858,7 @@
 
   <!-- STEP 2: OTP COMPONENT -->
   <ng-template #otpStep>
-    <div *ngIf="showOtpModal">
+    <div *ngIf="showOtpModals">
       <app-otp-verification
         [mobile]="verificationData.phone"
         (onVerified)="onOTPVerified()"
