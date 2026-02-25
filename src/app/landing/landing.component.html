@@ -814,7 +814,7 @@
      class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
 
   <!-- STEP 1: VERIFY OPTIONS -->
-  <ng-container *ngIf="!showOtpModal; else otpStep">
+  <ng-container *ngIf="!showOtpModals; else otpStep">
     <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
       <button
         (click)="closeVerificationModal()"
@@ -858,13 +858,63 @@
 
   <!-- STEP 2: OTP COMPONENT -->
   <ng-template #otpStep>
-    <div *ngIf="showOtpModal">
+ <!--    <div *ngIf="showOtpModal">
       <app-otp-verification
         [mobile]="verificationData.phone"
         (onVerified)="onOTPVerified()"
         (onBack)="handleOtpBack()">
       </app-otp-verification>
-    </div>
+    </div> -->
   </ng-template>
+
+</div>
+
+<!-- OTP Modal -->
+<div *ngIf="showOtpModals" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
+  <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
+    <button (click)="showOtpModals = false"
+      class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
+      <i class="ri-close-line text-2xl text-gray-600"></i>
+    </button>
+
+    <div class="text-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-900 font-poppins">Verify Mobile Number</h2>
+      <p class="text-gray-600 font-inter mt-2">We've sent a 6-digit OTP to <span class="font-semibold text-gray-900">{{ otpMobile }}</span></p>
+    </div>
+
+ <div class="flex justify-center gap-3" (paste)="onPaste($event)">
+        <input
+  #otpInput
+  *ngFor="let digit of otp; let i = index; trackBy: trackByIndex"
+  type="text"
+  inputmode="numeric"
+  maxlength="1"
+  [value]="otp[i]"
+  (input)="onInputChange($event, i)"
+  (keydown)="onKeyDown($event, i)"
+  class="w-14 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+/>
+
+      </div>
+
+ 
+    <p *ngIf="error" class="text-red-600 text-sm mb-4 text-center font-inter">
+      {{ error }}
+    </p>
+
+    <div class="text-center mb-4">
+      <ng-container *ngIf="canResend; else timerTemplate">
+        <button type="button" (click)="onResend()" class="text-orange-600 hover:text-orange-700 font-medium text-sm font-inter">Resend OTP</button>
+      </ng-container>
+      <ng-template #timerTemplate>
+        <p class="text-gray-600 text-sm font-inter">Resend OTP in <span class="font-semibold text-orange-600">{{ timer }}s</span></p>
+      </ng-template>
+    </div>
+
+    <button (click)="onVerifys()" [disabled]="isVerifying || otp.join('').length !== 6"
+      class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-inter">
+      {{ isVerifying ? 'Verifying...' : 'Verify & Continue' }}
+    </button>
+  </div>
 
 </div>
