@@ -53,7 +53,7 @@ forgotPasswordForm: FormGroup;
 isSendingOtp = false;
 showOtpModal = false;
 otpMobile = '';
- 
+ showOtpModals = false;
 // OTP Modal state
 
 otp: string[] = Array(6).fill('');
@@ -543,30 +543,7 @@ onLoginSubmit(event: Event): void {
     this.loginError = 'Invalid response from server';
   }
 }
-// private handleLoginSuccess(response: any): void {
-//   this.isLoggingIn = false;
 
-//   // 🔹 If mobile not verified
-//   if (!response.mobileVerified) {
-//     this.verificationData = {
-//       phone: response.phone,
-//       email: response.email
-//     };
-//     this.pendingLoginResponse = response;
-//     this.showLoginModal = false;
-//     this.showVerificationModal = true;
-//     return;
-//   }
-
-//   // 🔹 Otherwise normal login
-//   if (response.token) {
-//     this.authService.saveAuth(response.token, response.role, response.name, response.userId);
-//     this.closeLoginModal();
-//     this.authService.redirectByRole(response.role);
-//   } else {
-//     this.loginError = 'Invalid response from server';
-//   }
-// }
 
   private handleLoginError(error: HttpErrorResponse): void {
     this.isLoggingIn = false;
@@ -838,54 +815,6 @@ async onVerify() {
     this.isVerifying = false;
   }
 }
-// verificationTypes: 'forgot' | 'login' | null = null;
-// async onVerify() {
-//   const otpValue = this.otp.join('');
-//   if (otpValue.length !== 6) return;
-
-//   this.isVerifying = true;
-//   this.error = '';
-
-//   try {
-//     // 🔹 Step 1: Verify OTP via Firebase
-//     await this.authService.verifyOtp(otpValue);
-
-//     // 🔹 Step 2: Close OTP modal
-//     this.showOtpModal = false;
-
-//     // 🔹 Step 3: Check verification type
-//     if (this.verificationTypes === 'forgot') {
-//       // Forgot password flow
-//       this.showPasswordPopup = true; 
-//       this.verificationType = null; // reset
-//     } 
-//     else if (this.verificationType === 'mobile') {
-//       // Mobile verification flow after login
-//       if (this.pendingLoginResponse?.userId && this.otpMobile) {
-//         try {
-//           await this.authService.verifyMobileOnServer(
-//             this.pendingLoginResponse.userId,
-//             this.otpMobile
-//           ).toPromise();
-//           console.log('Mobile verified on server successfully');
-          
-//           // ✅ Update token & login
-//           this.handleLoginSuccess(this.pendingLoginResponse);
-//         } catch (err) {
-//           console.error('Server verification failed', err);
-//           this.error = 'Mobile verified locally but failed on server';
-//         }
-//       }
-//       this.verificationType = null; // reset
-//       this.pendingLoginResponse = null;
-//     }
-
-//   } catch (e: any) {
-//     this.error = e.message || 'OTP verification failed';
-//   } finally {
-//     this.isVerifying = false;
-//   }
-// }
 
 
 async submitNewPassword() {
@@ -931,7 +860,7 @@ async openMobileVerification() {
     await this.authService.sendOtp(this.verificationData?.phone);
 
     // Show OTP step inside verification modal
-    this.showOtpModal = true;
+    this.showOtpModals = true;
   } catch (err) {
     console.error(err);
     alert('Failed to send OTP');
@@ -954,18 +883,55 @@ closeVerificationModal() {
   // Back from OTP
 handleOtpBack() {
   
-  this.showOtpModal = false; // hide OTP
+  this.showOtpModals = false; // hide OTP
   this.authService.clearRecaptcha(); // 🔥 clear Firebase state
      this.showLoginModal=true;
 }
    /* OTP VERIFIED */
   onOTPVerified() {
-    this.showOtpModal = false;
+    this.showOtpModals = false;
     this.showVerificationModal = false;
   //  this.currentStep = 1;
     // this.successMessage = 'Mobile number verified successfully!';
        this.showLoginModal=true;
   }
+
+
+  async onVerifys() {
+  const otpValue = this.otp.join('');
+
+  if (otpValue.length !== 6) {
+    this.error = 'Enter full OTP';
+     alert(this.error); // show alert if OTP is incomplete
+    return;
+  }
+
+  this.isVerifying = true;
+   this.error = '';
+
+
+  try {
+    await this.authService.verifyOtp(otpValue);
+
+    const userId = this.authService.getUserId();
+    const phone = this.verificationData?.phone; // or wherever you store the phone number
+
+    if (userId && phone) {
+      console.log('Calling verifyMobileOnServer...');
+      await this.authService.verifyMobileOnServer(userId, phone).toPromise();
+      console.log('verifyMobileOnServer completed');
+    }
+      
+ //   this.onVerified.emit();
+   
+
+  } catch (err) {
+    console.error('Error during OTP verification:', err);
+    this.error = 'Invalid OTP';
+  } finally {
+    this.isVerifying = false;
+  }
+}
 
 }
 
