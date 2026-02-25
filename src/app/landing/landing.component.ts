@@ -493,80 +493,80 @@ onLoginSubmit(event: Event): void {
     });
 }
 
-//   private handleLoginSuccess(response: any): void {
-//   this.isLoggingIn = false;
-
-//   console.log('Login response:', response); 
-
-//   // 🚨 1️⃣ First check mobile verification
-//   if (!response.mobileVerified) {
-
-//     // Store temporary data (DO NOT store token yet)
-//    this.verificationData = {
-//   phone: response.phone,
-//   email: response.email
-// };
-//   console.log('verificationData set:', this.verificationData); //
-//     this.pendingLoginResponse = response; // store full response if needed
-//     this.showLoginModal=false;
-//     this.showVerificationModal = true;
-
-//     return; // ⛔ STOP here (no redirect)
-//   }
-
-//   // ✅ 2️⃣ If verified → normal login
-//   if (response.token) {
-
-//     if (this.authService) {
-//       this.authService.saveAuth(
-//         response.token,
-//         response.role,
-//         response.name,
-//         response.userId
-//       );
-//     } else {
-//       localStorage.setItem('token', response.token);
-//       if (response.user) {
-//         localStorage.setItem('user', JSON.stringify(response.user));
-//       }
-//     }
-
-//     this.closeLoginModal();
-
-//     if (this.authService) {
-//       this.authService.redirectByRole(response.role);
-//     } else {
-//       window.location.href = '/dashboard';
-//     }
-
-//   } else {
-//     this.loginError = 'Invalid response from server';
-//   }
-// }
-private handleLoginSuccess(response: any): void {
+  private handleLoginSuccess(response: any): void {
   this.isLoggingIn = false;
 
-  // 🔹 If mobile not verified
+  console.log('Login response:', response); 
+
+  // 🚨 1️⃣ First check mobile verification
   if (!response.mobileVerified) {
-    this.verificationData = {
-      phone: response.phone,
-      email: response.email
-    };
-    this.pendingLoginResponse = response;
-    this.showLoginModal = false;
+
+    // Store temporary data (DO NOT store token yet)
+   this.verificationData = {
+  phone: response.phone,
+  email: response.email
+};
+  console.log('verificationData set:', this.verificationData); //
+    this.pendingLoginResponse = response; // store full response if needed
+    this.showLoginModal=false;
     this.showVerificationModal = true;
-    return;
+
+    return; // ⛔ STOP here (no redirect)
   }
 
-  // 🔹 Otherwise normal login
+  // ✅ 2️⃣ If verified → normal login
   if (response.token) {
-    this.authService.saveAuth(response.token, response.role, response.name, response.userId);
+
+    if (this.authService) {
+      this.authService.saveAuth(
+        response.token,
+        response.role,
+        response.name,
+        response.userId
+      );
+    } else {
+      localStorage.setItem('token', response.token);
+      if (response.user) {
+        localStorage.setItem('user', JSON.stringify(response.user));
+      }
+    }
+
     this.closeLoginModal();
-    this.authService.redirectByRole(response.role);
+
+    if (this.authService) {
+      this.authService.redirectByRole(response.role);
+    } else {
+      window.location.href = '/dashboard';
+    }
+
   } else {
     this.loginError = 'Invalid response from server';
   }
 }
+// private handleLoginSuccess(response: any): void {
+//   this.isLoggingIn = false;
+
+//   // 🔹 If mobile not verified
+//   if (!response.mobileVerified) {
+//     this.verificationData = {
+//       phone: response.phone,
+//       email: response.email
+//     };
+//     this.pendingLoginResponse = response;
+//     this.showLoginModal = false;
+//     this.showVerificationModal = true;
+//     return;
+//   }
+
+//   // 🔹 Otherwise normal login
+//   if (response.token) {
+//     this.authService.saveAuth(response.token, response.role, response.name, response.userId);
+//     this.closeLoginModal();
+//     this.authService.redirectByRole(response.role);
+//   } else {
+//     this.loginError = 'Invalid response from server';
+//   }
+// }
 
   private handleLoginError(error: HttpErrorResponse): void {
     this.isLoggingIn = false;
@@ -628,7 +628,7 @@ private handleLoginSuccess(response: any): void {
   this.timer = 60;
   this.canResend = false;
   this.error = '';
-  this.verificationTypes = 'forgot';
+  //this.verificationTypes = 'forgot';
 }
 
 
@@ -815,30 +815,6 @@ onPaste(event: ClipboardEvent) {
 
 
 
-// async onVerify() {
-//   const otpValue = this.otp.join('');
-//   if (otpValue.length !== 6) return;
-
-//   this.isVerifying = true;
-//   this.error = '';
-
-//   try {
-//     // 1️⃣ Verify OTP via Firebase
-//     await this.authService.verifyOtp(otpValue);
-
-//     // ✅ CLOSE OTP MODAL
-//     this.showOtpModal = false;
-
-//     // ✅ OPEN PASSWORD POPUP
-//     this.showPasswordPopup = true;
-
-//   } catch (e: any) {
-//     this.error = e.message || 'OTP verification failed';
-//   } finally {
-//     this.isVerifying = false;
-//   }
-// }
-verificationTypes: 'forgot' | 'login' | null = null;
 async onVerify() {
   const otpValue = this.otp.join('');
   if (otpValue.length !== 6) return;
@@ -847,38 +823,14 @@ async onVerify() {
   this.error = '';
 
   try {
-    // 🔹 Step 1: Verify OTP via Firebase
+    // 1️⃣ Verify OTP via Firebase
     await this.authService.verifyOtp(otpValue);
 
-    // 🔹 Step 2: Close OTP modal
+    // ✅ CLOSE OTP MODAL
     this.showOtpModal = false;
 
-    // 🔹 Step 3: Check verification type
-    if (this.verificationTypes === 'forgot') {
-      // Forgot password flow
-      this.showPasswordPopup = true; 
-      this.verificationType = null; // reset
-    } 
-    else if (this.verificationType === 'mobile') {
-      // Mobile verification flow after login
-      if (this.pendingLoginResponse?.userId && this.otpMobile) {
-        try {
-          await this.authService.verifyMobileOnServer(
-            this.pendingLoginResponse.userId,
-            this.otpMobile
-          ).toPromise();
-          console.log('Mobile verified on server successfully');
-          
-          // ✅ Update token & login
-          this.handleLoginSuccess(this.pendingLoginResponse);
-        } catch (err) {
-          console.error('Server verification failed', err);
-          this.error = 'Mobile verified locally but failed on server';
-        }
-      }
-      this.verificationType = null; // reset
-      this.pendingLoginResponse = null;
-    }
+    // ✅ OPEN PASSWORD POPUP
+    this.showPasswordPopup = true;
 
   } catch (e: any) {
     this.error = e.message || 'OTP verification failed';
@@ -886,6 +838,54 @@ async onVerify() {
     this.isVerifying = false;
   }
 }
+// verificationTypes: 'forgot' | 'login' | null = null;
+// async onVerify() {
+//   const otpValue = this.otp.join('');
+//   if (otpValue.length !== 6) return;
+
+//   this.isVerifying = true;
+//   this.error = '';
+
+//   try {
+//     // 🔹 Step 1: Verify OTP via Firebase
+//     await this.authService.verifyOtp(otpValue);
+
+//     // 🔹 Step 2: Close OTP modal
+//     this.showOtpModal = false;
+
+//     // 🔹 Step 3: Check verification type
+//     if (this.verificationTypes === 'forgot') {
+//       // Forgot password flow
+//       this.showPasswordPopup = true; 
+//       this.verificationType = null; // reset
+//     } 
+//     else if (this.verificationType === 'mobile') {
+//       // Mobile verification flow after login
+//       if (this.pendingLoginResponse?.userId && this.otpMobile) {
+//         try {
+//           await this.authService.verifyMobileOnServer(
+//             this.pendingLoginResponse.userId,
+//             this.otpMobile
+//           ).toPromise();
+//           console.log('Mobile verified on server successfully');
+          
+//           // ✅ Update token & login
+//           this.handleLoginSuccess(this.pendingLoginResponse);
+//         } catch (err) {
+//           console.error('Server verification failed', err);
+//           this.error = 'Mobile verified locally but failed on server';
+//         }
+//       }
+//       this.verificationType = null; // reset
+//       this.pendingLoginResponse = null;
+//     }
+
+//   } catch (e: any) {
+//     this.error = e.message || 'OTP verification failed';
+//   } finally {
+//     this.isVerifying = false;
+//   }
+// }
 
 
 async submitNewPassword() {
@@ -926,24 +926,23 @@ closePasswordPopup() {
 async openMobileVerification() {
   this.verificationType = 'mobile';
   this.otpMobile = this.verificationData?.phone;
- this.verificationTypes = 'login';
+
   try {
     await this.authService.sendOtp(this.verificationData?.phone);
 
     // Show OTP step inside verification modal
-    this.showOtpModals = true;
+    this.showOtpModal = true;
   } catch (err) {
     console.error(err);
     alert('Failed to send OTP');
   }
 }
-showOtpModals = false;
+
 
 closeVerificationModal() {
 
   // Close UI
   this.showVerificationModal = false;
-  this.showOtpModals = false;
    this.showLoginModal=true;
   // Optional: clear mobile/email
   this.verificationData.phone = '';
@@ -955,7 +954,7 @@ closeVerificationModal() {
   // Back from OTP
 handleOtpBack() {
   
-  this.showOtpModals = false; // hide OTP
+  this.showOtpModal = false; // hide OTP
   this.authService.clearRecaptcha(); // 🔥 clear Firebase state
      this.showLoginModal=true;
 }
