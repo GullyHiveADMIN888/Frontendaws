@@ -214,6 +214,7 @@ onSendOTP() {
 
 onNextClick() {
   const mobile = this.formData?.mobile;
+   const email = this.formData?.email;
 
   if (!mobile) {
     this.errors.mobile = 'Mobile number is required';
@@ -231,6 +232,22 @@ onNextClick() {
 
       if (response.exists) {
         this.errors.mobile = 'Mobile number already registered';
+        return;
+      }
+
+      // ✅ Mobile not exists → go next
+      this.next.emit();
+    },
+    error: () => {
+      this.errors.mobile = 'Something went wrong';
+    }
+  });
+   // 🔥 Only check email existence
+  this.authService.checkEmailExists(email).subscribe({
+    next: (response) => {
+
+      if (response.exists) {
+        this.errors.email = 'Email id already registered';
         return;
       }
 
