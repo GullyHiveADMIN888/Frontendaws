@@ -911,19 +911,20 @@ closePasswordPopup() {
 }
 
 
-
 async openMobileVerification() {
   this.verificationType = 'mobile';
-  this.showOtpModals = true;
+  this.otpMobile = this.verificationData?.phone;
 
   try {
     await this.authService.sendOtp(this.verificationData?.phone);
+
+    // Show OTP step inside verification modal
+    this.showOtpModals = true;
   } catch (err) {
     console.error(err);
     alert('Failed to send OTP');
   }
 }
-
 showOtpModals = false;
 closeVerificationModal() {
 
