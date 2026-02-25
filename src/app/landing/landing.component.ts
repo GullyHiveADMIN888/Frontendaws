@@ -1,7 +1,7 @@
 
 import { Auth, signInWithPhoneNumber, ConfirmationResult } from '@angular/fire/auth';
 import { RecaptchaVerifier } from 'firebase/auth';
-
+import { OTPVerificationComponent } from '../auth/otp-verification/otp-verification.component';
 import {
   Input,
   Output,
@@ -28,14 +28,13 @@ import { AuthService } from '../auth/auth.service';
 
 import {  HttpErrorResponse } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
-//import { OTPVerificationComponent } from '../auth/otp-verification/otp-verification.component';
 
 @Component({
   selector: 'app-landing',
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule]
+  imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule, OTPVerificationComponent]
 })
 export class LandingPageComponent implements OnInit, OnDestroy {
   scrolled = false;
@@ -86,6 +85,14 @@ recaptchaVerifier!: RecaptchaVerifier;
     message: ''
   };
 
+showVerificationModal: boolean = false;
+verificationType: 'mobile' | 'email' | null = null;
+pendingLoginResponse: any = null;
+
+verificationData = {
+  phone: '',
+  email: ''
+};
 
   // API Configuration
   private readonly apiUrl = `${environment.apiBaseUrl}`; 
@@ -96,6 +103,7 @@ showPasswordPopup = false;
 newPassword = '';
 confirmPassword = '';
 passwordError = '';
+
 
   popularServices = [
     { 
@@ -295,20 +303,6 @@ passwordError = '';
   private subscription?: Subscription;
 
 
-//  constructor(
-//     private http: HttpClient,
-//     private fb: FormBuilder,
-//     private authService: AuthService,
-//     @Inject(PLATFORM_ID) private platformId: any
-//   ) {
-//     // Initialize login form
-//     this.loginForm = this.fb.group({
-//       email: ['', [Validators.required, Validators.email]],
-//       password: ['', [Validators.required, Validators.minLength(6)]],
-//       rememberMe: [false]
-//     });
-//   }
-
   constructor(private fb: FormBuilder, private http: HttpClient, private authService: AuthService, private auth: Auth, @Inject(PLATFORM_ID) private platformId: any) {
   this.loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -322,27 +316,12 @@ passwordError = '';
     mobile: ['', [Validators.required, Validators.pattern('^[6-9]\\d{9}$')]] // Indian 10-digit mobile number
   });
 }
-  //   @Input() mobile = '';
-  // @Output() onVerified = new EventEmitter<void>();
-  // @Output() onBack = new EventEmitter<void>();
   
-
-  // ngOnInit(): void {
-  //   this.setupScrollListener();
-  //   this.loadRememberedEmail();
-  // }
-
-  // ngOnDestroy(): void {
-  //   this.subscription?.unsubscribe();
-  // }
 
     ngOnInit(): void {
     this.setupScrollListener();
     this.loadRememberedEmail();
-    //  if (isPlatformBrowser(this.platformId)) {
-    //   this.startTimer();
-    //   setTimeout(() => this.focusInput(0), 0);
-    // }
+   
   }
 
   ngOnDestroy(): void {
@@ -477,11 +456,11 @@ onLoginSubmit(event: Event): void {
   password: this.loginForm.value.password
 };
 
-this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
-  .subscribe({
-    next: res => this.handleLoginSuccess(res),
-    error: err => this.handleLoginError(err)
-  });
+// this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
+//   .subscribe({
+//     next: res => this.handleLoginSuccess(res),
+//     error: err => this.handleLoginError(err)
+//   });
 
  
   
@@ -513,35 +492,85 @@ this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
       }
     });
 }
-  private handleLoginSuccess(response: any): void {
-    this.isLoggingIn = false;
+  // private handleLoginSuccess(response: any): void {
+  //   this.isLoggingIn = false;
     
-    if (response.token) {
-      // Store authentication data using your AuthService
-      if (this.authService) {
-        this.authService.saveAuth(response.token, response.role, response.name, response.userId);
-      } else {
-        // Fallback: Store directly in localStorage
-        localStorage.setItem('token', response.token);
-        if (response.user) {
-          localStorage.setItem('user', JSON.stringify(response.user));
-        }
-      }
+  //   if (response.token) {
+  //     // Store authentication data using your AuthService
+  //     if (this.authService) {
+  //       this.authService.saveAuth(response.token, response.role, response.name, response.userId);
+  //     } else {
+  //       // Fallback: Store directly in localStorage
+  //       localStorage.setItem('token', response.token);
+  //       if (response.user) {
+  //         localStorage.setItem('user', JSON.stringify(response.user));
+  //       }
+  //     }
       
-      // Close modal
-      this.closeLoginModal();
+  //     // Close modal
+  //     this.closeLoginModal();
       
-      // Redirect user based on role
-      if (this.authService) {
-        this.authService.redirectByRole(response.role);
-      } else {
-        // Fallback redirect
-        window.location.href = '/dashboard';
-      }
-    } else {
-      this.loginError = 'Invalid response from server';
-    }
+  //     // Redirect user based on role
+  //     if (this.authService) {
+  //       this.authService.redirectByRole(response.role);
+  //     } else {
+  //       // Fallback redirect
+  //       window.location.href = '/dashboard';
+  //     }
+  //   } else {
+  //     this.loginError = 'Invalid response from server';
+  //   }
+  // }
+  private handleLoginSuccess(response: any): void {
+  this.isLoggingIn = false;
+
+  console.log('Login response:', response); 
+
+  // 🚨 1️⃣ First check mobile verification
+  if (!response.mobileVerified) {
+
+    // Store temporary data (DO NOT store token yet)
+   this.verificationData = {
+  phone: response.phone,
+  email: response.email
+};
+  console.log('verificationData set:', this.verificationData); //
+    this.pendingLoginResponse = response; // store full response if needed
+    this.showLoginModal=false;
+    this.showVerificationModal = true;
+
+    return; // ⛔ STOP here (no redirect)
   }
+
+  // ✅ 2️⃣ If verified → normal login
+  if (response.token) {
+
+    if (this.authService) {
+      this.authService.saveAuth(
+        response.token,
+        response.role,
+        response.name,
+        response.userId
+      );
+    } else {
+      localStorage.setItem('token', response.token);
+      if (response.user) {
+        localStorage.setItem('user', JSON.stringify(response.user));
+      }
+    }
+
+    this.closeLoginModal();
+
+    if (this.authService) {
+      this.authService.redirectByRole(response.role);
+    } else {
+      window.location.href = '/dashboard';
+    }
+
+  } else {
+    this.loginError = 'Invalid response from server';
+  }
+}
 
   private handleLoginError(error: HttpErrorResponse): void {
     this.isLoggingIn = false;
@@ -660,18 +689,6 @@ async sendOtp() {
   }
 }
 
-
-// async onVerify() {
-//   const otpValue = this.otp.join('');
-//   if (otpValue.length !== 6) return;
-
-//   try {
-//     await this.authService.verifyOtp(otpValue);
-//     alert('OTP verified!');
-//   } catch {
-//     this.error = 'Invalid OTP';
-//   }
-// }
 
 
 
@@ -888,7 +905,50 @@ closePasswordPopup() {
   this.passwordError = '';
 }
 
- 
+
+
+async openMobileVerification() {
+  this.verificationType = 'mobile';
+  this.showOtpModal = true;
+
+  try {
+    await this.authService.sendOtp(this.verificationData?.phone);
+  } catch (err) {
+    console.error(err);
+    alert('Failed to send OTP');
+  }
+}
+
+
+closeVerificationModal() {
+
+  // Close UI
+  this.showVerificationModal = false;
+  this.showOtpModal = false;
+   this.showLoginModal=true;
+  // Optional: clear mobile/email
+  this.verificationData.phone = '';
+  this.verificationData.email = '';
+
+  // 🔥 CLEAR FIREBASE STATE SAFELY
+  this.authService.clearRecaptcha();
+}
+  // Back from OTP
+handleOtpBack() {
+  
+  this.showOtpModal = false; // hide OTP
+  this.authService.clearRecaptcha(); // 🔥 clear Firebase state
+     this.showLoginModal=true;
+}
+   /* OTP VERIFIED */
+  onOTPVerified() {
+    this.showOtpModal = false;
+    this.showVerificationModal = false;
+  //  this.currentStep = 1;
+    // this.successMessage = 'Mobile number verified successfully!';
+       this.showLoginModal=true;
+  }
+
 }
 
 // Helper function for RxJS
