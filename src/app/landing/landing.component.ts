@@ -16,8 +16,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { interval,Subscription } from 'rxjs';
-// import { environment } from '../../environments/environment';
-  import { environment } from '../../environments/environment.prod';
+ import { environment } from '../../environments/environment';
+//  import { environment } from '../../environments/environment.prod';
 
 
 import {  Inject, PLATFORM_ID } from '@angular/core';
@@ -934,6 +934,73 @@ handleOtpBack() {
 
 
 
+
+openEmailVerification() {
+  if (!this.pendingLoginResponse.email || !this.pendingLoginResponse.userId) {
+    alert('Email or User ID missing!');
+    return;
+  }
+
+  this.verificationType = 'email';
+
+  this.authService.sendEmailOtp({
+    userId: this.pendingLoginResponse.userId,
+    email: this.pendingLoginResponse.email,
+    fullName: this.pendingLoginResponse.name
+  }).subscribe({
+    next: (res: any) => {
+      console.log('Email OTP sent response:', res);
+
+      this.pendingLoginResponse.emailOtpToken = res.token;
+
+      if (!res.token) {
+        alert('OTP token not received from server');
+        return;
+      }
+
+      // ✅ Open modal ONLY after success
+      this.showOtpModals = true;
+    },
+    error: (err) => {
+      console.error('Send email OTP error:', err);
+      alert('Failed to send email OTP');
+    }
+  });
+}
+showOtpModals = true;
+
+onOTPVerifiedEmail(event: { otp: string }) {
+  if (this.verificationType === 'email') {
+    if (!this.pendingLoginResponse.emailOtpToken) {
+      alert('OTP token missing!');
+      return;
+    }
+
+    this.authService.verifyEmailOtp({
+      otp: event.otp,
+      token: this.pendingLoginResponse.emailOtpToken
+    }).subscribe({
+      next: () => {
+        alert('Email verified successfully!');
+        this.showOtpModals = false;
+        this.showVerificationModal = false;
+
+        // Mark email verified in local state
+        this.pendingLoginResponse.isEmailVerified = true;
+      },
+      error: () => {
+        alert('Invalid or expired OTP');
+      }
+    });
+  } 
+  else if (this.verificationType === 'mobile') {
+    this.isMobileVerified = true;
+    this.showOtpModals = false;
+    this.showVerificationModal = false;
+  }
+}
+
+isMobileVerified = false;
 
 }
 
