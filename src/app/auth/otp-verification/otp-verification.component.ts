@@ -143,41 +143,41 @@ onInputChange(event: Event, index: number) {
 
 
 
-// async onVerify() {
-//   const otpValue = this.otp.join('');
+async onVerify() {
+  const otpValue = this.otp.join('');
 
-//   if (otpValue.length !== 6) {
-//     this.error = 'Enter full OTP';
-//      alert(this.error); // show alert if OTP is incomplete
-//     return;
-//   }
+  if (otpValue.length !== 6) {
+    this.error = 'Enter full OTP';
+     alert(this.error); // show alert if OTP is incomplete
+    return;
+  }
 
-//   this.isVerifying = true;
-//    this.error = '';
+  this.isVerifying = true;
+   this.error = '';
 
 
-//   try {
-//     await this.authService.verifyOtp(otpValue);
+  try {
+    await this.authService.verifyOtp(otpValue);
 
-//     const userId = this.authService.getUserId();
-//     const phone = this.mobile; // or wherever you store the phone number
+    const userId = this.authService.getUserId();
+    const phone = this.mobile; // or wherever you store the phone number
 
-//     if (userId && phone) {
-//       console.log('Calling verifyMobileOnServer...');
-//       await this.authService.verifyMobileOnServer(userId, phone).toPromise();
-//       console.log('verifyMobileOnServer completed');
-//     }
+    if (userId && phone) {
+      console.log('Calling verifyMobileOnServer...');
+      await this.authService.verifyMobileOnServer(userId, phone).toPromise();
+      console.log('verifyMobileOnServer completed');
+    }
       
-//     this.onVerified.emit();
+    this.onVerified.emit();
    
 
-//   } catch (err) {
-//     console.error('Error during OTP verification:', err);
-//     this.error = 'Invalid OTP';
-//   } finally {
-//     this.isVerifying = false;
-//   }
-// }
+  } catch (err) {
+    console.error('Error during OTP verification:', err);
+    this.error = 'Invalid OTP';
+  } finally {
+    this.isVerifying = false;
+  }
+}
 
 
 async onResend() {
