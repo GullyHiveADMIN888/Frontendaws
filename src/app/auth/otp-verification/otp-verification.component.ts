@@ -142,7 +142,7 @@ onInputChange(event: Event, index: number) {
     setTimeout(() => this.focusInput(Math.min(pastedData.length, 5)), 0);
   }
 
-
+//FOR REGITER TIME.....
 
 // async onVerify() {
 //   const otpValue = this.otp.join('');
@@ -180,6 +180,42 @@ onInputChange(event: Event, index: number) {
 //   }
 // }
 
+
+// FOR LOGIN TIME ...
+
+// async onVerify() {
+//   const otpValue = this.otp.join('');
+
+//   if (otpValue.length !== 6) {
+//     this.error = 'Enter full OTP';
+//     alert(this.error);
+//     return;
+//   }
+
+//   this.isVerifying = true;
+//   this.error = '';
+
+//   try {
+//     await this.authService.verifyOtp(otpValue);
+
+//     if (this.userId && this.mobile) {
+//       console.log('Calling verifyMobileOnServer...', this.userId, this.mobile);
+//       await this.authService.verifyMobileOnServer(this.userId, this.mobile).toPromise();
+//       console.log('verifyMobileOnServer completed');
+//     }
+//  console.log('verifyMobileOnServer completed...', this.userId, this.mobile);
+//     this.onVerified.emit();
+//   } catch (err) {
+//     console.error('Error during OTP verification:', err);
+//     this.error = 'Invalid OTP';
+//   } finally {
+//     this.isVerifying = false;
+//   }
+// }
+
+
+//MANAGE BOTH IN SINGLE 
+
 async onVerify() {
   const otpValue = this.otp.join('');
 
@@ -193,14 +229,20 @@ async onVerify() {
   this.error = '';
 
   try {
+    // 🔹 Step 1: Firebase OTP verification
     await this.authService.verifyOtp(otpValue);
 
-    if (this.userId && this.mobile) {
-      console.log('Calling verifyMobileOnServer...', this.userId, this.mobile);
-      await this.authService.verifyMobileOnServer(this.userId, this.mobile).toPromise();
+    // 🔹 Step 2: Determine userId and mobile to send to backend
+    const userIdToUse = this.userId || this.authService.getUserId();
+    const mobileToUse = this.mobile || this.mobile;
+
+    if (userIdToUse && mobileToUse) {
+      console.log('Calling verifyMobileOnServer...', userIdToUse, mobileToUse);
+      await this.authService.verifyMobileOnServer(userIdToUse, mobileToUse).toPromise();
       console.log('verifyMobileOnServer completed');
     }
- console.log('verifyMobileOnServer completed...', this.userId, this.mobile);
+
+    // 🔹 Step 3: Emit event back to parent
     this.onVerified.emit();
   } catch (err) {
     console.error('Error during OTP verification:', err);
