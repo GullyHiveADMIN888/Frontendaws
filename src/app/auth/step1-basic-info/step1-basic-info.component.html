@@ -1,5 +1,5 @@
 <div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12 border border-gray-100">
- 
+
   <div class="flex items-center mb-8">
     <div class="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center mr-4">
       <i class="ri-user-line text-2xl text-white"></i>
@@ -54,27 +54,27 @@
         <input type="text" [value]="formData?.fullName || ''"
           (input)="onInputFieldChange('fullName', $any($event.target).value)"
           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-          placeholder="Enter your full name"  maxlength="50"/>
+          placeholder="Enter your full name" maxlength="50" />
         <p *ngIf="errors?.fullName" class="text-red-500 text-sm mt-1 font-inter">
           {{ errors.fullName }}
         </p>
       </div>
 
-   
+
 
       <!-- Mobile with OTP -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
           Mobile Number <span class="text-orange-600">*</span>
         </label>
-      
-          <input type="tel" [value]="formData?.mobile || ''"
-            (input)="onInputFieldChange('mobile', $any($event.target).value, $event)"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-            placeholder="10-digit mobile number" maxlength="10" />
 
-        
-       
+        <input type="tel" [value]="formData?.mobile || ''"
+          (input)="onInputFieldChange('mobile', $any($event.target).value, $event)"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+          placeholder="10-digit mobile number" maxlength="10" />
+
+
+
         <p *ngIf="errors?.mobile" class="text-red-500 text-sm mt-1 font-inter">
           {{ errors.mobile }}
         </p>
@@ -86,7 +86,7 @@
 
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-     
+
 
       <!-- Email -->
       <div>
@@ -96,35 +96,35 @@
         <input type="email" [value]="formData?.email || ''"
           (input)="onInputFieldChange('email', $any($event.target).value)"
           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-          placeholder="your.email@example.com"  maxlength="50"/>
+          placeholder="your.email@example.com" maxlength="50" />
         <p *ngIf="errors?.email" class="text-red-500 text-sm mt-1 font-inter">
           {{ errors.email }}
         </p>
       </div>
 
-       <div class="relative">
-          <label class="block text-sm font-medium mb-2 font-inter">
-            Password *
-          </label>
-          <input [type]="showPassword ? 'text' : 'password'" [value]="formData?.password || ''"
-            (input)="onInputFieldChange('password', $any($event.target).value)"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-            placeholder="Enter password" minlength="6"  maxlength="34"/>
-          <button type="button" (click)="togglePasswordVisibility()"
-            class="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none flex items-center justify-center">
-            <i class="ri-eye-line pt-5" *ngIf="!showPassword"></i>
-            <i class="ri-eye-off-line pt-5" *ngIf="showPassword"></i>
-          </button>
-          <p *ngIf="errors?.password" class="text-red-500 text-sm mt-1 font-inter">
-            {{ errors.password }}
-          </p>
-        </div>
+      <div class="relative">
+        <label class="block text-sm font-medium mb-2 font-inter">
+          Password *
+        </label>
+        <input [type]="showPassword ? 'text' : 'password'" [value]="formData?.password || ''"
+          (input)="onInputFieldChange('password', $any($event.target).value)"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+          placeholder="Enter password" minlength="6" maxlength="34" />
+        <button type="button" (click)="togglePasswordVisibility()"
+          class="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none flex items-center justify-center">
+          <i class="ri-eye-line pt-5" *ngIf="!showPassword"></i>
+          <i class="ri-eye-off-line pt-5" *ngIf="showPassword"></i>
+        </button>
+        <p *ngIf="errors?.password" class="text-red-500 text-sm mt-1 font-inter">
+          {{ errors.password }}
+        </p>
+      </div>
 
     </div>
 
 
-      <!-- Mobile with OTP -->
-      <!-- <div class="md:col-span-2">
+    <!-- Mobile with OTP -->
+    <!-- <div class="md:col-span-2">
         <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
           Mobile Number <span class="text-orange-600">*</span>
         </label>
@@ -144,59 +144,49 @@
           {{ errors.mobile }}
         </p>
       </div> -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-<div>
-    <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
-      Service Category <span class="text-orange-600">*</span>
-    </label>
-    <select
-  [(ngModel)]="formData.serviceCategoryId"
-  (ngModelChange)="onCategoryChange($event)"
-  name="serviceCategoryId"
-  class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
+          Service Category <span class="text-orange-600">*</span>
+        </label>
+        <select [(ngModel)]="formData.serviceCategoryId" (ngModelChange)="onCategoryChange($event)"
+          name="serviceCategoryId" class="w-full px-4 py-3 border border-gray-300 rounded-lg">
 
-  <option [ngValue]="null">Select Category</option>
+          <option [ngValue]="null">Select Category</option>
 
-  <option *ngFor="let cat of parentCategories"
-          [ngValue]="cat.id">
-    {{ cat.name }}
-  </option>
-</select>
- <p *ngIf="errors?.serviceCategoryId" class="text-red-500 text-sm mt-1 font-inter">
-      {{ errors.serviceCategoryId }}
-    </p>
- <!-- <p *ngIf="errors?.serviceCategory" class="text-red-500 text-sm mt-1 font-inter">
-        {{ errors.serviceCategory }}
-      </p> -->
+          <option *ngFor="let cat of parentCategories" [ngValue]="cat.id">
+            {{ cat.name }}
+          </option>
+        </select>
+        <p *ngIf="errors?.serviceCategoryId" class="text-red-500 text-sm mt-1 font-inter">
+          {{ errors.serviceCategoryId }}
+        </p>
 
-</div>
-  <!-- Professional Type -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
-            Professional Type <span class="text-orange-600">*</span>
-          </label>
+      </div>
+      <!-- Professional Type -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
+          Professional Type <span class="text-orange-600">*</span>
+        </label>
 
-        
-<select
-  [(ngModel)]="formData.professionalType"
-  name="professionalType"
-  class="w-full px-4 py-3 border border-gray-300 rounded-lg">
 
-  <option [ngValue]="null">Select Professional Type</option>
+        <select [(ngModel)]="formData.professionalType" name="professionalType"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg">
 
-  <option *ngFor="let type of professionalTypes"
-          [ngValue]="type.value">
-    {{ type.label }}
-  </option>
-</select>
+          <option [ngValue]="null">Select Professional Type</option>
 
-          <p *ngIf="errors?.professionalType" class="text-red-500 text-sm mt-1 font-inter">
-            {{ errors.professionalType }}
-          </p>
-        </div>
-</div>
-   
+          <option *ngFor="let type of professionalTypes" [ngValue]="type.value">
+            {{ type.label }}
+          </option>
+        </select>
+
+        <p *ngIf="errors?.professionalType" class="text-red-500 text-sm mt-1 font-inter">
+          {{ errors.professionalType }}
+        </p>
+      </div>
+    </div>
+
     <div>
 
       <!-- Subcategory Checkboxes -->
@@ -220,33 +210,26 @@
         </p>
       </div>
 
-     
-
-
-    
-     
 
 
 
 
-      
-      </div>
-
-      <!-- Navigation -->
-      <div class="flex justify-end pt-6 border-t border-gray-200">
-
-        <button type="button" (click)="onNextClick()"
-
-          class="px-8 py-3 bg-orange-600 text-white rounded-lg transition-colors font-medium font-inter">
-          Continue to Legal Identity
-        </button>
-
-      </div>
-      <!-- <p *ngIf="!isMobileVerified" class="text-sm text-gray-500 mt-2 font-inter text-right">
-        Please verify your mobile number to continue
-      </p> -->
     </div>
 
-    <!-- [class.opacity-50]="!isMobileVerified"
-  [class.cursor-not-allowed]="!isMobileVerified" -->
+    <!-- Navigation -->
+    <div class="flex justify-end pt-6 border-t border-gray-200">
+
+      <button type="button" (click)="onNextClick()"
+        class="px-8 py-3 bg-orange-600 text-white rounded-lg transition-colors font-medium font-inter">
+        Continue to Legal Identity
+      </button>
+
+    </div>
+    <!-- <p *ngIf="!isMobileVerified" class="text-sm text-gray-500 mt-2 font-inter text-right">
+        Please verify your mobile number to continue
+      </p> -->
   </div>
+
+  <!-- [class.opacity-50]="!isMobileVerified"
+  [class.cursor-not-allowed]="!isMobileVerified" -->
+</div>

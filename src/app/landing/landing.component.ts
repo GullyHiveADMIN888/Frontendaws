@@ -108,9 +108,8 @@ verificationData = {
   email: ''
 };
 
-  // API Configuration
-  private readonly apiUrl = `${environment.apiBaseUrl}`; 
-  // Common .NET Core ports: 7045, 5000, 5001, 7245
+
+  private readonly apiUrl = `${environment.apiBaseUrl}`;
 
 
 showPasswordPopup = false;

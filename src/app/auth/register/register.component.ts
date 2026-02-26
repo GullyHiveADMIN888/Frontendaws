@@ -8,7 +8,7 @@ import { Step3ProfessionalDetailsComponent } from '../step3-professional-details
 import { OTPVerificationComponent } from '../otp-verification/otp-verification.component';
 import { AuthService } from '../auth.service';
 import { RouterModule } from '@angular/router';
-
+import { forkJoin } from 'rxjs';
 // For identity type validation
 import { ViewChild } from '@angular/core';
 
@@ -24,7 +24,7 @@ import { ViewChild } from '@angular/core';
     Step2LegalIdentityComponent,
     Step3ProfessionalDetailsComponent,
     OTPVerificationComponent,
-    
+
 
   ],
   templateUrl: './register.component.html'
@@ -46,7 +46,7 @@ export class RegisterComponent {
     mobile: '',
     serviceCategory: [],
     coverageArea: '',
-   
+
     businessName: '',
     registrationType: null,
     registrationNumber: '',
@@ -65,14 +65,14 @@ export class RegisterComponent {
 
     locality: '',
     landmark: '',
-    stateId : null,
+    stateId: null,
     areaId: null,
     cityId: null as number | null,
     // professionalType: '',
-   serviceCategoryId: null,
-  professionalType: null,
-  howToKnowId: null, 
-  howToKnowOther: '',
+    serviceCategoryId: null,
+    professionalType: null,
+    howToKnowId: null,
+    howToKnowOther: '',
   };
 
   errors: any = {};
@@ -85,11 +85,11 @@ export class RegisterComponent {
 
   //last otp
   showVerificationModal = false;
-verificationType: 'mobile' | 'email' | null = null;
+  verificationType: 'mobile' | 'email' | null = null;
   //...
 
 
-  
+
 
   onInputChange(event: { field: string; value: any }) {
     this.formData[event.field] = event.value;
@@ -101,19 +101,21 @@ verificationType: 'mobile' | 'email' | null = null;
   }
 
   // For identity type validation
-@ViewChild(Step2LegalIdentityComponent) step2Component!: Step2LegalIdentityComponent;
-//...
+  @ViewChild(Step2LegalIdentityComponent) step2Component!: Step2LegalIdentityComponent;
+  //...
 
   /* 🔹 STEP NAVIGATION */
   goToStep(step: number) {
     this.currentStep = step;
     //this.showOTP = false;
   }
+
+
   goNextFromStep1() {
-    // 🔴 Step validation first
-    if (!this.validateStep1()) {
-      return;
-    }
+    // // 🔴 Step validation first
+    // if (!this.validateStep1()) {
+    //   return;
+    // }
 
     // 🔴 Mobile NOT verified → STOP + ALERT
     // if (!this.isMobileVerified) {
@@ -125,31 +127,29 @@ verificationType: 'mobile' | 'email' | null = null;
     // ✅ All good → go to Legal Identity
     this.currentStep = 3;
   }
-  // goNextFromStep3() {
-  //   if (this.validateStep3()) {
-  //     this.currentStep = 4; // OTP
-  //   }
-  // }
-  
-  goNextFromStep3() {
-  // Step 3 fields
-  if (!this.validateStep3()) return;
 
-  // Validate identity number
-  const step2Valid = this.step2Component?.validateIdentityNumber();
-  if (!step2Valid) {
-    // Focus the field if needed
-    alert(this.errors.registrationNumber || 'Please correct your identity number.');
-    return;
+
+
+
+  goNextFromStep3() {
+    // // Step 3 fields
+    // if (!this.validateStep3()) return;
+
+    // // Validate identity number
+    // const step2Valid = this.step2Component?.validateIdentityNumber();
+    // if (!step2Valid) {
+    //   // Focus the field if needed
+    //   alert(this.errors.registrationNumber || 'Please correct your identity number.');
+    //   return;
+    // }
+
+    this.currentStep = 4; // OTP
   }
 
-  this.currentStep = 4; // OTP
-}
-
   goNextFromStep4() {
-    if (this.validateStep4()) {
-      // this.currentStep = 5; // OTP
-    }
+    // if (this.validateStep4()) {
+    //   // this.currentStep = 5; // OTP
+    // }
   }
 
   /* 🔹 OTP FLOW */
@@ -162,9 +162,9 @@ verificationType: 'mobile' | 'email' | null = null;
     this.isMobileVerified = true;
     this.showOtpModal = false;
     this.showVerificationModal = false;
-  //  this.currentStep = 1;
-   // this.showVerificationModal = false; // close modal completely if desired
-     this.successMessage = 'Mobile number verified successfully!';
+    //  this.currentStep = 1;
+    // this.showVerificationModal = false; // close modal completely if desired
+    this.successMessage = 'Mobile number verified successfully!';
   }
 
 
@@ -173,7 +173,7 @@ verificationType: 'mobile' | 'email' | null = null;
 
 
   submitForm() {
-    if (!this.validateStep4()) return;
+   // if (!this.validateStep4()) return;
 
     this.isSubmitting = true;
 
@@ -192,12 +192,12 @@ verificationType: 'mobile' | 'email' | null = null;
       formData.append('SubCategoryIds[]', id.toString());
     });
 
-   
+
     // Step 2
     formData.append('BusinessName', this.formData.businessName || '');
     formData.append('RegistrationType', this.formData.registrationType || '');
     formData.append('RegistrationNumber', this.formData.registrationNumber || '');
-   
+
     formData.append('Password', this.formData.password || '');
     if (this.formData.registrationDocument) formData.append('RegistrationDocument', this.formData.registrationDocument);
     if (this.formData.addressProof) formData.append('AddressProof', this.formData.addressProof);
@@ -232,302 +232,258 @@ verificationType: 'mobile' | 'email' | null = null;
 
       formData.append('HowToKnowId', this.formData.howToKnowId?.toString() || '');
 
-if (this.formData.howToKnowId === 6) {
-  formData.append('HowToKnowOther', this.formData.howToKnowOther || '');
-}
+      if (this.formData.howToKnowId === 6) {
+        formData.append('HowToKnowOther', this.formData.howToKnowOther || '');
+      }
     });
 
 
-    // this.service.submitRegistration(formData).subscribe({
-    //   next: (res: RegistrationResponse) => {
-    //     console.log('Backend response:', res);
-
-    //       // Save userId in AuthService / localStorage
-    // if (res && res.userId) {
-    //   this.authService.saveAuth(res.token, res.role, res.name, res.userId);
-    // } else {
-    //   console.warn('userId not returned from backend!');
-    // }
 
 
+ 
 
-//   this.service.submitRegistration(formData).subscribe({
-//   next: async (res) => {  // TypeScript now knows `res: RegistrationResponse`
-//     console.log('Backend response:', res);
+    this.service.submitRegistration(formData).subscribe({
+      next: (res) => {
+        console.log('Backend response:', res);
 
-//     if (res.userId) {
-//       this.service.saveAuth(res.token, res.role, res.name, res.userId);
+        if (res.userId) {
+          this.service.saveAuth(res.token, res.role, res.name, res.userId);
+          this.formData.userId = res.userId;
+          this.isSubmitting = false;
+          this.submitSuccess = true;
+          // 👉 ONLY open verification modal here
+          this.showVerificationModal = true;
+        }
 
-//       // Optional: call server verification for mobile
-//       const userId = this.service.getUserId();
-//       const phone = this.formData.mobile;
-
-//       if (userId && phone) {
-//         console.log('Calling verifyMobileOnServer...');
-//         await this.service.verifyMobileOnServer(userId, phone).toPromise();
-//         console.log('verifyMobileOnServer completed');
-//       }
-//     } else {
-//       console.warn('userId not returned from backend!');
-//     }
-
-//     this.isSubmitting = false;
-//     this.submitSuccess = true;
-//     this.showVerificationModal = true;
-//   },
-//   error: (err) => {
-//     console.error('Registration error:', err);
-//     this.isSubmitting = false;
-//   }
-// });
-
-this.service.submitRegistration(formData).subscribe({
-  next: (res) => {
-    console.log('Backend response:', res);
-
-    if (res.userId) {
-      this.service.saveAuth(res.token, res.role, res.name, res.userId);
-    this.formData.userId = res.userId;
-      this.isSubmitting = false;
-      this.submitSuccess = true;
-      // 👉 ONLY open verification modal here
-      this.showVerificationModal = true;
-    }
-
-    this.isSubmitting = false;
-  },
-  error: (err) => {
-    console.error('Registration error:', err);
-    this.isSubmitting = false;
-  }
-});
-  }
-
-
-
-
-
-
-
-  validateStep1(): boolean {
-    this.errors = {};
-
-    // if (!this.formData.fullName?.trim()) {
-    //   this.errors.fullName = 'Full Name is required';
-    // }
-    const name = this.formData.fullName?.trim();
-
-if (!name) {
-  this.errors.fullName = 'Full Name is required';
-} 
-else if (name.length < 3) {
-  this.errors.fullName = 'Full Name must be at least 3 characters';
-} 
-else if (!/^[A-Za-z\u0900-\u097F\s.-]+$/.test(name)) {
-  this.errors.fullName = 'Full Name contains invalid characters';
-}
-
-
-    if (!this.formData.email?.trim()) {
-      this.errors.email = 'Email is required';
-    } else if (!/^\S+@\S+\.\S+$/.test(this.formData.email)) {
-      this.errors.email = 'Enter a valid email';
-    }
-
-    if (!this.formData.mobile?.trim()) {
-      this.errors.mobile = 'Mobile number is required';
-    } else if (!/^\d{10}$/.test(this.formData.mobile)) {
-      this.errors.mobile = 'Enter valid 10-digit mobile';
-    }
-
-    if (!this.formData.serviceCategoryId) {
-      this.errors.serviceCategoryId = 'Select a service category';
-    }
-    // if (!this.formData.subCategoryIds?.length) {
-    //   this.errors.subCategoryIds = 'Select at least one service subCategoory';
-    // }
-    // 🔹 SUBCATEGORY VALIDATION
-    if (this.formData.hasSubCategories) {
-      if (!this.formData.subCategoryIds?.length) {
-        this.errors.subCategoryIds = 'Select at least one service subcategory';
+        this.isSubmitting = false;
+      },
+      error: (err) => {
+        console.error('Registration error:', err);
+        this.isSubmitting = false;
       }
-    }
-
-
-    if (!this.formData.password?.trim()) {
-      this.errors.password = 'Password is required';
-    }
-    else if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/.test(this.formData.password)) {
-      this.errors.password =
-        'Password must be at least 6 characters and include 1 uppercase letter, 1 number, and 1 special character';
-    }
-
-    if (!this.formData.professionalType?.trim()) {
-      this.errors.professionalType = 'Select professional type';
-    }
-
-    return Object.keys(this.errors).length === 0;
-  }
-
-
-  validateStep3(): boolean {
-    this.errors = {};
-    if (!this.formData.businessName?.length) {
-      this.errors.businessName = 'Business name required';
-    }
-    if (!this.formData.registrationType?.length) {
-      this.errors.registrationType = 'Select registration type';
-    }
-    if (!this.formData.registrationNumber?.length) {
-      this.errors.registrationNumber = 'Registration number required';
-    }
-    if (!this.formData.registrationDocument) {
-      this.errors.registrationDocument = 'Upload registration document';
-    }
-    if (!this.formData.addressProof) {
-      this.errors.addressProof = 'Upload address proof';
-    }
-    if (!this.formData.line1?.trim()) {
-      this.errors.line1 = 'Line 1 is required';
-    }
-    if (!this.formData.stateId) {
-      this.errors.stateId = 'Select state';
-    }
-
-    if (!this.formData.cityId) {
-      this.errors.city = 'Select city';
-    }
-
-    if (!this.formData.pinCode?.trim()) {
-      this.errors.pinCode = 'PIN Code is required';
-    } else if (!/^\d{6}$/.test(this.formData.pinCode)) {
-      this.errors.pinCode = 'PIN Code must be exactly 6 digits';
-    }
-
-
-
-    return Object.keys(this.errors).length === 0;
-  }
-
-  validateStep4(): boolean {
-    this.errors = {};
-
-    if (!this.formData.selfOverview || this.formData.selfOverview.trim().length < 150) {
-      this.errors.selfOverview = 'Minimum 150 characters required';
-    }
-
-    if (!this.formData.skillsBackground || this.formData.skillsBackground.trim().length < 50) {
-      this.errors.skillsBackground = 'Minimum 50 characters required';
-    }
-  if (!this.formData.howToKnowId) {
-    this.errors.howToKnowId = 'Please select an option';
-  }
-
-  // ShowOtherInput logic should be checked via the selected ID
-  if (this.formData.howToKnowId === 6 && (!this.formData.howToKnowOther || this.formData.howToKnowOther.trim() === '')) {
-    this.errors.howToKnowOther = 'Please specify how you heard about us';
-  }
-
-    return Object.keys(this.errors).length === 0;
+    });
   }
 
 
 
-async openMobileVerification() {
-  this.verificationType = 'mobile';
-  this.showOtpModal = true;
 
-  try {
-    await this.service.sendOtp(this.formData?.mobile);
-  } catch (err) {
-    console.error(err);
-    alert('Failed to send OTP');
+
+
+
+  // validateStep1(): boolean {
+  //   this.errors = {};
+
+  //   const name = this.formData.fullName?.trim();
+
+  //   if (!name) {
+  //     this.errors.fullName = 'Full Name is required';
+  //   }
+  //   else if (name.length < 3) {
+  //     this.errors.fullName = 'Full Name must be at least 3 characters';
+  //   }
+  //   else if (!/^[A-Za-z\u0900-\u097F\s.-]+$/.test(name)) {
+  //     this.errors.fullName = 'Full Name contains invalid characters';
+  //   }
+
+
+  //   if (!this.formData.email?.trim()) {
+  //     this.errors.email = 'Email is required';
+  //   } else if (!/^\S+@\S+\.\S+$/.test(this.formData.email)) {
+  //     this.errors.email = 'Enter a valid email';
+  //   }
+
+  //   if (!this.formData.mobile?.trim()) {
+  //     this.errors.mobile = 'Mobile number is required';
+  //   } else if (!/^\d{10}$/.test(this.formData.mobile)) {
+  //     this.errors.mobile = 'Enter valid 10-digit mobile';
+  //   }
+
+  //   if (!this.formData.serviceCategoryId) {
+  //     this.errors.serviceCategoryId = 'Select a service category';
+  //   }
+
+  //   // 🔹 SUBCATEGORY VALIDATION
+  //   if (this.formData.hasSubCategories) {
+  //     if (!this.formData.subCategoryIds?.length) {
+  //       this.errors.subCategoryIds = 'Select at least one service subcategory';
+  //     }
+  //   }
+
+
+  //   if (!this.formData.password?.trim()) {
+  //     this.errors.password = 'Password is required';
+  //   }
+  //   else if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/.test(this.formData.password)) {
+  //     this.errors.password =
+  //       'Password must be at least 6 characters and include 1 uppercase letter, 1 number, and 1 special character';
+  //   }
+
+  //   if (!this.formData.professionalType?.trim()) {
+  //     this.errors.professionalType = 'Select professional type';
+  //   }
+
+  //   return Object.keys(this.errors).length === 0;
+  // }
+
+
+  // validateStep3(): boolean {
+  //   this.errors = {};
+  //   if (!this.formData.businessName?.length) {
+  //     this.errors.businessName = 'Business name required';
+  //   }
+  //   if (!this.formData.registrationType?.length) {
+  //     this.errors.registrationType = 'Select registration type';
+  //   }
+  //   if (!this.formData.registrationNumber?.length) {
+  //     this.errors.registrationNumber = 'Registration number required';
+  //   }
+  //   if (!this.formData.registrationDocument) {
+  //     this.errors.registrationDocument = 'Upload registration document';
+  //   }
+  //   if (!this.formData.addressProof) {
+  //     this.errors.addressProof = 'Upload address proof';
+  //   }
+  //   if (!this.formData.line1?.trim()) {
+  //     this.errors.line1 = 'Line 1 is required';
+  //   }
+  //   if (!this.formData.stateId) {
+  //     this.errors.stateId = 'Select state';
+  //   }
+
+  //   if (!this.formData.cityId) {
+  //     this.errors.city = 'Select city';
+  //   }
+
+  //   if (!this.formData.pinCode?.trim()) {
+  //     this.errors.pinCode = 'PIN Code is required';
+  //   } else if (!/^\d{6}$/.test(this.formData.pinCode)) {
+  //     this.errors.pinCode = 'PIN Code must be exactly 6 digits';
+  //   }
+
+
+
+  //   return Object.keys(this.errors).length === 0;
+  // }
+
+  // validateStep4(): boolean {
+  //   this.errors = {};
+
+  //   if (!this.formData.selfOverview || this.formData.selfOverview.trim().length < 150) {
+  //     this.errors.selfOverview = 'Minimum 150 characters required';
+  //   }
+
+  //   if (!this.formData.skillsBackground || this.formData.skillsBackground.trim().length < 50) {
+  //     this.errors.skillsBackground = 'Minimum 50 characters required';
+  //   }
+  //   if (!this.formData.howToKnowId) {
+  //     this.errors.howToKnowId = 'Please select an option';
+  //   }
+
+  //   // ShowOtherInput logic should be checked via the selected ID
+  //   if (this.formData.howToKnowId === 6 && (!this.formData.howToKnowOther || this.formData.howToKnowOther.trim() === '')) {
+  //     this.errors.howToKnowOther = 'Please specify how you heard about us';
+  //   }
+
+  //   return Object.keys(this.errors).length === 0;
+  // }
+
+
+
+  async openMobileVerification() {
+    this.verificationType = 'mobile';
+    this.showOtpModal = true;
+
+    try {
+      await this.service.sendOtp(this.formData?.mobile);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to send OTP');
+    }
   }
-}
 
 
 
-closeVerificationModal() {
+  closeVerificationModal() {
 
-  // Close UI
-  this.showVerificationModal = false;
-  this.showOtpModal = false;
+    // Close UI
+    this.showVerificationModal = false;
+    this.showOtpModal = false;
 
-  // Optional: clear mobile/email
-  this.formData.mobile = '';
-  this.formData.email = '';
+    // Optional: clear mobile/email
+    this.formData.mobile = '';
+    this.formData.email = '';
 
-  // 🔥 CLEAR FIREBASE STATE SAFELY
-  this.service.clearRecaptcha();
-}
+    // 🔥 CLEAR FIREBASE STATE SAFELY
+    this.service.clearRecaptcha();
+  }
   // Back from OTP
-handleOtpBack() {
-  
-  this.showOtpModal = false; // hide OTP
-  this.service.clearRecaptcha(); // 🔥 clear Firebase state
-}
+  handleOtpBack() {
 
-openEmailVerification() {
-  if (!this.formData.email || !this.formData.userId) {
-    alert('Email or User ID missing!');
-    return;
+    this.showOtpModal = false; // hide OTP
+    this.service.clearRecaptcha(); // 🔥 clear Firebase state
   }
 
-  this.verificationType = 'email';
-
-  this.service.sendEmailOtp({
-    userId: this.formData.userId,
-    email: this.formData.email,
-    fullName: this.formData.fullName
-  }).subscribe({
-    next: (res: any) => {
-      console.log('Email OTP sent response:', res);
-
-      this.formData.emailOtpToken = res.token;
-
-      if (!res.token) {
-        alert('OTP token not received from server');
-        return;
-      }
-
-      // ✅ Open modal ONLY after success
-      this.showOtpModal = true;
-    },
-    error: (err) => {
-      console.error('Send email OTP error:', err);
-      alert('Failed to send email OTP');
-    }
-  });
-}
-
-onOTPVerifiedEmail(event: { otp: string }) {
-  if (this.verificationType === 'email') {
-    if (!this.formData.emailOtpToken) {
-      alert('OTP token missing!');
+  openEmailVerification() {
+    if (!this.formData.email || !this.formData.userId) {
+      alert('Email or User ID missing!');
       return;
     }
 
-    this.service.verifyEmailOtp({
-      otp: event.otp,
-      token: this.formData.emailOtpToken
-    }).subscribe({
-      next: () => {
-        alert('Email verified successfully!');
-        this.showOtpModal = false;
-        this.showVerificationModal = false;
+    this.verificationType = 'email';
 
-        // Mark email verified in local state
-        this.formData.isEmailVerified = true;
+    this.service.sendEmailOtp({
+      userId: this.formData.userId,
+      email: this.formData.email,
+      fullName: this.formData.fullName
+    }).subscribe({
+      next: (res: any) => {
+        console.log('Email OTP sent response:', res);
+
+        this.formData.emailOtpToken = res.token;
+
+        if (!res.token) {
+          alert('OTP token not received from server');
+          return;
+        }
+
+        // ✅ Open modal ONLY after success
+        this.showOtpModal = true;
       },
-      error: () => {
-        alert('Invalid or expired OTP');
+      error: (err) => {
+        console.error('Send email OTP error:', err);
+        alert('Failed to send email OTP');
       }
     });
-  } 
-  else if (this.verificationType === 'mobile') {
-    this.isMobileVerified = true;
-    this.showOtpModal = false;
-    this.showVerificationModal = false;
   }
-}
+
+  onOTPVerifiedEmail(event: { otp: string }) {
+    if (this.verificationType === 'email') {
+      if (!this.formData.emailOtpToken) {
+        alert('OTP token missing!');
+        return;
+      }
+
+      this.service.verifyEmailOtp({
+        otp: event.otp,
+        token: this.formData.emailOtpToken
+      }).subscribe({
+        next: () => {
+          alert('Email verified successfully!');
+          this.showOtpModal = false;
+          this.showVerificationModal = false;
+
+          // Mark email verified in local state
+          this.formData.isEmailVerified = true;
+        },
+        error: () => {
+          alert('Invalid or expired OTP');
+        }
+      });
+    }
+    else if (this.verificationType === 'mobile') {
+      this.isMobileVerified = true;
+      this.showOtpModal = false;
+      this.showVerificationModal = false;
+    }
+  }
 }
