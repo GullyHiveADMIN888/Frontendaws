@@ -16,8 +16,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { interval,Subscription } from 'rxjs';
- import { environment } from '../../environments/environment';
-//  import { environment } from '../../environments/environment.prod';
+// import { environment } from '../../environments/environment';
+  import { environment } from '../../environments/environment.prod';
 
 
 import {  Inject, PLATFORM_ID } from '@angular/core';
@@ -29,6 +29,20 @@ import { AuthService } from '../auth/auth.service';
 import {  HttpErrorResponse } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 
+interface LoginResponse {
+  token: string;
+  role: string;
+  userId: number;
+  name: string;
+  email: string;
+  phone: string;
+  mobileVerified: boolean;
+  emailVerified: boolean;
+
+  emailOtpToken?: string;   // ✅ optional
+  isEmailVerified?: boolean;
+}
+
 @Component({
   selector: 'app-landing',
   templateUrl: './landing.component.html',
@@ -36,6 +50,7 @@ import { catchError } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule, OTPVerificationComponent]
 })
+
 export class LandingPageComponent implements OnInit, OnDestroy {
   scrolled = false;
   currentTestimonial = 0;
@@ -86,7 +101,7 @@ recaptchaVerifier!: RecaptchaVerifier;
 showVerificationModal: boolean = false;
 verificationType: 'mobile' | 'email' | null = null;
 verificationTypes: 'forgot' | 'login' | null = null;
-pendingLoginResponse: any = null;
+pendingLoginResponse!: LoginResponse;
 
 verificationData = {
   phone: '',
@@ -298,6 +313,8 @@ passwordError = '';
       rating: 5
     }
   ];
+
+  
 
   private subscription?: Subscription;
 
@@ -602,7 +619,7 @@ onLoginSubmit(event: Event): void {
   console.log('Login response:', response); 
 
   // 🚨 1️⃣ First check mobile verification
-  if (!response.mobileVerified) {
+  if (!response.mobileVerified && !response.emailVerified) {
 
     // Store temporary data (DO NOT store token yet)
    this.verificationData = {
@@ -832,7 +849,7 @@ async onVerify() {
 
       // 👉 Call backend to mark mobile verified
       await this.authService.verifyMobileOnServer(
-        this.pendingLoginResponse.userId,
+       this.pendingLoginResponse.userId.toString(),
         this.verificationData.phone
       ).toPromise();
 
@@ -927,12 +944,17 @@ handleOtpBack() {
   onOTPVerified() {
     this.showOtpModal = false;
     this.showVerificationModal = false;
-  //  this.currentStep = 1;
-    // this.successMessage = 'Mobile number verified successfully!';
        this.showLoginModal=true;
   }
 
-
+  // Back from OTP
+handleOtpBackotp() {
+  
+  this.showOtpModal = false; // hide OTP
+  this.authService.clearRecaptcha(); // 🔥 clear Firebase state
+     this.showLoginModal=false;
+      this.showVerificationModal = true;
+}
 
 
 openEmailVerification() {
@@ -957,9 +979,10 @@ openEmailVerification() {
         alert('OTP token not received from server');
         return;
       }
-
+ this.showVerificationModal = false;
+    this.showOtpModal = true;
       // ✅ Open modal ONLY after success
-      this.showOtpModals = true;
+     // this.showOtpModals = true;
     },
     error: (err) => {
       console.error('Send email OTP error:', err);
@@ -967,7 +990,7 @@ openEmailVerification() {
     }
   });
 }
-showOtpModals = true;
+// showOtpModals = true;
 
 onOTPVerifiedEmail(event: { otp: string }) {
   if (this.verificationType === 'email') {
@@ -982,11 +1005,12 @@ onOTPVerifiedEmail(event: { otp: string }) {
     }).subscribe({
       next: () => {
         alert('Email verified successfully!');
-        this.showOtpModals = false;
+       // this.showOtpModals = false;
+        this.showOtpModal = false;
         this.showVerificationModal = false;
-
+        this.showLoginModal=true;
         // Mark email verified in local state
-        this.pendingLoginResponse.isEmailVerified = true;
+       // this.pendingLoginResponse.isEmailVerified = true;
       },
       error: () => {
         alert('Invalid or expired OTP');
@@ -995,8 +1019,9 @@ onOTPVerifiedEmail(event: { otp: string }) {
   } 
   else if (this.verificationType === 'mobile') {
     this.isMobileVerified = true;
-    this.showOtpModals = false;
+ //   this.showOtpModals = false;
     this.showVerificationModal = false;
+     this.showOtpModal = false;
   }
 }
 
