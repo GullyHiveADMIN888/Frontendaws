@@ -898,6 +898,7 @@ async submitNewPassword() {
 }
 closePasswordPopup() {
   this.showPasswordPopup = false;
+  this.showOtpModals =false;
   this.newPassword = '';
   this.confirmPassword = '';
   this.passwordError = '';
