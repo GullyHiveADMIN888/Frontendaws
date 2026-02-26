@@ -167,7 +167,7 @@ async onVerify() {
       await this.authService.verifyMobileOnServer(userId, phone).toPromise();
       console.log('verifyMobileOnServer completed');
     }
-      
+      console.log('verifyMobileOnServer completed...');
     this.onVerified.emit();
    
 
