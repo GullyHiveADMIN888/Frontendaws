@@ -802,29 +802,6 @@ async onResend() {
 showOtpModals = false;
 
 
-// async onVerify() {
-//   const otpValue = this.otp.join('');
-//   if (otpValue.length !== 6) return;
-
-//   this.isVerifying = true;
-//   this.error = '';
-
-//   try {
-//     // 1️⃣ Verify OTP via Firebase
-//     await this.authService.verifyOtp(otpValue);
-
-//     // ✅ CLOSE OTP MODAL
-//     this.showOtpModal = false;
-
-//     // ✅ OPEN PASSWORD POPUP
-//     this.showPasswordPopup = true;
-
-//   } catch (e: any) {
-//     this.error = e.message || 'OTP verification failed';
-//   } finally {
-//     this.isVerifying = false;
-//   }
-// }
 async onVerify() {
   const otpValue = this.otp.join('');
   if (otpValue.length !== 6) return;
