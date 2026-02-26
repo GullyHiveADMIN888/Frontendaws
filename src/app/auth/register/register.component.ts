@@ -445,36 +445,7 @@ async openMobileVerification() {
   }
 }
 
-// openEmailVerification() {
-//   this.verificationType = 'email';
-//   this.showOtpModal = true;
 
-//   this.service.sendEmailOtp(this.formData.email).subscribe({
-//     next: () => {},
-//     error: (err) => alert('Failed to send email OTP')
-//   });
-// }
-// openEmailVerification() {
-//   this.verificationType = 'email';
-//   this.showOtpModal = true; // show OTP component
-
-//   // Call backend to send OTP
-//   this.service.sendEmailOtp({
-//     userId: this.formData.userId, // pass userId from registration response
-//     email: this.formData.email,
-//     fullName: this.formData.fullName
-//   }).subscribe({
-//     next: (res: any) => {
-//       console.log('Email OTP sent', res);
-//       // save JWT token to use in verification
-//       this.formData.emailOtpToken = res.token;
-//     },
-//     error: (err) => {
-//       console.error('Failed to send email OTP', err);
-//       alert('Failed to send email OTP');
-//     }
-//   });
-// }
 
 closeVerificationModal() {
 
@@ -495,36 +466,7 @@ handleOtpBack() {
   this.showOtpModal = false; // hide OTP
   this.service.clearRecaptcha(); // 🔥 clear Firebase state
 }
-// openEmailVerification() {
-//   if (!this.formData.email || !this.formData.userId) {
-//     alert('Email or User ID missing!');
-//     return;
-//   }
 
-//   this.verificationType = 'email';
-//   this.showOtpModal = true;
-
-//   this.service.sendEmailOtp({
-//     userId: this.formData.userId,
-//     email: this.formData.email,
-//     fullName: this.formData.fullName
-//   }).subscribe({
-//     next: (res: any) => {
-//       this.formData.emailOtpToken = res.token;
-//       console.log('Email OTP sent, token:', res.token);
-//     },
-//     error: () => {
-//       alert('Failed to send email OTP');
-//       this.showOtpModal = false;
-//     }
-//   });
-// }
-// onOTPVerifiedEmail(event: { otp: string }) {
-//   alert('Email verified successfully!');
-//   this.showOtpModal = false;
-//   this.showVerificationModal = false;
-//   this.formData.isEmailVerified = true; // mark as verified
-// }
 openEmailVerification() {
   if (!this.formData.email || !this.formData.userId) {
     alert('Email or User ID missing!');

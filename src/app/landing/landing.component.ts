@@ -29,6 +29,20 @@ import { AuthService } from '../auth/auth.service';
 import {  HttpErrorResponse } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 
+interface LoginResponse {
+  token: string;
+  role: string;
+  userId: number;
+  name: string;
+  email: string;
+  phone: string;
+  mobileVerified: boolean;
+  emailVerified: boolean;
+
+  emailOtpToken?: string;   // ✅ optional
+  isEmailVerified?: boolean;
+}
+
 @Component({
   selector: 'app-landing',
   templateUrl: './landing.component.html',
@@ -36,6 +50,7 @@ import { catchError } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule, OTPVerificationComponent]
 })
+
 export class LandingPageComponent implements OnInit, OnDestroy {
   scrolled = false;
   currentTestimonial = 0;
@@ -86,7 +101,7 @@ recaptchaVerifier!: RecaptchaVerifier;
 showVerificationModal: boolean = false;
 verificationType: 'mobile' | 'email' | null = null;
 verificationTypes: 'forgot' | 'login' | null = null;
-pendingLoginResponse: any = null;
+pendingLoginResponse!: LoginResponse;
 
 verificationData = {
   phone: '',
@@ -298,6 +313,8 @@ passwordError = '';
       rating: 5
     }
   ];
+
+  
 
   private subscription?: Subscription;
 
@@ -602,7 +619,7 @@ onLoginSubmit(event: Event): void {
   console.log('Login response:', response); 
 
   // 🚨 1️⃣ First check mobile verification
-  if (!response.mobileVerified) {
+  if (!response.mobileVerified && !response.emailVerified) {
 
     // Store temporary data (DO NOT store token yet)
    this.verificationData = {
@@ -832,7 +849,7 @@ async onVerify() {
 
       // 👉 Call backend to mark mobile verified
       await this.authService.verifyMobileOnServer(
-        this.pendingLoginResponse.userId,
+       this.pendingLoginResponse.userId.toString(),
         this.verificationData.phone
       ).toPromise();
 
@@ -927,13 +944,88 @@ handleOtpBack() {
   onOTPVerified() {
     this.showOtpModal = false;
     this.showVerificationModal = false;
-  //  this.currentStep = 1;
-    // this.successMessage = 'Mobile number verified successfully!';
        this.showLoginModal=true;
   }
 
+  // Back from OTP
+handleOtpBackotp() {
+  
+  this.showOtpModal = false; // hide OTP
+  this.authService.clearRecaptcha(); // 🔥 clear Firebase state
+     this.showLoginModal=false;
+      this.showVerificationModal = true;
+}
 
 
+openEmailVerification() {
+  if (!this.pendingLoginResponse.email || !this.pendingLoginResponse.userId) {
+    alert('Email or User ID missing!');
+    return;
+  }
+
+  this.verificationType = 'email';
+
+  this.authService.sendEmailOtp({
+    userId: this.pendingLoginResponse.userId,
+    email: this.pendingLoginResponse.email,
+    fullName: this.pendingLoginResponse.name
+  }).subscribe({
+    next: (res: any) => {
+      console.log('Email OTP sent response:', res);
+
+      this.pendingLoginResponse.emailOtpToken = res.token;
+
+      if (!res.token) {
+        alert('OTP token not received from server');
+        return;
+      }
+ this.showVerificationModal = false;
+    this.showOtpModal = true;
+      // ✅ Open modal ONLY after success
+     // this.showOtpModals = true;
+    },
+    error: (err) => {
+      console.error('Send email OTP error:', err);
+      alert('Failed to send email OTP');
+    }
+  });
+}
+// showOtpModals = true;
+
+onOTPVerifiedEmail(event: { otp: string }) {
+  if (this.verificationType === 'email') {
+    if (!this.pendingLoginResponse.emailOtpToken) {
+      alert('OTP token missing!');
+      return;
+    }
+
+    this.authService.verifyEmailOtp({
+      otp: event.otp,
+      token: this.pendingLoginResponse.emailOtpToken
+    }).subscribe({
+      next: () => {
+        alert('Email verified successfully!');
+       // this.showOtpModals = false;
+        this.showOtpModal = false;
+        this.showVerificationModal = false;
+        this.showLoginModal=true;
+        // Mark email verified in local state
+       // this.pendingLoginResponse.isEmailVerified = true;
+      },
+      error: () => {
+        alert('Invalid or expired OTP');
+      }
+    });
+  } 
+  else if (this.verificationType === 'mobile') {
+    this.isMobileVerified = true;
+ //   this.showOtpModals = false;
+    this.showVerificationModal = false;
+     this.showOtpModal = false;
+  }
+}
+
+isMobileVerified = false;
 
 }
 
