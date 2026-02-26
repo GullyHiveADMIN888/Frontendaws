@@ -990,7 +990,7 @@
     <app-otp-verification
       *ngIf="verificationType === 'mobile'"
       [mobile]="pendingLoginResponse.phone"
-      (onVerified)="onVerify()"
+      (onVerified)="onOTPVerified()"
       (onBack)="handleOtpBackotp()">
     </app-otp-verification>
 
