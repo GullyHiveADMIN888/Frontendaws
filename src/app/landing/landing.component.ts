@@ -919,50 +919,14 @@ handleOtpBack() {
      this.showLoginModal=true;
 }
    /* OTP VERIFIED */
-  // onOTPVerified() {
-  //   this.showOtpModal = false;
-  //   this.showVerificationModal = false;
-  //      this.showLoginModal=true;
-  // }
-
-
-async onOTPVerified() {
-  const otpValue = this.otp.join('');
-
-  if (otpValue.length !== 6) {
-    this.error = 'Enter full OTP';
-     alert(this.error); // show alert if OTP is incomplete
-    return;
-  }
-
-  this.isVerifying = true;
-   this.error = '';
-
-
-  try {
-    await this.authService.verifyOtp(otpValue);
-
-    const userId = this.authService.getUserId();
-    const phone = this.verificationData.phone; // or wherever you store the phone number
-
-    if (userId && phone) {
-      console.log('Calling verifyMobileOnServer...');
-      await this.authService.verifyMobileOnServer(userId, phone).toPromise();
-      console.log('verifyMobileOnServer completed');
-    }
-       this.showOtpModal = false;
-     this.showVerificationModal = false;
+  onOTPVerified() {
+    this.showOtpModal = false;
+    this.showVerificationModal = false;
        this.showLoginModal=true;
- //   this.onVerified.emit();
-   
-
-  } catch (err) {
-    console.error('Error during OTP verification:', err);
-    this.error = 'Invalid OTP';
-  } finally {
-    this.isVerifying = false;
   }
-}
+
+
+
 
   // Back from OTP
 handleOtpBackotp() {
