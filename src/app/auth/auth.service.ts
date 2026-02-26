@@ -62,16 +62,9 @@ export class AuthService implements CanActivate {
 
   // Register
 
-  // submitRegistration(formData: FormData) {
-  //   return this.http.post(`${this.apiUrl}/register`, formData);
-  // }
-
   submitRegistration(formData: FormData): Observable<RegistrationResponse> {
     return this.http.post<RegistrationResponse>(`${this.apiUrl}/register`, formData);
   }
-
-
-
 
   // auth.service.ts
   saveAuth(token: string, role: string, name?: string, userId?: string) {
@@ -80,8 +73,6 @@ export class AuthService implements CanActivate {
     localStorage.setItem('userId', userId || ''); // Store ID
     if (name) localStorage.setItem('name', name);
   }
-
-
 
   redirectByRole(role: string) {
     const routes: Record<string, string> = {
@@ -156,22 +147,6 @@ export class AuthService implements CanActivate {
     return this.http.post(`${this.apiUrl}/update-password`, data).toPromise();
   }
 
-
-
-  // /** 🔹 Verify OTP */
-  //   async verifyOtp(otp: string) {
-  //     if (!this.confirmationResult) {
-  //       throw new Error('OTP not requested');
-  //     }
-  //     return this.confirmationResult.confirm(otp);
-
-  //   //   const result = await this.confirmationResult.confirm(otp);
-  //   // // 🔥 CLEAR after success
-  //   // this.clearRecaptcha();
-  //   // return result;
-
-  //   }
-
   async verifyOtp(otp: string) {
     if (!this.confirmationResult) {
       throw new Error('OTP not requested');
@@ -226,13 +201,6 @@ export class AuthService implements CanActivate {
     this.recaptchaVerifier = undefined;
     this.confirmationResult = undefined;
   }
-
-  // verifyMobileOnServer(userId: string, phone: string) {
-  //   return this.http.post(`${this.apiUrl}/verify-mobile`, {
-  //     userId,
-  //     phone
-  //   });
-  // }
 
   verifyMobileOnServer(userId: string, phone: string) {
     console.log('verifyMobileOnServer called with:', userId, phone);

@@ -987,6 +987,7 @@
       (onBack)="handleOtpBackotp()">
     </app-otp-verification>
 
+   <!-- when Seprate function on otp comopnet .... -->
     <!-- <app-otp-verification
       *ngIf="verificationType === 'mobile'"
       [mobile]="pendingLoginResponse.phone"
@@ -994,6 +995,8 @@
       (onVerified)="onOTPVerified()"
       (onBack)="handleOtpBackotp()">
     </app-otp-verification> -->
+<!-- 
+    when both for regisret and login time manage ...... -->
     <app-otp-verification
   *ngIf="verificationType === 'mobile'"
   [mobile]="pendingLoginResponse?.phone || ''"

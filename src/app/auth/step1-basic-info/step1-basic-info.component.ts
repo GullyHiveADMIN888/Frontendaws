@@ -4,6 +4,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PLATFORM_ID } from '@angular/core';
 import { AuthService } from '../auth.service';
+import { forkJoin } from 'rxjs';
 
 import { Auth, signInWithPhoneNumber, ConfirmationResult } from '@angular/fire/auth';
 
@@ -203,62 +204,157 @@ onSendOTP() {
 }
 //......
 
+
+
 // onNextClick() {
-//   if (!this.isMobileVerified) {
-//     alert('⚠️ Please verify your mobile number before continuing');
+//   const mobile = this.formData?.mobile;
+//    const email = this.formData?.email;
+
+//   // if (!mobile) {
+//   //   this.errors.mobile = 'Mobile number is required';
+//   //   return;
+//   // }
+
+//   if (!/^\d{10}$/.test(mobile)) {
+//     this.errors.mobile = 'Mobile number must be 10 digits';
 //     return;
 //   }
 
-//   this.next.emit(); // go to next step
+//   // 🔥 Only check mobile existence
+//   this.authService.checkMobileExists(mobile).subscribe({
+//     next: (response) => {
+
+//       if (response.exists) {
+//         this.errors.mobile = 'Mobile number already registered';
+//         return;
+//       }
+
+//       // ✅ Mobile not exists → go next
+//       this.next.emit();
+//     },
+//     error: () => {
+//       this.errors.mobile = 'Something went wrong';
+//     }
+//   });
+//    // 🔥 Only check email existence
+//   this.authService.checkEmailExists(email).subscribe({
+//     next: (response) => {
+
+//       if (response.exists) {
+//         this.errors.email = 'Email id already registered';
+//         return;
+//       }
+
+//       // ✅ Mobile not exists → go next
+//       this.next.emit();
+//     },
+//     error: () => {
+//       this.errors.mobile = 'Something went wrong';
+//     }
+//   });
 // }
 
-onNextClick() {
-  const mobile = this.formData?.mobile;
-   const email = this.formData?.email;
 
-  if (!mobile) {
+
+
+validateStep1(): boolean {
+  this.errors = {};
+
+  const name = this.formData.fullName?.trim();
+
+  if (!name) {
+    this.errors.fullName = 'Full Name is required';
+  }
+  else if (name.length < 3) {
+    this.errors.fullName = 'Full Name must be at least 3 characters';
+  }
+  else if (!/^[A-Za-z\u0900-\u097F\s.-]+$/.test(name)) {
+    this.errors.fullName = 'Full Name contains invalid characters';
+  }
+
+  if (!this.formData.email?.trim()) {
+    this.errors.email = 'Email is required';
+  } else if (!/^\S+@\S+\.\S+$/.test(this.formData.email)) {
+    this.errors.email = 'Enter a valid email';
+  }
+
+  if (!this.formData.mobile?.trim()) {
     this.errors.mobile = 'Mobile number is required';
-    return;
+  } else if (!/^\d{10}$/.test(this.formData.mobile)) {
+    this.errors.mobile = 'Enter valid 10-digit mobile';
   }
 
-  if (!/^\d{10}$/.test(mobile)) {
-    this.errors.mobile = 'Mobile number must be 10 digits';
-    return;
+  if (!this.formData.serviceCategoryId) {
+    this.errors.serviceCategoryId = 'Select a service category';
   }
 
-  // 🔥 Only check mobile existence
-  this.authService.checkMobileExists(mobile).subscribe({
-    next: (response) => {
-
-      if (response.exists) {
-        this.errors.mobile = 'Mobile number already registered';
-        return;
-      }
-
-      // ✅ Mobile not exists → go next
-      this.next.emit();
-    },
-    error: () => {
-      this.errors.mobile = 'Something went wrong';
+  if (this.formData.hasSubCategories) {
+    if (!this.formData.subCategoryIds?.length) {
+      this.errors.subCategoryIds = 'Select at least one service subcategory';
     }
-  });
-   // 🔥 Only check email existence
-  this.authService.checkEmailExists(email).subscribe({
-    next: (response) => {
+  }
 
-      if (response.exists) {
-        this.errors.email = 'Email id already registered';
-        return;
+  if (!this.formData.password?.trim()) {
+    this.errors.password = 'Password is required';
+  }
+  else if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/.test(this.formData.password)) {
+    this.errors.password =
+      'Password must include 1 uppercase, 1 number & 1 special character';
+  }
+
+  if (!this.formData.professionalType?.trim()) {
+    this.errors.professionalType = 'Select professional type';
+  }
+
+  return Object.keys(this.errors).length === 0;
+}
+
+onNextClick() {
+
+  // 🔴 1️⃣ Local validation first
+  if (!this.validateStep1()) {
+    this.scrollToFirstError();
+    return;
+  }
+
+  const mobile = this.formData.mobile;
+  const email = this.formData.email;
+
+  // 🔴 2️⃣ Check mobile + email existence together
+  forkJoin({
+    mobileRes: this.authService.checkMobileExists(mobile),
+    emailRes: this.authService.checkEmailExists(email)
+  }).subscribe({
+    next: ({ mobileRes, emailRes }) => {
+
+      let hasError = false;
+
+      if (mobileRes.exists) {
+        this.errors.mobile = 'Mobile number already registered';
+        hasError = true;
+        this.scrollToFirstError();
       }
 
-      // ✅ Mobile not exists → go next
-      this.next.emit();
+      if (emailRes.exists) {
+        this.errors.email = 'Email id already registered';
+        hasError = true;
+        this.scrollToFirstError();
+      }
+
+      // ✅ 3️⃣ Only emit if NO errors
+      if (!hasError) {
+        this.next.emit();
+        
+      }
     },
     error: () => {
-      this.errors.mobile = 'Something went wrong';
+      this.errors.mobile = 'Something went wrong. Please try again.';
+      this.scrollToFirstError();
     }
   });
 }
+
+
 
 ngOnChanges(changes: SimpleChanges) {
   if (changes['formData'] && this.formData) {
@@ -299,6 +395,13 @@ ngOnChanges(changes: SimpleChanges) {
   }
 }
 
-
+scrollToFirstError() {
+  setTimeout(() => {
+    const firstErrorElement = document.querySelector('.text-red-500');
+    if (firstErrorElement) {
+      firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 100);
+}
 
 }
