@@ -987,12 +987,20 @@
       (onBack)="handleOtpBackotp()">
     </app-otp-verification>
 
-    <app-otp-verification
+    <!-- <app-otp-verification
       *ngIf="verificationType === 'mobile'"
       [mobile]="pendingLoginResponse.phone"
+      [userId]="pendingLoginResponse!.userId.toString()"
       (onVerified)="onOTPVerified()"
       (onBack)="handleOtpBackotp()">
-    </app-otp-verification>
+    </app-otp-verification> -->
+    <app-otp-verification
+  *ngIf="verificationType === 'mobile'"
+  [mobile]="pendingLoginResponse?.phone || ''"
+  [userId]="pendingLoginResponse?.userId?.toString() || ''"
+  (onVerified)="onOTPVerified()"
+  (onBack)="handleOtpBackotp()">
+</app-otp-verification>
 
   </div>
 </div>
