@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
-  import { environment } from '../../environments/environment.prod';
+ import { environment } from '../../environments/environment.prod';
  // import { environment } from '../../environments/environment';
 // --- Dashboard & Stats ---
 export interface SellerStats {
@@ -155,6 +155,7 @@ export interface Referral {
   status: 'pending' | 'approved' | 'paid'; // ✅ add this
   earnings?: string;
   amount?: number;   // numeric for totals
+  referralCode?: string;
 }
 
 // ────────────── MODELS ──────────────
@@ -354,7 +355,14 @@ buyLead(leadId: number): Observable<any> {
     return this.http.get<{ success: boolean; data: Referral[] }>(
       `${this.apiUrl}/refer/${sellerId}`,
       { headers: this.getHeaders() }
-    ).pipe(map(res => res.data));
+    ).pipe(
+        map(res => {
+      console.log('Full API Response:', res);      // 🔥 entire response
+      console.log('Referrals Data:', res.data);    // 🔥 only data
+      return res.data;
+    })
+      // map(res => res.data)
+    );
   }
 
   // Service Categories APIs

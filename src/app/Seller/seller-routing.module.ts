@@ -62,7 +62,7 @@ const routes: Routes = [
         children: [
           { path: 'profile/:id', component: EditProfileComponent }
         ]
-      }
+      },
     ]
   }
 ];
@@ -72,3 +72,4 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class SellerRoutingModule {}
+

@@ -322,7 +322,10 @@ passwordError = '';
   this.loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
-    rememberMe: [false]
+    rememberMe: [false],
+     // Captcha login
+     captcha: ['', Validators.required] 
+     //...
   });
 
 
@@ -333,11 +336,31 @@ passwordError = '';
 }
   
 
+
+  // Captcha login
+captchaUrl: string = '';
+
+loadCaptcha() {
+  this.captchaUrl = `${this.apiUrl}/auth/captcha?${new Date().getTime()}`;
+}
+
+refreshCaptcha() {
+  this.loadCaptcha();
+}
+
+//...
     ngOnInit(): void {
+       // Captcha login
+     this.loadCaptcha();
+
+   
+       //...
     this.setupScrollListener();
     this.loadRememberedEmail();
    
   }
+
+  
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
@@ -579,9 +602,9 @@ onLoginSubmit(event: Event): void {
   const formValue = this.loginForm.value;
  const loginPayload = {
   username: this.loginForm.value.email,
-  password: this.loginForm.value.password
+  password: this.loginForm.value.password,
+  captcha: this.loginForm.value.captcha
 };
-
 
 
   // Handle remember me functionality
@@ -594,7 +617,7 @@ onLoginSubmit(event: Event): void {
   }
 
   // Make API call to .NET Core 8 backend
-  this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
+  this.http.post(`${this.apiUrl}/auth/login`, loginPayload, { withCredentials: true })
     .pipe(
       catchError((error: HttpErrorResponse) => {
         this.isLoggingIn = false;
@@ -671,9 +694,22 @@ onLoginSubmit(event: Event): void {
       case 401:
         this.loginError = 'Invalid email or password';
         break;
-      case 400:
+      // case 400:
+      //   this.loginError = 'Invalid request. Please check your input';
+      //   break;
+       case 400:
+      if (error.error?.message === 'Invalid captcha') {
+        this.loginError = 'Invalid captcha. Please try again.';
+        
+        // Clear captcha input
+        this.loginForm.get('captcha')?.reset();
+        
+        // Refresh captcha image
+        this.refreshCaptcha();
+      } else {
         this.loginError = 'Invalid request. Please check your input';
-        break;
+      }
+      break;
       case 403:
         this.loginError = 'Account not verified. Please verify your email';
         break;
@@ -701,6 +737,7 @@ onLoginSubmit(event: Event): void {
     this.showLoginModal = true;
     this.loginError = '';
     this.loginData = { email: '', password: '' };
+    this.refreshCaptcha();
   }
 
   closeLoginModal(): void {
@@ -708,6 +745,13 @@ onLoginSubmit(event: Event): void {
     this.loginData = { email: '', password: '' };
     this.loginError = '';
     this.isLoggingIn = false;
+
+
+     // Reset full form (best way)
+  this.loginForm.reset();
+
+  // Optional: refresh captcha when modal opens next time
+  this.captchaUrl = '';
   }
 
 

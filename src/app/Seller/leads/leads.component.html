@@ -15,18 +15,15 @@
       </button>
     </div> -->
     <div class="flex gap-3 mb-4">
-  <button 
-    *ngFor="let s of statuses"
-    (click)="setFilter(s.value)"
-    class="px-4 py-2 rounded-lg font-medium"
-    [ngClass]="filterStatus === s.value 
+      <button *ngFor="let s of statuses" (click)="setFilter(s.value)" class="px-4 py-2 rounded-lg font-medium"
+        [ngClass]="filterStatus === s.value 
       ? 'bg-orange-600 text-white' 
       : 'bg-gray-100'">
 
-    {{ s.label }}
+        {{ s.label }}
 
-  </button>
-</div>
+      </button>
+    </div>
 
     <!-- TOP BAR -->
     <div class="flex justify-between items-center mb-6">
@@ -97,10 +94,10 @@
 
                   <!-- {{ lead.unlockedCount || 0 }} Unlocked -->
 
-{{ lead.leadType === 'standard' 
-      ? (lead.unlockedCount || 0) + ' Unlocked' 
-      : (lead.leadType === 'confirmed' ? (lead.committedCount || 0) + ' Confirmed' : '') 
-  }}
+                  {{ lead.leadType === 'standard'
+                  ? (lead.unlockedCount || 0) + ' Unlocked'
+                  : (lead.leadType === 'confirmed' ? (lead.committedCount || 0) + ' Confirmed' : '')
+                  }}
 
                 </span>
 
@@ -122,7 +119,7 @@
               <span class="flex items-center gap-1">
                 <i class="ri-map-pin-line text-orange-500"></i>
                 {{ lead.location }}
-                   <span *ngIf="lead?.areaName">({{ lead?.areaName }})</span> 
+                <span *ngIf="lead?.areaName">({{ lead?.areaName }})</span>
               </span>
 
               <span class="flex items-center gap-1">
@@ -234,7 +231,7 @@
         <p class="text-sm text-gray-500 mt-1 flex items-center">
           <i class="ri-map-pin-line mr-1"></i>
           {{ selectedLead.location }}
-            <span *ngIf="selectedLead.areaName">({{ selectedLead.areaName }})</span>
+          <span *ngIf="selectedLead.areaName">({{ selectedLead.areaName }})</span>
 
         </p>
       </div>
@@ -373,13 +370,11 @@
         Close
       </button>
 
-      <button 
-  [disabled]="selectedLead.isPurchased"
-  class="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 font-semibold rounded-lg shadow"
-  (click)="buyLead()"
->
-  {{ selectedLead.isPurchased ? 'Purchased' : 'Buy Lead' }}
-</button>
+      <button [disabled]="selectedLead.isPurchased"
+        class="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 font-semibold rounded-lg shadow"
+        (click)="buyLead()">
+        {{ selectedLead.isPurchased ? 'Purchased' : 'Buy Lead' }}
+      </button>
 
     </div>
 
@@ -423,8 +418,8 @@
 
           <p class="text-sm text-gray-500 mt-1 flex items-center">
             <i class="ri-map-pin-line mr-1"></i>
-            {{ selectedLead?.location }}   
-        <span *ngIf="selectedLead?.areaName">({{ selectedLead?.areaName }})</span> 
+            {{ selectedLead?.location }}
+            <span *ngIf="selectedLead?.areaName">({{ selectedLead?.areaName }})</span>
 
           </p>
         </div>
@@ -484,8 +479,8 @@
   </div>
 </div> -->
 
- <div class="flex justify-between items-center border rounded-xl p-4 mb-4">
-    
+    <div class="flex justify-between items-center border rounded-xl p-4 mb-4">
+
       <span class="text-sm text-gray-600">
         {{ selectedLead?.description || 'N/A' }}
       </span>
@@ -520,7 +515,7 @@
       <div *ngIf="selectedLead.providerPrice != null"
         class="flex justify-between items-center mt-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
         <span class="text-green-700 font-semibold text-sm">
-           Estimate Cost
+          Estimate Cost
         </span>
 
         <span class="text-lg font-bold text-green-600">
@@ -564,74 +559,64 @@
 
 
     </div> -->
-<div class="flex justify-end items-end gap-3">
+    <div class="flex justify-end items-end gap-3">
 
-  <!-- Small Cancel Button -->
-  <button
-    (click)="closePaymentModal()"
-    class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100"
-  >
-    Cancel
-  </button>
+      <!-- Small Cancel Button -->
+      <button (click)="closePaymentModal()"
+        class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100">
+        Cancel
+      </button>
 
-  
 
-   <button
-    class="px-3 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md flex flex-col items-center justify-center min-w-[160px]
+
+      <button class="px-3 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md flex flex-col items-center justify-center min-w-[160px]
    
        hover:scale-[1.02]">
 
-   
-
-    <span class="text-3xl font-extrabold text-white leading-tight">
-      ₹{{ totalBalance || '00.00' }}
-    </span>
- <span class="text-sm text-white opacity-90">
-     Available Balance
-    </span>
-  </button>
 
 
+        <span class="text-3xl font-extrabold text-white leading-tight">
+          ₹{{ totalBalance || '00.00' }}
+        </span>
+        <span class="text-sm text-white opacity-90">
+          Available Balance
+        </span>
+      </button>
 
 
 
 
-  <!-- Large Pay Button -->
-  <button
-    [disabled]="selectedLead?.isPurchased"
-    (click)="confirmPurchase()"
-    class="px-3 py-2 rounded-xl transition-all flex flex-col items-center justify-center min-w-[160px]"
-    [ngClass]="selectedLead?.isPurchased
+
+
+      <!-- Large Pay Button -->
+      <button [disabled]="selectedLead?.isPurchased" (click)="confirmPurchase()"
+        class="px-3 py-2 rounded-xl transition-all flex flex-col items-center justify-center min-w-[160px]" [ngClass]="selectedLead?.isPurchased
       ? 'bg-gray-400 cursor-not-allowed'
-      : 'bg-green-600 hover:bg-green-700 shadow-md hover:scale-[1.02]'"
-  >
+      : 'bg-green-600 hover:bg-green-700 shadow-md hover:scale-[1.02]'">
 
-    <span class="text-xl text-white opacity-90">
-      {{ selectedLead?.isPurchased ? 'Lead Already Purchased' : 'Pay' }}
-    </span>
+        <span class="text-xl text-white opacity-90">
+          {{ selectedLead?.isPurchased ? 'Lead Already Purchased' : 'Pay' }}
+        </span>
 
-    <span class="text-3xl font-extrabold text-white leading-tight">
-      ₹{{ selectedLead?.leadPrice ?? 'NA' }}
-    </span>
+        <span class="text-3xl font-extrabold text-white leading-tight">
+          ₹{{ selectedLead?.leadPrice ?? 'NA' }}
+        </span>
 
-    <span *ngIf="!selectedLead?.isPurchased"
-          class="text-sm text-white opacity-90 mt-1">
-      From Wallet To
-    </span>
+        <span *ngIf="!selectedLead?.isPurchased" class="text-sm text-white opacity-90 mt-1">
+          From Wallet To
+        </span>
 
-    <span *ngIf="!selectedLead?.isPurchased"
-          class="text-sm text-white opacity-90">
-      Unlock Lead
-    </span>
+        <span *ngIf="!selectedLead?.isPurchased" class="text-sm text-white opacity-90">
+          Unlock Lead
+        </span>
 
-    <span *ngIf="selectedLead?.isPurchased"
-          class="mt-1 text-white">
-      ✔
-    </span>
+        <span *ngIf="selectedLead?.isPurchased" class="mt-1 text-white">
+          ✔
+        </span>
 
-  </button>
+      </button>
 
-</div>
+    </div>
   </div>
 </div>
 
@@ -640,8 +625,7 @@
 <!-- Custom Confirmation Modal -->
 <div *ngIf="showConfirmModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
   <div
-    class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 transform transition-transform duration-300 scale-95 animate-fadeIn"
-  >
+    class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 transform transition-transform duration-300 scale-95 animate-fadeIn">
     <!-- Icon / Header -->
     <div class="flex justify-center mb-4">
       <div class="bg-yellow-100 p-3 rounded-full">
@@ -661,21 +645,16 @@
     </p>
 
     <!-- Actions -->
-  <div class="flex justify-center gap-3">
-      <button
-        (click)="closeConfirmModal()"
-        class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100 w-1/2"
-      >
+    <div class="flex justify-center gap-3">
+      <button (click)="closeConfirmModal()" class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100 w-1/2">
         Cancel
       </button>
-      <button
-        (click)="confirmBuyLead()"
-        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow w-1/2"
-      >
+      <button (click)="confirmBuyLead()"
+        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow w-1/2">
         Yes, Pay & Unlock
       </button>
     </div>
-   
+
   </div>
 </div>
 
@@ -711,8 +690,8 @@
 
           <p class="text-sm text-gray-500 mt-1 flex items-center gap-1">
             <i class="ri-map-pin-line"></i>
-            {{ selectedLead?.location }}   
-              <span *ngIf="selectedLead?.areaName">({{ selectedLead?.areaName }})</span> 
+            {{ selectedLead?.location }}
+            <span *ngIf="selectedLead?.areaName">({{ selectedLead?.areaName }})</span>
           </p>
         </div>
 
@@ -749,33 +728,25 @@
         <!-- <textarea rows="3" [(ngModel)]="quoteMessage" class="w-full border rounded-lg px-3 py-2 mt-1"
           placeholder="Write message to customer"></textarea> -->
 
-          <textarea
-  #messageRef="ngModel"
-  name="quoteMessage"
-  rows="3"
-  [(ngModel)]="quoteMessage"
-  required
-  minlength="150"
-  maxlength="2000"
-  class="w-full border rounded-lg px-3 py-2 mt-1"
-  placeholder="Write message to customer">
+        <textarea #messageRef="ngModel" name="quoteMessage" rows="3" [(ngModel)]="quoteMessage" required minlength="150"
+          maxlength="2000" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Write message to customer">
 </textarea>
 
-<!-- Character Counter -->
-<div class="flex justify-between text-xs mt-1">
-  <span class="text-red-500" *ngIf="messageRef.invalid && messageRef.touched">
-    <span *ngIf="messageRef.errors?.['required']">
-      Message is required
-    </span>
-    <span *ngIf="messageRef.errors?.['minlength']">
-      Minimum 150 characters required
-    </span>
-  </span>
+        <!-- Character Counter -->
+        <div class="flex justify-between text-xs mt-1">
+          <span class="text-red-500" *ngIf="messageRef.invalid && messageRef.touched">
+            <span *ngIf="messageRef.errors?.['required']">
+              Message is required
+            </span>
+            <span *ngIf="messageRef.errors?.['minlength']">
+              Minimum 150 characters required
+            </span>
+          </span>
 
-  <span class="text-gray-500">
-    {{ quoteMessage?.length || 0 }}/2000
-  </span>
-</div>
+          <span class="text-gray-500">
+            {{ quoteMessage?.length || 0 }}/2000
+          </span>
+        </div>
       </div>
     </div>
 
