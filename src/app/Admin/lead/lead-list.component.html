@@ -138,8 +138,7 @@
                         <!-- Search Term -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
-                            <input type="text" placeholder="Search by description"
-                                formControlName="searchTerm"
+                            <input type="text" placeholder="Search by description" formControlName="searchTerm"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                         </div>
 
@@ -513,7 +512,10 @@
                                         </button>
                                         <button (click)="openAssignmentModal(lead)"
                                             class="text-purple-600 hover:text-purple-900 p-2 rounded-lg hover:bg-purple-50 transition-colors"
-                                            title="Assign to Provider">
+                                            [class.opacity-50]="isLeadExpired(lead)"
+                                            [class.cursor-not-allowed]="isLeadExpired(lead)"
+                                            [disabled]="isLeadExpired(lead)"
+                                            title="{{ isLeadExpired(lead) ? 'Lead has expired' : 'Assign to Provider' }}">
                                             <i class="text-lg">👥</i>
                                         </button>
                                         <button (click)="deleteLead(lead.id)"
@@ -584,9 +586,11 @@
                                                             <i class="text-green-600">👤</i>
                                                         </div>
                                                         <div>
-                                                            <div class="font-medium">{{ lead.customerDisplayName || 'Unknown' }}
+                                                            <div class="font-medium">{{ lead.customerDisplayName ||
+                                                                'Unknown' }}
                                                             </div>
-                                                            <div class="text-xs text-gray-500">{{ lead.customerEmail || 'No email'
+                                                            <div class="text-xs text-gray-500">{{ lead.customerEmail ||
+                                                                'No email'
                                                                 }}</div>
                                                         </div>
                                                     </div>
@@ -598,7 +602,8 @@
                                                     </dl>
                                                 </div>
                                                 <ng-template #noCustomer>
-                                                    <p class="text-gray-500 text-center py-4">No customer information available</p>
+                                                    <p class="text-gray-500 text-center py-4">No customer information
+                                                        available</p>
                                                 </ng-template>
                                             </div>
                                         </div>
@@ -611,7 +616,8 @@
                                                 </h4>
                                             </div>
                                             <div class="bg-white rounded-lg border border-gray-200 p-4">
-                                                <p class="text-gray-700">{{ lead.description || 'No description provided' }}</p>
+                                                <p class="text-gray-700">{{ lead.description || 'No description
+                                                    provided' }}</p>
                                             </div>
                                         </div>
 
@@ -632,10 +638,12 @@
                                                     <dd class="text-gray-900">{{ lead.timePreference || 'N/A' }}</dd>
 
                                                     <dt class="text-gray-500">Scheduled Start:</dt>
-                                                    <dd class="text-gray-900">{{ formatDateTime(lead.scheduledStart) }}</dd>
+                                                    <dd class="text-gray-900">{{ formatDateTime(lead.scheduledStart) }}
+                                                    </dd>
 
                                                     <dt class="text-gray-500">Scheduled End:</dt>
-                                                    <dd class="text-gray-900">{{ formatDateTime(lead.scheduledEnd) }}</dd>
+                                                    <dd class="text-gray-900">{{ formatDateTime(lead.scheduledEnd) }}
+                                                    </dd>
                                                 </dl>
                                             </div>
                                         </div>
@@ -743,14 +751,15 @@
     </div>
 
     <!-- Manual Assignment Modal -->
-    <div *ngIf="showAssignmentModal && selectedLeadForAssignment" 
+    <div *ngIf="showAssignmentModal && selectedLeadForAssignment"
         class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
         <div class="relative bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
             <div class="flex items-center justify-between p-5 border-b">
-                <h3 class="text-xl font-semibold text-gray-900">Assign Lead #{{ selectedLeadForAssignment.id }} to Provider</h3>
+                <h3 class="text-xl font-semibold text-gray-900">Assign Lead #{{ selectedLeadForAssignment.id }} to
+                    Provider</h3>
                 <button (click)="closeAssignmentModal()" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
@@ -760,13 +769,14 @@
                     <!-- Lead Info Summary -->
                     <div class="bg-blue-50 p-3 rounded-lg mb-4">
                         <p class="text-sm text-blue-800">
-                            <span class="font-semibold">Lead:</span> #{{ selectedLeadForAssignment.id }} - 
-                            {{ (selectedLeadForAssignment.description && selectedLeadForAssignment.description.length > 50) 
-                                ? (selectedLeadForAssignment.description | slice:0:50) + '...' 
-                                : selectedLeadForAssignment.description || 'No description' }}
+                            <span class="font-semibold">Lead:</span> #{{ selectedLeadForAssignment.id }} -
+                            {{ (selectedLeadForAssignment.description && selectedLeadForAssignment.description.length >
+                            50)
+                            ? (selectedLeadForAssignment.description | slice:0:50) + '...'
+                            : selectedLeadForAssignment.description || 'No description' }}
                         </p>
                         <p class="text-xs text-blue-600 mt-1">
-                            Category: {{ selectedLeadForAssignment.categoryName || 'N/A' }} | 
+                            Category: {{ selectedLeadForAssignment.categoryName || 'N/A' }} |
                             Location: {{ selectedLeadForAssignment.cityName || 'N/A' }}
                         </p>
                     </div>
@@ -776,9 +786,8 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Select Provider *</label>
                         <div class="relative" #assignmentProviderDropdown>
                             <div class="relative">
-                                <input #assignmentProviderSearchInput type="text" 
-                                    placeholder="Search provider by name or email..."
-                                    formControlName="providerSearch"
+                                <input #assignmentProviderSearchInput type="text"
+                                    placeholder="Search provider by name or email..." formControlName="providerSearch"
                                     (click)="onAssignmentProviderInputClick()"
                                     (keydown)="onAssignmentProviderInputKeydown($event)"
                                     class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -789,7 +798,7 @@
                                     (mousedown)="$event.preventDefault()" type="button"
                                     class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 focus:outline-none">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
@@ -804,7 +813,8 @@
                             <div *ngIf="loadingAssignmentProviders"
                                 class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
                                 <div class="flex items-center justify-center p-4">
-                                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600 mr-2"></div>
+                                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600 mr-2">
+                                    </div>
                                     <span class="text-sm text-gray-600">Searching providers...</span>
                                 </div>
                             </div>
@@ -814,25 +824,27 @@
                                 class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto">
                                 <div class="py-1">
                                     <div *ngFor="let provider of filteredAssignmentProviders; let i = index"
-                                        (click)="selectAssignmentProvider(provider)" 
-                                        (keydown.enter)="selectAssignmentProvider(provider)"
-                                        tabindex="0"
+                                        (click)="selectAssignmentProvider(provider)"
+                                        (keydown.enter)="selectAssignmentProvider(provider)" tabindex="0"
                                         class="assignment-provider-dropdown-item px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors focus:outline-none focus:bg-gray-100 border-b border-gray-100 last:border-b-0">
                                         <div class="flex items-start">
                                             <div class="flex-shrink-0 mt-1 mr-3">
-                                                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                                <div
+                                                    class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                                                     <i class="text-purple-600 text-sm">👤</i>
                                                 </div>
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <div class="font-medium text-gray-900">{{ provider.displayName || provider.businessName || 'Unknown' }}</div>
-                                                <div class="text-sm text-gray-500">{{ provider.email || 'No email' }}</div>
+                                                <div class="font-medium text-gray-900">{{ provider.displayName ||
+                                                    provider.businessName || 'Unknown' }}</div>
+                                                <div class="text-sm text-gray-500">{{ provider.email || 'No email' }}
+                                                </div>
                                                 <div class="text-xs text-gray-400 mt-1">
                                                     <span *ngIf="provider.phone">📞 {{ provider.phone }}</span>
                                                     <span *ngIf="!provider.phone">📞 N/A</span>
                                                     <span class="mx-1">•</span>
-                                                    <span *ngIf="provider.providerTier" 
-                                                        [class]="getProviderTierColor(provider.providerTier)" 
+                                                    <span *ngIf="provider.providerTier"
+                                                        [class]="getProviderTierColor(provider.providerTier)"
                                                         class="px-1.5 py-0.5 rounded text-xs">
                                                         {{ provider.providerTier }}
                                                     </span>
@@ -857,7 +869,7 @@
                             </div>
                         </div>
                         <input type="hidden" formControlName="providerId" />
-                        <div *ngIf="assignmentForm.get('providerId')?.invalid && assignmentForm.get('providerId')?.touched" 
+                        <div *ngIf="assignmentForm.get('providerId')?.invalid && assignmentForm.get('providerId')?.touched"
                             class="text-xs text-red-500 mt-1">
                             Provider is required
                         </div>
@@ -866,12 +878,12 @@
                     <!-- Offer Wave -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Offer Wave *</label>
-                        <input type="number" formControlName="offerWave" min="1"
+                        <input type="number" formControlName="offerWave" min="1" max="10"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             [class.border-red-500]="assignmentForm.get('offerWave')?.invalid && assignmentForm.get('offerWave')?.touched" />
-                        <div *ngIf="assignmentForm.get('offerWave')?.invalid && assignmentForm.get('offerWave')?.touched" 
+                        <div *ngIf="assignmentForm.get('offerWave')?.invalid && assignmentForm.get('offerWave')?.touched"
                             class="text-xs text-red-500 mt-1">
-                            Valid offer wave is required
+                            Valid offer wave (1-10) is required
                         </div>
                     </div>
 
@@ -880,6 +892,10 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">PPL Price</label>
                         <input type="number" formControlName="pplPrice" step="0.01" min="0"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+                        <div *ngIf="assignmentForm.get('pplPrice')?.touched && assignmentForm.get('pplPrice')?.errors?.['min']"
+                            class="text-xs text-red-500 mt-1">
+                            Price cannot be negative
+                        </div>
                     </div>
 
                     <!-- Is Free Lead -->
@@ -894,8 +910,12 @@
                     <!-- Offer Expires At -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Offer Expires At</label>
-                        <input type="datetime-local" formControlName="offerExpiresAt"
+                        <input type="datetime-local" formControlName="offerExpiresAt" [min]="getTodayDateTime()"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+                        <div *ngIf="assignmentForm.get('offerExpiresAt')?.errors?.['pastDate']"
+                            class="text-xs text-red-500 mt-1">
+                            Expiry date cannot be in the past
+                        </div>
                     </div>
 
                     <!-- Notes -->
@@ -903,16 +923,19 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
                         <textarea formControlName="notes" rows="2" placeholder="Optional notes..."
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
+                        <div *ngIf="assignmentForm.get('notes')?.errors?.['maxlength']"
+                            class="text-xs text-red-500 mt-1">
+                            Maximum 500 characters allowed
+                        </div>
                     </div>
                 </form>
             </div>
             <div class="flex items-center justify-end gap-3 p-5 border-t">
-                <button (click)="closeAssignmentModal()" 
+                <button (click)="closeAssignmentModal()"
                     class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
                     Cancel
                 </button>
-                <button (click)="assignToProvider()" 
-                    [disabled]="assignmentForm.invalid"
+                <button (click)="assignToProvider()" [disabled]="assignmentForm.invalid"
                     class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-700 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50">
                     Assign to Provider
                 </button>
@@ -920,7 +943,7 @@
         </div>
     </div>
 
-        <!-- Create Lead Modal (unchanged) -->
+    <!-- Create Lead Modal -->
     <div *ngIf="showCreateModal"
         class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
         <div class="relative bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
@@ -935,9 +958,23 @@
             </div>
             <div class="p-6">
                 <form [formGroup]="leadForm" class="space-y-6">
+                    <!-- Validation Summary -->
+                    <div *ngIf="leadForm.errors && (leadForm.touched || isSubmitting)"
+                        class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                        <h4 class="text-sm font-medium text-red-800 mb-2">Please fix the following errors:</h4>
+                        <ul class="list-disc list-inside text-xs text-red-600 space-y-1">
+                            <li *ngIf="leadForm.errors?.['endDatePast']">End date cannot be in the past</li>
+                            <li *ngIf="leadForm.errors?.['endDateBeforeStart']">End date cannot be before start date
+                            </li>
+                            <li *ngIf="leadForm.errors?.['maxLessThanMin']">Maximum budget cannot be less than minimum
+                                budget</li>
+                            <li *ngIf="leadForm.errors?.['negativeBudget']">Budget cannot be negative</li>
+                        </ul>
+                    </div>
+
                     <!-- Customer Search -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Customer</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Customer *</label>
                         <div class="relative" #customerDropdown>
                             <div class="relative">
                                 <input #customerSearchInput type="text"
@@ -945,6 +982,7 @@
                                     (input)="onCustomerSearchInput()" (click)="onCustomerSearchClick()"
                                     (keydown)="onCustomerInputKeydown($event)"
                                     class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    [class.border-red-500]="leadForm.get('customerUserId')?.invalid && leadForm.get('customerUserId')?.touched"
                                     autocomplete="off" />
 
                                 <button *ngIf="selectedCustomer" (click)="clearCustomerSelection()"
@@ -1017,6 +1055,10 @@
                             </div>
                         </div>
                         <input type="hidden" formControlName="customerUserId" />
+                        <div *ngIf="leadForm.get('customerUserId')?.invalid && leadForm.get('customerUserId')?.touched"
+                            class="text-xs text-red-500 mt-1">
+                            Customer is required
+                        </div>
                     </div>
 
                     <!-- Lead Type and Flow Type -->
@@ -1059,7 +1101,12 @@
                             placeholder="Enter lead description"></textarea>
                         <div *ngIf="leadForm.get('description')?.invalid && leadForm.get('description')?.touched"
                             class="text-xs text-red-500 mt-1">
-                            Description is required
+                            <span *ngIf="leadForm.get('description')?.errors?.['required']">Description is
+                                required</span>
+                            <span *ngIf="leadForm.get('description')?.errors?.['minlength']">Minimum 10 characters
+                                required</span>
+                            <span *ngIf="leadForm.get('description')?.errors?.['maxlength']">Maximum 500 characters
+                                allowed</span>
                         </div>
                     </div>
 
@@ -1068,12 +1115,22 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Budget Min</label>
                             <input type="number" formControlName="budgetMin" placeholder="Min budget"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                [class.border-red-500]="leadForm.errors?.['negativeBudget'] || leadForm.errors?.['maxLessThanMin']" />
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Budget Max</label>
                             <input type="number" formControlName="budgetMax" placeholder="Max budget"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                [class.border-red-500]="leadForm.errors?.['negativeBudget'] || leadForm.errors?.['maxLessThanMin']" />
+
+                            <!-- Budget Validation Messages -->
+                            <div *ngIf="leadForm.errors?.['negativeBudget']" class="text-xs text-red-500 mt-1">
+                                Budget cannot be negative
+                            </div>
+                            <div *ngIf="leadForm.errors?.['maxLessThanMin']" class="text-xs text-red-500 mt-1">
+                                Maximum budget cannot be less than minimum budget
+                            </div>
                         </div>
                     </div>
 
@@ -1083,8 +1140,8 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">Time Preference</label>
                             <select formControlName="timePreference"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="null">Select Time Preference</option>
-                                <option *ngFor="let pref of timePreferences" [value]="pref">{{pref | titlecase}}
+                                <option [ngValue]="null">Select Time Preference</option>
+                                <option *ngFor="let pref of timePreferences" [ngValue]="pref">{{pref | titlecase}}
                                 </option>
                             </select>
                         </div>
@@ -1094,8 +1151,9 @@
                             <select formControlName="source"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 [class.border-red-500]="leadForm.get('source')?.invalid && leadForm.get('source')?.touched">
-                                <option value="">Select Source</option>
-                                <option *ngFor="let source of sources" [value]="source">{{source | titlecase}}</option>
+                                <option [ngValue]="null">Select Source</option>
+                                <option *ngFor="let source of sources" [ngValue]="source">{{source | titlecase}}
+                                </option>
                             </select>
                             <div *ngIf="leadForm.get('source')?.invalid && leadForm.get('source')?.touched"
                                 class="text-xs text-red-500 mt-1">
@@ -1104,29 +1162,39 @@
                         </div>
                     </div>
 
-                    <!-- Scheduled Dates -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Scheduled Start</label>
                             <input type="datetime-local" formControlName="scheduledStart"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                [class.border-red-500]="leadForm.errors?.['endDateBeforeStart'] && leadForm.get('scheduledEnd')?.value" />
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Scheduled End</label>
-                            <input type="datetime-local" formControlName="scheduledEnd"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <input type="datetime-local" formControlName="scheduledEnd" [min]="getTodayDateTime()"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                [class.border-red-500]="leadForm.errors?.['endDatePast'] || leadForm.errors?.['endDateBeforeStart']" />
+
+                            <!-- Validation Error Messages -->
+                            <div *ngIf="leadForm.errors?.['endDatePast']" class="text-xs text-red-500 mt-1">
+                                End date cannot be in the past
+                            </div>
+                            <div *ngIf="leadForm.errors?.['endDateBeforeStart']" class="text-xs text-red-500 mt-1">
+                                End date cannot be before start date
+                            </div>
                         </div>
                     </div>
 
                     <!-- Category and Subcategory -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
                             <div class="relative">
                                 <div class="relative">
                                     <input type="text" placeholder="Search category..." formControlName="categorySearch"
                                         (input)="onFormCategorySearchInput()" (click)="showCategoryDropdown = true"
                                         class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        [class.border-red-500]="leadForm.get('categoryId')?.invalid && leadForm.get('categoryId')?.touched"
                                         autocomplete="off" />
 
                                     <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
@@ -1147,6 +1215,10 @@
                                 </div>
                             </div>
                             <input type="hidden" formControlName="categoryId" />
+                            <div *ngIf="leadForm.get('categoryId')?.invalid && leadForm.get('categoryId')?.touched"
+                                class="text-xs text-red-500 mt-1">
+                                Category is required
+                            </div>
                         </div>
 
                         <div>
@@ -1162,12 +1234,13 @@
                     <!-- City and Area -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
                             <div class="relative">
                                 <div class="relative">
                                     <input type="text" placeholder="Search city..." formControlName="citySearch"
                                         (input)="onFormCitySearchInput()" (click)="showCityDropdown = true"
                                         class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        [class.border-red-500]="leadForm.get('cityId')?.invalid && leadForm.get('cityId')?.touched"
                                         autocomplete="off" />
 
                                     <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
@@ -1187,14 +1260,19 @@
                                 </div>
                             </div>
                             <input type="hidden" formControlName="cityId" />
+                            <div *ngIf="leadForm.get('cityId')?.invalid && leadForm.get('cityId')?.touched"
+                                class="text-xs text-red-500 mt-1">
+                                City is required
+                            </div>
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Area</label>
                             <select formControlName="areaId"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option [ngValue]="null" disabled>Select Area</option>
-                                <option *ngFor="let area of areas" [ngValue]="area.id">{{ area.areaName }} {{ area.pincode
+                                <option [ngValue]="null">Select Area</option>
+                                <option *ngFor="let area of areas" [ngValue]="area.id">{{ area.areaName }} {{
+                                    area.pincode
                                     ? '(' + area.pincode + ')' : '' }}</option>
                             </select>
                         </div>
@@ -1203,9 +1281,7 @@
                     <!-- Pincode and Is Instant -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Pincode</label>
-                            <input type="text" formControlName="pincode" placeholder="Enter pincode"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+
                         </div>
 
                         <div class="flex items-center">
@@ -1223,7 +1299,7 @@
                     class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
                     Cancel
                 </button>
-                <button (click)="createLead()" [disabled]="isSubmitting"
+                <button (click)="createLead()" [disabled]="isSubmitting || leadForm.invalid"
                     class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50">
                     {{ isSubmitting ? 'Creating...' : 'Create Lead' }}
                 </button>
@@ -1231,7 +1307,7 @@
         </div>
     </div>
 
-    <!-- Edit Lead Modal (unchanged) -->
+    <!-- Edit Lead Modal -->
     <div *ngIf="showEditModal"
         class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
         <div class="relative bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
@@ -1246,9 +1322,23 @@
             </div>
             <div class="p-6">
                 <form [formGroup]="leadForm" class="space-y-6">
-                    <!-- Same form fields as create modal -->
+                    <!-- Validation Summary -->
+                    <div *ngIf="leadForm.errors && (leadForm.touched || isSubmitting)"
+                        class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                        <h4 class="text-sm font-medium text-red-800 mb-2">Please fix the following errors:</h4>
+                        <ul class="list-disc list-inside text-xs text-red-600 space-y-1">
+                            <li *ngIf="leadForm.errors?.['endDatePast']">End date cannot be in the past</li>
+                            <li *ngIf="leadForm.errors?.['endDateBeforeStart']">End date cannot be before start date
+                            </li>
+                            <li *ngIf="leadForm.errors?.['maxLessThanMin']">Maximum budget cannot be less than minimum
+                                budget</li>
+                            <li *ngIf="leadForm.errors?.['negativeBudget']">Budget cannot be negative</li>
+                        </ul>
+                    </div>
+
+                    <!-- Customer Search -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Customer</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Customer *</label>
                         <div class="relative" #customerDropdown>
                             <div class="relative">
                                 <input #customerSearchInput type="text"
@@ -1256,6 +1346,7 @@
                                     (input)="onCustomerSearchInput()" (click)="onCustomerSearchClick()"
                                     (keydown)="onCustomerInputKeydown($event)"
                                     class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    [class.border-red-500]="leadForm.get('customerUserId')?.invalid && leadForm.get('customerUserId')?.touched"
                                     autocomplete="off" />
 
                                 <button *ngIf="selectedCustomer" (click)="clearCustomerSelection()"
@@ -1328,16 +1419,21 @@
                             </div>
                         </div>
                         <input type="hidden" formControlName="customerUserId" />
+                        <div *ngIf="leadForm.get('customerUserId')?.invalid && leadForm.get('customerUserId')?.touched"
+                            class="text-xs text-red-500 mt-1">
+                            Customer is required
+                        </div>
                     </div>
 
+                    <!-- Lead Type and Flow Type -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Lead Type *</label>
                             <select formControlName="leadType"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 [class.border-red-500]="leadForm.get('leadType')?.invalid && leadForm.get('leadType')?.touched">
-                                <option value="">Select Lead Type</option>
-                                <option *ngFor="let type of leadTypes" [value]="type">{{type | uppercase}}</option>
+                                <option [ngValue]="null" disabled>-- Select Lead Type --</option>
+                                <option *ngFor="let type of leadTypes" [ngValue]="type">{{type | uppercase}}</option>
                             </select>
                             <div *ngIf="leadForm.get('leadType')?.invalid && leadForm.get('leadType')?.touched"
                                 class="text-xs text-red-500 mt-1">
@@ -1350,8 +1446,8 @@
                             <select formControlName="flowType"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 [class.border-red-500]="leadForm.get('flowType')?.invalid && leadForm.get('flowType')?.touched">
-                                <option value="">Select Flow Type</option>
-                                <option *ngFor="let type of flowTypes" [value]="type">{{type | titlecase}}</option>
+                                <option [ngValue]="null" disabled>-- Select Flow Type --</option>
+                                <option *ngFor="let type of flowTypes" [ngValue]="type">{{type | titlecase}}</option>
                             </select>
                             <div *ngIf="leadForm.get('flowType')?.invalid && leadForm.get('flowType')?.touched"
                                 class="text-xs text-red-500 mt-1">
@@ -1360,6 +1456,7 @@
                         </div>
                     </div>
 
+                    <!-- Description -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Description *</label>
                         <textarea formControlName="description" rows="3"
@@ -1368,30 +1465,45 @@
                             placeholder="Enter lead description"></textarea>
                         <div *ngIf="leadForm.get('description')?.invalid && leadForm.get('description')?.touched"
                             class="text-xs text-red-500 mt-1">
-                            Description is required
+                            <span *ngIf="leadForm.get('description')?.errors?.['required']">Description is
+                                required</span>
+                            <span *ngIf="leadForm.get('description')?.errors?.['minlength']">Minimum 10 characters
+                                required</span>
+                            <span *ngIf="leadForm.get('description')?.errors?.['maxlength']">Maximum 500 characters
+                                allowed</span>
                         </div>
                     </div>
 
+                    <!-- Budget Range -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Budget Min</label>
-                            <input type="number" formControlName="budgetMin" placeholder="Min budget"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <input type="number" formControlName="budgetMin" placeholder="Min budget" min="0"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                [class.border-red-500]="leadForm.get('budgetMin')?.errors?.['min']" />
+                            <div *ngIf="leadForm.get('budgetMin')?.errors?.['min']" class="text-xs text-red-500 mt-1">
+                                Budget cannot be negative
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Budget Max</label>
-                            <input type="number" formControlName="budgetMax" placeholder="Max budget"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <input type="number" formControlName="budgetMax" placeholder="Max budget" min="0"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                [class.border-red-500]="leadForm.get('budgetMax')?.errors?.['min']" />
+                            <div *ngIf="leadForm.get('budgetMax')?.errors?.['min']" class="text-xs text-red-500 mt-1">
+                                Budget cannot be negative
+                            </div>
                         </div>
                     </div>
 
+                    <!-- Time Preference and Source -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Time Preference</label>
                             <select formControlName="timePreference"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="">Select Time Preference</option>
-                                <option *ngFor="let pref of timePreferences" [value]="pref">{{pref | titlecase}}
+                                <option [ngValue]="null">Select Time Preference</option>
+                                <option *ngFor="let pref of timePreferences" [ngValue]="pref">{{pref | titlecase}}
                                 </option>
                             </select>
                         </div>
@@ -1401,8 +1513,9 @@
                             <select formControlName="source"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 [class.border-red-500]="leadForm.get('source')?.invalid && leadForm.get('source')?.touched">
-                                <option value="">Select Source</option>
-                                <option *ngFor="let source of sources" [value]="source">{{source | titlecase}}</option>
+                                <option [ngValue]="null">Select Source</option>
+                                <option *ngFor="let source of sources" [ngValue]="source">{{source | titlecase}}
+                                </option>
                             </select>
                             <div *ngIf="leadForm.get('source')?.invalid && leadForm.get('source')?.touched"
                                 class="text-xs text-red-500 mt-1">
@@ -1411,27 +1524,38 @@
                         </div>
                     </div>
 
+                    <!-- Scheduled Dates - CORRECTED: Start date can be in past, End date cannot -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Scheduled Start</label>
                             <input type="datetime-local" formControlName="scheduledStart"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <!-- No validation message for start date past - it's allowed -->
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Scheduled End</label>
-                            <input type="datetime-local" formControlName="scheduledEnd"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Scheduled End *</label>
+                            <input type="datetime-local" formControlName="scheduledEnd" [min]="getTodayDateTime()"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                [class.border-red-500]="leadForm.errors?.['endDatePast'] || leadForm.errors?.['endDateBeforeStart']" />
+                            <div *ngIf="leadForm.errors?.['endDatePast']" class="text-xs text-red-500 mt-1">
+                                End date cannot be in the past
+                            </div>
+                            <div *ngIf="leadForm.errors?.['endDateBeforeStart']" class="text-xs text-red-500 mt-1">
+                                End date cannot be before start date
+                            </div>
                         </div>
                     </div>
 
+                    <!-- Category and Subcategory -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
                             <div class="relative">
                                 <div class="relative">
                                     <input type="text" placeholder="Search category..." formControlName="categorySearch"
                                         (input)="onFormCategorySearchInput()" (click)="showCategoryDropdown = true"
                                         class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        [class.border-red-500]="leadForm.get('categoryId')?.invalid && leadForm.get('categoryId')?.touched"
                                         autocomplete="off" />
 
                                     <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
@@ -1452,26 +1576,32 @@
                                 </div>
                             </div>
                             <input type="hidden" formControlName="categoryId" />
+                            <div *ngIf="leadForm.get('categoryId')?.invalid && leadForm.get('categoryId')?.touched"
+                                class="text-xs text-red-500 mt-1">
+                                Category is required
+                            </div>
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Subcategory</label>
                             <select formControlName="subcategoryId"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="">Select Subcategory</option>
-                                <option *ngFor="let sub of subcategories" [value]="sub.id">{{ sub.name }}</option>
+                                <option [ngValue]="null">Select Subcategory</option>
+                                <option *ngFor="let sub of subcategories" [ngValue]="sub.id">{{ sub.name }}</option>
                             </select>
                         </div>
                     </div>
 
+                    <!-- City and Area -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
                             <div class="relative">
                                 <div class="relative">
                                     <input type="text" placeholder="Search city..." formControlName="citySearch"
                                         (input)="onFormCitySearchInput()" (click)="showCityDropdown = true"
                                         class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        [class.border-red-500]="leadForm.get('cityId')?.invalid && leadForm.get('cityId')?.touched"
                                         autocomplete="off" />
 
                                     <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
@@ -1491,24 +1621,28 @@
                                 </div>
                             </div>
                             <input type="hidden" formControlName="cityId" />
+                            <div *ngIf="leadForm.get('cityId')?.invalid && leadForm.get('cityId')?.touched"
+                                class="text-xs text-red-500 mt-1">
+                                City is required
+                            </div>
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Area</label>
                             <select formControlName="areaId"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="">Select Area</option>
-                                <option *ngFor="let area of areas" [value]="area.id">{{ area.areaName }} {{ area.pincode
+                                <option [ngValue]="null">Select Area</option>
+                                <option *ngFor="let area of areas" [ngValue]="area.id">{{ area.areaName }} {{
+                                    area.pincode
                                     ? '(' + area.pincode + ')' : '' }}</option>
                             </select>
                         </div>
                     </div>
 
+                    <!-- Pincode and Is Instant -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Pincode</label>
-                            <input type="text" formControlName="pincode" placeholder="Enter pincode"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+
                         </div>
 
                         <div class="flex items-center">
@@ -1526,7 +1660,7 @@
                     class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
                     Cancel
                 </button>
-                <button (click)="updateLead()" [disabled]="isSubmitting"
+                <button (click)="updateLead()" [disabled]="isSubmitting || leadForm.invalid"
                     class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50">
                     {{ isSubmitting ? 'Updating...' : 'Update Lead' }}
                 </button>

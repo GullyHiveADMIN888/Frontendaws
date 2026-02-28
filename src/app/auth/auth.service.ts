@@ -59,16 +59,11 @@ submitRegistration(formData: FormData) {
   return this.http.post(`${this.apiUrl}/register`, formData);
 }
 
-
-
-
-
-
   // auth.service.ts
 saveAuth(token: string, role: string, name?: string, userId?: string) {
   localStorage.setItem('token', token);
   localStorage.setItem('role', role);
-  localStorage.setItem('userId', userId || ''); // Store ID
+  localStorage.setItem('userId', userId || ''); 
   if (name) localStorage.setItem('name', name);
 }
 
@@ -97,6 +92,10 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
 getUserId(): string | null {
   return localStorage.getItem('userId');
 }
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
 
   isLoggedIn() {
     return !!localStorage.getItem('token');
