@@ -4,41 +4,7 @@
   </h2>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <!-- <a
-      *ngFor="let action of actions"
-      [routerLink]="action.link"
-      class="bg-white rounded-lg p-6 border border-gray-200 hover:shadow-lg transition-all group"
-    >
-      <div
-        class="w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-colors"
-        [ngClass]="action.color"
-      >
-        <i [class]="action.icon + ' text-2xl'"></i>
-      </div>
-
-      <h3 class="font-semibold text-gray-900 mb-1">
-        {{ action.title }}
-      </h3>
-      <p class="text-sm text-gray-600">
-        {{ action.description }}
-      </p>
-    </a> -->
-
-
-    
-  <!-- <a
-  *ngFor="let action of actions"
-  class="cursor-pointer bg-white rounded-lg p-6 border hover:shadow-lg"
-  (click)="onAction(action)"
-  [routerLink]="action.link || null"
->
-  <div [ngClass]="action.color"
-       class="w-12 h-12 flex items-center justify-center rounded-lg mb-4">
-    <i [class]="action.icon + ' text-2xl'"></i>
-  </div>
-
-  <h3 class="font-semibold">{{ action.title }}</h3>
-</a> -->
+ 
 
 <button
   *ngFor="let action of actions"

@@ -33,6 +33,7 @@ export class SettingsComponent implements OnInit {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
+     // this.showUserMenu = false;
       this.childRouteActive = !!this.route.firstChild;
     });
   }
@@ -56,18 +57,6 @@ bankDetails = {
   address: ''
 };
 errors: any = {};
-
-
-  // ngOnInit(): void {
-  //   // Subscribe to sellerId from SellerService
-  //   this.sellerService.sellerId$.subscribe(id => {
-  //     if (id) {
-  //       this.sellerId = id;
-  //       this.buildSettingsMenu(); // build menu after sellerId is available
-  //     }
-  //   });
-  // }
-
 
 ngOnInit(): void {
   this.sellerService.sellerId$.subscribe(id => {
@@ -127,27 +116,45 @@ ngOnInit(): void {
         title: 'Account & Security',
         items: [
           { icon: 'ri-lock-line', title: 'Password & Security', description: 'Change password and security settings', link: ['/seller/settings/security'] },
-          { icon: 'ri-bank-card-line', title: 'Payment Methods', description: 'Manage your payment and billing information', link: ['/seller/settings/payment'] },
-          { icon: 'ri-shield-check-line', title: 'Privacy Settings', description: 'Control your privacy and data preferences', link: ['/seller/settings/privacy'] },
-          { 
+           { 
             icon: 'ri-tools-line', 
             title: 'Bank Account Management', 
             description: 'Edit services you offer and pricing', 
             link: ['/seller/settings/services'] 
-          }
+          },
+          { icon: 'ri-bank-card-line', title: 'Payment Methods', description: 'Manage your payment and billing information', link: ['/seller/settings/payment'] },
+          { icon: 'ri-shield-check-line', title: 'Privacy Settings', description: 'Control your privacy and data preferences', link: ['/seller/settings/privacy'] }
+         
         ]
       }
     ];
   }
 
-  navigateTo(link: string | any[]) {
-    if (Array.isArray(link)) {
-      this.router.navigate(link);
-    } else {
-      this.router.navigateByUrl(link);
-    }
-  }
+  // navigateTo(link: string | any[]) {
+  //   if (Array.isArray(link)) {
+  //     this.router.navigate(link);
+  //   } else {
+  //     this.router.navigateByUrl(link);
+  //   }
+  // }
+navigateTo(link: string | any[]) {
 
+  const urlTree = Array.isArray(link)
+    ? this.router.createUrlTree(link)
+    : this.router.parseUrl(link);
+
+  const canMatch = this.router.serializeUrl(urlTree);
+
+  const match = this.router.config.some(route =>
+    canMatch.startsWith('/' + (route.path ?? ''))
+  );
+
+  if (match) {
+    this.router.navigateByUrl(urlTree);
+  } else {
+    console.warn('Route does not exist. Staying on same page.');
+  }
+}
 
 
 
@@ -215,6 +222,9 @@ onSettingClick(item: SettingItem) {
   else if (item.title === 'Bank Account Management') {
     this.openAddBankDetails(); // 🏦 open bank modal
   } 
+  else if (item.title === 'Legal Identity Address Proof') {
+  this.openLegalIdentityModal();
+}
   else {
     this.navigateTo(item.link); // ➡️ normal navigation
   }
@@ -471,4 +481,122 @@ resetBankForm() {
 }
 
 
+legalIdentityData = {
+  registrationType: '',
+  registrationNumber: '',
+  registrationDocumentFile: null as File | null, // ✅ actual File
+  addressProofFile: null as File | null,        // ✅ actual File
+  registrationDocumentUrl: '',                  // ✅ existing document URL
+  addressProofUrl: '',
+  registrationDocument: null as File | null,
+  addressProof:null as File | null,
+};
+//...For Edit Identity
+showLegalIdentityModal = false;
+
+registrationTypes = [
+  'GST Registration',
+  'Aadhar Card',
+  'E-Shram Card',
+  'PAN Card',
+  'Udyam Registration'
+];
+registrationFieldMap: any = {
+  'PAN Card': 'pan',
+  'GST Registration': 'gstin',
+  'Udyam Registration': 'udyam_number',
+  'Aadhar Card': 'aadhaar_number',
+  'E-Shram Card': 'eshram_number'
+};
+
+openLegalIdentityModal() {
+  this.sellerService.getLegalIdentity(this.sellerId)
+    .subscribe((res: any) => {
+
+      const provider = res.provider;
+      const documents = res.documents;
+
+      // 🔹 Dynamic detection using mapping
+      Object.entries(this.registrationFieldMap).forEach(([type, field]) => {
+        const key = field as keyof typeof provider; // ✅ cast to keyof provider
+        if (provider[key]) {
+          this.legalIdentityData.registrationType = type;
+          this.legalIdentityData.registrationNumber = provider[key];
+        }
+      });
+
+      // 🔹 Set document URLs
+      documents.forEach((doc: any) => {
+        if (doc.doc_type === 'registration')
+          this.legalIdentityData.registrationDocumentUrl = doc.file_url;
+
+        if (doc.doc_type === 'address_proof')
+          this.legalIdentityData.addressProofUrl = doc.file_url;
+      });
+
+      this.showLegalIdentityModal = true;
+    });
+}
+// updateLegalIdentity() {
+//   const formData = new FormData();
+
+//   formData.append('RegistrationType', this.legalIdentityData.registrationType);
+//   formData.append('RegistrationNumber', this.legalIdentityData.registrationNumber);
+
+//   // If you have file uploads
+//   if (this.legalIdentityData.registrationDocument) {
+//     formData.append('RegistrationDocument', this.legalIdentityData.registrationDocument);
+//   }
+//   if (this.legalIdentityData.addressProof) {
+//     formData.append('AddressProofDocument', this.legalIdentityData.addressProof);
+//   }
+
+//   this.sellerService.updateLegalIdentity(
+//       this.sellerId,
+//       formData
+//   ).subscribe(() => {
+//     alert('Updated successfully');
+//     this.showLegalIdentityModal = false;
+//   });
+// }
+handleFileChange(field: 'registrationDocumentFile' | 'addressProofFile', event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0] ?? null;
+
+  if (field === 'registrationDocumentFile') {
+    this.legalIdentityData.registrationDocumentFile = file;
+  } else {
+    this.legalIdentityData.addressProofFile = file;
+  }
+
+  // Optional: preview image
+  if (file && file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (field === 'registrationDocumentFile') this.legalIdentityData.registrationDocumentUrl = reader.result as string;
+      else this.legalIdentityData.addressProofUrl = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+updateLegalIdentity() {
+  const formData = new FormData();
+  formData.append('RegistrationType', this.legalIdentityData.registrationType);
+  formData.append('RegistrationNumber', this.legalIdentityData.registrationNumber);
+
+  if (this.legalIdentityData.registrationDocumentFile) {
+    formData.append('RegistrationDocument', this.legalIdentityData.registrationDocumentFile);
+  }
+
+  if (this.legalIdentityData.addressProofFile) {
+    formData.append('AddressProofDocument', this.legalIdentityData.addressProofFile);
+  }
+
+  this.sellerService.updateLegalIdentity(this.sellerId, formData)
+    .subscribe(() => {
+      alert('Updated successfully');
+      this.showLegalIdentityModal = false;
+    });
+}
 }

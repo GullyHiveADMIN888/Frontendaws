@@ -68,7 +68,7 @@
 
   <!-- Registration Doc -->
   <div>
-    <label class="block text-sm font-medium mb-2">Identity Proof Document *</label> 
+    <label class="block text-sm font-medium mb-2">Identity Proof Document </label> 
     <input type="file"
            hidden
            id="regDoc"
@@ -96,7 +96,7 @@
 
   <!-- Address Proof -->
   <div>
-    <label class="block text-sm font-medium mb-2">Address Proof *</label>
+    <label class="block text-sm font-medium mb-2">Address Proof </label>
     <input type="file"
            hidden
            id="addrDoc"
@@ -331,10 +331,14 @@
   <!-- Navigation -->
   <div class="flex justify-between mt-8">
     <button (click)="back.emit()" class="px-6 py-3 border rounded-lg"> <i class="ri-arrow-left-line ml-2"></i> Back</button>
-    <button (click)="next.emit()" class="px-6 py-3 bg-orange-600 text-white rounded-lg">
+    <!-- <button (click)="next.emit()" class="px-6 py-3 bg-orange-600 text-white rounded-lg">
       Continue to Professional Details
       <i class="ri-arrow-right-line ml-2"></i>
-    </button>
+    </button> -->
+    <button (click)="onNextClick()" class="px-6 py-3 bg-orange-600 text-white rounded-lg">
+  Continue to Professional Details
+  <i class="ri-arrow-right-line ml-2"></i>
+</button>
   </div>
 
 </div>

@@ -22,6 +22,15 @@ import { LedgerComponent } from './ledger/ledger.component';
 import { AuthService } from '../auth/auth.service'; 
 
 const routes: Routes = [
+
+  // ✅ PUBLIC ROUTE (NO GUARD)
+  {
+    path: 'sharableProfile/:id',
+    component: SharableProfileComponent
+  },
+
+
+
   {
     path: '',
     component: SellerLayoutComponent,
@@ -51,7 +60,7 @@ const routes: Routes = [
 
       // Profile
       { path: 'completeProfile/:id', component: PublicProfileComponent },
-       { path: 'sharableProfile/:id', component: SharableProfileComponent },
+     //  { path: 'sharableProfile/:id', component: SharableProfileComponent },
 
       { path: 'refer/:sellerId', component: ReferEarnComponent }, // 👈 ADD THIS
 
@@ -62,7 +71,7 @@ const routes: Routes = [
         children: [
           { path: 'profile/:id', component: EditProfileComponent }
         ]
-      }
+      },
     ]
   }
 ];
@@ -72,3 +81,4 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class SellerRoutingModule {}
+

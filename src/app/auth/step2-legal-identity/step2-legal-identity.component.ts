@@ -380,5 +380,75 @@ validateIdentityNumber() {
 }
 
 
+validateStep3(): boolean {
+
+  this.errors = {};
+
+  if (!this.formData.businessName?.length) {
+    this.errors.businessName = 'Business name required';
+  }
+
+  if (!this.formData.registrationType?.length) {
+    this.errors.registrationType = 'Select registration type';
+  }
+
+  if (!this.formData.registrationNumber?.length) {
+    this.errors.registrationNumber = 'Registration number required';
+  } else if (!this.validateIdentityNumber()) {
+    // validateIdentityNumber will set error itself
+  }
+
+  if (!this.formData.registrationDocument) {
+    this.errors.registrationDocument = 'Upload registration document';
+  }
+
+  if (!this.formData.addressProof) {
+    this.errors.addressProof = 'Upload address proof';
+  }
+
+  if (!this.formData.line1?.trim()) {
+    this.errors.line1 = 'Line 1 is required';
+  }
+
+  if (!this.formData.stateId) {
+    this.errors.stateId = 'Select state';
+  }
+
+  if (!this.formData.cityId) {
+    this.errors.city = 'Select city';
+  }
+
+  if (!this.formData.pinCode?.trim()) {
+    this.errors.pinCode = 'PIN Code is required';
+  } 
+  else if (!/^\d{6}$/.test(this.formData.pinCode)) {
+    this.errors.pinCode = 'PIN Code must be exactly 6 digits';
+  }
+
+  if (!this.formData.selectedAreaIds || this.formData.selectedAreaIds.length === 0) {
+    this.errors.selectedAreaIds = 'Select at least one service area';
+  }
+
+  return Object.keys(this.errors).length === 0;
+}
+
+onNextClick() {
+
+  if (!this.validateStep3()) {
+    this.scrollToFirstError();
+    return;
+  }
+
+  this.next.emit();
+}
+scrollToFirstError() {
+  setTimeout(() => {
+    const firstError = document.querySelector('.text-red-500');
+    if (firstError) {
+      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 100);
+}
+
 }
 

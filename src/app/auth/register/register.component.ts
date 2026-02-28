@@ -8,9 +8,10 @@ import { Step3ProfessionalDetailsComponent } from '../step3-professional-details
 import { OTPVerificationComponent } from '../otp-verification/otp-verification.component';
 import { AuthService } from '../auth.service';
 import { RouterModule } from '@angular/router';
-
+import { forkJoin } from 'rxjs';
 // For identity type validation
 import { ViewChild } from '@angular/core';
+
 
 @Component({
   selector: 'app-register',
@@ -24,10 +25,14 @@ import { ViewChild } from '@angular/core';
     Step3ProfessionalDetailsComponent,
     OTPVerificationComponent,
 
+
   ],
   templateUrl: './register.component.html'
 })
+
+
 export class RegisterComponent {
+
 
   currentStep = 1;
 
@@ -41,7 +46,7 @@ export class RegisterComponent {
     mobile: '',
     serviceCategory: [],
     coverageArea: '',
-   
+
     businessName: '',
     registrationType: null,
     registrationNumber: '',
@@ -49,8 +54,6 @@ export class RegisterComponent {
     skillsBackground: '',
     achievements: '',
     businessAddress: '',
-  //  state: '',
-  //  city: '',
     pinCode: '',
     role: '',
     password: '',
@@ -62,12 +65,14 @@ export class RegisterComponent {
 
     locality: '',
     landmark: '',
-    stateId : null,
+    stateId: null,
     areaId: null,
     cityId: null as number | null,
     // professionalType: '',
-   serviceCategoryId: null,
-  professionalType: null,
+    serviceCategoryId: null,
+    professionalType: null,
+    howToKnowId: null,
+    howToKnowOther: '',
   };
 
   errors: any = {};
@@ -76,6 +81,14 @@ export class RegisterComponent {
   showOtpModal = false;
   isMobileVerified = false;
   //...
+  successMessage = '';
+
+  //last otp
+  showVerificationModal = false;
+  verificationType: 'mobile' | 'email' | null = null;
+  //...
+
+
 
 
   onInputChange(event: { field: string; value: any }) {
@@ -88,55 +101,55 @@ export class RegisterComponent {
   }
 
   // For identity type validation
-@ViewChild(Step2LegalIdentityComponent) step2Component!: Step2LegalIdentityComponent;
-//...
+  @ViewChild(Step2LegalIdentityComponent) step2Component!: Step2LegalIdentityComponent;
+  //...
 
   /* 🔹 STEP NAVIGATION */
   goToStep(step: number) {
     this.currentStep = step;
     //this.showOTP = false;
   }
+
+
   goNextFromStep1() {
-    // 🔴 Step validation first
-    if (!this.validateStep1()) {
-      return;
-    }
+    // // 🔴 Step validation first
+    // if (!this.validateStep1()) {
+    //   return;
+    // }
 
     // 🔴 Mobile NOT verified → STOP + ALERT
-    if (!this.isMobileVerified) {
-      alert('Please verify your mobile number before continuing.');
-      return;
-    }
+    // if (!this.isMobileVerified) {
+    //   alert('Please verify your mobile number before continuing.');
+    //   return;
+    // }
 
 
     // ✅ All good → go to Legal Identity
     this.currentStep = 3;
   }
-  // goNextFromStep3() {
-  //   if (this.validateStep3()) {
-  //     this.currentStep = 4; // OTP
-  //   }
-  // }
-  
-  goNextFromStep3() {
-  // Step 3 fields
-  if (!this.validateStep3()) return;
 
-  // Validate identity number
-  const step2Valid = this.step2Component?.validateIdentityNumber();
-  if (!step2Valid) {
-    // Focus the field if needed
-    alert(this.errors.registrationNumber || 'Please correct your identity number.');
-    return;
+
+
+
+  goNextFromStep3() {
+    // // Step 3 fields
+    // if (!this.validateStep3()) return;
+
+    // // Validate identity number
+    // const step2Valid = this.step2Component?.validateIdentityNumber();
+    // if (!step2Valid) {
+    //   // Focus the field if needed
+    //   alert(this.errors.registrationNumber || 'Please correct your identity number.');
+    //   return;
+    // }
+
+    this.currentStep = 4; // OTP
   }
 
-  this.currentStep = 4; // OTP
-}
-
   goNextFromStep4() {
-    if (this.validateStep4()) {
-      // this.currentStep = 5; // OTP
-    }
+    // if (this.validateStep4()) {
+    //   // this.currentStep = 5; // OTP
+    // }
   }
 
   /* 🔹 OTP FLOW */
@@ -148,7 +161,10 @@ export class RegisterComponent {
   onOTPVerified() {
     this.isMobileVerified = true;
     this.showOtpModal = false;
-    this.currentStep = 1;
+    this.showVerificationModal = false;
+    //  this.currentStep = 1;
+    // this.showVerificationModal = false; // close modal completely if desired
+    this.successMessage = 'Mobile number verified successfully!';
   }
 
 
@@ -157,7 +173,7 @@ export class RegisterComponent {
 
 
   submitForm() {
-    if (!this.validateStep4()) return;
+   // if (!this.validateStep4()) return;
 
     this.isSubmitting = true;
 
@@ -168,7 +184,6 @@ export class RegisterComponent {
     formData.append('Email', this.formData.email || '');
     formData.append('Mobile', this.formData.mobile || '');
     formData.append('ProfessionalType', this.formData.professionalType || '');
-  //  formData.append('ServiceCategory', JSON.stringify(this.formData.serviceCategory || []));
 
 
     // ✅ Service Category IDs
@@ -177,46 +192,15 @@ export class RegisterComponent {
       formData.append('SubCategoryIds[]', id.toString());
     });
 
-   // if (this.formData.profilePicture) formData.append('ProfilePicture', this.formData.profilePicture);
 
     // Step 2
     formData.append('BusinessName', this.formData.businessName || '');
     formData.append('RegistrationType', this.formData.registrationType || '');
     formData.append('RegistrationNumber', this.formData.registrationNumber || '');
-    // Instead of sending state name:
-   // formData.append('State', this.formData.stateId?.toString() || '');
-   // formData.append('City', this.formData.cityId?.toString() || '');
 
-    // formData.append('PlotNumber', this.formData.plotNumber || '');
-  //  formData.append('PinCode', this.formData.pinCode || '');
-   // formData.append('Role', 'Seller');
     formData.append('Password', this.formData.password || '');
     if (this.formData.registrationDocument) formData.append('RegistrationDocument', this.formData.registrationDocument);
     if (this.formData.addressProof) formData.append('AddressProof', this.formData.addressProof);
-
-//  // 🔹 Map registration type to correct field
-//   switch(this.formData.registrationType) {
-//     case 'PAN Card':
-//       formData.append('Pan', this.formData.registrationNumber || '');
-//       break;
-//     case 'GST Registration':
-//       formData.append('GSTIN', this.formData.registrationNumber || '');
-//       break;
-//     case 'Udyam Registration':
-//       formData.append('UdyamNumber', this.formData.registrationNumber || '');
-//       break;
-//     case 'Aadhar Card':
-//       formData.append('AadhaarNumber', this.formData.registrationNumber || '');
-//       formData.append('AadhaarVerified', 'true');
-//       break;
-//     case 'E-Shram Card':
-//       formData.append('EShramNumber', this.formData.registrationNumber || '');
-//       formData.append('EShramVerified', 'true');
-//       break;
-//     default:
-//       break;
-//   }
-
 
 
     formData.append('Line1', this.formData.line1 || '');
@@ -245,14 +229,33 @@ export class RegisterComponent {
     (this.formData.serviceAreas || []).forEach((area: any, index: number) => {
       formData.append(`ServiceAreas[${index}].AreaId`, area.areaId.toString());
       formData.append(`ServiceAreas[${index}].CityId`, area.cityId.toString());
+
+      formData.append('HowToKnowId', this.formData.howToKnowId?.toString() || '');
+
+      if (this.formData.howToKnowId === 6) {
+        formData.append('HowToKnowOther', this.formData.howToKnowOther || '');
+      }
     });
 
+
+
+
+ 
 
     this.service.submitRegistration(formData).subscribe({
       next: (res) => {
         console.log('Backend response:', res);
+
+        if (res.userId) {
+          this.service.saveAuth(res.token, res.role, res.name, res.userId);
+          this.formData.userId = res.userId;
+          this.isSubmitting = false;
+          this.submitSuccess = true;
+          // 👉 ONLY open verification modal here
+          this.showVerificationModal = true;
+        }
+
         this.isSubmitting = false;
-        this.submitSuccess = true; // show success message
       },
       error: (err) => {
         console.error('Registration error:', err);
@@ -267,121 +270,220 @@ export class RegisterComponent {
 
 
 
-  validateStep1(): boolean {
-    this.errors = {};
+  // validateStep1(): boolean {
+  //   this.errors = {};
 
-    // if (!this.formData.fullName?.trim()) {
-    //   this.errors.fullName = 'Full Name is required';
-    // }
-    const name = this.formData.fullName?.trim();
+  //   const name = this.formData.fullName?.trim();
 
-if (!name) {
-  this.errors.fullName = 'Full Name is required';
-} 
-else if (name.length < 3) {
-  this.errors.fullName = 'Full Name must be at least 3 characters';
-} 
-else if (!/^[A-Za-z\u0900-\u097F\s.-]+$/.test(name)) {
-  this.errors.fullName = 'Full Name contains invalid characters';
-}
+  //   if (!name) {
+  //     this.errors.fullName = 'Full Name is required';
+  //   }
+  //   else if (name.length < 3) {
+  //     this.errors.fullName = 'Full Name must be at least 3 characters';
+  //   }
+  //   else if (!/^[A-Za-z\u0900-\u097F\s.-]+$/.test(name)) {
+  //     this.errors.fullName = 'Full Name contains invalid characters';
+  //   }
 
 
-    if (!this.formData.email?.trim()) {
-      this.errors.email = 'Email is required';
-    } else if (!/^\S+@\S+\.\S+$/.test(this.formData.email)) {
-      this.errors.email = 'Enter a valid email';
+  //   if (!this.formData.email?.trim()) {
+  //     this.errors.email = 'Email is required';
+  //   } else if (!/^\S+@\S+\.\S+$/.test(this.formData.email)) {
+  //     this.errors.email = 'Enter a valid email';
+  //   }
+
+  //   if (!this.formData.mobile?.trim()) {
+  //     this.errors.mobile = 'Mobile number is required';
+  //   } else if (!/^\d{10}$/.test(this.formData.mobile)) {
+  //     this.errors.mobile = 'Enter valid 10-digit mobile';
+  //   }
+
+  //   if (!this.formData.serviceCategoryId) {
+  //     this.errors.serviceCategoryId = 'Select a service category';
+  //   }
+
+  //   // 🔹 SUBCATEGORY VALIDATION
+  //   if (this.formData.hasSubCategories) {
+  //     if (!this.formData.subCategoryIds?.length) {
+  //       this.errors.subCategoryIds = 'Select at least one service subcategory';
+  //     }
+  //   }
+
+
+  //   if (!this.formData.password?.trim()) {
+  //     this.errors.password = 'Password is required';
+  //   }
+  //   else if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/.test(this.formData.password)) {
+  //     this.errors.password =
+  //       'Password must be at least 6 characters and include 1 uppercase letter, 1 number, and 1 special character';
+  //   }
+
+  //   if (!this.formData.professionalType?.trim()) {
+  //     this.errors.professionalType = 'Select professional type';
+  //   }
+
+  //   return Object.keys(this.errors).length === 0;
+  // }
+
+
+  // validateStep3(): boolean {
+  //   this.errors = {};
+  //   if (!this.formData.businessName?.length) {
+  //     this.errors.businessName = 'Business name required';
+  //   }
+  //   if (!this.formData.registrationType?.length) {
+  //     this.errors.registrationType = 'Select registration type';
+  //   }
+  //   if (!this.formData.registrationNumber?.length) {
+  //     this.errors.registrationNumber = 'Registration number required';
+  //   }
+  //   if (!this.formData.registrationDocument) {
+  //     this.errors.registrationDocument = 'Upload registration document';
+  //   }
+  //   if (!this.formData.addressProof) {
+  //     this.errors.addressProof = 'Upload address proof';
+  //   }
+  //   if (!this.formData.line1?.trim()) {
+  //     this.errors.line1 = 'Line 1 is required';
+  //   }
+  //   if (!this.formData.stateId) {
+  //     this.errors.stateId = 'Select state';
+  //   }
+
+  //   if (!this.formData.cityId) {
+  //     this.errors.city = 'Select city';
+  //   }
+
+  //   if (!this.formData.pinCode?.trim()) {
+  //     this.errors.pinCode = 'PIN Code is required';
+  //   } else if (!/^\d{6}$/.test(this.formData.pinCode)) {
+  //     this.errors.pinCode = 'PIN Code must be exactly 6 digits';
+  //   }
+
+
+
+  //   return Object.keys(this.errors).length === 0;
+  // }
+
+  // validateStep4(): boolean {
+  //   this.errors = {};
+
+  //   if (!this.formData.selfOverview || this.formData.selfOverview.trim().length < 150) {
+  //     this.errors.selfOverview = 'Minimum 150 characters required';
+  //   }
+
+  //   if (!this.formData.skillsBackground || this.formData.skillsBackground.trim().length < 50) {
+  //     this.errors.skillsBackground = 'Minimum 50 characters required';
+  //   }
+  //   if (!this.formData.howToKnowId) {
+  //     this.errors.howToKnowId = 'Please select an option';
+  //   }
+
+  //   // ShowOtherInput logic should be checked via the selected ID
+  //   if (this.formData.howToKnowId === 6 && (!this.formData.howToKnowOther || this.formData.howToKnowOther.trim() === '')) {
+  //     this.errors.howToKnowOther = 'Please specify how you heard about us';
+  //   }
+
+  //   return Object.keys(this.errors).length === 0;
+  // }
+
+
+
+  async openMobileVerification() {
+    this.verificationType = 'mobile';
+    this.showOtpModal = true;
+
+    try {
+      await this.service.sendOtp(this.formData?.mobile);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to send OTP');
+    }
+  }
+
+
+
+  closeVerificationModal() {
+
+    // Close UI
+    this.showVerificationModal = false;
+    this.showOtpModal = false;
+
+    // Optional: clear mobile/email
+    this.formData.mobile = '';
+    this.formData.email = '';
+
+    // 🔥 CLEAR FIREBASE STATE SAFELY
+    this.service.clearRecaptcha();
+  }
+  // Back from OTP
+  handleOtpBack() {
+
+    this.showOtpModal = false; // hide OTP
+    this.service.clearRecaptcha(); // 🔥 clear Firebase state
+  }
+
+  openEmailVerification() {
+    if (!this.formData.email || !this.formData.userId) {
+      alert('Email or User ID missing!');
+      return;
     }
 
-    if (!this.formData.mobile?.trim()) {
-      this.errors.mobile = 'Mobile number is required';
-    } else if (!/^\d{10}$/.test(this.formData.mobile)) {
-      this.errors.mobile = 'Enter valid 10-digit mobile';
-    }
+    this.verificationType = 'email';
 
-    if (!this.formData.serviceCategoryId) {
-      this.errors.serviceCategoryId = 'Select a service category';
-    }
-    // if (!this.formData.subCategoryIds?.length) {
-    //   this.errors.subCategoryIds = 'Select at least one service subCategoory';
-    // }
-    // 🔹 SUBCATEGORY VALIDATION
-    if (this.formData.hasSubCategories) {
-      if (!this.formData.subCategoryIds?.length) {
-        this.errors.subCategoryIds = 'Select at least one service subcategory';
+    this.service.sendEmailOtp({
+      userId: this.formData.userId,
+      email: this.formData.email,
+      fullName: this.formData.fullName
+    }).subscribe({
+      next: (res: any) => {
+        console.log('Email OTP sent response:', res);
+
+        this.formData.emailOtpToken = res.token;
+
+        if (!res.token) {
+          alert('OTP token not received from server');
+          return;
+        }
+
+        // ✅ Open modal ONLY after success
+        this.showOtpModal = true;
+      },
+      error: (err) => {
+        console.error('Send email OTP error:', err);
+        alert('Failed to send email OTP');
       }
-    }
-
-
-    if (!this.formData.password?.trim()) {
-      this.errors.password = 'Password is required';
-    }
-    else if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/.test(this.formData.password)) {
-      this.errors.password =
-        'Password must be at least 6 characters and include 1 uppercase letter, 1 number, and 1 special character';
-    }
-
-    if (!this.formData.professionalType?.trim()) {
-      this.errors.professionalType = 'Select professional type';
-    }
-
-    return Object.keys(this.errors).length === 0;
+    });
   }
 
+  onOTPVerifiedEmail(event: { otp: string }) {
+    if (this.verificationType === 'email') {
+      if (!this.formData.emailOtpToken) {
+        alert('OTP token missing!');
+        return;
+      }
 
-  validateStep3(): boolean {
-    this.errors = {};
-    if (!this.formData.businessName?.length) {
-      this.errors.businessName = 'Business name required';
-    }
-    if (!this.formData.registrationType?.length) {
-      this.errors.registrationType = 'Select registration type';
-    }
-    if (!this.formData.registrationNumber?.length) {
-      this.errors.registrationNumber = 'Registration number required';
-    }
-    if (!this.formData.registrationDocument) {
-      this.errors.registrationDocument = 'Upload registration document';
-    }
-    if (!this.formData.addressProof) {
-      this.errors.addressProof = 'Upload address proof';
-    }
-    if (!this.formData.line1?.trim()) {
-      this.errors.line1 = 'Line 1 is required';
-    }
-    if (!this.formData.stateId) {
-      this.errors.stateId = 'Select state';
-    }
+      this.service.verifyEmailOtp({
+        otp: event.otp,
+        token: this.formData.emailOtpToken
+      }).subscribe({
+        next: () => {
+          alert('Email verified successfully!');
+          this.showOtpModal = false;
+          this.showVerificationModal = false;
 
-    if (!this.formData.cityId) {
-      this.errors.city = 'Select city';
+          // Mark email verified in local state
+          this.formData.isEmailVerified = true;
+        },
+        error: () => {
+          alert('Invalid or expired OTP');
+        }
+      });
     }
-
-    if (!this.formData.pinCode?.trim()) {
-      this.errors.pinCode = 'PIN Code is required';
-    } else if (!/^\d{6}$/.test(this.formData.pinCode)) {
-      this.errors.pinCode = 'PIN Code must be exactly 6 digits';
+    else if (this.verificationType === 'mobile') {
+      this.isMobileVerified = true;
+      this.showOtpModal = false;
+      this.showVerificationModal = false;
     }
-
-
-
-    return Object.keys(this.errors).length === 0;
   }
-
-  validateStep4(): boolean {
-    this.errors = {};
-
-    if (!this.formData.selfOverview || this.formData.selfOverview.trim().length < 150) {
-      this.errors.selfOverview = 'Minimum 150 characters required';
-    }
-
-    if (!this.formData.skillsBackground || this.formData.skillsBackground.trim().length < 50) {
-      this.errors.skillsBackground = 'Minimum 50 characters required';
-    }
-
-    return Object.keys(this.errors).length === 0;
-  }
-
-
-
-
 }

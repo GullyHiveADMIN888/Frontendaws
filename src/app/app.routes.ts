@@ -44,4 +44,6 @@ export const routes: Routes = [
 
 
   { path: '**', redirectTo: '' }
+// this path redirect to home page if the url is not get 
+ // { path: '**', redirectTo: '' }
 ];

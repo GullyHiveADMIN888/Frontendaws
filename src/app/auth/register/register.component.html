@@ -90,3 +90,227 @@
 
 
 </div>
+
+
+
+ <!-- (click)="openEmailVerification()" -->
+
+<!-- ACCOUNT VERIFICATION MODAL -->
+<!-- <div *ngIf="!showVerificationModal"
+
+     class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+
+
+  <ng-container *ngIf="!showOtpModal; else otpOnly">
+
+  
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
+
+      <button
+        (click)="showVerificationModal = false"
+         (click)="closeVerificationModal()"
+        class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">
+        ✕
+      </button>
+
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">
+          Verify Your Account
+        </h2>
+        <p class="text-sm text-gray-500 mt-1">
+          Please verify your details to continue
+        </p>
+      </div>
+
+     
+      <div class="flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-4">
+        <div>
+          <p class="text-xs text-gray-500">Mobile Number</p>
+          <p class="font-semibold text-gray-800">
+            {{ formData.mobile }}
+          </p>
+        </div>
+
+        <button
+          (click)="openMobileVerification()"
+          class="min-w-[90px] bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
+          Verify
+        </button>
+      </div>
+
+   
+      <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+        <div>
+          <p class="text-xs text-gray-500">Email Address</p>
+          <p class="font-semibold text-gray-800">
+            {{ formData.email }}
+          </p>
+        </div>
+
+        <button
+          class="min-w-[90px] bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
+          Verify
+        </button>
+      </div>
+
+    </div>
+
+  </ng-container>
+
+
+  <ng-template #otpOnly>
+    <app-otp-verification
+      [mobile]="formData.mobile"
+      (onVerified)="onOTPVerified()"
+      (onBack)="showOtpModal = false">
+    </app-otp-verification>
+  </ng-template>
+
+</div> -->
+
+<!-- ACCOUNT VERIFICATION MODAL -->
+<!-- <div *ngIf="showVerificationModal"
+
+     class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+
+ 
+  <ng-container *ngIf="!showOtpModal; else otpStep">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
+      <button
+        (click)="closeVerificationModal()"
+        class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">
+        ✕
+      </button>
+
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Verify Your Account</h2>
+        <p class="text-sm text-gray-500 mt-1">Please verify your details to continue</p>
+      </div>
+
+     
+      <div class="flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-4">
+        <div>
+          <p class="text-xs text-gray-500">Mobile Number</p>
+          <p class="font-semibold text-gray-800">{{ formData.mobile }}</p>
+        </div>
+
+        <button
+          (click)="openMobileVerification()"
+          class="min-w-[90px] bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
+          Verify
+        </button>
+      </div>
+
+     
+
+<div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+  <div>
+    <p class="text-xs text-gray-500">Email Address</p>
+    <p class="font-semibold text-gray-800">{{ formData.email }}</p>
+  </div>
+
+  <button
+    (click)="openEmailVerification()"
+    class="min-w-[90px] bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
+    Verify
+  </button>
+</div>
+
+
+<app-otp-verification
+  *ngIf="showOtpModal && verificationType === 'email'"
+  [email]="formData.email"
+  [otpToken]="formData.emailOtpToken"
+  (onVerifiedEmail)="onOTPVerifiedEmail($event)"
+  (onBack)="handleOtpBack()">
+</app-otp-verification>
+
+
+    </div>
+
+
+  </ng-container>
+
+
+  <ng-template #otpStep>
+    <div *ngIf="showOtpModal">
+      <app-otp-verification
+        [mobile]="formData.mobile"
+        (onVerified)="onOTPVerified()"
+        (onBack)="handleOtpBack()">
+      </app-otp-verification>
+  
+    </div>
+  </ng-template>
+
+</div> -->
+
+
+<div *ngIf="showVerificationModal"
+     class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+
+  <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
+
+    <button
+      (click)="closeVerificationModal()"
+      class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">
+      ✕
+    </button>
+
+    <!-- STEP 1 -->
+    <ng-container *ngIf="!showOtpModal">
+
+      <!-- MOBILE -->
+      <div class="flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-4">
+        <div>
+          <p class="text-xs text-gray-500">Mobile Number</p>
+          <p class="font-semibold text-gray-800">{{ formData.mobile }}</p>
+        </div>
+
+        <button
+          (click)="openMobileVerification()"
+          class="min-w-[90px] bg-orange-600 text-white text-sm px-4 py-2 rounded-lg">
+          Verify
+        </button>
+      </div>
+
+      <!-- EMAIL -->
+      <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+        <div>
+          <p class="text-xs text-gray-500">Email Address</p>
+          <p class="font-semibold text-gray-800">{{ formData.email }}</p>
+        </div>
+
+        <button
+          (click)="openEmailVerification()"
+          class="min-w-[90px] bg-blue-600 text-white text-sm px-4 py-2 rounded-lg">
+          Verify
+        </button>
+      </div>
+
+    </ng-container>
+
+    <!-- STEP 2: SINGLE OTP COMPONENT -->
+    <ng-container *ngIf="showOtpModal">
+
+      <!-- EMAIL OTP -->
+      <app-otp-verification
+        *ngIf="verificationType === 'email'"
+        [email]="formData.email"
+        [otpToken]="formData.emailOtpToken"
+        (onVerifiedEmail)="onOTPVerifiedEmail($event)"
+        (onBack)="handleOtpBack()">
+      </app-otp-verification>
+
+      <!-- MOBILE OTP -->
+      <app-otp-verification
+        *ngIf="verificationType === 'mobile'"
+        [mobile]="formData.mobile"
+        (onVerified)="onOTPVerified()"
+        (onBack)="handleOtpBack()">
+      </app-otp-verification>
+
+    </ng-container>
+
+  </div>
+</div>

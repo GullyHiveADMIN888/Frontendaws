@@ -27,10 +27,14 @@ export class OTPVerificationComponent implements OnInit, OnDestroy {
 
   constructor(private authService: AuthService, @Inject(PLATFORM_ID) private platformId: Object) {}
 
-  @Input() mobile = '';
+  @Input() mobile: string = '';  // default to empty string
+@Input() userId: string = '';  // default to empty string
   @Output() onVerified = new EventEmitter<void>();
   @Output() onBack = new EventEmitter<void>();
 
+  @Input() otpToken!: string; // JWT token for email verification
+  @Input() email?: string;        // JWT for email
+ @Output() onVerifiedEmail = new EventEmitter<{ otp: string }>();
   @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
   otp: string[] = Array(6).fill('');
@@ -38,6 +42,7 @@ export class OTPVerificationComponent implements OnInit, OnDestroy {
   canResend = false;
   isVerifying = false;
   error = '';
+
 
   private timerSubscription: Subscription | null = null;
 
@@ -137,27 +142,115 @@ onInputChange(event: Event, index: number) {
     setTimeout(() => this.focusInput(Math.min(pastedData.length, 5)), 0);
   }
 
+//FOR REGITER TIME.....
+
+// async onVerify() {
+//   const otpValue = this.otp.join('');
+
+//   if (otpValue.length !== 6) {
+//     this.error = 'Enter full OTP';
+//      alert(this.error); // show alert if OTP is incomplete
+//     return;
+//   }
+
+//   this.isVerifying = true;
+//    this.error = '';
+
+
+//   try {
+//     await this.authService.verifyOtp(otpValue);
+
+//     const userId = this.authService.getUserId();
+//     const phone = this.mobile; // or wherever you store the phone number
+
+//     if (userId && phone) {
+//       console.log('Calling verifyMobileOnServer...');
+//       await this.authService.verifyMobileOnServer(userId, phone).toPromise();
+//       console.log('verifyMobileOnServer completed');
+//     }
+//       console.log('verifyMobileOnServer completed...', userId, phone);
+//     this.onVerified.emit();
+   
+
+//   } catch (err) {
+//     console.error('Error during OTP verification:', err);
+//     this.error = 'Invalid OTP';
+//   } finally {
+//     this.isVerifying = false;
+//   }
+// }
+
+
+// FOR LOGIN TIME ...
+
+// async onVerify() {
+//   const otpValue = this.otp.join('');
+
+//   if (otpValue.length !== 6) {
+//     this.error = 'Enter full OTP';
+//     alert(this.error);
+//     return;
+//   }
+
+//   this.isVerifying = true;
+//   this.error = '';
+
+//   try {
+//     await this.authService.verifyOtp(otpValue);
+
+//     if (this.userId && this.mobile) {
+//       console.log('Calling verifyMobileOnServer...', this.userId, this.mobile);
+//       await this.authService.verifyMobileOnServer(this.userId, this.mobile).toPromise();
+//       console.log('verifyMobileOnServer completed');
+//     }
+//  console.log('verifyMobileOnServer completed...', this.userId, this.mobile);
+//     this.onVerified.emit();
+//   } catch (err) {
+//     console.error('Error during OTP verification:', err);
+//     this.error = 'Invalid OTP';
+//   } finally {
+//     this.isVerifying = false;
+//   }
+// }
+
+
+//MANAGE BOTH IN SINGLE 
 
 async onVerify() {
   const otpValue = this.otp.join('');
 
   if (otpValue.length !== 6) {
     this.error = 'Enter full OTP';
+    alert(this.error);
     return;
   }
 
   this.isVerifying = true;
+  this.error = '';
 
   try {
+    // 🔹 Step 1: Firebase OTP verification
     await this.authService.verifyOtp(otpValue);
+
+    // 🔹 Step 2: Determine userId and mobile to send to backend
+    const userIdToUse = this.userId || this.authService.getUserId();
+    const mobileToUse = this.mobile || this.mobile;
+
+    if (userIdToUse && mobileToUse) {
+      console.log('Calling verifyMobileOnServer...', userIdToUse, mobileToUse);
+      await this.authService.verifyMobileOnServer(userIdToUse, mobileToUse).toPromise();
+      console.log('verifyMobileOnServer completed');
+    }
+
+    // 🔹 Step 3: Emit event back to parent
     this.onVerified.emit();
-  } catch {
+  } catch (err) {
+    console.error('Error during OTP verification:', err);
     this.error = 'Invalid OTP';
   } finally {
     this.isVerifying = false;
   }
 }
-
 
 async onResend() {
   this.timer = 60;
@@ -178,5 +271,19 @@ async onResend() {
   trackByIndex(index: number) {
   return index;
 }
+// Email OTP
+async verifyEmailOtp() {
+  const otpValue = this.otp.join('');
+  if (otpValue.length !== 6) { alert('Enter full OTP'); return; }
+  if (!this.email || !this.otpToken) { alert('Email or token missing'); return; }
 
+  this.isVerifying = true;
+  try {
+    await this.authService.verifyEmailOtp({ otp: otpValue, token: this.otpToken }).toPromise();
+    alert('Email verified successfully!');
+    this.onVerifiedEmail.emit({ otp: otpValue });
+  } catch (err: any) {
+    this.error = err?.message || 'Invalid OTP';
+  } finally { this.isVerifying = false; }
+}
 }

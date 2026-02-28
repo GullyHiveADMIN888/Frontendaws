@@ -8,7 +8,7 @@ import { SellerService, Referral } from '../seller.service';
 })
 export class ReferEarnComponent implements OnInit {
   sellerId!: number;
-  referralCode = 'JOHNDOE2024';
+ // referralCode = 'JOHNDOE2024';
   referralLink = '';
   copied = false;
 
@@ -16,7 +16,7 @@ export class ReferEarnComponent implements OnInit {
   totalEarnings = 0;
   activeReferrals = 0;
   pendingReferrals = 0;
-
+  referralCode = '';
   constructor(private route: ActivatedRoute, private sellerService: SellerService) {}
 
   ngOnInit(): void {
@@ -24,7 +24,7 @@ export class ReferEarnComponent implements OnInit {
       const id = params.get('sellerId');
       if (id) {
         this.sellerId = +id;
-        this.referralLink = `https://gullyhivefrontend-z698.onrender.com/#/join?ref=${this.referralCode}`;
+      //  this.referralLink = `https://gullyhivefrontend-z698.onrender.com/#/join?ref=${this.referrals.referralCode}`;
         this.loadReferralsAndEarnings();
       }
     });
@@ -58,6 +58,11 @@ export class ReferEarnComponent implements OnInit {
           earnings: `$${amountNum}` // formatted for display
         };
       });
+// ✅ Set referral code from first record
+    if (this.referrals.length > 0 && this.referrals[0].referralCode) {
+      this.referralCode = this.referrals[0].referralCode!;
+      this.referralLink = `https://gullyhivefrontend-z698.onrender.com/#/join?ref=${this.referralCode}`;
+    }
 
       // Calculate totals
       this.totalEarnings = this.referrals.reduce((sum, r) => sum + (r.amount ?? 0), 0);
