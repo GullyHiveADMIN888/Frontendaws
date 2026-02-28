@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 // import { LoginComponent } from './login/login.component';
 import { RegisterLayoutComponent } from './register/register-layout/register-layout.component';
 import { RegisterComponent } from './register/register.component';
+import { CustomerRegisterComponent } from './costumer-registration/customer-register/customer-register.component';
 // import { LandingPageComponent } from '../landing/landing.component';
 
 export const AUTH_ROUTES: Routes = [
@@ -25,6 +26,11 @@ export const AUTH_ROUTES: Routes = [
         component: RegisterComponent
       }
     ]
+  },
+
+  {
+    path: 'customer/register',
+    component: CustomerRegisterComponent // Direct component, no layout needed
   },
 
   // DEFAULT REDIRECT

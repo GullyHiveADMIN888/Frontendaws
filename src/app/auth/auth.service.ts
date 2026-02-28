@@ -61,18 +61,20 @@ export class AuthService implements CanActivate {
   }
 
   // Register
-
-  submitRegistration(formData: FormData): Observable<RegistrationResponse> {
-    return this.http.post<RegistrationResponse>(`${this.apiUrl}/register`, formData);
-  }
+  
+submitRegistration(formData: FormData) {
+  return this.http.post(`${this.apiUrl}/register`, formData);
+}
 
   // auth.service.ts
-  saveAuth(token: string, role: string, name?: string, userId?: string) {
-    localStorage.setItem('token', token);
-    localStorage.setItem('role', role);
-    localStorage.setItem('userId', userId || ''); // Store ID
-    if (name) localStorage.setItem('name', name);
-  }
+saveAuth(token: string, role: string, name?: string, userId?: string) {
+  localStorage.setItem('token', token);
+  localStorage.setItem('role', role);
+  localStorage.setItem('userId', userId || ''); 
+  if (name) localStorage.setItem('name', name);
+}
+
+
 
   redirectByRole(role: string) {
     const routes: Record<string, string> = {
@@ -96,6 +98,10 @@ export class AuthService implements CanActivate {
   // getter for userId
   getUserId(): string | null {
     return localStorage.getItem('userId');
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
   }
 
   isLoggedIn() {

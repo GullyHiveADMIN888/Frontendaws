@@ -63,8 +63,8 @@ export interface CreateLeadDto {
     subcategoryId?: number;
     cityId?: number;
     areaId?: number;
-    pincode?: string;
-    confirmedStatus: string | null;
+    // pincode?: string;
+    confirmedStatus?: string | null;
 }
 
 export interface UpdateLeadDto {
@@ -79,12 +79,12 @@ export interface UpdateLeadDto {
     isInstant: boolean;
     source: string;
     flowType: string;
-    confirmedStatus: string | null;
+    confirmedStatus?: string | null;
     categoryId?: number;
     subcategoryId?: number;
     cityId?: number;
     areaId?: number;
-    pincode?: string;
+    // pincode?: string;
 }
 
 export interface Category {

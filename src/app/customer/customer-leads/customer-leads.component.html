@@ -1,0 +1,722 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Header -->
+  <div class="mb-8 flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2 font-poppins">
+        My Leads
+      </h1>
+      <p class="text-gray-600 font-inter">Manage and track all your service requests</p>
+    </div>
+
+    <!-- Create Lead Button -->
+    <button (click)="openCreateModal()" class="px-6 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 
+                   font-medium flex items-center gap-2 transition-all duration-200">
+      <i class="ri-add-line text-xl"></i>
+      <span>Create New Lead</span>
+    </button>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="mb-6">
+    <div class="relative">
+      <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="onSearch()"
+        placeholder="Search leads by description, category..." class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl 
+                    focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500
+                    transition duration-200 font-inter">
+      <i class="ri-search-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl"></i>
+      <button *ngIf="searchTerm" (click)="searchTerm = ''; onSearch()"
+        class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+        <i class="ri-close-line text-xl"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Leads Table Container - With horizontal scroll on mobile -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="p-8 text-center">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-orange-600 border-t-transparent"></div>
+      <p class="mt-2 text-gray-600 font-inter">Loading your leads...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && leads.length === 0" class="p-12 text-center">
+      <div class="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i class="ri-file-list-3-line text-4xl text-orange-600"></i>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-2 font-poppins">No leads yet</h3>
+      <p class="text-gray-600 mb-6 font-inter">Create your first lead to start getting responses from providers</p>
+      <button (click)="openCreateModal()" class="px-6 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 
+                     font-medium inline-flex items-center gap-2">
+        <i class="ri-add-line"></i>
+        Create Your First Lead
+      </button>
+    </div>
+
+    <!-- Leads Table - With horizontal scroll on mobile -->
+    <div *ngIf="!loading && leads.length > 0" class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Budget</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+            <th class="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <ng-container *ngFor="let lead of leads">
+            <!-- Main Row -->
+            <tr class="hover:bg-gray-50 transition-colors cursor-pointer" (click)="toggleLeadExpand(lead)">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ lead.id }}</td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-gray-900 line-clamp-2">{{ lead.description }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">{{ lead.categoryName }}</div>
+                <div class="text-xs text-gray-500">{{ lead.subcategoryName || 'All' }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">{{ lead.cityName }}</div>
+                <div class="text-xs text-gray-500">{{ lead.areaName || 'All areas' }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">
+                  ₹{{ lead.budgetMin || 0 }} - ₹{{ lead.budgetMax || 0 }}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  [ngClass]="getStatusBadgeClass(lead)">
+                  {{ getStatusText(lead) }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ lead.createdAt | date:'mediumDate' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button (click)="toggleLeadExpand(lead); $event.stopPropagation()" 
+                        class="text-orange-600 hover:text-orange-900 mr-3"
+                        [attr.title]="isLeadExpanded(lead) ? 'Show less' : 'View details'">
+                  <i [class]="isLeadExpanded(lead) ? 'ri-subtract-line text-xl' : 'ri-eye-line text-xl'"></i>
+                </button>
+                <!-- <button (click)="deleteLead(lead.id); $event.stopPropagation()" 
+                        class="text-red-600 hover:text-red-900" title="Delete">
+                  <i class="ri-delete-bin-line text-xl"></i>
+                </button> -->
+              </td>
+            </tr>
+            
+            <!-- Expanded Details Row -->
+            <tr *ngIf="isLeadExpanded(lead)" class="bg-orange-50">
+              <td colspan="8" class="px-6 py-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <!-- Lead Details -->
+                  <div class="bg-white p-4 rounded-lg shadow-sm border border-orange-100">
+                    <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+                      <i class="ri-information-line text-orange-600 mr-2"></i>
+                      Lead Details
+                    </h4>
+                    <div class="space-y-2 text-sm">
+                      <p><span class="font-medium text-gray-600">ID:</span> #{{ lead.id }}</p>
+                      <p><span class="font-medium text-gray-600">Description:</span> {{ lead.description }}</p>
+                      <p><span class="font-medium text-gray-600">Flow Type:</span> 
+                        <span class="px-2 py-1 text-xs rounded-full" 
+                              [ngClass]="lead.flowType === 'confirmed' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'">
+                          {{ lead.flowType }}
+                        </span>
+                      </p>
+                      <p *ngIf="lead.confirmedStatus"><span class="font-medium text-gray-600">Confirmed Status:</span> {{ lead.confirmedStatus }}</p>
+                    </div>
+                  </div>
+
+                  <!-- Category Details -->
+                  <div class="bg-white p-4 rounded-lg shadow-sm border border-orange-100">
+                    <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+                      <i class="ri-price-tag-3-line text-orange-600 mr-2"></i>
+                      Service Details
+                    </h4>
+                    <div class="space-y-2 text-sm">
+                      <p><span class="font-medium text-gray-600">Category:</span> {{ lead.categoryName }}</p>
+                      <p><span class="font-medium text-gray-600">Subcategory:</span> {{ lead.subcategoryName || 'Not specified' }}</p>
+                      <p><span class="font-medium text-gray-600">Budget:</span> ₹{{ lead.budgetMin || 0 }} - ₹{{ lead.budgetMax || 0 }}</p>
+                    </div>
+                  </div>
+
+                  <!-- Location Details -->
+                  <div class="bg-white p-4 rounded-lg shadow-sm border border-orange-100">
+                    <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+                      <i class="ri-map-pin-line text-orange-600 mr-2"></i>
+                      Location
+                    </h4>
+                    <div class="space-y-2 text-sm">
+                      <p><span class="font-medium text-gray-600">City:</span> {{ lead.cityName }}</p>
+                      <p><span class="font-medium text-gray-600">Area:</span> {{ lead.areaName || 'All areas' }}</p>
+                      <p *ngIf="lead.pincode"><span class="font-medium text-gray-600">Pincode:</span> {{ lead.pincode }}</p>
+                    </div>
+                  </div>
+
+                  <!-- Timing Details -->
+                  <div class="bg-white p-4 rounded-lg shadow-sm border border-orange-100">
+                    <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+                      <i class="ri-time-line text-orange-600 mr-2"></i>
+                      Timing
+                    </h4>
+                    <div class="space-y-2 text-sm">
+                      <p><span class="font-medium text-gray-600">Time Preference:</span> {{ lead.timePreference }}</p>
+                      <p *ngIf="lead.scheduledStart"><span class="font-medium text-gray-600">Start:</span> {{ lead.scheduledStart | date:'medium' }}</p>
+                      <p *ngIf="lead.scheduledEnd"><span class="font-medium text-gray-600">End:</span> {{ lead.scheduledEnd | date:'medium' }}</p>
+                      <p><span class="font-medium text-gray-600">Instant:</span> {{ lead.isInstant ? 'Yes' : 'No' }}</p>
+                    </div>
+                  </div>
+
+                  <!-- Offer Statistics -->
+                  <div class="bg-white p-4 rounded-lg shadow-sm border border-orange-100">
+                    <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+                      <i class="ri-bar-chart-2-line text-orange-600 mr-2"></i>
+                      Offer Statistics
+                    </h4>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                      <div class="text-center p-2 bg-gray-50 rounded">
+                        <span class="block font-bold text-lg text-orange-600">{{ lead.totalOffers }}</span>
+                        <span class="text-xs text-gray-500">Total</span>
+                      </div>
+                      <div class="text-center p-2 bg-yellow-50 rounded">
+                        <span class="block font-bold text-lg text-yellow-600">{{ lead.offeredCount }}</span>
+                        <span class="text-xs text-gray-500">Offered</span>
+                      </div>
+                      <div class="text-center p-2 bg-blue-50 rounded">
+                        <span class="block font-bold text-lg text-blue-600">{{ lead.seenCount }}</span>
+                        <span class="text-xs text-gray-500">Seen</span>
+                      </div>
+                      <div class="text-center p-2 bg-green-50 rounded">
+                        <span class="block font-bold text-lg text-green-600">{{ lead.committedCount }}</span>
+                        <span class="text-xs text-gray-500">Committed</span>
+                      </div>
+                      <div class="text-center p-2 bg-purple-50 rounded">
+                        <span class="block font-bold text-lg text-purple-600">{{ lead.unlockedCount }}</span>
+                        <span class="text-xs text-gray-500">Unlocked</span>
+                      </div>
+                      <div class="text-center p-2 bg-red-50 rounded">
+                        <span class="block font-bold text-lg text-red-600">{{ lead.dismissedCount }}</span>
+                        <span class="text-xs text-gray-500">Dismissed</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Dates -->
+                  <div class="bg-white p-4 rounded-lg shadow-sm border border-orange-100">
+                    <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+                      <i class="ri-calendar-line text-orange-600 mr-2"></i>
+                      Important Dates
+                    </h4>
+                    <div class="space-y-2 text-sm">
+                      <p><span class="font-medium text-gray-600">Created:</span> {{ lead.createdAt | date:'medium' }}</p>
+                      <p><span class="font-medium text-gray-600">Last Updated:</span> {{ lead.updatedAt | date:'medium' }}</p>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="!loading && leads.length > 0"
+      class="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="text-sm text-gray-700 order-2 sm:order-1">
+        Showing {{ (currentPage - 1) * pageSize + 1 }} to
+        {{ Math.min(currentPage * pageSize, totalLeads) }} of {{ totalLeads }} leads
+      </div>
+      <div class="flex gap-2 order-1 sm:order-2">
+        <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium
+                       hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+          Previous
+        </button>
+        <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium
+                       hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Lead Modal -->
+<div *ngIf="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl mx-4 flex flex-col max-h-[90vh]">
+
+    <!-- Header with Progress -->
+    <div class="px-8 py-6 border-b border-gray-200">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900 font-poppins">Create New Lead</h2>
+          <p class="text-gray-600 font-inter mt-1">Step {{ currentStep }} of {{ totalSteps }}</p>
+        </div>
+        <button (click)="closeCreateModal()" class="text-gray-400 hover:text-gray-600">
+          <i class="ri-close-line text-2xl"></i>
+        </button>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div class="h-full bg-orange-600 transition-all duration-300"
+          [style.width.%]="(currentStep / totalSteps) * 100"></div>
+      </div>
+    </div>
+
+    <!-- Scrollable Content - Using formGroup -->
+    <form [formGroup]="leadForm" class="flex-1 overflow-y-auto px-8 py-6">
+
+      <!-- Step 1: Category Selection -->
+      <div *ngIf="currentStep === 1" class="space-y-4">
+        <label class="block text-sm font-semibold text-gray-800 mb-2">
+          Select Service Category <span class="text-orange-600">*</span>
+        </label>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div *ngFor="let cat of categories" (click)="onCategorySelect(cat)"
+            class="relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-200" [ngClass]="{
+                 'border-orange-500 bg-orange-50': selectedCategory?.id === cat.id,
+                 'border-gray-200 hover:border-orange-300': selectedCategory?.id !== cat.id
+               }">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                <i class="ri-service-line text-orange-600"></i>
+              </div>
+              <div>
+                <h3 class="font-medium text-gray-900">{{ cat.name }}</h3>
+                <p class="text-xs text-gray-500">{{ cat.description || 'Service category' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Subcategory Selection -->
+      <div *ngIf="currentStep === 2" class="space-y-4">
+        <label class="block text-sm font-semibold text-gray-800 mb-2">
+          Select Subcategory (Optional)
+        </label>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div *ngFor="let sub of subcategories" (click)="onSubcategorySelect(sub)"
+            class="relative p-3 rounded-lg border-2 cursor-pointer transition-all duration-200" [ngClass]="{
+                 'border-orange-500 bg-orange-50': selectedSubcategory?.id === sub.id,
+                 'border-gray-200 hover:border-orange-300': selectedSubcategory?.id !== sub.id
+               }">
+            <p class="font-medium text-gray-900">{{ sub.name }}</p>
+          </div>
+        </div>
+
+        <button *ngIf="subcategories.length === 0" (click)="nextStep()" type="button"
+          class="w-full mt-4 py-3 bg-gray-100 text-gray-600 rounded-lg font-medium">
+          Skip Subcategory
+        </button>
+      </div>
+
+      <!-- Step 3: City Selection -->
+      <div *ngIf="currentStep === 3" class="space-y-4">
+        <label class="block text-sm font-semibold text-gray-800 mb-2">
+          Select City <span class="text-orange-600">*</span>
+        </label>
+
+        <div class="relative city-search-container">
+          <div class="relative">
+            <input type="text" [(ngModel)]="citySearchTerm" [ngModelOptions]="{standalone: true}"
+              (input)="searchCities(citySearchTerm)" (focus)="onCityInputFocus()" placeholder="Search for a city..."
+              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl
+                    focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500
+                    transition duration-200">
+            <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+
+            <!-- Loading Spinner -->
+            <div *ngIf="loadingCities" class="absolute right-3 top-1/2 -translate-y-1/2">
+              <div class="animate-spin rounded-full h-5 w-5 border-2 border-orange-600 border-t-transparent"></div>
+            </div>
+          </div>
+
+          <!-- Dropdown Results -->
+          <div *ngIf="showCityDropdown && filteredCities.length > 0"
+            class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+            <div *ngFor="let city of filteredCities" (click)="onCitySelect(city)"
+              class="px-4 py-3 hover:bg-orange-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0">
+              <div class="font-medium text-gray-900">{{ city.name }}</div>
+              <div class="text-xs text-gray-500">{{ city.stateName }}, {{ city.country }}</div>
+            </div>
+          </div>
+
+          <!-- No Results Message -->
+          <div *ngIf="showCityDropdown && citySearchTerm.length >= 2 && filteredCities.length === 0 && !loadingCities"
+            class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg p-4 text-center">
+            <p class="text-gray-500">No cities found matching "{{ citySearchTerm }}"</p>
+          </div>
+
+          <!-- Selected City Display -->
+          <div *ngIf="selectedCity && !showCityDropdown"
+            class="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg flex items-center justify-between">
+            <div>
+              <span class="font-medium text-gray-900">{{ selectedCity.name }}</span>
+              <span class="text-xs text-gray-500 ml-2">{{ selectedCity.stateName }}</span>
+            </div>
+            <button (click)="clearCitySelection()" class="text-gray-400 hover:text-gray-600">
+              <i class="ri-close-line text-xl"></i>
+            </button>
+          </div>
+
+          <!-- Search Hint -->
+          <p class="text-xs text-gray-500 mt-2">
+            Type at least 2 characters to search for cities
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 4: Area Selection -->
+      <div *ngIf="currentStep === 4" class="space-y-4">
+        <label class="block text-sm font-semibold text-gray-800 mb-2">
+          Select Area (Optional)
+        </label>
+
+        <div class="relative area-search-container">
+          <div class="relative">
+            <input type="text" [(ngModel)]="areaSearchTerm" [ngModelOptions]="{standalone: true}"
+              (input)="searchAreas(areaSearchTerm)" (focus)="onAreaInputFocus()" [disabled]="!selectedCity"
+              placeholder="Search for an area..." class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl
+                    focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500
+                    transition duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed">
+            <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+
+            <!-- Loading Spinner -->
+            <div *ngIf="loadingAreas" class="absolute right-3 top-1/2 -translate-y-1/2">
+              <div class="animate-spin rounded-full h-5 w-5 border-2 border-orange-600 border-t-transparent"></div>
+            </div>
+          </div>
+
+          <!-- Dropdown Results -->
+          <div *ngIf="showAreaDropdown && filteredAreas.length > 0"
+            class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+            <div *ngFor="let area of filteredAreas" (click)="onAreaSelect(area)"
+              class="px-4 py-3 hover:bg-orange-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0">
+              <div class="font-medium text-gray-900">{{ area.areaName }}</div>
+              <div class="text-xs text-gray-500">
+                <span *ngIf="area.pincode">Pincode: {{ area.pincode }}</span>
+                <span *ngIf="!area.pincode">No pincode available</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- No Results Message -->
+          <div *ngIf="showAreaDropdown && areaSearchTerm.length >= 2 && filteredAreas.length === 0 && !loadingAreas"
+            class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg p-4 text-center">
+            <p class="text-gray-500">No areas found matching "{{ areaSearchTerm }}"</p>
+          </div>
+
+          <!-- Selected Area Display -->
+          <div *ngIf="selectedArea && !showAreaDropdown"
+            class="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg flex items-center justify-between">
+            <div>
+              <span class="font-medium text-gray-900">{{ selectedArea.areaName }}</span>
+              <span *ngIf="selectedArea.pincode" class="text-xs text-gray-500 ml-2">Pincode: {{ selectedArea.pincode
+                }}</span>
+            </div>
+            <button (click)="clearAreaSelection()" class="text-gray-400 hover:text-gray-600">
+              <i class="ri-close-line text-xl"></i>
+            </button>
+          </div>
+
+          <!-- No City Selected Message -->
+          <div *ngIf="!selectedCity" class="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-lg text-center">
+            <p class="text-sm text-gray-500">Please select a city first</p>
+          </div>
+
+          <!-- Search Hint -->
+          <p *ngIf="selectedCity" class="text-xs text-gray-500 mt-2">
+            Type at least 2 characters to search for areas
+          </p>
+        </div>
+
+        <!-- Skip Button -->
+        <button *ngIf="!selectedArea" (click)="nextStep()" type="button"
+          class="w-full mt-4 py-3 bg-gray-100 text-gray-600 rounded-xl font-medium hover:bg-gray-200 transition-colors">
+          Skip Area Selection
+        </button>
+      </div>
+
+      <!-- Step 5: Budget -->
+<div *ngIf="currentStep === 5" class="space-y-6">
+  <label class="block text-sm font-semibold text-gray-800 mb-2">
+    Budget Range (Optional)
+  </label>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <label class="block text-sm text-gray-600 mb-1">Minimum Budget (₹)</label>
+      <input type="number" formControlName="budgetMin" placeholder="Min" 
+             (focus)="budgetMinTouched = true"
+             class="w-full px-4 py-3 border rounded-xl
+                    focus:outline-none focus:ring-2 focus:ring-orange-500
+                    transition duration-200"
+             [ngClass]="{
+               'border-red-500': (budgetMinTouched || formSubmitted) && 
+                                 (leadForm.get('budgetMin')?.invalid || 
+                                  leadForm.hasError('budgetMinGreaterThanMax') ||
+                                  leadForm.hasError('budgetRangeTooSmall'))
+             }">
+      
+      <!-- Budget Min Error -->
+      <div *ngIf="(budgetMinTouched || formSubmitted) && leadForm.get('budgetMin')?.errors" 
+           class="mt-1 text-xs text-red-600">
+        <p *ngIf="leadForm.get('budgetMin')?.hasError('min')">Minimum budget cannot be negative</p>
+        <p *ngIf="leadForm.get('budgetMin')?.hasError('max')">Maximum budget limit is ₹10,00,000</p>
+      </div>
+    </div>
+    
+    <div>
+      <label class="block text-sm text-gray-600 mb-1">Maximum Budget (₹)</label>
+      <input type="number" formControlName="budgetMax" placeholder="Max"
+             (focus)="budgetMaxTouched = true"
+             class="w-full px-4 py-3 border rounded-xl
+                    focus:outline-none focus:ring-2 focus:ring-orange-500
+                    transition duration-200"
+             [ngClass]="{
+               'border-red-500': (budgetMaxTouched || formSubmitted) && 
+                                 (leadForm.get('budgetMax')?.invalid || 
+                                  leadForm.hasError('budgetMinGreaterThanMax') ||
+                                  leadForm.hasError('budgetRangeTooSmall'))
+             }">
+      
+      <!-- Budget Max Error -->
+      <div *ngIf="(budgetMaxTouched || formSubmitted) && leadForm.get('budgetMax')?.errors" 
+           class="mt-1 text-xs text-red-600">
+        <p *ngIf="leadForm.get('budgetMax')?.hasError('min')">Maximum budget cannot be negative</p>
+        <p *ngIf="leadForm.get('budgetMax')?.hasError('max')">Maximum budget limit is ₹10,00,000</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Budget Range Errors -->
+  <div *ngIf="(budgetMinTouched || budgetMaxTouched || formSubmitted) && 
+              (leadForm.hasError('budgetMinGreaterThanMax') || leadForm.hasError('budgetRangeTooSmall'))" 
+       class="p-3 bg-red-50 border border-red-200 rounded-lg">
+    <p *ngIf="leadForm.hasError('budgetMinGreaterThanMax')" class="text-sm text-red-600">
+      <i class="ri-error-warning-line mr-1"></i>
+      Minimum budget cannot be greater than maximum budget
+    </p>
+    <p *ngIf="leadForm.hasError('budgetRangeTooSmall')" class="text-sm text-red-600">
+      <i class="ri-error-warning-line mr-1"></i>
+      Budget range should be at least ₹50
+    </p>
+  </div>
+
+  <!-- Quick budget options -->
+  <div>
+    <label class="block text-sm text-gray-600 mb-2">Quick Select</label>
+    <div class="flex flex-wrap gap-2">
+      <button *ngFor="let budget of [{min:0,max:1000}, {min:1000,max:5000}, {min:5000,max:10000}]"
+        (click)="setBudget(budget)" type="button"
+        class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:border-orange-500
+               hover:bg-orange-50 transition-colors">
+        ₹{{ budget.min }} - ₹{{ budget.max }}
+      </button>
+    </div>
+  </div>
+</div>
+
+      <!-- Step 6: Time Preference -->
+<div *ngIf="currentStep === 6" class="space-y-4">
+  <label class="block text-sm font-semibold text-gray-800 mb-2">
+    When do you need this service? <span class="text-orange-600">*</span>
+  </label>
+
+  <!-- Time preference options -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+    <div *ngFor="let pref of timePreferences" (click)="onTimePreferenceChange(pref.value)"
+      class="relative p-3 sm:p-4 rounded-xl border-2 cursor-pointer text-center transition-all duration-200"
+      [ngClass]="{
+        'border-orange-500 bg-orange-50': leadForm.get('timePreference')?.value === pref.value,
+        'border-gray-200 hover:border-orange-300': leadForm.get('timePreference')?.value !== pref.value,
+        'border-red-500': (formSubmitted && !leadForm.get('timePreference')?.value)
+      }">
+      <i [class]="pref.icon + ' text-xl sm:text-2xl text-orange-600 mb-1 sm:mb-2'"></i>
+      <p class="font-medium text-gray-900 text-sm sm:text-base">{{ pref.label }}</p>
+      <p class="text-xs text-gray-500 mt-0.5 sm:mt-1 hidden sm:block">{{ pref.description }}</p>
+    </div>
+  </div>
+
+  <!-- Time Preference Required Error -->
+  <div *ngIf="formSubmitted && !leadForm.get('timePreference')?.value" 
+       class="text-sm text-red-600">
+    <i class="ri-error-warning-line mr-1"></i>
+    Please select when you need this service
+  </div>
+
+  <!-- Custom schedule for 'scheduled' -->
+  <div *ngIf="leadForm.get('timePreference')?.value === 'scheduled'"
+       class="mt-4 p-4 bg-gray-50 rounded-xl border"
+       [ngClass]="{'border-red-200': leadForm.invalid && (leadForm.touched || formSubmitted)}">
+    
+    <p class="text-sm font-medium text-gray-700 mb-3">Select your preferred schedule:</p>
+
+    <div class="flex flex-col sm:flex-row gap-4">
+      <div class="flex-1">
+        <label class="block text-xs text-gray-600 mb-1">Start Date & Time <span class="text-orange-600">*</span></label>
+        <input type="datetime-local" formControlName="scheduledStart" 
+               [min]="getCurrentDateTime()"
+               class="w-full px-3 py-2 text-sm border rounded-lg
+                      focus:outline-none focus:ring-2 focus:ring-orange-500
+                      bg-white transition duration-200"
+               [ngClass]="{
+                 'border-red-500': (leadForm.get('scheduledStart')?.touched || formSubmitted) && 
+                                   (leadForm.get('scheduledStart')?.invalid || leadForm.hasError('startDateInPast'))
+               }">
+        
+        <!-- Start Date Errors -->
+        <div *ngIf="(leadForm.get('scheduledStart')?.touched || formSubmitted) && 
+                    (leadForm.get('scheduledStart')?.invalid || leadForm.hasError('startDateInPast'))" 
+             class="mt-1 text-xs text-red-600">
+          <p *ngIf="!leadForm.get('scheduledStart')?.value">Start date and time are required</p>
+          <p *ngIf="leadForm.hasError('startDateInPast')">Start date cannot be in the past</p>
+        </div>
+      </div>
+      
+      <div class="flex-1">
+        <label class="block text-xs text-gray-600 mb-1">End Date & Time <span class="text-orange-600">*</span></label>
+        <input type="datetime-local" formControlName="scheduledEnd"
+               [min]="leadForm.get('scheduledStart')?.value || getCurrentDateTime()"
+               class="w-full px-3 py-2 text-sm border rounded-lg
+                      focus:outline-none focus:ring-2 focus:ring-orange-500
+                      bg-white transition duration-200"
+               [ngClass]="{
+                 'border-red-500': (leadForm.get('scheduledEnd')?.touched || formSubmitted) && 
+                                   (leadForm.get('scheduledEnd')?.invalid || 
+                                    leadForm.hasError('endDateBeforeStart') ||
+                                    leadForm.hasError('maxDurationExceeded'))
+               }">
+        
+        <!-- End Date Errors -->
+        <div *ngIf="(leadForm.get('scheduledEnd')?.touched || formSubmitted) && 
+                    (leadForm.get('scheduledEnd')?.invalid || 
+                     leadForm.hasError('endDateBeforeStart') ||
+                     leadForm.hasError('maxDurationExceeded'))" 
+             class="mt-1 text-xs text-red-600">
+          <p *ngIf="!leadForm.get('scheduledEnd')?.value">End date and time are required</p>
+          <p *ngIf="leadForm.hasError('endDateBeforeStart')">End date must be after start date</p>
+          <p *ngIf="leadForm.hasError('maxDurationExceeded')">Service duration cannot exceed 30 days</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Date Range Summary -->
+    <div *ngIf="leadForm.get('scheduledStart')?.value && leadForm.get('scheduledEnd')?.value && !leadForm.hasError('endDateBeforeStart')"
+         class="mt-3 p-2 bg-blue-50 rounded-lg text-xs text-blue-700">
+      <i class="ri-information-line mr-1"></i>
+      Duration: {{ calculateDuration() }}
+    </div>
+  </div>
+</div>
+
+      <!-- Step 7: Flow Type and Description -->
+<div *ngIf="currentStep === 7" class="space-y-6">
+  <!-- Flow Type -->
+  <div>
+    <label class="block text-sm font-semibold text-gray-800 mb-3">
+      Lead Type <span class="text-orange-600">*</span>
+    </label>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div *ngFor="let type of flowTypes" (click)="setFlowType(type.value)"
+        class="relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-200" 
+        [ngClass]="{
+          'border-orange-500 bg-orange-50': leadForm.get('flowType')?.value === type.value,
+          'border-gray-200 hover:border-orange-300': leadForm.get('flowType')?.value !== type.value,
+          'border-red-500': formSubmitted && !leadForm.get('flowType')?.value
+        }">
+        <p class="font-semibold text-gray-900">{{ type.label }}</p>
+        <p class="text-sm text-gray-500 mt-1">{{ type.description }}</p>
+      </div>
+    </div>
+
+    <!-- Flow Type Required Error -->
+    <div *ngIf="formSubmitted && !leadForm.get('flowType')?.value" 
+         class="mt-1 text-sm text-red-600">
+      <i class="ri-error-warning-line mr-1"></i>
+      Please select a lead type
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div>
+    <label class="block text-sm font-semibold text-gray-800 mb-2">
+      Description <span class="text-orange-600">*</span>
+    </label>
+    <textarea rows="5" formControlName="description" 
+              placeholder="Describe your requirement in detail..." 
+              class="w-full px-4 py-3 border rounded-xl
+                     focus:outline-none focus:ring-2 focus:ring-orange-500
+                     resize-none transition duration-200"
+              [ngClass]="{
+                'border-red-500': (leadForm.get('description')?.touched || formSubmitted) && 
+                                  leadForm.get('description')?.invalid
+              }"></textarea>
+    
+    <!-- Character count and validation -->
+    <div class="flex justify-between items-center mt-1">
+      <div class="text-xs">
+        <span [ngClass]="{
+          'text-red-600': leadForm.get('description')?.value?.length < 10,
+          'text-green-600': leadForm.get('description')?.value?.length >= 10
+        }">
+          {{ leadForm.get('description')?.value?.length || 0 }}/1000 characters
+        </span>
+      </div>
+      <p class="text-xs text-gray-500">
+        Provide as much detail as possible to get better responses (min 10 characters)
+      </p>
+    </div>
+
+    <!-- Description Errors -->
+    <div *ngIf="(leadForm.get('description')?.touched || formSubmitted) && leadForm.get('description')?.invalid" 
+         class="mt-2 space-y-1">
+      <p *ngIf="leadForm.get('description')?.hasError('required')" 
+         class="text-sm text-red-600">
+        <i class="ri-error-warning-line mr-1"></i>
+        Description is required
+      </p>
+      <p *ngIf="leadForm.get('description')?.hasError('minlength')" 
+         class="text-sm text-red-600">
+        <i class="ri-error-warning-line mr-1"></i>
+        Description must be at least 10 characters long
+      </p>
+      <p *ngIf="leadForm.get('description')?.hasError('maxlength')" 
+         class="text-sm text-red-600">
+        <i class="ri-error-warning-line mr-1"></i>
+        Description cannot exceed 1000 characters
+      </p>
+    </div>
+  </div>
+</div>
+    </form>
+
+    <!-- Footer -->
+    <div class="flex justify-between gap-3 px-8 py-5 border-t border-gray-200">
+      <button *ngIf="currentStep > 1" (click)="prevStep()" type="button"
+        class="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-medium">
+        Back
+      </button>
+      <button *ngIf="currentStep < totalSteps" (click)="nextStep()" [disabled]="!canProceed()" type="button" class="px-8 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 
+                     font-medium ml-auto disabled:opacity-50 disabled:cursor-not-allowed">
+        Next
+      </button>
+      <button *ngIf="currentStep === totalSteps" (click)="submitLead()" [disabled]="!canProceed()" type="button" class="px-8 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 
+                     font-medium ml-auto disabled:opacity-50 disabled:cursor-not-allowed">
+        Search
+      </button>
+    </div>
+  </div>
+</div>

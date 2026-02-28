@@ -32,6 +32,18 @@ export const routes: Routes = [
     import('./Seller/seller.module').then(m => m.SellerModule)
 },
 
+// customer routes
+ {
+    path: 'buyer',
+    canActivate: [authGuard],
+    data: { roles: ['Buyer'] },
+    loadChildren: () =>
+      import('./customer/customer.module')
+        .then(m => m.CustomerModule)
+  },
+
+
+  { path: '**', redirectTo: '' }
 // this path redirect to home page if the url is not get 
  // { path: '**', redirectTo: '' }
 ];
