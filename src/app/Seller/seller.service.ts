@@ -42,6 +42,7 @@ export interface Lead {
   visitingPrice?: string;
   providerPrice?: number;
   areaName?: string;
+  offerStatus?: string;
   areaId?: number;
    leadId: number;
 
