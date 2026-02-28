@@ -243,7 +243,7 @@ export class RegisterComponent {
  
 
     this.service.submitRegistration(formData).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         console.log('Backend response:', res);
 
         if (res.userId) {
