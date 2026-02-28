@@ -340,9 +340,18 @@ passwordError = '';
   // Captcha login
 captchaUrl: string = '';
 
+// loadCaptcha() {
+//   this.captchaUrl = `${this.apiUrl}/auth/captcha?${new Date().getTime()}`;
+// }
 loadCaptcha() {
-  this.captchaUrl = `${this.apiUrl}/auth/captcha?${new Date().getTime()}`;
+  this.http.get(`${this.apiUrl}/auth/captcha`, {
+    responseType: 'blob',
+    withCredentials: true
+  }).subscribe(blob => {
+    this.captchaUrl = URL.createObjectURL(blob);
+  });
 }
+
 
 refreshCaptcha() {
   this.loadCaptcha();
