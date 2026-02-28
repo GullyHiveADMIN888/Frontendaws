@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-// import { environment } from '../../environments/environment';
+
+ // import { environment } from '../../environments/environment';
   import { environment } from '../../environments/environment.prod';
 
 
@@ -122,7 +123,25 @@ getCities(stateId: number): Observable<any[]> {
   return this.http.get<any[]>(`${this.apiUrl}/cities/${stateId}`);
 }
 
-  /** 🔹 Verify OTP */
+getAreasByCity(cityId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/areas/${cityId}`);
+  }
+  
+
+checkMobileExists(mobile: string) {
+  return this.http.get<{ exists: boolean }>(
+    `${this.apiUrl}/check-mobile`,
+    { params: { mobile } }
+  );
+}
+// AuthService.ts
+updatePasswordByMobile(data: { mobile: string; newPassword: string }) {
+  return this.http.post(`${this.apiUrl}/update-password`, data).toPromise();
+}
+
+ 
+
+/** 🔹 Verify OTP */
   async verifyOtp(otp: string) {
     if (!this.confirmationResult) {
       throw new Error('OTP not requested');
@@ -134,10 +153,6 @@ getCities(stateId: number): Observable<any[]> {
   // this.clearRecaptcha();
   // return result;
 
-  }
-
- getAreasByCity(cityId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/areas/${cityId}`);
   }
 
 private async initRecaptcha(): Promise<void> {
@@ -183,18 +198,6 @@ clearRecaptcha() {
   this.confirmationResult = undefined;
 }
 
-
-
-checkMobileExists(mobile: string) {
-  return this.http.get<{ exists: boolean }>(
-    `${this.apiUrl}/check-mobile`,
-    { params: { mobile } }
-  );
-}
-// AuthService.ts
-updatePasswordByMobile(data: { mobile: string; newPassword: string }) {
-  return this.http.post(`${this.apiUrl}/update-password`, data).toPromise();
-}
 
 
 

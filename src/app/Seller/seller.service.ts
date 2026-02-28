@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
-// import { environment } from '../../environments/environment';
- import { environment } from '../../environments/environment.prod';
-// import { environment } from '../../environments/environment';
+  import { environment } from '../../environments/environment.prod';
+ // import { environment } from '../../environments/environment';
 // --- Dashboard & Stats ---
 export interface SellerStats {
   totalLeads: number;
@@ -37,11 +36,14 @@ export interface Lead {
   email?: string;
   leadPrice?: string;
   unlockedCount?: number;
-  committedCount?: string;
+  committedCount?: number;
   priceBreakdown?: { [key: string]: number }; // parsed JSON
   basePrice?: string;
   visitingPrice?: string;
   providerPrice?: number;
+  areaName?: string;
+  areaId?: number;
+   leadId: number;
 
 }
 
@@ -164,12 +166,14 @@ export interface ProviderService {
 
 export interface ProviderServicesResponse {
   providerServices: ProviderService[];
-  serviceArea: {
-    type: 'city_radius' | 'polygon' | 'pincode_list';
-    cityId?: number;
-    radiusKm?: number;
-    pincodes: string[];
-  };
+
+serviceAreas: {
+  cityId: number;
+  areaId: number;
+  areaName: string;
+}[];
+
+
   categories: any[];
   subCategories: any[];
   cities: any[];
@@ -257,17 +261,6 @@ export class SellerService {
       )
       .pipe(map(res => res.data));
   }
-
-
-  // // 🔹 Buy Lead
-  // buyLead(leadId: number): Observable<any> {
-  //   const sellerId = Number(localStorage.getItem('sellerId'));
-
-  //   return this.http.post(
-  //     `${this.apiUrl}/leads/${leadId}/buy?sellerId=${sellerId}`,
-  //     {}
-  //   );
-  // }
 
 // 🔹 Buy Lead
 buyLead(leadId: number): Observable<any> {
@@ -393,7 +386,9 @@ buyLead(leadId: number): Observable<any> {
       )
       .pipe(map(res => res.data));
   }
-
+   getAreasByCity(cityId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiBaseUrl}/auth/areas/${cityId}`);
+  }
 
   // 🔹 Update services + area
   updateServicesAndArea(providerId: number, payload: any) {
@@ -498,8 +493,6 @@ console.log("BUY DEBUG:");
   }
 
 
- getAreasByCity(cityId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiBaseUrl}/auth/areas/${cityId}`);
-  }
+ 
 
 }

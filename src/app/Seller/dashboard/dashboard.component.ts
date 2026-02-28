@@ -12,6 +12,8 @@ import { SellerService,  ProviderService, ProviderServicesResponse } from '../se
 export class DashboardComponent implements OnInit {
   user: any;
    sellerId!: number;
+  // UI state properties
+  initialLoading = true;// For modal loading state
 
   constructor(private sellerService: SellerService) {}
 
@@ -20,46 +22,100 @@ totalResponses = 0;
 acceptedResponses = 0;
 pendingResponses = 0;
 totalBalance=0;
+coverageArea = {
+  cityId: null as number | null,
+  areaIds: [] as number[]
+};
+// ngOnInit() {
+//   this.sellerService.getDashboardData().subscribe(d => {
+//     this.user = d;
+//     this.sellerId = d.sellerId;
 
+//     // Leads
+//     this.sellerService.getLeads().subscribe(leads => {
+//       this.totalLeads = leads.length;
+//     });
+
+//     // Responses (NOW sellerId exists)
+//     this.sellerService.getMyResponses(this.sellerId).subscribe(res => {
+//       const responses = res.data;
+//       this.totalResponses = responses.length;
+//       this.acceptedResponses = responses.filter(r => r.status === 'accepted').length;
+//       this.pendingResponses = responses.filter(r => r.status === 'pending').length;
+//         this.totalBalance = d.totalBalance || 0;
+//     });
+
+//     // Load services
+//   //  this.loadProviderServices(this.sellerId);
+//   });
+// }
 ngOnInit() {
-  this.sellerService.getDashboardData().subscribe(d => {
-    this.user = d;
-    this.sellerId = d.sellerId;
+  this.initialLoading = true;
 
-    // Leads
-    this.sellerService.getLeads().subscribe(leads => {
-      this.totalLeads = leads.length;
-    });
+  this.sellerService.getDashboardData().subscribe({
+    next: (d) => {
+      this.user = d;
+      this.sellerId = d.sellerId;
+      this.totalBalance = d.totalBalance || 0;
 
-    // Responses (NOW sellerId exists)
-    this.sellerService.getMyResponses(this.sellerId).subscribe(res => {
-      const responses = res.data;
-      this.totalResponses = responses.length;
-      this.acceptedResponses = responses.filter(r => r.status === 'accepted').length;
-      this.pendingResponses = responses.filter(r => r.status === 'pending').length;
-        this.totalBalance = d.totalBalance || 0;
-    });
+      // Leads
+      this.sellerService.getLeads().subscribe({
+        next: (leads) => {
+          this.totalLeads = leads.length;
 
-    // Load services
-    this.loadProviderServices(this.sellerId);
+          // Responses (call after leads)
+          this.sellerService.getMyResponses(this.sellerId).subscribe({
+            next: (res) => {
+              const responses = res.data;
+
+              this.totalResponses = responses.length;
+              this.acceptedResponses =
+                responses.filter(r => r.status === 'accepted').length;
+              this.pendingResponses =
+                responses.filter(r => r.status === 'pending').length;
+
+              // 🔥 STOP LOADER HERE
+              this.initialLoading = false;
+            },
+            error: (err) => {
+              console.error(err);
+              this.initialLoading = false;
+            }
+          });
+        },
+        error: (err) => {
+          console.error(err);
+          this.initialLoading = false;
+        }
+      });
+    },
+    error: (err) => {
+      console.error(err);
+      this.initialLoading = false;
+    }
   });
 }
 
-
   loadDashboardData(): void {
+
+ 
     this.sellerService.getDashboardData().subscribe({
       next: dashboard => {
         console.log('Dashboard data:', dashboard);
         this.user = dashboard; // 👈 STORE FULL DASHBOARD
+          this.initialLoading = false;
       },
-      error: err => console.error('Failed to load dashboard data', err)
+      error: err => 
+      {
+          this.initialLoading = false;
+        console.error('Failed to load dashboard data', err)
+      }
     });
   }
 
   // Services
   services: { categoryId: number; subCategoryIds: number[] }[] = [];
   selectedCategory: number | null = null;
-  //selectedSubCategory: number | null = null;
   editCategoryId: number | null = null;
   editSubCategoryIds: number[] = [];
 
@@ -68,15 +124,7 @@ ngOnInit() {
   subCategories: any[] = [];
   cities: any[] = [];
 
-  // Service area
-  serviceArea: {
-    type: 'city_radius' | 'polygon' | 'pincode_list' | '';
-    cityId?: number;
-    radiusKm?: number;
-    pincodes: string[];
-  } = { type: 'city_radius', pincodes: [] };
-
-  pincodeInput = '';
+ // pincodeInput = '';
   showServicesModal = false;
 
 onCategoryChange(categoryId: number) {
@@ -109,58 +157,12 @@ isSubCategorySelected(subId: number): boolean {
   return this.editSubCategoryIds.includes(subId);
 }
 
-addPincode() {
-  if (this.pincodeInput && !this.serviceArea.pincodes.includes(this.pincodeInput)) {
-    this.serviceArea.pincodes.push(this.pincodeInput);
-    this.pincodeInput = '';
-  }
-}
-
-removePincode(index: number) {
-  this.serviceArea.pincodes.splice(index, 1);
-}
 
 removeService(index: number) {
   this.services.splice(index, 1);
 }
 
 
-loadProviderServices(providerId: number) {
-  this.sellerService.getProviderServices(providerId).subscribe({
-    next: (data) => {
-
-      console.log('Provider services API data:', data);
-
-      // ✅ FIXED HERE
-      this.services = data.providerServices.map(s => ({
-        categoryId: s.categoryId,
-        subCategoryIds: s.subCategoryIds
-      }));
-
-      if (data.serviceArea) {
-  this.serviceArea = {
-    type: data.serviceArea.type,
-    cityId: data.serviceArea.cityId,
-    radiusKm: data.serviceArea.radiusKm,
-    pincodes: Array.isArray(data.serviceArea.pincodes)
-      ? [...data.serviceArea.pincodes]
-      : []
-  };
-}
-
-
-      // ✅ load dropdown reference data
-      this.parentCategories = data.categories;
-      this.subCategories = data.subCategories;
-      this.cities = data.cities;
-      this.serviceProviderQuestions = data.providerQuestionIds || [];
-      if (this.services.length > 0) {
-        this.onCategoryChange(this.services[0].categoryId);
-      }
-    },
-    error: err => console.error(err)
-  });
-}
 
 
 // Get category name from ID safely
@@ -184,39 +186,6 @@ getSubCategoryNames(service: { categoryId: number; subCategoryIds: number[] }): 
 }
 
 
-openEditServices() {
-  if (!this.sellerId) return;
-
-  this.sellerService.getProviderServices(this.sellerId).subscribe({
-    next: (data) => {
-      this.services = data.providerServices ?? [];
-      this.parentCategories = data.categories ?? [];
-      this.cities = data.cities ?? [];
-     // this.serviceArea = data.serviceArea ?? { type: '', pincodes: [] };
-     this.serviceArea = {
-  type: data.serviceArea?.type ?? '',
-  cityId: data.serviceArea?.cityId,
-  radiusKm: data.serviceArea?.radiusKm,
-  pincodes: Array.isArray(data.serviceArea?.pincodes)
-    ? [...data.serviceArea.pincodes]
-    : []
-};
-
-      if (this.services.length > 0) {
-        const firstService = this.services[0];
-        this.editCategoryId = firstService.categoryId;
-        this.editSubCategoryIds = [...firstService.subCategoryIds];
-
-        // Load subcategories dynamically
-        this.sellerService.getSubCategories(this.editCategoryId)
-          .subscribe(res => this.subCategories = res);
-      }
-
-      this.showServicesModal = true; // ✅ open popup
-    },
-    error: err => console.error(err)
-  });
-}
 
 
 
@@ -254,9 +223,10 @@ saveServicesAndArea() {
     }));
 
   const payload = {
-    services: this.updatedServices,  // Only send updated selections
-    serviceArea: this.serviceArea,
-    questions: uncheckedQuestions  // 🔹 Send only false questions
+    services: this.updatedServices, 
+  
+  serviceArea: this.coverageArea,
+    questions: uncheckedQuestions  
   };
 
   this.sellerService.updateServicesAndArea(this.sellerId, payload).subscribe({
@@ -408,6 +378,168 @@ toggleQuestion(questionId: number): void {
 }
 
 
+
+
+
+areas: { id: number, name: string }[] = [];
+
+
+onCityChange(cityId: number) {
+  if (!cityId) {
+    this.areas = [];
+    this.selectedAreaIds = [];
+    return;
+  }
+
+  this.selectedAreaIds = []; // reset previous selections
+
+  this.sellerService.getAreasByCity(cityId).subscribe(res => {
+    this.areas = res.map(a => ({
+      id: Number(a.id),
+      name: a.area_name
+    }));
+  });
+}
+
+// openEditServices() {
+//   if (!this.sellerId) return;
+
+//   this.sellerService.getProviderServices(this.sellerId).subscribe({
+//     next: (data) => {
+//        console.log("Full provider services data:", data);
+//       // 1️⃣ Load services, categories, cities
+//       this.services = data.providerServices ?? [];
+//       this.parentCategories = data.categories ?? [];
+//       this.cities = data.cities ?? [];
+
+      
+//       if (data.serviceAreas && data.serviceAreas.length > 0) {
+
+//   const firstCity = data.serviceAreas[0].cityId;
+
+//   this.coverageArea.cityId = firstCity;
+
+//   this.coverageArea.areaIds = data.serviceAreas.map(a => a.areaId);
+
+//   this.onCityChange(firstCity);
+// }
+
+//       // 4️⃣ Preselect first service category/subcategories
+//       if (this.services.length > 0) {
+//         const firstService = this.services[0];
+//         this.editCategoryId = firstService.categoryId;
+//         this.editSubCategoryIds = [...firstService.subCategoryIds];
+
+//         this.sellerService.getSubCategories(this.editCategoryId)
+//           .subscribe(res => this.subCategories = res);
+//       }
+
+//       // Show modal
+//       this.showServicesModal = true;
+//     },
+//     error: err => console.error(err)
+//   });
+// }
+openEditServices() {
+  if (!this.sellerId) return;
+
+  this.sellerService.getProviderServices(this.sellerId).subscribe({
+    next: (data) => {
+      console.log("Full provider services data:", data);
+
+      // Load services, categories, cities
+      this.services = data.providerServices ?? [];
+      this.parentCategories = data.categories ?? [];
+      this.cities = data.cities ?? [];
+
+      // ❌ Missing before: preselected question IDs
+      this.serviceProviderQuestions = data.providerQuestionIds || [];
+
+      // Preselect coverage areas
+      if (data.serviceAreas && data.serviceAreas.length > 0) {
+        const firstCity = data.serviceAreas[0].cityId;
+        this.coverageArea.cityId = firstCity;
+        this.coverageArea.areaIds = data.serviceAreas.map(a => a.areaId);
+        this.onCityChange(firstCity);
+      }
+
+      // Preselect first service
+      if (this.services.length > 0) {
+        const firstService = this.services[0];
+        this.editCategoryId = firstService.categoryId;
+        this.editSubCategoryIds = [...firstService.subCategoryIds];
+
+        this.sellerService.getSubCategories(this.editCategoryId)
+          .subscribe(res => this.subCategories = res);
+
+        // ✅ Load questions for subcategories
+        this.editSubCategoryIds.forEach(subId => {
+          this.loadQuestionsForSubCategory(subId, true);
+        });
+      }
+
+      this.showServicesModal = true;
+    },
+    error: err => console.error(err)
+  });
+}
+
+
+dropdownOpen = false;
+areaSearch = '';
+
+
+get selectedAreas() {
+  return this.areas.filter(a =>
+    this.coverageArea.areaIds.includes(a.id)
+  );
+}
+
+// Toggle dropdown visibility
+toggleDropdown() {
+  this.dropdownOpen = !this.dropdownOpen;
+}
+
+
+
+
+// Remove tag when clicking X
+filteredAreas(): { id: number; name: string }[] {
+  const search = this.areaSearch?.toLowerCase() || '';
+  return this.areas.filter(a =>
+    !this.coverageArea.areaIds.includes(a.id) && // ❌ exclude already selected
+    a.name.toLowerCase().includes(search)
+  );
+}
+
+toggleAreaSelection(area: {id: number, name: string}) {
+  const idx = this.coverageArea.areaIds.indexOf(area.id);
+
+  if (idx > -1) {
+    // Already selected → remove it
+    this.coverageArea.areaIds.splice(idx, 1);
+  } else {
+    // Not selected → add it
+    this.coverageArea.areaIds.push(area.id);
+  }
+
+  // Keep dropdown open for multi-select
+  this.dropdownOpen = true;
+
+  // Clear search text
+  this.areaSearch = '';
+}
+
+removeArea(area: {id: number, name: string}, event: Event) {
+  event.stopPropagation();
+  const idx = this.coverageArea.areaIds.indexOf(area.id);
+  if (idx > -1) {
+    this.coverageArea.areaIds.splice(idx, 1);
+  }
+}
+// areas: { id: number, name: string }[] = [];
+selectedAreaIds: number[] = [];
+serviceArea: { cityId?: number, areaId?: number, areaName?: string } = {};
 }
 
 

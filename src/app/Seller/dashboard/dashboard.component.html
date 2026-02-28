@@ -1,7 +1,63 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+
+
+   <!-- Full Page Loading Overlay -->
+    <!-- PREMIUM FULL PAGE LOADER -->
+<div *ngIf="initialLoading"
+     class="fixed inset-0 z-[999] flex items-center justify-center 
+            bg-gradient-to-br from-orange-50 via-white to-orange-100
+            backdrop-blur-sm">
+
+  <div class="bg-white/80 backdrop-blur-xl shadow-2xl rounded-3xl p-10 text-center w-[350px] border border-orange-100">
+
+    <!-- Animated Logo Circle -->
+   <!-- Animated Logo Circle -->
+<div class="relative mb-6 flex items-center justify-center">
+
+  <!-- Outer rotating ring (perfectly centered) -->
+  <div class="absolute inset-0 flex items-center justify-center">
+    <div class="w-28 h-28 rounded-full border-4 
+                border-orange-200 border-t-orange-600 
+                animate-spin">
+    </div>
+  </div>
+
+  <!-- Inner Logo Circle -->
+  <div class="w-20 h-20 
+              bg-gradient-to-br from-orange-500 to-orange-600 
+              rounded-full 
+              flex items-center justify-center 
+              shadow-lg z-10">
+    <img src="assets/gali_logo.png"
+         class="w-10 h-10 object-contain brightness-0 invert" />
+  </div>
+
+</div>
+    <!-- Title -->
+    <h2 class="text-xl font-semibold text-gray-800 mb-2">
+      Loading Dashboard
+    </h2>
+
+    <!-- Subtitle -->
+    <p class="text-sm text-gray-500 mb-6">
+      Please wait while we prepare your workspace...
+    </p>
+
+    <!-- Animated Progress Bar -->
+    <div class="w-full bg-orange-100 rounded-full h-2 overflow-hidden">
+      <div class="h-2 bg-gradient-to-r from-orange-500 to-orange-600 animate-pulse w-3/4 rounded-full"></div>
+    </div>
+
+  </div>
+</div>
+
+
+
+
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900 mb-2">
-      <!-- Welcome back, {{ user?.name || 'Seller' }}! 👋 -->
+    
       Welcome back, {{ user?.name || 'Seller' }}! 👋
     </h1>
     <p class="text-gray-600">Here's what's happening with your business today.</p>
@@ -168,52 +224,82 @@
       </div>
 
 
-      <!-- Coverage Area -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          Coverage Area
-        </label>
+     
+    <!-- Coverage Area -->
+      
+    
 
-        <select [(ngModel)]="serviceArea.type" class="w-full px-4 py-3 border border-gray-300 rounded-lg mb-3">
-          <option value="">Select Area Type</option>
-          <option value="city_radius">City</option>
-          <option value="polygon">Radius (KM)</option>
-          <option value="pincode_list">Pincode List</option>
-        </select>
+<div>
+  <!-- Coverage Area Header centered -->
+  <div class="flex items-center justify-center mb-1">
+    <div class="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center mr-2">
+      <i class="ri-home-line text-xs text-white"></i>
+    </div>
+    <h2 class="text-lg font-bold text-gray-900">Coverage Area</h2>
+  </div>
 
-        <!-- City -->
-        <select *ngIf="serviceArea.type === 'city_radius'" [(ngModel)]="serviceArea.cityId"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg">
-          <option *ngFor="let city of cities" [value]="city.id">
-            {{ city.name }}
-          </option>
-        </select>
+  <!-- City Select -->
+  <div class="mb-4">
+    <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
+    <select [(ngModel)]="coverageArea.cityId" 
+            (change)="onCityChange(coverageArea.cityId!)"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+      <option value="" disabled selected>Select City</option>
+      <option *ngFor="let city of cities" [value]="city.id">
+        {{ city.name }}
+      </option>
+    </select>
+  </div>
 
-        <!-- Radius -->
-        <input *ngIf="serviceArea.type === 'polygon'" type="number" [(ngModel)]="serviceArea.radiusKm"
-          placeholder="Enter radius in KM" class="w-full px-4 py-3 border border-gray-300 rounded-lg" />
 
-        <!-- Pincode -->
-        <div *ngIf="serviceArea.type === 'pincode_list'">
-          <div class="flex gap-2 mb-3">
-            <input [(ngModel)]="pincodeInput" placeholder="Enter pincode"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg" />
-            <button (click)="addPincode()" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
-              Add
-            </button>
-          </div>
+<div class="mb-4 relative w-full">
+  <label class="block text-sm font-medium text-gray-700 mb-2">
+    Locality
+  </label>
 
-          <div class="flex flex-wrap gap-2">
-            <span *ngFor="let p of serviceArea.pincodes; let i = index"
-              class="bg-gray-200 px-3 py-1 rounded-full flex items-center">
-              {{ p }}
-              <button (click)="removePincode(i)" class="ml-2 text-red-500 font-bold">
-                ×
-              </button>
-            </span>
-          </div>
-        </div>
-      </div>
+  <!-- Searchable Input Box -->
+  <div class=" border border-gray-300 rounded-lg p-2 flex flex-wrap items-center min-h-[40px] focus-within:ring-2 focus-within:ring-blue-400"
+       (click)="toggleDropdown()">
+
+    <!-- Selected Tags -->
+    <span *ngFor="let area of selectedAreas"
+          class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-1 mb-1 text-sm flex items-center">
+      {{ area.name }}
+      <i class="ri-close-line ml-1 cursor-pointer"
+         (click)="removeArea(area, $event)"></i>
+    </span>
+
+    <!-- Search Input -->
+    <input
+      type="text"
+      [(ngModel)]="areaSearch"
+      (focus)="dropdownOpen = true"
+      placeholder="Select Locality"
+      class="flex-1 outline-none min-w-[120px]"
+    />
+
+    <i class="ri-arrow-down-s-line ml-auto"></i>
+  </div>
+
+  <!-- Dropdown -->
+  <div *ngIf="dropdownOpen"
+       class="absolute w-full bg-white border border-gray-300 mt-1 rounded shadow max-h-48 overflow-y-auto z-10">
+
+    <!-- Filtered Areas -->
+    <label *ngFor="let area of filteredAreas()"
+           class="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer">
+
+      <input type="checkbox"
+             class="mr-2"
+             [checked]="coverageArea.areaIds.includes(area.id)"
+             (change)="toggleAreaSelection(area)">
+
+      <span>{{ area.name }}</span>
+    </label>
+  </div>
+</div>
+</div>
+
     </div>
 
     <!-- Footer -->
