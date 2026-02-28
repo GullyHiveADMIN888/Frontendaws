@@ -33,6 +33,7 @@ export class SettingsComponent implements OnInit {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
+     // this.showUserMenu = false;
       this.childRouteActive = !!this.route.firstChild;
     });
   }
@@ -115,27 +116,45 @@ ngOnInit(): void {
         title: 'Account & Security',
         items: [
           { icon: 'ri-lock-line', title: 'Password & Security', description: 'Change password and security settings', link: ['/seller/settings/security'] },
-          { icon: 'ri-bank-card-line', title: 'Payment Methods', description: 'Manage your payment and billing information', link: ['/seller/settings/payment'] },
-          { icon: 'ri-shield-check-line', title: 'Privacy Settings', description: 'Control your privacy and data preferences', link: ['/seller/settings/privacy'] },
-          { 
+           { 
             icon: 'ri-tools-line', 
             title: 'Bank Account Management', 
             description: 'Edit services you offer and pricing', 
             link: ['/seller/settings/services'] 
-          }
+          },
+          { icon: 'ri-bank-card-line', title: 'Payment Methods', description: 'Manage your payment and billing information', link: ['/seller/settings/payment'] },
+          { icon: 'ri-shield-check-line', title: 'Privacy Settings', description: 'Control your privacy and data preferences', link: ['/seller/settings/privacy'] }
+         
         ]
       }
     ];
   }
 
-  navigateTo(link: string | any[]) {
-    if (Array.isArray(link)) {
-      this.router.navigate(link);
-    } else {
-      this.router.navigateByUrl(link);
-    }
-  }
+  // navigateTo(link: string | any[]) {
+  //   if (Array.isArray(link)) {
+  //     this.router.navigate(link);
+  //   } else {
+  //     this.router.navigateByUrl(link);
+  //   }
+  // }
+navigateTo(link: string | any[]) {
 
+  const urlTree = Array.isArray(link)
+    ? this.router.createUrlTree(link)
+    : this.router.parseUrl(link);
+
+  const canMatch = this.router.serializeUrl(urlTree);
+
+  const match = this.router.config.some(route =>
+    canMatch.startsWith('/' + (route.path ?? ''))
+  );
+
+  if (match) {
+    this.router.navigateByUrl(urlTree);
+  } else {
+    console.warn('Route does not exist. Staying on same page.');
+  }
+}
 
 
 

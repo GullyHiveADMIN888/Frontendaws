@@ -3,6 +3,8 @@ import { RouterOutlet, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SellerService } from '../seller.service';
 import { Router } from '@angular/router';
+import { NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 
 
@@ -18,7 +20,14 @@ export class SellerLayoutComponent implements OnInit {
    sellerId!: number;
 
   constructor(private sellerService: SellerService,
-  private router: Router) {}
+  private router: Router) {
+     // ✅ Auto close dropdown on route change
+  this.router.events
+    .pipe(filter(event => event instanceof NavigationEnd))
+    .subscribe(() => {
+      this.showUserMenu = false;
+    });
+  }
 
   ngOnInit(): void {
     this.loadUserData();
@@ -46,7 +55,9 @@ logout() {
   localStorage.removeItem('userId');
   localStorage.removeItem('sellerId');
   this.sellerService.clearSession();
-  this.router.navigate(['/login']);
+  localStorage.clear(); // ✅ safest
+  //this.router.navigate(['/login']);
+  this.router.navigate(['/']);
 }
 
   // Helper to get initials
