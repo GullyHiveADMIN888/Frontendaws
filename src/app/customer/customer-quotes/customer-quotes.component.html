@@ -168,9 +168,10 @@
                 <!-- Price & Validity -->
                 <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
                     <div>
-                        <span class="text-xs text-gray-500 block">Price Range</span>
+                        <span class="text-xs text-gray-500 block">Price By Provider</span>
                         <span class="text-xl font-bold text-gray-900">
-                            ₹{{ quote.priceMin | number:'1.0-0' }} - ₹{{ quote.priceMax | number:'1.0-0' }}
+                            ₹{{ quote.priceMin | number:'1.0-0' }} 
+                            <!-- - ₹{{ quote.priceMax | number:'1.0-0' }} -->
                         </span>
                         <span *ngIf="quote.visitFeeIncluded"
                             class="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
