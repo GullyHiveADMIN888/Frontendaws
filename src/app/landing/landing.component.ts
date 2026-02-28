@@ -593,6 +593,7 @@ onLoginSubmit(event: Event): void {
     } else {
       this.loginError = 'Please check your input';
     }
+    
     return;
   }
 
@@ -631,6 +632,9 @@ onLoginSubmit(event: Event): void {
       },
       error: () => {
         // Error already handled in catchError
+          this.loginForm.patchValue({ captcha: '' });
+         this.refreshCaptcha(); 
+         
       }
     });
 }
@@ -889,14 +893,58 @@ async onVerify() {
   }
 }
 
+// async submitNewPassword() {
+//   this.passwordError = '';
+
+//   if (!this.newPassword || this.newPassword.length < 6) {
+//     this.passwordError = 'Password must be at least 6 characters';
+//     return;
+//   }
+
+//   if (this.newPassword !== this.confirmPassword) {
+//     this.passwordError = 'Passwords do not match';
+//     return;
+//   }
+
+//   try {
+//     await this.authService.updatePasswordByMobile({
+//       mobile: this.otpMobile.replace('+91', ''),
+//       newPassword: this.newPassword
+//     });
+
+//     alert('Password updated successfully');
+
+//     this.closePasswordPopup();
+
+//   } catch (e: any) {
+//     this.passwordError = e.message || 'Failed to update password';
+//   }
+// }
 async submitNewPassword() {
   this.passwordError = '';
 
-  if (!this.newPassword || this.newPassword.length < 6) {
-    this.passwordError = 'Password must be at least 6 characters';
+  // 1️⃣ Required check
+  if (!this.newPassword?.trim()) {
+    this.passwordError = 'Password is required';
     return;
   }
 
+  // 2️⃣ Strong password check
+  const strongPasswordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/;
+
+  if (!strongPasswordRegex.test(this.newPassword)) {
+    this.passwordError =
+      'Password must include 1 uppercase, 1 number & 1 special character';
+    return;
+  }
+
+  // 3️⃣ Confirm password required
+  if (!this.confirmPassword?.trim()) {
+    this.passwordError = 'Confirm password is required';
+    return;
+  }
+
+  // 4️⃣ Match check
   if (this.newPassword !== this.confirmPassword) {
     this.passwordError = 'Passwords do not match';
     return;
@@ -913,7 +961,7 @@ async submitNewPassword() {
     this.closePasswordPopup();
 
   } catch (e: any) {
-    this.passwordError = e.message || 'Failed to update password';
+    this.passwordError = e?.error?.message || 'Failed to update password';
   }
 }
 closePasswordPopup() {

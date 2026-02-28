@@ -55,7 +55,9 @@ logout() {
   localStorage.removeItem('userId');
   localStorage.removeItem('sellerId');
   this.sellerService.clearSession();
-  this.router.navigate(['/login']);
+  localStorage.clear(); // ✅ safest
+  //this.router.navigate(['/login']);
+  this.router.navigate(['/']);
 }
 
   // Helper to get initials
