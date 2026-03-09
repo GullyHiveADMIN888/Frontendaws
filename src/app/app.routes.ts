@@ -31,6 +31,14 @@ export const routes: Routes = [
   loadChildren: () =>
     import('./Seller/seller.module').then(m => m.SellerModule)
 },
+  // 🔒 Business providers
+  {
+    path: 'business',
+    canActivate: [authGuard],
+    data: { roles: ['Seller'] },
+   loadChildren: () =>
+    import('./business/business.module').then(m => m.BusinessModule)
+  },
 
 // customer routes
  {
