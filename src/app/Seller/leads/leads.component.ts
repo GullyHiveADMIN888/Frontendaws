@@ -12,12 +12,12 @@ import { SellerService, Lead } from '../seller.service';
 export class LeadsComponent implements OnInit {
 
  // filterStatus: 'all' | 'new' | 'Unlocked' | 'responded' | 'viewed' = 'all';
- filterStatus: 'all' | 'new' | 'provider_unlocked' | 'responded' | 'viewed' | 'in_progress' = 'all';
+ filterStatus: 'all' | 'offered' | 'unlocked' | 'responded' | 'viewed' | 'committed' = 'all';
  statuses = [
   { label: 'All', value: 'all' },
-  { label: 'New', value: 'new' },
-  { label: 'Unlocked', value: 'provider_unlocked' },
-  { label: 'Confirmed', value: 'in_progress' },
+  { label: 'New', value: 'offered' },
+  { label: 'Unlocked', value: 'unlocked' },
+  { label: 'Confirmed', value: 'committed' },
   { label: 'Responded', value: 'responded' },
   { label: 'Viewed', value: 'viewed' }
 ];
@@ -114,8 +114,11 @@ export class LeadsComponent implements OnInit {
     return `${days} days ago`;
   }
 
-  setFilter(status: any) {
-    this.filterStatus = status;
+  // setFilter(status: any)
+   setFilter(offerStatus: any)
+   {
+  //  this.filterStatus = status;
+    this.filterStatus = offerStatus;
     this.currentPage = 1;
     this.updatePagination();
   }
@@ -123,7 +126,8 @@ export class LeadsComponent implements OnInit {
   get filteredLeads(): Lead[] {
     return this.filterStatus === 'all'
       ? this.leads
-      : this.leads.filter(l => l.status === this.filterStatus);
+     // : this.leads.filter(l => l.status === this.filterStatus);
+     : this.leads.filter(l => l.offerStatus === this.filterStatus);
   }
 
   get paginatedLeads(): Lead[] {
