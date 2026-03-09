@@ -6,9 +6,10 @@ import { ActivatedRoute } from '@angular/router';
 import { SellerService, PublicProfile } from '../seller.service';
 
 @Component({
-  selector: 'app-public-profile',
-  templateUrl: './public-profile.component.html',
-  styleUrls: ['./public-profile.component.css']
+    selector: 'app-public-profile',
+    templateUrl: './public-profile.component.html',
+    styleUrls: ['./public-profile.component.css'],
+    standalone: false
 })
 
 

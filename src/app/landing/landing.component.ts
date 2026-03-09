@@ -44,11 +44,10 @@ interface LoginResponse {
 }
 
 @Component({
-  selector: 'app-landing',
-  templateUrl: './landing.component.html',
-  styleUrls: ['./landing.component.css'],
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule, OTPVerificationComponent]
+    selector: 'app-landing',
+    templateUrl: './landing.component.html',
+    styleUrls: ['./landing.component.css'],
+    imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule, OTPVerificationComponent]
 })
 
 export class LandingPageComponent implements OnInit, OnDestroy {

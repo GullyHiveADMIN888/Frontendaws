@@ -10,10 +10,9 @@ import {  HostListener } from '@angular/core';
 
 
 @Component({
-  selector: 'app-step2-legal-identity',
-  standalone: true,
-  imports: [CommonModule,  FormsModule ],
-  templateUrl: './step2-legal-identity.component.html'
+    selector: 'app-step2-legal-identity',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './step2-legal-identity.component.html'
 })
 export class Step2LegalIdentityComponent implements OnInit {
   @Input() errors: any;

@@ -3,9 +3,10 @@ import { LeadStatusService } from './services/lead-status.service';
 import { LeadStatus, LeadStatusCreateDto, LeadStatusUpdateDto } from './models/lead-status.model';
 
 @Component({
-  selector: 'app-lead-status-master',
-  templateUrl: './lead-status-master.component.html',
-  styleUrls: ['./lead-status-master.component.css']
+    selector: 'app-lead-status-master',
+    templateUrl: './lead-status-master.component.html',
+    styleUrls: ['./lead-status-master.component.css'],
+    standalone: false
 })
 export class LeadStatusMasterComponent implements OnInit {
   // Data properties

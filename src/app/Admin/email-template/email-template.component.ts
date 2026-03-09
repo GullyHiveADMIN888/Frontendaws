@@ -5,9 +5,10 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-email-template',
-  templateUrl: './email-template.component.html',
-  styleUrls: ['./email-template.component.css']
+    selector: 'app-email-template',
+    templateUrl: './email-template.component.html',
+    styleUrls: ['./email-template.component.css'],
+    standalone: false
 })
 export class EmailTemplateComponent implements OnInit, OnDestroy {
   templates: string[] = [];

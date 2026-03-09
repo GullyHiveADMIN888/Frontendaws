@@ -4,9 +4,10 @@ import { UserManagementService } from './services/user-management.service';
 import { User, Role, UserStats, UserListRequest } from './models/user-management.model';
 
 @Component({
-  selector: 'app-user-management',
-  templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.css']
+    selector: 'app-user-management',
+    templateUrl: './user-management.component.html',
+    styleUrls: ['./user-management.component.css'],
+    standalone: false
 })
 export class UserManagementComponent implements OnInit {
   // Data

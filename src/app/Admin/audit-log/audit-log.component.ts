@@ -7,9 +7,10 @@ import { debounceTime, distinctUntilChanged, switchMap, catchError, tap } from '
 import { Subject, of } from 'rxjs';
 
 @Component({
-  selector: 'app-audit-log',
-  templateUrl: './audit-log.component.html',
-  styleUrls: ['./audit-log.component.css']
+    selector: 'app-audit-log',
+    templateUrl: './audit-log.component.html',
+    styleUrls: ['./audit-log.component.css'],
+    standalone: false
 })
 export class AuditLogComponent implements OnInit {
   logs: AuditLog[] = [];

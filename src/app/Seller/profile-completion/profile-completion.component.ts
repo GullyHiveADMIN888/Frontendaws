@@ -3,8 +3,9 @@ import { Component, Input } from '@angular/core';
 import { SellerService, DashboardData } from '../seller.service';
 
 @Component({
-  selector: 'app-profile-completion',
-  templateUrl: './profile-completion.component.html'
+    selector: 'app-profile-completion',
+    templateUrl: './profile-completion.component.html',
+    standalone: false
 })
 export class ProfileCompletionComponent {
   completionPercentage = 75;

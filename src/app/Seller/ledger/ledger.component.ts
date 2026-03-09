@@ -3,8 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { SellerService, WalletTransaction } from '../seller.service';
 
 @Component({
-  selector: 'app-ledger',
-  templateUrl: './ledger.component.html',
+    selector: 'app-ledger',
+    templateUrl: './ledger.component.html',
+    standalone: false
 })
 
 // export class LedgerComponent implements OnInit {

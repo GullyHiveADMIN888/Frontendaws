@@ -4,10 +4,9 @@ import { AuthService } from '../auth.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-step3-professional-details',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './step3-professional-details.component.html'
+    selector: 'app-step3-professional-details',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './step3-professional-details.component.html'
 })
 export class Step3ProfessionalDetailsComponent implements OnInit {
   @Input() errors: any;

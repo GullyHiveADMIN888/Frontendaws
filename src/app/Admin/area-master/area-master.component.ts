@@ -19,9 +19,10 @@ interface PaginationInfo {
 }
 
 @Component({
-  selector: 'app-area-master',
-  templateUrl: './area-master.component.html',
-  styleUrls: ['./area-master.component.css']
+    selector: 'app-area-master',
+    templateUrl: './area-master.component.html',
+    styleUrls: ['./area-master.component.css'],
+    standalone: false
 })
 export class AreaMasterComponent implements OnInit {
   @ViewChild('areaForm') areaForm!: NgForm;

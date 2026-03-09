@@ -3,9 +3,10 @@ import { ServicePackageService, City, ServiceCategory, ServiceSubCategory } from
 import { ServicePackage, ServicePackageCreateDto, ServicePackageUpdateDto } from './models/service-package.model';
 
 @Component({
-  selector: 'app-service-package-master',
-  templateUrl: './service-package-master.component.html',
-  styleUrls: ['./service-package-master.component.css']
+    selector: 'app-service-package-master',
+    templateUrl: './service-package-master.component.html',
+    styleUrls: ['./service-package-master.component.css'],
+    standalone: false
 })
 export class ServicePackageMasterComponent implements OnInit {
   // Data properties

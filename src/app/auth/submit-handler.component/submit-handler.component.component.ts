@@ -4,10 +4,9 @@ import { RegisterFormData } from '../models/register.model';
 import { validateForm } from '../register/validation-scripts';
 
 @Component({
-  selector: 'app-submit-handler',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './submit-handler.component.component.html'
+    selector: 'app-submit-handler',
+    imports: [CommonModule],
+    templateUrl: './submit-handler.component.component.html'
 })
 export class SubmitHandlerComponent {
   @Input() formData!: RegisterFormData;

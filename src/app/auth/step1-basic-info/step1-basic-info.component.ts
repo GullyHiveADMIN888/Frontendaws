@@ -12,10 +12,9 @@ import { Auth, signInWithPhoneNumber, ConfirmationResult } from '@angular/fire/a
 import { SimpleChanges } from '@angular/core';
 
 @Component({
-  selector: 'app-step1-basic-info',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './step1-basic-info.component.html'
+    selector: 'app-step1-basic-info',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './step1-basic-info.component.html'
 })
 export class Step1BasicInfoComponent {
   @Input() formData: any;

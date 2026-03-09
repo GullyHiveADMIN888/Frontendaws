@@ -3,10 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-customer-step3-preferences',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './customer-step3-preferences.component.html'
+    selector: 'app-customer-step3-preferences',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './customer-step3-preferences.component.html'
 })
 export class CustomerStep3PreferencesComponent {
   @Input() formData: any;

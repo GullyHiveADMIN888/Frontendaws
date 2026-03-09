@@ -32,9 +32,10 @@ interface SubCategoryCreateDto {
 }
 
 @Component({
-  selector: 'app-sub-category-master',
-  templateUrl: './sub-category-master.component.html',
-  styleUrls: ['./sub-category-master.component.css'],
+    selector: 'app-sub-category-master',
+    templateUrl: './sub-category-master.component.html',
+    styleUrls: ['./sub-category-master.component.css'],
+    standalone: false
 })
 export class SubCategoryMasterComponent implements OnInit {
   // Data properties

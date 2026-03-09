@@ -17,11 +17,10 @@ import { FormsModule } from '@angular/forms';
 import { interval, Subscription } from 'rxjs';
 import { AuthService } from '../auth.service';
 @Component({
-  selector: 'app-otp-verification',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-   // imports: [CommonModule],
-  templateUrl: './otp-verification.component.html'
+    selector: 'app-otp-verification',
+    imports: [CommonModule, FormsModule],
+    // imports: [CommonModule],
+    templateUrl: './otp-verification.component.html'
 })
 export class OTPVerificationComponent implements OnInit, OnDestroy {
 

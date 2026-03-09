@@ -7,11 +7,10 @@ import { UserDataService, UserData } from '../services/user-data.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
-  selector: 'app-customer-layout',
-  templateUrl: './customer-layout.component.html',
-  styleUrls: ['./customer-layout.component.css'],
-  standalone: true,
-  imports: [CommonModule, RouterModule]
+    selector: 'app-customer-layout',
+    templateUrl: './customer-layout.component.html',
+    styleUrls: ['./customer-layout.component.css'],
+    imports: [CommonModule, RouterModule]
 })
 export class CustomerLayoutComponent implements OnInit {
   showUserMenu = false;

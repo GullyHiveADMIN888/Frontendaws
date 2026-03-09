@@ -26,9 +26,10 @@ interface QuestionWithSubCategory extends Question {
 }
 
 @Component({
-  selector: 'app-question-master',
-  templateUrl: './question-master.component.html',
-  styleUrls: ['./question-master.component.css']
+    selector: 'app-question-master',
+    templateUrl: './question-master.component.html',
+    styleUrls: ['./question-master.component.css'],
+    standalone: false
 })
 export class QuestionMasterComponent implements OnInit {
   // Data properties

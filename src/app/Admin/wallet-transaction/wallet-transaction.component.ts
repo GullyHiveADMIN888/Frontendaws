@@ -7,9 +7,10 @@ import { debounceTime, distinctUntilChanged, switchMap, catchError, tap } from '
 import { Subject, of } from 'rxjs';
 
 @Component({
-  selector: 'app-wallet-transaction',
-  templateUrl: './wallet-transaction.component.html',
-  styleUrls: ['./wallet-transaction.component.css']
+    selector: 'app-wallet-transaction',
+    templateUrl: './wallet-transaction.component.html',
+    styleUrls: ['./wallet-transaction.component.css'],
+    standalone: false
 })
 export class WalletTransactionComponent implements OnInit {
   Math = Math;

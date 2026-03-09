@@ -43,16 +43,17 @@ import { FooterComponent } from '../footer/footer.component';
 import { AdminService } from '../admin.service';
 
 @Component({
-  selector: 'app-admin-dashboard',
-  // standalone: true,
-  // imports: [
-  //   CommonModule,
-  //   RouterModule,
-  //   HeaderComponent,
-  //   FooterComponent,
-  // ],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+    selector: 'app-admin-dashboard',
+    // standalone: true,
+    // imports: [
+    //   CommonModule,
+    //   RouterModule,
+    //   HeaderComponent,
+    //   FooterComponent,
+    // ],
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.css'],
+    // standalone: false
 })
 export class DashboardComponent implements OnInit {
 

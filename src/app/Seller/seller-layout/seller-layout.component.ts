@@ -9,10 +9,9 @@ import { filter } from 'rxjs/operators';
 
 
 @Component({
-  selector: 'app-seller-layout',
-  standalone: true,
-  imports: [RouterOutlet, RouterModule, CommonModule],
-  templateUrl: './seller-layout.component.html'
+    selector: 'app-seller-layout',
+    imports: [RouterOutlet, RouterModule, CommonModule],
+    templateUrl: './seller-layout.component.html'
 })
 export class SellerLayoutComponent implements OnInit {
   showUserMenu = false;

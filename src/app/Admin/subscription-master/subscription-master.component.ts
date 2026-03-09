@@ -13,9 +13,10 @@ import { debounceTime, distinctUntilChanged, switchMap, catchError, tap } from '
 import { Subject, of } from 'rxjs';
 
 @Component({
-  selector: 'app-subscription-master',
-  templateUrl: './subscription-master.component.html',
-  styleUrls: ['./subscription-master.component.css']
+    selector: 'app-subscription-master',
+    templateUrl: './subscription-master.component.html',
+    styleUrls: ['./subscription-master.component.css'],
+    standalone: false
 })
 export class SubscriptionMasterComponent implements OnInit {
   // Data properties

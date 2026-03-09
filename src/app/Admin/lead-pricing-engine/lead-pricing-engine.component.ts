@@ -10,9 +10,10 @@ import {
 } from './models/lead-pricing-engine.model';
 
 @Component({
-  selector: 'app-lead-pricing-engine',
-  templateUrl: './lead-pricing-engine.component.html',
-  styleUrls: ['./lead-pricing-engine.component.css']
+    selector: 'app-lead-pricing-engine',
+    templateUrl: './lead-pricing-engine.component.html',
+    styleUrls: ['./lead-pricing-engine.component.css'],
+    standalone: false
 })
 export class LeadPricingEngineComponent implements OnInit, OnDestroy {
   Math = Math;

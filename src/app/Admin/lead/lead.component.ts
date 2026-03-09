@@ -1490,7 +1490,8 @@ import Swal from 'sweetalert2';
 @Component({
     selector: 'app-lead-list',
     templateUrl: './lead-list.component.html',
-    styleUrls: ['./lead-list.component.css']
+    styleUrls: ['./lead-list.component.css'],
+    standalone: false
 })
 export class LeadListComponent implements OnInit {
     Math = Math;

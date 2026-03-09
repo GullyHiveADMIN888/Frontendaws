@@ -40,17 +40,16 @@ export interface CustomerRegisterRequest {
 }
 
 @Component({
-  selector: 'app-customer-register',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    CustomerStepIndicatorComponent,
-    CustomerStep1BasicInfoComponent,
-    CustomerStep2AddressComponent,
-    CustomerStep3PreferencesComponent
-  ],
-  templateUrl: './customer-register.component.html'
+    selector: 'app-customer-register',
+    imports: [
+        CommonModule,
+        RouterModule,
+        CustomerStepIndicatorComponent,
+        CustomerStep1BasicInfoComponent,
+        CustomerStep2AddressComponent,
+        CustomerStep3PreferencesComponent
+    ],
+    templateUrl: './customer-register.component.html'
 })
 export class CustomerRegisterComponent {
   currentStep = 1;

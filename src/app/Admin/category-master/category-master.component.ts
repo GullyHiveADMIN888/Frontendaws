@@ -29,9 +29,10 @@ interface ServiceCategoryCreateDto {
 }
 
 @Component({
-  selector: 'app-category-master',
-  templateUrl: './category-master.component.html',
-  styleUrls: ['./category-master.component.css']
+    selector: 'app-category-master',
+    templateUrl: './category-master.component.html',
+    styleUrls: ['./category-master.component.css'],
+    standalone: false
 })
 export class CategoryMasterComponent implements OnInit {
   // Data properties

@@ -84,9 +84,10 @@ import { Component, OnInit } from '@angular/core';
 import { SellerService, HelpFaq,HelpCategory } from '../seller.service';
 
 @Component({
-  selector: 'app-help',
-  templateUrl: './help.component.html',
-  styleUrls: ['./help.component.css']
+    selector: 'app-help',
+    templateUrl: './help.component.html',
+    styleUrls: ['./help.component.css'],
+    standalone: false
 })
 export class HelpComponent implements OnInit {
 

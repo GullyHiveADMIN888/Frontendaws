@@ -11,9 +11,10 @@ import {
 } from './models/lead-pricing-config.model';
 
 @Component({
-  selector: 'app-lead-pricing-config',
-  templateUrl: './lead-pricing-config.component.html',
-  styleUrls: ['./lead-pricing-config.component.css']
+    selector: 'app-lead-pricing-config',
+    templateUrl: './lead-pricing-config.component.html',
+    styleUrls: ['./lead-pricing-config.component.css'],
+    standalone: false
 })
 export class LeadPricingConfigComponent implements OnInit {
   // Data properties

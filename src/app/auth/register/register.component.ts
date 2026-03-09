@@ -14,20 +14,17 @@ import { ViewChild } from '@angular/core';
 
 
 @Component({
-  selector: 'app-register',
-  standalone: true,
-  imports: [
-    RouterModule,
-    CommonModule,
-    StepIndicatorComponent,
-    Step1BasicInfoComponent,
-    Step2LegalIdentityComponent,
-    Step3ProfessionalDetailsComponent,
-    OTPVerificationComponent,
-
-
-  ],
-  templateUrl: './register.component.html'
+    selector: 'app-register',
+    imports: [
+        RouterModule,
+        CommonModule,
+        StepIndicatorComponent,
+        Step1BasicInfoComponent,
+        Step2LegalIdentityComponent,
+        Step3ProfessionalDetailsComponent,
+        OTPVerificationComponent,
+    ],
+    templateUrl: './register.component.html'
 })
 
 

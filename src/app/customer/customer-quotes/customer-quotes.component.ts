@@ -9,9 +9,10 @@ import {
 } from './models/customer-quote.models';
 
 @Component({
-  selector: 'app-customer-quotes',
-  templateUrl: './customer-quotes.component.html',
-  styleUrls: ['./customer-quotes.component.css']
+    selector: 'app-customer-quotes',
+    templateUrl: './customer-quotes.component.html',
+    styleUrls: ['./customer-quotes.component.css'],
+    standalone: false
 })
 export class CustomerQuotesComponent implements OnInit {
   Math = Math;

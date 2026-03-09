@@ -5,10 +5,9 @@ import { CustomerAuthService } from '../services/customer-auth.service';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 
 @Component({
-  selector: 'app-customer-step1-basic-info',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './customer-step1-basic-info.component.html'
+    selector: 'app-customer-step1-basic-info',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './customer-step1-basic-info.component.html'
 })
 export class CustomerStep1BasicInfoComponent implements OnInit, OnChanges {
   @Input() formData: any;

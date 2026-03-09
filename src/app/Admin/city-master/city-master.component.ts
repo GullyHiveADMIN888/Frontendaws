@@ -5,9 +5,10 @@ import { environment } from '../../../environments/environment.prod';
 import { City, CreateCity, UpdateCity, State } from './models/city.model';
 
 @Component({
-  selector: 'app-city-master',
-  templateUrl: './city-master.component.html',
-  styleUrls: ['./city-master.component.css']
+    selector: 'app-city-master',
+    templateUrl: './city-master.component.html',
+    styleUrls: ['./city-master.component.css'],
+    // standalone: false
 })
 export class CityMasterComponent implements OnInit {
   // Data properties

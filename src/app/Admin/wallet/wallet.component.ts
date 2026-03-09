@@ -15,9 +15,10 @@ import {
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-wallet-list',
-  templateUrl: './wallet.component.html',
-  styleUrls: ['./wallet.component.css']
+    selector: 'app-wallet-list',
+    templateUrl: './wallet.component.html',
+    styleUrls: ['./wallet.component.css'],
+    standalone: false
 })
 export class WalletListComponent implements OnInit {
   Math = Math;

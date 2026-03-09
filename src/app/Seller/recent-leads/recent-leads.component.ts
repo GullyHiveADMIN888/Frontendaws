@@ -2,8 +2,9 @@ import { Component, OnInit ,Input} from '@angular/core';
 import { SellerService, Lead } from '../seller.service';
 
 @Component({
-  selector: 'app-recent-leads',
-  templateUrl: './recent-leads.component.html'
+    selector: 'app-recent-leads',
+    templateUrl: './recent-leads.component.html',
+    standalone: false
 })
 export class RecentLeadsComponent implements OnInit {
   leads: Lead[] = [];

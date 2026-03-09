@@ -17,9 +17,10 @@ import { debounceTime, distinctUntilChanged, switchMap, catchError, tap } from '
 import { Subject, of } from 'rxjs';
 
 @Component({
-  selector: 'app-lead-assignment',
-  templateUrl: './lead-assignment.component.html',
-  styleUrls: ['./lead-assignment.component.css']
+    selector: 'app-lead-assignment',
+    templateUrl: './lead-assignment.component.html',
+    styleUrls: ['./lead-assignment.component.css'],
+    standalone: false
 })
 export class LeadAssignmentComponent implements OnInit {
   Math = Math;

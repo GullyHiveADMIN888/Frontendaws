@@ -5,9 +5,10 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment.prod';
 
 @Component({
-  selector: 'app-change-password',
-  templateUrl: './change-password.component.html',
-  styleUrls: ['./change-password.component.css']
+    selector: 'app-change-password',
+    templateUrl: './change-password.component.html',
+    styleUrls: ['./change-password.component.css'],
+    standalone: false
 })
 export class ChangePasswordComponent implements OnInit {
   // Form

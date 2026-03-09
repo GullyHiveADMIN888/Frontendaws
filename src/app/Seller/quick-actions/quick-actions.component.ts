@@ -3,8 +3,9 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 @Component({
-  selector: 'app-quick-actions',
-  templateUrl: './quick-actions.component.html'
+    selector: 'app-quick-actions',
+    templateUrl: './quick-actions.component.html',
+    standalone: false
 })
 export class QuickActionsComponent {
   @Output() editServices = new EventEmitter<void>();
