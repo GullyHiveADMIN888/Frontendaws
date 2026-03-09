@@ -1,11 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { ServicePackageService, City, ServiceCategory, ServiceSubCategory } from './services/service-package.service';
 import { ServicePackage, ServicePackageCreateDto, ServicePackageUpdateDto } from './models/service-package.model';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
-  selector: 'app-service-package-master',
-  templateUrl: './service-package-master.component.html',
-  styleUrls: ['./service-package-master.component.css']
+    selector: 'app-service-package-master',
+    templateUrl: './service-package-master.component.html',
+    styleUrls: ['./service-package-master.component.css'],
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,          
+        ReactiveFormsModule,   
+        RouterModule,           
+        HeaderComponent,
+        FooterComponent
+    ]
 })
 export class ServicePackageMasterComponent implements OnInit {
   // Data properties

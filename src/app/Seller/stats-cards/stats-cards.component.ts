@@ -2,8 +2,9 @@ import { Component, Input, OnChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-stats-cards',
-  templateUrl: './stats-cards.component.html'
+    selector: 'app-stats-cards',
+    templateUrl: './stats-cards.component.html',
+    standalone: false
 })
 export class StatsCardsComponent implements OnChanges {
   @Input() totalLeads = 0;

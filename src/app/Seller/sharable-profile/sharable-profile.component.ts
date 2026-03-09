@@ -6,10 +6,9 @@ import { RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment.prod';
 
 @Component({
-  selector: 'app-sharable-profile',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './sharable-profile.component.html',
+    selector: 'app-sharable-profile',
+    imports: [CommonModule, RouterModule],
+    templateUrl: './sharable-profile.component.html'
 })
 export class SharableProfileComponent implements OnInit {
 

@@ -3,8 +3,9 @@ import { ActivatedRoute } from '@angular/router';
 import { SellerService, Referral } from '../seller.service';
 
 @Component({
-  selector: 'app-refer-earn',
-  templateUrl: './refer-earn.component.html'
+    selector: 'app-refer-earn',
+    templateUrl: './refer-earn.component.html',
+    standalone: false
 })
 export class ReferEarnComponent implements OnInit {
   sellerId!: number;

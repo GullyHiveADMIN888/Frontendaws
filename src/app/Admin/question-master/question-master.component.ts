@@ -14,6 +14,11 @@ import {
   QuestionWithOptions,
   SubCategory
 } from './models/question.model';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
 
 interface ServiceCategory {
   id: number;
@@ -26,9 +31,18 @@ interface QuestionWithSubCategory extends Question {
 }
 
 @Component({
-  selector: 'app-question-master',
-  templateUrl: './question-master.component.html',
-  styleUrls: ['./question-master.component.css']
+    selector: 'app-question-master',
+    templateUrl: './question-master.component.html',
+    styleUrls: ['./question-master.component.css'],
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,          
+        ReactiveFormsModule,   
+        RouterModule,           
+        HeaderComponent,
+        FooterComponent
+    ]
 })
 export class QuestionMasterComponent implements OnInit {
   // Data properties

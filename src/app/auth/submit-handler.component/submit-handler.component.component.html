@@ -1,11 +1,10 @@
 <div class="flex justify-center pt-6">
   <button type="button" (click)="handleSubmit()" [disabled]="isSubmitting"
-          class="bg-orange-600 text-white px-12 py-4 rounded-lg font-semibold hover:bg-orange-700">
-    <ng-container *ngIf="isSubmitting; else normal">
+    class="bg-orange-600 text-white px-12 py-4 rounded-lg font-semibold hover:bg-orange-700">
+    @if (isSubmitting) {
       <span class="flex items-center"><i class="ri-loader-4-line animate-spin mr-2"></i>Submitting...</span>
-    </ng-container>
-    <ng-template #normal>
+    } @else {
       <span class="flex items-center"><i class="ri-send-plane-fill mr-2"></i>Submit Registration</span>
-    </ng-template>
+    }
   </button>
 </div>

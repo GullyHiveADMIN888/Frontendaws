@@ -1,5 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   LeadAssignment,
   Provider,
@@ -15,11 +15,24 @@ import { LeadAssignmentService } from './services/lead-assignment.service';
 import { CityService } from './services/city.service';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, tap } from 'rxjs/operators';
 import { Subject, of } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FooterComponent } from '../footer/footer.component';
+import { HeaderComponent } from '../header/header.component';
 
 @Component({
-  selector: 'app-lead-assignment',
-  templateUrl: './lead-assignment.component.html',
-  styleUrls: ['./lead-assignment.component.css']
+    selector: 'app-lead-assignment',
+    templateUrl: './lead-assignment.component.html',
+    styleUrls: ['./lead-assignment.component.css'],
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,          
+        ReactiveFormsModule,   
+        RouterModule,           
+        HeaderComponent,
+        FooterComponent
+    ]
 })
 export class LeadAssignmentComponent implements OnInit {
   Math = Math;

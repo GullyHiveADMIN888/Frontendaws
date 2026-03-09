@@ -1,15 +1,28 @@
 import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuditLog, User } from './models/audit-log.model';
 import { PagedResult } from './models/paged-result.model';
 import { AuditLogService } from './services/audit-log.service';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, tap } from 'rxjs/operators';
 import { Subject, of } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FooterComponent } from '../footer/footer.component';
+import { HeaderComponent } from '../header/header.component';
 
 @Component({
-  selector: 'app-audit-log',
-  templateUrl: './audit-log.component.html',
-  styleUrls: ['./audit-log.component.css']
+    selector: 'app-audit-log',
+    templateUrl: './audit-log.component.html',
+    styleUrls: ['./audit-log.component.css'],
+    standalone: true,
+    imports: [
+            CommonModule,
+            FormsModule,          
+            ReactiveFormsModule,   
+            RouterModule,           
+            HeaderComponent,
+            FooterComponent
+        ]
 })
 export class AuditLogComponent implements OnInit {
   logs: AuditLog[] = [];

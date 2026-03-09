@@ -1,13 +1,12 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { CustomerAuthService } from '../services/customer-auth.service';
 
 @Component({
-  selector: 'app-customer-step2-address',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './customer-step2-address.component.html'
+    selector: 'app-customer-step2-address',
+    imports: [FormsModule],
+    templateUrl: './customer-step2-address.component.html'
 })
 export class CustomerStep2AddressComponent implements OnInit, OnChanges {
   @Input() formData: any;

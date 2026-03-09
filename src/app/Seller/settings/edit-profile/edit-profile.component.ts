@@ -187,9 +187,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { SellerService, PublicProfile } from '../../seller.service';
 
 @Component({
-  selector: 'app-edit-profile',
-  templateUrl: './edit-profile.component.html',
-  styleUrls: ['./edit-profile.component.css']
+    selector: 'app-edit-profile',
+    templateUrl: './edit-profile.component.html',
+    styleUrls: ['./edit-profile.component.css'],
+    standalone: false
 })
 export class EditProfileComponent implements OnInit {
   editForm: FormGroup;

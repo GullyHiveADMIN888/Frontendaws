@@ -34,15 +34,17 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let txn of transactions">
-      <td class="py-2 px-3 border-b">{{ txn.txn_id }}</td>
-      <td class="py-2 px-3 border-b">{{ txn.wallet_amount_type }}</td>
-      <td class="py-2 px-3 border-b">{{ txn.direction }}</td>
-      <td class="py-2 px-3 border-b">{{ txn.amount | currency:txn.txn_currency }}</td>
-      <td class="py-2 px-3 border-b">{{ txn.balance_after | currency:txn.txn_currency }}</td>
-      <td class="py-2 px-3 border-b">{{ txn.created_at | date:'short' }}</td>
-      <td class="py-2 px-3 border-b">{{ txn.reference_type }}</td>
-    </tr>
+    @for (txn of transactions; track txn) {
+      <tr>
+        <td class="py-2 px-3 border-b">{{ txn.txn_id }}</td>
+        <td class="py-2 px-3 border-b">{{ txn.wallet_amount_type }}</td>
+        <td class="py-2 px-3 border-b">{{ txn.direction }}</td>
+        <td class="py-2 px-3 border-b">{{ txn.amount | currency:txn.txn_currency }}</td>
+        <td class="py-2 px-3 border-b">{{ txn.balance_after | currency:txn.txn_currency }}</td>
+        <td class="py-2 px-3 border-b">{{ txn.created_at | date:'short' }}</td>
+        <td class="py-2 px-3 border-b">{{ txn.reference_type }}</td>
+      </tr>
+    }
   </tbody>
 </table>
 
@@ -50,16 +52,16 @@
 
 <div class="flex justify-end mt-4 gap-2 items-center">
   <button (click)="prevPage()"
-          class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-          [disabled]="currentPage === 1">
+    class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+    [disabled]="currentPage === 1">
     Prev
   </button>
 
   <span class="text-sm">Page {{ currentPage }} of {{ totalPages }}</span>
 
   <button (click)="nextPage()"
-          class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 mr-3"
-          [disabled]="currentPage === totalPages">
+    class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 mr-3"
+    [disabled]="currentPage === totalPages">
     Next
   </button>
 </div>

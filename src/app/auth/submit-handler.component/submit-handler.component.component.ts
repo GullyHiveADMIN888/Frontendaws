@@ -1,13 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RegisterFormData } from '../models/register.model';
 import { validateForm } from '../register/validation-scripts';
 
 @Component({
-  selector: 'app-submit-handler',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './submit-handler.component.component.html'
+    selector: 'app-submit-handler',
+    imports: [],
+    templateUrl: './submit-handler.component.component.html'
 })
 export class SubmitHandlerComponent {
   @Input() formData!: RegisterFormData;

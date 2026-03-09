@@ -1,12 +1,11 @@
  import { Component } from '@angular/core';
  import { RouterModule, RouterOutlet } from '@angular/router';
- import { CommonModule } from '@angular/common';
+ 
 
 @Component({
-  selector: 'app-register-layout',
-  standalone: true,
-  imports: [RouterOutlet ,CommonModule,RouterModule], // ✅ include CommonModule
-  templateUrl: './register-layout.component.html'
+    selector: 'app-register-layout',
+    imports: [RouterOutlet, RouterModule], // ✅ include CommonModule
+    templateUrl: './register-layout.component.html'
 })
 export class RegisterLayoutComponent {
   currentStep = 1;

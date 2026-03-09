@@ -4,16 +4,20 @@
     <div class="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
       <i class="ri-smartphone-line text-4xl text-orange-600"></i>
     </div>
-   
-    <h2>
-  {{ email ? 'Verify Email Address' : 'Verify Mobile Number' }}
-</h2>
 
-<p>
-  We've sent a 6-digit OTP to 
-  <span *ngIf="email">{{ email }}</span>
-  <span *ngIf="!email">{{ mobile }}</span>
-</p>
+    <h2>
+      {{ email ? 'Verify Email Address' : 'Verify Mobile Number' }}
+    </h2>
+
+    <p>
+      We've sent a 6-digit OTP to
+      @if (email) {
+        <span>{{ email }}</span>
+      }
+      @if (!email) {
+        <span>{{ mobile }}</span>
+      }
+    </p>
   </div>
 
   <div class="space-y-6">
@@ -22,42 +26,44 @@
         Enter OTP
       </label>
       <div class="flex justify-center gap-3" (paste)="onPaste($event)">
-        <input
-  #otpInput
-  *ngFor="let digit of otp; let i = index; trackBy: trackByIndex"
-  type="text"
-  inputmode="numeric"
-  maxlength="1"
-  [value]="otp[i]"
-  (input)="onInputChange($event, i)"
-  (keydown)="onKeyDown($event, i)"
-  class="w-14 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-/>
+        @for (digit of otp; track trackByIndex(i); let i = $index) {
+          <input
+            #otpInput
+            type="text"
+            inputmode="numeric"
+            maxlength="1"
+            [value]="otp[i]"
+            (input)="onInputChange($event, i)"
+            (keydown)="onKeyDown($event, i)"
+            class="w-14 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            />
+        }
 
       </div>
-      <p *ngIf="error" class="text-red-600 text-sm mt-3 text-center font-inter">
-        <i class="ri-error-warning-line mr-1"></i>
-        {{ error }}
-      </p>
+      @if (error) {
+        <p class="text-red-600 text-sm mt-3 text-center font-inter">
+          <i class="ri-error-warning-line mr-1"></i>
+          {{ error }}
+        </p>
+      }
     </div>
 
     <div class="text-center">
-      <ng-container *ngIf="canResend; else timerTemplate">
+      @if (canResend) {
         <button
           type="button"
           (click)="onResend()"
           class="text-orange-600 hover:text-orange-700 font-medium text-sm font-inter whitespace-nowrap cursor-pointer transition-colors"
-        >
+          >
           <i class="ri-refresh-line mr-1"></i>
           Resend OTP
         </button>
-      </ng-container>
-      
-      <ng-template #timerTemplate>
+      } @else {
         <p class="text-gray-600 text-sm font-inter">
           Resend OTP in <span class="font-semibold text-orange-600">{{ timer }}s</span>
         </p>
-      </ng-template>
+      }
+
     </div>
 
     <div class="flex gap-4 pt-4">
@@ -66,27 +72,26 @@
         (click)="onBack.emit()"
         [disabled]="isVerifying"
         class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium font-inter whitespace-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-      >
+        >
         <i class="ri-arrow-left-line mr-2"></i>
         Back
       </button>
       <!-- (click)="onVerify()" -->
       <button
         type="button"
-        
+
         (click)="email ? verifyEmailOtp() : onVerify()"
         [disabled]="isVerifying || otp.join('').length !== 6"
         class="flex-1 px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium font-inter whitespace-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        <ng-container *ngIf="!isVerifying; else verifyingTemplate">
+        >
+        @if (!isVerifying) {
           Verify & Continue
           <i class="ri-arrow-right-line ml-2"></i>
-        </ng-container>
-        
-        <ng-template #verifyingTemplate>
+        } @else {
           <i class="ri-loader-4-line animate-spin mr-2"></i>
           Verifying...
-        </ng-template>
+        }
+
       </button>
     </div>
   </div>

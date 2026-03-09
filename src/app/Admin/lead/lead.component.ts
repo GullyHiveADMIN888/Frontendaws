@@ -1467,7 +1467,7 @@
 // }
 
 import { Component, OnInit, ViewChild, ElementRef, HostListener, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { LeadService } from './services/lead.service';
 import {
@@ -1486,11 +1486,24 @@ import {
 } from './models/lead.model';
 import { of } from 'rxjs';
 import Swal from 'sweetalert2';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
     selector: 'app-lead-list',
     templateUrl: './lead-list.component.html',
-    styleUrls: ['./lead-list.component.css']
+    styleUrls: ['./lead-list.component.css'],
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,          
+        ReactiveFormsModule,   
+        RouterModule,           
+        HeaderComponent,
+        FooterComponent
+    ]
 })
 export class LeadListComponent implements OnInit {
     Math = Math;

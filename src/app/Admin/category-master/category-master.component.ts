@@ -3,6 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { AdminService } from '../admin.service';
 // import { environment } from '../../../environments/environment';
 import { environment } from '../../../environments/environment.prod';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
 
 interface ServiceCategory {
   id: number;
@@ -29,9 +34,18 @@ interface ServiceCategoryCreateDto {
 }
 
 @Component({
-  selector: 'app-category-master',
-  templateUrl: './category-master.component.html',
-  styleUrls: ['./category-master.component.css']
+    selector: 'app-category-master',
+    templateUrl: './category-master.component.html',
+    styleUrls: ['./category-master.component.css'],
+    standalone: true,
+    imports: [
+            CommonModule,
+            FormsModule,          
+            ReactiveFormsModule,   
+            RouterModule,           
+            HeaderComponent,
+            FooterComponent
+        ]
 })
 export class CategoryMasterComponent implements OnInit {
   // Data properties

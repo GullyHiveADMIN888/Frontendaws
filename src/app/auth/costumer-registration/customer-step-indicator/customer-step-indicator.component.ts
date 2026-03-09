@@ -8,10 +8,9 @@ interface Step {
 }
 
 @Component({
-  selector: 'app-customer-step-indicator',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './customer-step-indicator.component.html'
+    selector: 'app-customer-step-indicator',
+    imports: [CommonModule],
+    templateUrl: './customer-step-indicator.component.html'
 })
 export class CustomerStepIndicatorComponent {
   @Input() currentStep = 1;

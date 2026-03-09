@@ -534,9 +534,10 @@ import {
 } from './models/customer-lead.models';
 
 @Component({
-  selector: 'app-customer-leads',
-  templateUrl: './customer-leads.component.html',
-  styleUrls: ['./customer-leads.component.css']
+    selector: 'app-customer-leads',
+    templateUrl: './customer-leads.component.html',
+    styleUrls: ['./customer-leads.component.css'],
+    standalone: false
 })
 export class CustomerLeadsComponent implements OnInit {
   expandedLeads: Set<number> = new Set<number>();

@@ -1,476 +1,491 @@
 <div class="min-h-screen flex flex-col">
 
   <!-- Full Page Loading Overlay -->
-    <div *ngIf="initialLoading" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
-        <div class="text-center">
-            <!-- Animated Logo or Icon -->
-            <div class="mb-8">
-                <svg class="w-24 h-24 mx-auto text-blue-600 animate-pulse" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6M9 16h6" />
-                </svg>
-            </div>
-
-            <!-- Loading Text with Animation -->
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Loading Service Categories
-              
-            </h2>
-            <div class="flex items-center justify-center space-x-2 mb-4">
-                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0s"></div>
-                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
-            </div>
-
-            <!-- Loading Progress Message -->
-            <p class="text-gray-600 text-sm">
-                Please wait while we fetch your data...
-            </p>
-
-            <!-- Optional: Loading Tips -->
-            <!-- <div class="mt-8 max-w-md mx-auto">
-                <div class="bg-blue-50 rounded-lg p-4">
-                    <p class="text-xs text-blue-700">
-                        <span class="font-semibold">Tip:</span> You can filter assignments by provider, city, category, and date range once the data loads.
-                    </p>
-                </div>
-            </div> -->
-        </div>
-    </div>
-    <!-- Header -->
-    <app-admin-header></app-admin-header>
-<div class="min-h-screen bg-gray-50 p-4 md:p-6">
-  <div class="max-w-7xl mx-auto">
-    <!-- Header -->
-    <div class="mb-8">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-            Service Category Master
-          </h1>
-          <p class="text-gray-600">
-            Manage all service categories and their hierarchy
-          </p>
-        </div>
-        <button (click)="openAddModal()"
-          class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md flex items-center gap-2 w-full sm:w-auto justify-center">
-          <i class="text-lg">+</i>
-          <span>Add New Category</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-blue-500">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-500 mb-1">Total Categories</p>
-            <h3 class="text-2xl font-bold text-gray-800">{{totalCategories}}</h3>
+  @if (initialLoading) {
+    <div class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+      <div class="text-center">
+        <!-- Animated Logo or Icon -->
+        <div class="mb-8">
+          <svg class="w-24 h-24 mx-auto text-blue-600 animate-pulse" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6M9 16h6" />
+            </svg>
           </div>
-          <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
-            <i class="text-blue-600 text-xl">📁</i>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-green-500">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-500 mb-1">Active Categories</p>
-            <h3 class="text-2xl font-bold text-gray-800">{{activeCategories}}</h3>
-          </div>
-          <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center">
-            <i class="text-green-600 text-xl">✅</i>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-purple-500">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-500 mb-1">Parent Categories</p>
-            <h3 class="text-2xl font-bold text-gray-800">{{parentCategories}}</h3>
-          </div>
-          <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
-            <i class="text-purple-600 text-xl">📂</i>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-orange-500">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-500 mb-1">Leaf Categories</p>
-            <h3 class="text-2xl font-bold text-gray-800">{{leafCategories}}</h3>
-          </div>
-          <div class="w-12 h-12 rounded-lg bg-orange-50 flex items-center justify-center">
-            <i class="text-orange-600 text-xl">🍃</i>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Table Container -->
-    <div class="bg-white rounded-xl shadow overflow-hidden">
-      <!-- Table Header -->
-      <div class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div class="flex items-center gap-4">
-          <h2 class="text-lg font-semibold text-gray-800">
-            Service Categories
+          <!-- Loading Text with Animation -->
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">Loading Service Categories
           </h2>
-          <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-            {{categories.length}} Items
-          </span>
-        </div>
-        <div class="flex items-center gap-3">
-          <div class="relative">
-            <input type="text" [(ngModel)]="searchTerm" (input)="filterCategories()" placeholder="Search categories..."
-              class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64">
-            <i class="absolute left-3 top-2.5 text-gray-400">🔍</i>
+          <div class="flex items-center justify-center space-x-2 mb-4">
+            <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+            <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+            <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
           </div>
-          <button (click)="refreshData()"
-            class="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-            <i class="text-gray-600">🔄</i>
+          <!-- Loading Progress Message -->
+          <p class="text-gray-600 text-sm">
+            Please wait while we fetch your data...
+          </p>
+          <!-- Optional: Loading Tips -->
+          <!-- <div class="mt-8 max-w-md mx-auto">
+          <div class="bg-blue-50 rounded-lg p-4">
+            <p class="text-xs text-blue-700">
+              <span class="font-semibold">Tip:</span> You can filter assignments by provider, city, category, and date range once the data loads.
+            </p>
+          </div>
+        </div> -->
+      </div>
+    </div>
+  }
+  <!-- Header -->
+  <app-admin-header></app-admin-header>
+  <div class="min-h-screen bg-gray-50 p-4 md:p-6">
+    <div class="max-w-7xl mx-auto">
+      <!-- Header -->
+      <div class="mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+              Service Category Master
+            </h1>
+            <p class="text-gray-600">
+              Manage all service categories and their hierarchy
+            </p>
+          </div>
+          <button (click)="openAddModal()"
+            class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md flex items-center gap-2 w-full sm:w-auto justify-center">
+            <i class="text-lg">+</i>
+            <span>Add New Category</span>
           </button>
         </div>
       </div>
 
-      <!-- Loading State -->
-      <div *ngIf="loading" class="p-8 text-center">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-        <p class="text-gray-600">Loading categories...</p>
-      </div>
-
-      <!-- Error State -->
-      <div *ngIf="error" class="p-8 text-center">
-        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <i class="text-red-600 text-2xl">⚠️</i>
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white rounded-xl shadow p-5 border-l-4 border-blue-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 mb-1">Total Categories</p>
+              <h3 class="text-2xl font-bold text-gray-800">{{totalCategories}}</h3>
+            </div>
+            <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
+              <i class="text-blue-600 text-xl">📁</i>
+            </div>
+          </div>
         </div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">Error Loading Data</h3>
-        <p class="text-gray-600 mb-4">{{error}}</p>
-        <button (click)="refreshData()"
-          class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-          Try Again
-        </button>
-      </div>
 
-      <!-- Table -->
-      <div *ngIf="!loading && !error && filteredCategories.length > 0" class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                ID
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Name & Description
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Slug
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Properties
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Display Order
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr *ngFor="let category of filteredCategories" class="hover:bg-gray-50 transition-colors">
-              <!-- ID -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="text-sm font-medium text-gray-900">#{{category.id}}</span>
-              </td>
-
-              <!-- Name & Description -->
-              <td class="px-6 py-4">
-                <div>
-                  <div class="flex items-center gap-2 mb-1">
-                    <h4 class="text-sm font-semibold text-gray-900">{{category.name}}</h4>
-                    <span *ngIf="category.parentId === null"
-                      class="px-2 py-0.5 bg-purple-100 text-purple-800 text-xs rounded-full">
-                      Parent
-                    </span>
-                  </div>
-                  <p class="text-sm text-gray-500">{{category.description || 'No description'}}</p>
-                </div>
-              </td>
-
-              <!-- Slug -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <code class="text-sm bg-gray-100 text-gray-800 px-2 py-1 rounded font-mono">
-                  {{category.slug}}
-                </code>
-              </td>
-
-              <!-- Properties -->
-              <td class="px-6 py-4">
-                <div class="flex flex-wrap gap-2">
-                  <span [class]="category.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-                    class="px-2 py-1 rounded text-xs font-medium">
-                    {{category.isActive ? 'Active' : 'Inactive'}}
-                  </span>
-                  <span [class]="category.isLeaf ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'"
-                    class="px-2 py-1 rounded text-xs font-medium">
-                    {{category.isLeaf ? 'Leaf' : 'Branch'}}
-                  </span>
-                </div>
-              </td>
-
-              <!-- Display Order -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <span class="text-sm font-medium text-gray-900 mr-2">{{category.displayOrder}}</span>
-                  <div class="flex flex-col">
-                    <!-- <button (click)="changeDisplayOrder(category.id, 'up')" class="text-gray-400 hover:text-blue-600">
-                      <i>↑</i>
-                    </button>
-                    <button (click)="changeDisplayOrder(category.id, 'down')" class="text-gray-400 hover:text-blue-600">
-                      <i>↓</i>
-                    </button> -->
-                  </div>
-                </div>
-              </td>
-
-              <!-- Actions -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center gap-2">
-                  <button (click)="editCategory(category)"
-                    class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors">
-                    <i class="text-lg">✏️</i>
-                  </button>
-                  <button (click)="toggleActive(category)"
-                    [disabled]="category.updating"
-                    [class]="category.isActive ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900'"
-                    class="p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 min-w-[40px] min-h-[40px] flex items-center justify-center">
-                    <span *ngIf="!category.updating">
-                      <i class="text-lg">{{category.isActive ? '⏸️' : '▶️'}}</i>
-                    </span>
-                    <span *ngIf="category.updating" class="flex">
-                      <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                    </span>
-                  </button>
-                  <button (click)="confirmDelete(category)"
-                    [disabled]="category.deleting"
-                    class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50 min-w-[40px] min-h-[40px] flex items-center justify-center">
-                    <span *ngIf="!category.deleting">
-                      <i class="text-lg">🗑️</i>
-                    </span>
-                    <span *ngIf="category.deleting" class="flex">
-                      <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                    </span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Empty State -->
-      <div *ngIf="!loading && !error && filteredCategories.length === 0" class="p-12 text-center">
-        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <i class="text-gray-400 text-3xl">📁</i>
+        <div class="bg-white rounded-xl shadow p-5 border-l-4 border-green-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 mb-1">Active Categories</p>
+              <h3 class="text-2xl font-bold text-gray-800">{{activeCategories}}</h3>
+            </div>
+            <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center">
+              <i class="text-green-600 text-xl">✅</i>
+            </div>
+          </div>
         </div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">No Categories Found</h3>
-        <p class="text-gray-600 mb-6">No service categories match your search or no categories have been created yet.</p>
-        <button (click)="openAddModal()"
-          class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
-          <i class="mr-2">+</i>
-          Add Your First Category
-        </button>
+
+        <div class="bg-white rounded-xl shadow p-5 border-l-4 border-purple-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 mb-1">Parent Categories</p>
+              <h3 class="text-2xl font-bold text-gray-800">{{parentCategories}}</h3>
+            </div>
+            <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
+              <i class="text-purple-600 text-xl">📂</i>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-5 border-l-4 border-orange-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 mb-1">Leaf Categories</p>
+              <h3 class="text-2xl font-bold text-gray-800">{{leafCategories}}</h3>
+            </div>
+            <div class="w-12 h-12 rounded-lg bg-orange-50 flex items-center justify-center">
+              <i class="text-orange-600 text-xl">🍃</i>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Pagination -->
-      <div *ngIf="!loading && !error && filteredCategories.length > 0"
-        class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-        <div class="text-sm text-gray-500">
-          Showing <span class="font-medium">{{filteredCategories.length}}</span> of <span
+      <!-- Table Container -->
+      <div class="bg-white rounded-xl shadow overflow-hidden">
+        <!-- Table Header -->
+        <div class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <h2 class="text-lg font-semibold text-gray-800">
+              Service Categories
+            </h2>
+            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+              {{categories.length}} Items
+            </span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="relative">
+              <input type="text" [(ngModel)]="searchTerm" (input)="filterCategories()" placeholder="Search categories..."
+                class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64">
+                <i class="absolute left-3 top-2.5 text-gray-400">🔍</i>
+              </div>
+              <button (click)="refreshData()"
+                class="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <i class="text-gray-600">🔄</i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Loading State -->
+          @if (loading) {
+            <div class="p-8 text-center">
+              <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+              <p class="text-gray-600">Loading categories...</p>
+            </div>
+          }
+
+          <!-- Error State -->
+          @if (error) {
+            <div class="p-8 text-center">
+              <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="text-red-600 text-2xl">⚠️</i>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-800 mb-2">Error Loading Data</h3>
+              <p class="text-gray-600 mb-4">{{error}}</p>
+              <button (click)="refreshData()"
+                class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Try Again
+              </button>
+            </div>
+          }
+
+          <!-- Table -->
+          @if (!loading && !error && filteredCategories.length > 0) {
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      ID
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Name & Description
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Slug
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Properties
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Display Order
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  @for (category of filteredCategories; track category) {
+                    <tr class="hover:bg-gray-50 transition-colors">
+                      <!-- ID -->
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm font-medium text-gray-900">#{{category.id}}</span>
+                      </td>
+                      <!-- Name & Description -->
+                      <td class="px-6 py-4">
+                        <div>
+                          <div class="flex items-center gap-2 mb-1">
+                            <h4 class="text-sm font-semibold text-gray-900">{{category.name}}</h4>
+                            @if (category.parentId === null) {
+                              <span
+                                class="px-2 py-0.5 bg-purple-100 text-purple-800 text-xs rounded-full">
+                                Parent
+                              </span>
+                            }
+                          </div>
+                          <p class="text-sm text-gray-500">{{category.description || 'No description'}}</p>
+                        </div>
+                      </td>
+                      <!-- Slug -->
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <code class="text-sm bg-gray-100 text-gray-800 px-2 py-1 rounded font-mono">
+                          {{category.slug}}
+                        </code>
+                      </td>
+                      <!-- Properties -->
+                      <td class="px-6 py-4">
+                        <div class="flex flex-wrap gap-2">
+                          <span [class]="category.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                            class="px-2 py-1 rounded text-xs font-medium">
+                            {{category.isActive ? 'Active' : 'Inactive'}}
+                          </span>
+                          <span [class]="category.isLeaf ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'"
+                            class="px-2 py-1 rounded text-xs font-medium">
+                            {{category.isLeaf ? 'Leaf' : 'Branch'}}
+                          </span>
+                        </div>
+                      </td>
+                      <!-- Display Order -->
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                          <span class="text-sm font-medium text-gray-900 mr-2">{{category.displayOrder}}</span>
+                          <div class="flex flex-col">
+                            <!-- <button (click)="changeDisplayOrder(category.id, 'up')" class="text-gray-400 hover:text-blue-600">
+                            <i>↑</i>
+                          </button>
+                          <button (click)="changeDisplayOrder(category.id, 'down')" class="text-gray-400 hover:text-blue-600">
+                            <i>↓</i>
+                          </button> -->
+                        </div>
+                      </div>
+                    </td>
+                    <!-- Actions -->
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="flex items-center gap-2">
+                        <button (click)="editCategory(category)"
+                          class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors">
+                          <i class="text-lg">✏️</i>
+                        </button>
+                        <button (click)="toggleActive(category)"
+                          [disabled]="category.updating"
+                          [class]="category.isActive ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900'"
+                          class="p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 min-w-[40px] min-h-[40px] flex items-center justify-center">
+                          @if (!category.updating) {
+                            <span>
+                              <i class="text-lg">{{category.isActive ? '⏸️' : '▶️'}}</i>
+                            </span>
+                          }
+                          @if (category.updating) {
+                            <span class="flex">
+                              <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                            </span>
+                          }
+                        </button>
+                        <button (click)="confirmDelete(category)"
+                          [disabled]="category.deleting"
+                          class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50 min-w-[40px] min-h-[40px] flex items-center justify-center">
+                          @if (!category.deleting) {
+                            <span>
+                              <i class="text-lg">🗑️</i>
+                            </span>
+                          }
+                          @if (category.deleting) {
+                            <span class="flex">
+                              <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                            </span>
+                          }
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+        <!-- Empty State -->
+        @if (!loading && !error && filteredCategories.length === 0) {
+          <div class="p-12 text-center">
+            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="text-gray-400 text-3xl">📁</i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">No Categories Found</h3>
+            <p class="text-gray-600 mb-6">No service categories match your search or no categories have been created yet.</p>
+            <button (click)="openAddModal()"
+              class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
+              <i class="mr-2">+</i>
+              Add Your First Category
+            </button>
+          </div>
+        }
+
+        <!-- Pagination -->
+        @if (!loading && !error && filteredCategories.length > 0) {
+          <div
+            class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <div class="text-sm text-gray-500">
+              Showing <span class="font-medium">{{filteredCategories.length}}</span> of <span
             class="font-medium">{{categories.length}}</span> categories
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50">
+              Previous
+            </button>
+            <button class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
+              1
+            </button>
+            <button class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50">
+              Next
+            </button>
+          </div>
         </div>
-        <div class="flex items-center gap-2">
-          <button class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50">
-            Previous
-          </button>
-          <button class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
-            1
-          </button>
-          <button class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50">
-            Next
-          </button>
-        </div>
-      </div>
+      }
     </div>
   </div>
 </div>
 
 <!-- Add/Edit Modal -->
-<div *ngIf="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-  <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-    <!-- Modal Header -->
-    <div class="sticky top-0 bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-      <h3 class="text-xl font-bold text-gray-800">
-        {{isEditMode ? 'Edit Category' : 'Add New Category'}}
-      </h3>
-      <button (click)="closeModal()" [disabled]="modalLoading" class="text-gray-400 hover:text-gray-600 disabled:opacity-50">
-        <i class="text-2xl">×</i>
-      </button>
-    </div>
-
-    <!-- Modal Body -->
-    <div class="p-6">
-      <form (ngSubmit)="saveCategory()" #categoryForm="ngForm" class="space-y-6">
-        <!-- Name -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Category Name *
-          </label>
-          <input type="text" 
-                 [(ngModel)]="currentCategory.name" 
-                 name="name" 
-                 required
-                 (input)="onNameChange()"
-                 [disabled]="modalLoading"
-                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-                 placeholder="Enter category name">
-        </div>
-
-        <!-- Slug -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Slug *
-          </label>
-          <input type="text" 
-                 [(ngModel)]="currentCategory.slug" 
-                 name="slug" 
-                 required
-                 [disabled]="modalLoading"
-                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-                 placeholder="e.g., home-services">
-          <p class="text-xs text-gray-500 mt-1">URL-friendly version of the name (auto-generated from name)</p>
-        </div>
-
-        <!-- Parent Category -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Parent Category
-          </label>
-          <select [(ngModel)]="currentCategory.parentId" 
+@if (showModal) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <!-- Modal Header -->
+      <div class="sticky top-0 bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <h3 class="text-xl font-bold text-gray-800">
+          {{isEditMode ? 'Edit Category' : 'Add New Category'}}
+        </h3>
+        <button (click)="closeModal()" [disabled]="modalLoading" class="text-gray-400 hover:text-gray-600 disabled:opacity-50">
+          <i class="text-2xl">×</i>
+        </button>
+      </div>
+      <!-- Modal Body -->
+      <div class="p-6">
+        <form (ngSubmit)="saveCategory()" #categoryForm="ngForm" class="space-y-6">
+          <!-- Name -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Category Name *
+            </label>
+            <input type="text"
+              [(ngModel)]="currentCategory.name"
+              name="name"
+              required
+              (input)="onNameChange()"
+              [disabled]="modalLoading"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+              placeholder="Enter category name">
+            </div>
+            <!-- Slug -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Slug *
+              </label>
+              <input type="text"
+                [(ngModel)]="currentCategory.slug"
+                name="slug"
+                required
+                [disabled]="modalLoading"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                placeholder="e.g., home-services">
+                <p class="text-xs text-gray-500 mt-1">URL-friendly version of the name (auto-generated from name)</p>
+              </div>
+              <!-- Parent Category -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Parent Category
+                </label>
+                <select [(ngModel)]="currentCategory.parentId"
                   name="parentId"
                   [disabled]="modalLoading"
                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50">
-            <option [ngValue]="null">-- No Parent (Top Level) --</option>
-            <option *ngFor="let cat of categories" [value]="cat.id" [disabled]="cat.id === currentCategory.id">
-              {{cat.name}} {{cat.id === currentCategory.id ? '(Current)' : ''}}
-            </option>
-          </select>
-        </div>
-
-        <!-- Description -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Description
-          </label>
-          <textarea [(ngModel)]="currentCategory.description" 
-                    name="description" 
-                    rows="3"
-                    [disabled]="modalLoading"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-                    placeholder="Enter category description"></textarea>
-        </div>
-
-        <!-- Display Order -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Display Order
-          </label>
-          <input type="number" 
-                 [(ngModel)]="currentCategory.displayOrder" 
-                 name="displayOrder" 
-                 min="1"
-                 [disabled]="modalLoading"
-                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-                 placeholder="Enter display order">
-        </div>
-
-        <!-- Status Options -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Is Active -->
-          <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-            <div>
-              <h4 class="font-medium text-gray-800">Active Status</h4>
-              <p class="text-sm text-gray-500">Category will be visible in the system</p>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" 
-                     [(ngModel)]="currentCategory.isActive" 
-                     name="isActive" 
-                     [disabled]="modalLoading"
-                     class="sr-only peer">
-              <div [class]="modalLoading ? 'opacity-50' : ''"
-                   class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+                  <option [ngValue]="null">-- No Parent (Top Level) --</option>
+                  @for (cat of categories; track cat) {
+                    <option [value]="cat.id" [disabled]="cat.id === currentCategory.id">
+                      {{cat.name}} {{cat.id === currentCategory.id ? '(Current)' : ''}}
+                    </option>
+                  }
+                </select>
               </div>
-            </label>
-          </div>
-
-          <!-- Is Leaf -->
-          <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-            <div>
-              <h4 class="font-medium text-gray-800">Leaf Category</h4>
-              <p class="text-sm text-gray-500">Category cannot have sub-categories</p>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" 
-                     [(ngModel)]="currentCategory.isLeaf" 
-                     name="isLeaf" 
-                     [disabled]="modalLoading"
-                     class="sr-only peer">
-              <div [class]="modalLoading ? 'opacity-50' : ''"
-                   class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <!-- Form Actions -->
-        <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
-          <button type="button" 
-                  (click)="closeModal()"
+              <!-- Description -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Description
+                </label>
+                <textarea [(ngModel)]="currentCategory.description"
+                  name="description"
+                  rows="3"
                   [disabled]="modalLoading"
-                  class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50">
-            Cancel
-          </button>
-          <button type="submit" 
-                  [disabled]="!categoryForm.form.valid || modalLoading"
-                  class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]">
-            <span *ngIf="!modalLoading">
-              {{isEditMode ? 'Update Category' : 'Create Category'}}
-            </span>
-            <span *ngIf="modalLoading" class="flex items-center">
-              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              {{isEditMode ? 'Updating...' : 'Creating...'}}
-            </span>
-          </button>
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                placeholder="Enter category description"></textarea>
+              </div>
+              <!-- Display Order -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Display Order
+                </label>
+                <input type="number"
+                  [(ngModel)]="currentCategory.displayOrder"
+                  name="displayOrder"
+                  min="1"
+                  [disabled]="modalLoading"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                  placeholder="Enter display order">
+                </div>
+                <!-- Status Options -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <!-- Is Active -->
+                  <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                      <h4 class="font-medium text-gray-800">Active Status</h4>
+                      <p class="text-sm text-gray-500">Category will be visible in the system</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox"
+                        [(ngModel)]="currentCategory.isActive"
+                        name="isActive"
+                        [disabled]="modalLoading"
+                        class="sr-only peer">
+                        <div [class]="modalLoading ? 'opacity-50' : ''"
+                          class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+                        </div>
+                      </label>
+                    </div>
+                    <!-- Is Leaf -->
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                      <div>
+                        <h4 class="font-medium text-gray-800">Leaf Category</h4>
+                        <p class="text-sm text-gray-500">Category cannot have sub-categories</p>
+                      </div>
+                      <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox"
+                          [(ngModel)]="currentCategory.isLeaf"
+                          name="isLeaf"
+                          [disabled]="modalLoading"
+                          class="sr-only peer">
+                          <div [class]="modalLoading ? 'opacity-50' : ''"
+                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+                    <!-- Form Actions -->
+                    <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
+                      <button type="button"
+                        (click)="closeModal()"
+                        [disabled]="modalLoading"
+                        class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50">
+                        Cancel
+                      </button>
+                      <button type="submit"
+                        [disabled]="!categoryForm.form.valid || modalLoading"
+                        class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]">
+                        @if (!modalLoading) {
+                          <span>
+                            {{isEditMode ? 'Update Category' : 'Create Category'}}
+                          </span>
+                        }
+                        @if (modalLoading) {
+                          <span class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            {{isEditMode ? 'Updating...' : 'Creating...'}}
+                          </span>
+                        }
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          }
+          <app-admin-footer></app-admin-footer>
         </div>
-      </form>
-    </div>
-  </div>
-</div>
-    <app-admin-footer></app-admin-footer>
-</div>
