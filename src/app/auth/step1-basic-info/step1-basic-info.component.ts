@@ -1,6 +1,6 @@
 
 import { Component, Input, Output, EventEmitter, Inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PLATFORM_ID } from '@angular/core';
 import { AuthService } from '../auth.service';
@@ -12,9 +12,10 @@ import { Auth, signInWithPhoneNumber, ConfirmationResult } from '@angular/fire/a
 import { SimpleChanges } from '@angular/core';
 
 @Component({
-    selector: 'app-step1-basic-info',
-    imports: [FormsModule],
-    templateUrl: './step1-basic-info.component.html'
+  selector: 'app-step1-basic-info',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './step1-basic-info.component.html'
 })
 export class Step1BasicInfoComponent {
   @Input() formData: any;
@@ -41,8 +42,8 @@ export class Step1BasicInfoComponent {
 
   professionalTypes = [
     { label: 'Independent Professional', value: 'individual' },
-    { label: 'MSME / Agency', value: 'msme' },
-    { label: 'Company / Corporate', value: 'company' }
+    { label: 'Business', value: 'business' }
+   // { label: 'Company / Corporate', value: 'company' }
   ];
 
 
@@ -259,17 +260,29 @@ onSendOTP() {
 validateStep1(): boolean {
   this.errors = {};
 
-  const name = this.formData.fullName?.trim();
+  //const name = this.formData.fullName?.trim();
 
-  if (!name) {
-    this.errors.fullName = 'Full Name is required';
+  // if (!name) {
+  //   this.errors.fullName = 'Full Name is required';
+  // }
+  // else if (name.length < 3) {
+  //   this.errors.fullName = 'Full Name must be at least 3 characters';
+  // }
+  // else if (!/^[A-Za-z\u0900-\u097F\s.-]+$/.test(name)) {
+  //   this.errors.fullName = 'Full Name contains invalid characters';
+  // }
+    const firstName = this.formData.firstName?.trim();
+
+  if (!firstName) {
+    this.errors.firstName = 'First Name is required';
   }
-  else if (name.length < 3) {
-    this.errors.fullName = 'Full Name must be at least 3 characters';
+  else if (firstName.length < 3) {
+    this.errors.firstName = 'First Name must be at least 3 characters';
   }
-  else if (!/^[A-Za-z\u0900-\u097F\s.-]+$/.test(name)) {
-    this.errors.fullName = 'Full Name contains invalid characters';
+  else if (!/^[A-Za-z\u0900-\u097F\s.-]+$/.test(firstName)) {
+    this.errors.firstName = 'First Name contains invalid characters';
   }
+
 
   if (!this.formData.email?.trim()) {
     this.errors.email = 'Email is required';
@@ -293,6 +306,14 @@ validateStep1(): boolean {
     }
   }
 
+  // if (!this.formData.password?.trim()) {
+  //   this.errors.password = 'Password is required';
+  // }
+  // else if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/.test(this.formData.password)) {
+  //   this.errors.password =
+  //     'Password must include 1 uppercase, 1 number & 1 special character';
+  // }
+  // Password
   if (!this.formData.password?.trim()) {
     this.errors.password = 'Password is required';
   }
@@ -300,6 +321,15 @@ validateStep1(): boolean {
     this.errors.password =
       'Password must include 1 uppercase, 1 number & 1 special character';
   }
+
+  // Confirm Password
+  if (!this.formData.confirmPassword?.trim()) {
+    this.errors.confirmPassword = 'Confirm password is required';
+  }
+  else if (this.formData.password !== this.formData.confirmPassword) {
+    this.errors.confirmPassword = 'Passwords do not match';
+  }
+
 
   if (!this.formData.professionalType?.trim()) {
     this.errors.professionalType = 'Select professional type';

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { WalletService } from './services/wallet.service';
 import {
@@ -13,12 +13,24 @@ import {
   WalletDetailDto
 } from './models/wallet.model';
 import Swal from 'sweetalert2';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
     selector: 'app-wallet-list',
     templateUrl: './wallet.component.html',
     styleUrls: ['./wallet.component.css'],
-    standalone: false
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,          
+        ReactiveFormsModule,   
+        RouterModule,           
+        HeaderComponent,
+        FooterComponent
+    ]
 })
 export class WalletListComponent implements OnInit {
   Math = Math;

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
 import { LeadPricingEngineService } from './services/lead-pricing-engine.service';
@@ -8,12 +8,24 @@ import {
   LeadPricingEngineFilterDto,
   DropdownOption
 } from './models/lead-pricing-engine.model';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
     selector: 'app-lead-pricing-engine',
     templateUrl: './lead-pricing-engine.component.html',
     styleUrls: ['./lead-pricing-engine.component.css'],
-    standalone: false
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,          
+        ReactiveFormsModule,   
+        RouterModule,           
+        HeaderComponent,
+        FooterComponent
+    ]
 })
 export class LeadPricingEngineComponent implements OnInit, OnDestroy {
   Math = Math;

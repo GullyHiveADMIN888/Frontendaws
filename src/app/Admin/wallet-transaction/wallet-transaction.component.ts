@@ -1,16 +1,28 @@
 // components/wallet-ledger/wallet-transaction.component.ts
 import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { WalletTransaction, User, WalletTransactionFilter, PagedResult } from './models/wallet-transaction.model';
 import { WalletTransactionService } from './services/wallet-transaction.service';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, tap } from 'rxjs/operators';
 import { Subject, of } from 'rxjs';
+import { FooterComponent } from '../footer/footer.component';
+import { HeaderComponent } from '../header/header.component';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
     selector: 'app-wallet-transaction',
     templateUrl: './wallet-transaction.component.html',
     styleUrls: ['./wallet-transaction.component.css'],
-    standalone: false
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,          
+        ReactiveFormsModule,   
+        RouterModule,           
+        HeaderComponent,
+        FooterComponent
+    ]
 })
 export class WalletTransactionComponent implements OnInit {
   Math = Math;

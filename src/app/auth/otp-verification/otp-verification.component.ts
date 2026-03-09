@@ -19,6 +19,7 @@ import { AuthService } from '../auth.service';
 @Component({
     selector: 'app-otp-verification',
     imports: [FormsModule],
+    standalone: true,
     // imports: [CommonModule],
     templateUrl: './otp-verification.component.html'
 })

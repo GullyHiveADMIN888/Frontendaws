@@ -41,6 +41,8 @@ import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
 
 import { AdminService } from '../admin.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-admin-dashboard',
@@ -50,10 +52,19 @@ import { AdminService } from '../admin.service';
     //   RouterModule,
     //   HeaderComponent,
     //   FooterComponent,
+    //   RouterModule
     // ],
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.css'],
-    // standalone: false
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,          
+        ReactiveFormsModule,   
+        RouterModule,           
+        HeaderComponent,
+        FooterComponent
+    ]
 })
 export class DashboardComponent implements OnInit {
 

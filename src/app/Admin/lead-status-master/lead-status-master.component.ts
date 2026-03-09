@@ -1,12 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { LeadStatusService } from './services/lead-status.service';
 import { LeadStatus, LeadStatusCreateDto, LeadStatusUpdateDto } from './models/lead-status.model';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
     selector: 'app-lead-status-master',
     templateUrl: './lead-status-master.component.html',
     styleUrls: ['./lead-status-master.component.css'],
-    standalone: false
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,          
+        ReactiveFormsModule,   
+        RouterModule,           
+        HeaderComponent,
+        FooterComponent
+    ]
 })
 export class LeadStatusMasterComponent implements OnInit {
   // Data properties

@@ -1,5 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AdminService } from '../admin.service';
 import { SubscriptionPlan, SubscriptionPlanFilter, SUBJECT_OPTIONS, TIER_OPTIONS, CURRENCY_OPTIONS } from './models/subscription-plan.model';
@@ -11,12 +11,24 @@ import { CityService } from './services/city.service';
 import { CategoryService } from './services/category.service';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, tap } from 'rxjs/operators';
 import { Subject, of } from 'rxjs';
+import { FooterComponent } from '../footer/footer.component';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { HeaderComponent } from '../header/header.component';
 
 @Component({
     selector: 'app-subscription-master',
     templateUrl: './subscription-master.component.html',
     styleUrls: ['./subscription-master.component.css'],
-    standalone: false
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,          
+        ReactiveFormsModule,   
+        RouterModule,           
+        HeaderComponent,
+        FooterComponent
+    ]
 })
 export class SubscriptionMasterComponent implements OnInit {
   // Data properties

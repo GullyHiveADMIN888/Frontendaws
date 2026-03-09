@@ -1,6 +1,5 @@
-
 import { Component, OnInit } from '@angular/core';
-
+import { CommonModule } from '@angular/common';
 import { StepIndicatorComponent } from '../step-indicator/step-indicator.component';
 import { Step1BasicInfoComponent } from '../step1-basic-info/step1-basic-info.component';
 import { Step2LegalIdentityComponent } from '../step2-legal-identity/step2-legal-identity.component';
@@ -14,16 +13,20 @@ import { ViewChild } from '@angular/core';
 
 
 @Component({
-    selector: 'app-register',
-    imports: [
+  selector: 'app-register',
+  standalone: true,
+  imports: [
     RouterModule,
+    CommonModule,
     StepIndicatorComponent,
     Step1BasicInfoComponent,
     Step2LegalIdentityComponent,
     Step3ProfessionalDetailsComponent,
-    OTPVerificationComponent
-],
-    templateUrl: './register.component.html'
+    OTPVerificationComponent,
+
+
+  ],
+  templateUrl: './register.component.html'
 })
 
 
@@ -38,6 +41,8 @@ export class RegisterComponent {
 
   formData: any = {
     fullName: '',
+    firstName: '',
+    lastName: '',
     email: '',
     mobile: '',
     serviceCategory: [],
@@ -53,6 +58,7 @@ export class RegisterComponent {
     pinCode: '',
     role: '',
     password: '',
+    confirmPassword: '',
     registrationDocument: File,
     addressProof: File,
     // Step 2 - Business Address
@@ -176,7 +182,10 @@ export class RegisterComponent {
     const formData = new FormData();
 
     // Step 1
-    formData.append('FullName', this.formData.fullName || '');
+  //  formData.append('FullName', this.formData.fullName || '');
+    const fullName = `${this.formData.firstName || ''} ${this.formData.lastName || ''}`.trim();
+
+  formData.append('FullName', fullName);
     formData.append('Email', this.formData.email || '');
     formData.append('Mobile', this.formData.mobile || '');
     formData.append('ProfessionalType', this.formData.professionalType || '');
