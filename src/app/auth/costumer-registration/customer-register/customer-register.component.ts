@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { CustomerStepIndicatorComponent } from '../customer-step-indicator/customer-step-indicator.component';
 import { CustomerStep1BasicInfoComponent } from '../customer-step1-basic-info/customer-step1-basic-info.component';
@@ -42,13 +42,12 @@ export interface CustomerRegisterRequest {
 @Component({
     selector: 'app-customer-register',
     imports: [
-        CommonModule,
-        RouterModule,
-        CustomerStepIndicatorComponent,
-        CustomerStep1BasicInfoComponent,
-        CustomerStep2AddressComponent,
-        CustomerStep3PreferencesComponent
-    ],
+    RouterModule,
+    CustomerStepIndicatorComponent,
+    CustomerStep1BasicInfoComponent,
+    CustomerStep2AddressComponent,
+    CustomerStep3PreferencesComponent
+],
     templateUrl: './customer-register.component.html'
 })
 export class CustomerRegisterComponent {

@@ -1,42 +1,41 @@
 <div class="min-h-screen bg-gray-50">
 
-<!-- Full Page Loading Overlay -->
-    <div *ngIf="initialLoading" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
-        <div class="text-center">
-            <!-- Animated Logo or Icon -->
-            <div class="mb-8">
-                <svg class="w-24 h-24 mx-auto text-blue-600 animate-pulse" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6M9 16h6" />
-                </svg>
-            </div>
-
-            <!-- Loading Text with Animation -->
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Loading Service Packages</h2>
-            <div class="flex items-center justify-center space-x-2 mb-4">
-                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0s"></div>
-                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
-            </div>
-
-            <!-- Loading Progress Message -->
-            <p class="text-gray-600 text-sm">
-                Please wait while we fetch your data...
+  <!-- Full Page Loading Overlay -->
+  @if (initialLoading) {
+    <div class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+      <div class="text-center">
+        <!-- Animated Logo or Icon -->
+        <div class="mb-8">
+          <svg class="w-24 h-24 mx-auto text-blue-600 animate-pulse" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6M9 16h6" />
+            </svg>
+          </div>
+          <!-- Loading Text with Animation -->
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">Loading Service Packages</h2>
+          <div class="flex items-center justify-center space-x-2 mb-4">
+            <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+            <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+            <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+          </div>
+          <!-- Loading Progress Message -->
+          <p class="text-gray-600 text-sm">
+            Please wait while we fetch your data...
+          </p>
+          <!-- Optional: Loading Tips -->
+          <!-- <div class="mt-8 max-w-md mx-auto">
+          <div class="bg-blue-50 rounded-lg p-4">
+            <p class="text-xs text-blue-700">
+              <span class="font-semibold">Tip:</span> You can filter assignments by provider, city, category, and date range once the data loads.
             </p>
-
-            <!-- Optional: Loading Tips -->
-            <!-- <div class="mt-8 max-w-md mx-auto">
-                <div class="bg-blue-50 rounded-lg p-4">
-                    <p class="text-xs text-blue-700">
-                        <span class="font-semibold">Tip:</span> You can filter assignments by provider, city, category, and date range once the data loads.
-                    </p>
-                </div>
-            </div> -->
-        </div>
+          </div>
+        </div> -->
+      </div>
     </div>
+  }
 
   <app-admin-header></app-admin-header>
   <div class="max-w-7xl mx-auto my-12 px-4 sm:px-6 lg:px-8">
@@ -115,523 +114,616 @@
           <div class="relative">
             <input type="text" [(ngModel)]="searchTerm" (input)="filterPackages()" placeholder="Search packages..."
               class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64">
-            <i class="absolute left-3 top-2.5 text-gray-400">🔍</i>
+              <i class="absolute left-3 top-2.5 text-gray-400">🔍</i>
+            </div>
+            <button (click)="refreshData()"
+              class="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+              <i class="text-gray-600">🔄</i>
+            </button>
           </div>
-          <button (click)="refreshData()"
-            class="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-            <i class="text-gray-600">🔄</i>
-          </button>
         </div>
-      </div>
 
-      <!-- Loading State -->
-      <div *ngIf="loading" class="p-8 text-center">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-        <p class="text-gray-600">Loading service packages...</p>
-      </div>
+        <!-- Loading State -->
+        @if (loading) {
+          <div class="p-8 text-center">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+            <p class="text-gray-600">Loading service packages...</p>
+          </div>
+        }
 
-      <!-- Error State -->
-      <div *ngIf="error" class="p-8 text-center">
-        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <i class="text-red-600 text-2xl">⚠️</i>
-        </div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">Error Loading Data</h3>
-        <p class="text-gray-600 mb-4">{{error}}</p>
-        <button (click)="refreshData()"
-          class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-          Try Again
-        </button>
-      </div>
+        <!-- Error State -->
+        @if (error) {
+          <div class="p-8 text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="text-red-600 text-2xl">⚠️</i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Error Loading Data</h3>
+            <p class="text-gray-600 mb-4">{{error}}</p>
+            <button (click)="refreshData()"
+              class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              Try Again
+            </button>
+          </div>
+        }
 
-      <!-- Table -->
-      <div *ngIf="!loading && !error && filteredPackages.length > 0" class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                ID
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Package Details
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Pricing
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Created
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr *ngFor="let pkg of filteredPackages" class="hover:bg-gray-50 transition-colors">
-              <!-- ID -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="text-sm font-medium text-gray-900">#{{pkg.id}}</span>
-              </td>
+        <!-- Table -->
+        @if (!loading && !error && filteredPackages.length > 0) {
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    ID
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Package Details
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Pricing
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Created
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                @for (pkg of filteredPackages; track pkg) {
+                  <tr class="hover:bg-gray-50 transition-colors">
+                    <!-- ID -->
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class="text-sm font-medium text-gray-900">#{{pkg.id}}</span>
+                    </td>
+                    <!-- Package Details -->
+                    <td class="px-6 py-4">
+                      <div>
+                        <h4 class="text-sm font-semibold text-gray-900">{{pkg.name}}</h4>
+                        <p class="text-sm text-gray-500 mt-1 line-clamp-2">{{pkg.description || 'No description'}}</p>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                          @if (pkg.cityId) {
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
+                              City: {{getCityName(pkg.cityId)}}
+                            </span>
+                          }
+                          <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">
+                            Category: {{getCategoryName(pkg.categoryId)}}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                    <!-- Pricing -->
+                    <td class="px-6 py-4">
+                      <div class="text-sm">
+                        <!-- <div class="font-semibold text-gray-900">{{formatCurrency(pkg.totalPrice, pkg.currency)}}</div> -->
+                        <div class="text-xs text-gray-500 space-y-1 mt-1">
+                          <div class="flex items-center justify-between">
+                            <span>Base:</span>
+                            <span>{{formatCurrency(pkg.basePrice, pkg.currency)}}</span>
+                          </div>
+                          @if (pkg.platformCharges) {
+                            <div class="flex items-center justify-between">
+                              <span>Platform:</span>
+                              <span class="text-green-600">+{{formatCurrency(pkg.platformCharges, pkg.currency)}}</span>
+                            </div>
+                          }
+                          @if (pkg.visitingCharges) {
+                            <div class="flex items-center justify-between">
+                              <span>Visiting:</span>
+                              <span class="text-orange-600">+{{formatCurrency(pkg.visitingCharges, pkg.currency)}}</span>
+                            </div>
+                          }
+                          <div class="flex items-center justify-between border-t border-gray-200 pt-1 mt-1">
+                            <span class="font-medium">Total:</span>
+                            <span class="font-bold text-blue-700">{{formatCurrency(pkg.totalPrice, pkg.currency)}}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <!-- Status -->
+                    <td class="px-6 py-4">
+                      <div class="flex flex-wrap gap-2">
+                        <span [class]="pkg.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                          class="px-3 py-1 rounded-full text-xs font-medium">
+                          {{pkg.isActive ? 'Active' : 'Inactive'}}
+                        </span>
+                      </div>
+                    </td>
+                    <!-- Created Date -->
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm text-gray-500">
+                        {{formatDate(pkg.createdAt)}}
+                      </div>
+                    </td>
+                    <!-- Actions -->
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="flex items-center gap-2">
+                        <button (click)="editPackage(pkg)"
+                          class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors">
+                          <i class="text-lg">✏️</i>
+                        </button>
+                        <button (click)="toggleActive(pkg)" [disabled]="pkg.updating"
+                          [class]="pkg.isActive ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900'"
+                          class="p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 min-w-[40px] min-h-[40px] flex items-center justify-center">
+                          @if (!pkg.updating) {
+                            <span>
+                              <i class="text-lg">{{pkg.isActive ? '⏸️' : '▶️'}}</i>
+                            </span>
+                          }
+                          @if (pkg.updating) {
+                            <span class="flex">
+                              <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                                </circle>
+                                <path class="opacity-75" fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                              </svg>
+                            </span>
+                          }
+                        </button>
+                        <button (click)="confirmDelete(pkg)" [disabled]="pkg.deleting"
+                          class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50 min-w-[40px] min-h-[40px] flex items-center justify-center">
+                          @if (!pkg.deleting) {
+                            <span>
+                              <i class="text-lg">🗑️</i>
+                            </span>
+                          }
+                          @if (pkg.deleting) {
+                            <span class="flex">
+                              <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                                </circle>
+                                <path class="opacity-75" fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                              </svg>
+                            </span>
+                          }
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
 
-              <!-- Package Details -->
-              <td class="px-6 py-4">
-                <div>
-                  <h4 class="text-sm font-semibold text-gray-900">{{pkg.name}}</h4>
-                  <p class="text-sm text-gray-500 mt-1 line-clamp-2">{{pkg.description || 'No description'}}</p>
-                  <div class="flex flex-wrap gap-2 mt-2">
-                    <span *ngIf="pkg.cityId" class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
-                      City: {{getCityName(pkg.cityId)}}
-                    </span>
-                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">
-                      Category: {{getCategoryName(pkg.categoryId)}}
-                    </span>
-                  </div>
-                </div>
-              </td>
+        <!-- Empty State -->
+        @if (!loading && !error && filteredPackages.length === 0) {
+          <div class="p-12 text-center">
+            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="text-gray-400 text-3xl">📦</i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">No Service Packages Found</h3>
+            <p class="text-gray-600 mb-6">No service packages match your search or no packages have been created yet.</p>
+            <button (click)="openAddModal()"
+              class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
+              <i class="mr-2">+</i>
+              Add Your First Package
+            </button>
+          </div>
+        }
 
-              <!-- Pricing -->
-              <td class="px-6 py-4">
-                <div class="text-sm">
-                  <!-- <div class="font-semibold text-gray-900">{{formatCurrency(pkg.totalPrice, pkg.currency)}}</div> -->
-                  <div class="text-xs text-gray-500 space-y-1 mt-1">
-                    <div class="flex items-center justify-between">
-                      <span>Base:</span>
-                      <span>{{formatCurrency(pkg.basePrice, pkg.currency)}}</span>
-                    </div>
-                    <div *ngIf="pkg.platformCharges" class="flex items-center justify-between">
-                      <span>Platform:</span>
-                      <span class="text-green-600">+{{formatCurrency(pkg.platformCharges, pkg.currency)}}</span>
-                    </div>
-                    <div *ngIf="pkg.visitingCharges" class="flex items-center justify-between">
-                      <span>Visiting:</span>
-                      <span class="text-orange-600">+{{formatCurrency(pkg.visitingCharges, pkg.currency)}}</span>
-                    </div>
-                    <div class="flex items-center justify-between border-t border-gray-200 pt-1 mt-1">
-                      <span class="font-medium">Total:</span>
-                      <span class="font-bold text-blue-700">{{formatCurrency(pkg.totalPrice, pkg.currency)}}</span>
-                    </div>
-                  </div>
-                </div>
-              </td>
-
-              <!-- Status -->
-              <td class="px-6 py-4">
-                <div class="flex flex-wrap gap-2">
-                  <span [class]="pkg.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-                    class="px-3 py-1 rounded-full text-xs font-medium">
-                    {{pkg.isActive ? 'Active' : 'Inactive'}}
-                  </span>
-                </div>
-              </td>
-
-              <!-- Created Date -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-500">
-                  {{formatDate(pkg.createdAt)}}
-                </div>
-              </td>
-
-              <!-- Actions -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center gap-2">
-                  <button (click)="editPackage(pkg)"
-                    class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors">
-                    <i class="text-lg">✏️</i>
-                  </button>
-                  <button (click)="toggleActive(pkg)" [disabled]="pkg.updating"
-                    [class]="pkg.isActive ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900'"
-                    class="p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 min-w-[40px] min-h-[40px] flex items-center justify-center">
-                    <span *ngIf="!pkg.updating">
-                      <i class="text-lg">{{pkg.isActive ? '⏸️' : '▶️'}}</i>
-                    </span>
-                    <span *ngIf="pkg.updating" class="flex">
-                      <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                        </circle>
-                        <path class="opacity-75" fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                        </path>
-                      </svg>
-                    </span>
-                  </button>
-                  <button (click)="confirmDelete(pkg)" [disabled]="pkg.deleting"
-                    class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50 min-w-[40px] min-h-[40px] flex items-center justify-center">
-                    <span *ngIf="!pkg.deleting">
-                      <i class="text-lg">🗑️</i>
-                    </span>
-                    <span *ngIf="pkg.deleting" class="flex">
-                      <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                        </circle>
-                        <path class="opacity-75" fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                        </path>
-                      </svg>
-                    </span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Empty State -->
-      <div *ngIf="!loading && !error && filteredPackages.length === 0" class="p-12 text-center">
-        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <i class="text-gray-400 text-3xl">📦</i>
-        </div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">No Service Packages Found</h3>
-        <p class="text-gray-600 mb-6">No service packages match your search or no packages have been created yet.</p>
-        <button (click)="openAddModal()"
-          class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
-          <i class="mr-2">+</i>
-          Add Your First Package
-        </button>
-      </div>
-
-      <!-- Pagination -->
-      <div *ngIf="!loading && !error && filteredPackages.length > 0"
-        class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-        <div class="text-sm text-gray-500">
-          Showing <span class="font-medium">{{filteredPackages.length}}</span> of <span
+        <!-- Pagination -->
+        @if (!loading && !error && filteredPackages.length > 0) {
+          <div
+            class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <div class="text-sm text-gray-500">
+              Showing <span class="font-medium">{{filteredPackages.length}}</span> of <span
             class="font-medium">{{servicePackages.length}}</span> packages
+          </div>
         </div>
-      </div>
+      }
     </div>
   </div>
   <app-admin-footer></app-admin-footer>
 </div>
 
 <!-- Add/Edit Modal -->
-<div *ngIf="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-  <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-    <!-- Modal Header -->
-    <div class="sticky top-0 bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-      <h3 class="text-xl font-bold text-gray-800">
-        {{isEditMode ? 'Edit Service Package' : 'Add New Service Package'}}
-      </h3>
-      <button (click)="closeModal()" [disabled]="modalLoading"
-        class="text-gray-400 hover:text-gray-600 disabled:opacity-50">
-        <i class="text-2xl">×</i>
-      </button>
-    </div>
-
-    <!-- Modal Body -->
-    <div class="p-6">
-      <form (ngSubmit)="savePackage()" #packageForm="ngForm" class="space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Subcategory Selection -->
-          <div class="md:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Name *
-            </label>
-
-            <div *ngIf="modalLoading && !currentPackage.categoryId" class="mb-4">
-              <div class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
-              <span class="text-sm text-gray-500">Please select a category first...</span>
+@if (showModal) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <!-- Modal Header -->
+      <div class="sticky top-0 bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <h3 class="text-xl font-bold text-gray-800">
+          {{isEditMode ? 'Edit Service Package' : 'Add New Service Package'}}
+        </h3>
+        <button (click)="closeModal()" [disabled]="modalLoading"
+          class="text-gray-400 hover:text-gray-600 disabled:opacity-50">
+          <i class="text-2xl">×</i>
+        </button>
+      </div>
+      <!-- Modal Body -->
+      <div class="p-6">
+        <form (ngSubmit)="savePackage()" #packageForm="ngForm" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Subcategory Selection -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Name *
+              </label>
+              @if (modalLoading && !currentPackage.categoryId) {
+                <div class="mb-4">
+                  <div class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                  <span class="text-sm text-gray-500">Please select a category first...</span>
+                </div>
+              }
+              <!-- Subcategory Dropdown -->
+              <select [(ngModel)]="currentPackage.name" name="name" required
+                [disabled]="modalLoading || groupedSubCategories.length === 0 || !currentPackage.categoryId"
+                (ngModelChange)="onSubCategoryChange()" #nameInput="ngModel"
+                [class]="nameInput.invalid && nameInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+                class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50">
+                <option [ngValue]="''" [selected]="!currentPackage.name">-- Select Subcategory --</option>
+                @for (group of groupedSubCategories; track group) {
+                  @for (subcat of group.subcategories; track subcat) {
+                    <option [value]="subcat.id"
+                      [selected]="isEditMode && (currentPackage.name === subcat.id.toString() || currentPackage.name === subcat.name)">
+                      {{subcat.name}}
+                    </option>
+                  }
+                }
+              </select>
+              @if (nameInput.invalid && nameInput.touched) {
+                <div class="mt-1 text-sm text-red-600">
+                  @if (nameInput.errors?.['required']) {
+                    <div>Subcategory selection is required</div>
+                  }
+                </div>
+              }
+              @if (!currentPackage.categoryId) {
+                <div class="mt-2 p-2 bg-amber-50 border border-amber-200 rounded">
+                  <p class="text-xs text-amber-700">
+                    <strong>Note:</strong> Please select a category first to see available subcategories.
+                  </p>
+                </div>
+              }
+              @if (modalLoading && currentPackage.categoryId) {
+                <div
+                  class="mt-2 p-2 bg-blue-50 border border-blue-200 rounded">
+                  <div class="inline-block animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 mr-2"></div>
+                  <span class="text-xs text-blue-700">Loading subcategories...</span>
+                </div>
+              }
+              @if (currentPackage.categoryId && groupedSubCategories.length > 0 && !modalLoading) {
+                <p
+                  class="text-xs text-gray-500 mt-1">
+                  @if (currentPackage.name) {
+                    Selected: {{getSelectedSubCategoryDisplayName()}}
+                  }
+                  @if (!currentPackage.name) {
+                    Available subcategories for {{getCategoryName(currentPackage.categoryId)}}
+                  }
+                </p>
+              }
+              @if (currentPackage.categoryId && groupedSubCategories.length === 0 && !modalLoading) {
+                <p
+                  class="text-xs text-amber-600 mt-1">
+                  No active subcategories found for this category. Please create subcategories first in the Subcategory
+                  Master.
+                </p>
+              }
             </div>
-
-            <!-- Subcategory Dropdown -->
-            <select [(ngModel)]="currentPackage.name" name="name" required
-              [disabled]="modalLoading || groupedSubCategories.length === 0 || !currentPackage.categoryId"
-              (ngModelChange)="onSubCategoryChange()" #nameInput="ngModel"
-              [class]="nameInput.invalid && nameInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
-              class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50">
-
-              <option [ngValue]="''" [selected]="!currentPackage.name">-- Select Subcategory --</option>
-
-              <ng-container *ngFor="let group of groupedSubCategories">
-                <option *ngFor="let subcat of group.subcategories" [value]="subcat.id"
-                  [selected]="isEditMode && (currentPackage.name === subcat.id.toString() || currentPackage.name === subcat.name)">
-                  {{subcat.name}}
-                </option>
-              </ng-container>
-
-            </select>
-
-            <div *ngIf="nameInput.invalid && nameInput.touched" class="mt-1 text-sm text-red-600">
-              <div *ngIf="nameInput.errors?.['required']">Subcategory selection is required</div>
-            </div>
-
-            <div *ngIf="!currentPackage.categoryId" class="mt-2 p-2 bg-amber-50 border border-amber-200 rounded">
-              <p class="text-xs text-amber-700">
-                <strong>Note:</strong> Please select a category first to see available subcategories.
-              </p>
-            </div>
-
-            <div *ngIf="modalLoading && currentPackage.categoryId"
-              class="mt-2 p-2 bg-blue-50 border border-blue-200 rounded">
-              <div class="inline-block animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 mr-2"></div>
-              <span class="text-xs text-blue-700">Loading subcategories...</span>
-            </div>
-
-            <p *ngIf="currentPackage.categoryId && groupedSubCategories.length > 0 && !modalLoading"
-              class="text-xs text-gray-500 mt-1">
-              <ng-container *ngIf="currentPackage.name">
-                Selected: {{getSelectedSubCategoryDisplayName()}}
-              </ng-container>
-              <ng-container *ngIf="!currentPackage.name">
-                Available subcategories for {{getCategoryName(currentPackage.categoryId)}}
-              </ng-container>
-            </p>
-
-            <p *ngIf="currentPackage.categoryId && groupedSubCategories.length === 0 && !modalLoading"
-              class="text-xs text-amber-600 mt-1">
-              No active subcategories found for this category. Please create subcategories first in the Subcategory
-              Master.
-            </p>
-          </div>
-
-          <!-- City Dropdown -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              City (Optional)
-            </label>
-            <select [(ngModel)]="currentPackage.cityId" name="cityId" [disabled]="modalLoading || cities.length === 0"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50">
-              <option [ngValue]="null">-- Select City (Optional) --</option>
-              <option *ngFor="let city of cities" [value]="city.id">
-                {{city.name}} (Tier {{city.tier}})
-              </option>
-            </select>
-            <p *ngIf="cities.length === 0" class="text-xs text-amber-600 mt-1">
-              Loading cities...
-            </p>
-            <p *ngIf="currentPackage.cityId && cities.length > 0" class="text-xs text-gray-500 mt-1">
-              Selected: {{getCityName(currentPackage.cityId)}}
-            </p>
-          </div>
-
-          <!-- Category Dropdown -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Category *
-            </label>
-            <div *ngIf="serviceCategories.length === 0" class="mb-2">
-              <div class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
-              <span class="text-sm text-gray-500">Loading categories...</span>
-            </div>
-
-            <select [(ngModel)]="currentPackage.categoryId" name="categoryId" required
-              [disabled]="modalLoading || serviceCategories.length === 0" (ngModelChange)="onCategoryChange()"
-              #categoryInput="ngModel"
-              [class]="categoryInput.invalid && categoryInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
-              class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50">
-              <option [ngValue]="0">-- Select Category --</option>
-              <option *ngFor="let category of serviceCategories" [value]="category.id">
-                {{category.name}}
-              </option>
-            </select>
-            <div *ngIf="categoryInput.invalid && categoryInput.touched" class="mt-1 text-sm text-red-600">
-              <div *ngIf="categoryInput.errors?.['required']">Please select a category</div>
-              <div *ngIf="currentPackage.categoryId === 0">Please select a valid category</div>
-            </div>
-            <p *ngIf="serviceCategories.length === 0" class="text-xs text-amber-600 mt-1">
-              No active categories found. Please create categories first.
-            </p>
-            <p *ngIf="currentPackage.categoryId > 0 && serviceCategories.length > 0" class="text-xs text-gray-500 mt-1">
-              Selected: {{getCategoryName(currentPackage.categoryId)}}
-            </p>
-          </div>
-        </div>
-
-        <!-- Pricing Section -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Base Price -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Base Price *
-            </label>
-            <input type="number" [(ngModel)]="currentPackage.basePrice" name="basePrice" required min="0" max="1000000"
-              step="0.01" [disabled]="modalLoading" #priceInput="ngModel"
-              (change)="calculateTotalPrice()"
-              [class]="priceInput.invalid && priceInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
-              class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50" placeholder="0.00">
-            <div *ngIf="priceInput.invalid && priceInput.touched" class="mt-1 text-sm text-red-600">
-              <div *ngIf="priceInput.errors?.['required']">Base price is required</div>
-              <div *ngIf="priceInput.errors?.['min']">Price must be at least ₹0</div>
-              <div *ngIf="priceInput.errors?.['max']">Price cannot exceed ₹1,000,000</div>
-            </div>
-            <p class="text-xs text-gray-500 mt-1">Enter amount between ₹0 and ₹1,000,000</p>
-          </div>
-
-          <!-- Platform Charges -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Platform Charges
-            </label>
-            <input type="number" [(ngModel)]="currentPackage.platformCharges" name="platformCharges" min="0" max="100000"
-              step="0.01" [disabled]="modalLoading" #platformInput="ngModel"
-              (change)="calculateTotalPrice()"
-              [class]="platformInput.invalid && platformInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
-              class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50" placeholder="0.00">
-            <div *ngIf="platformInput.invalid && platformInput.touched" class="mt-1 text-sm text-red-600">
-              <div *ngIf="platformInput.errors?.['min']">Platform charges cannot be negative</div>
-              <div *ngIf="platformInput.errors?.['max']">Platform charges cannot exceed ₹100,000</div>
-            </div>
-            <p class="text-xs text-gray-500 mt-1">Optional platform service charges (₹0 to ₹100,000)</p>
-          </div>
-
-          <!-- Visiting Charges -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Visiting Charges
-            </label>
-            <input type="number" [(ngModel)]="currentPackage.visitingCharges" name="visitingCharges" min="0" max="100000"
-              step="0.01" [disabled]="modalLoading" #visitingInput="ngModel"
-              (change)="calculateTotalPrice()"
-              [class]="visitingInput.invalid && visitingInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
-              class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50" placeholder="0.00">
-            <div *ngIf="visitingInput.invalid && visitingInput.touched" class="mt-1 text-sm text-red-600">
-              <div *ngIf="visitingInput.errors?.['min']">Visiting charges cannot be negative</div>
-              <div *ngIf="visitingInput.errors?.['max']">Visiting charges cannot exceed ₹100,000</div>
-            </div>
-            <p class="text-xs text-gray-500 mt-1">Optional technician visiting charges (₹0 to ₹100,000)</p>
-          </div>
-        </div>
-
-        <!-- Total Price Display -->
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <div class="flex items-center justify-between">
+            <!-- City Dropdown -->
             <div>
-              <h4 class="font-medium text-gray-800">Total Price</h4>
-              <p class="text-sm text-gray-500">Base + Platform + Visiting Charges</p>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                City (Optional)
+              </label>
+              <select [(ngModel)]="currentPackage.cityId" name="cityId" [disabled]="modalLoading || cities.length === 0"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50">
+                <option [ngValue]="null">-- Select City (Optional) --</option>
+                @for (city of cities; track city) {
+                  <option [value]="city.id">
+                    {{city.name}} (Tier {{city.tier}})
+                  </option>
+                }
+              </select>
+              @if (cities.length === 0) {
+                <p class="text-xs text-amber-600 mt-1">
+                  Loading cities...
+                </p>
+              }
+              @if (currentPackage.cityId && cities.length > 0) {
+                <p class="text-xs text-gray-500 mt-1">
+                  Selected: {{getCityName(currentPackage.cityId)}}
+                </p>
+              }
             </div>
-            <div class="text-right">
-              <div class="text-2xl font-bold text-gray-800">{{formatCurrency(calculateTotalPrice(), currentPackage.currency)}}</div>
-              <div class="text-sm text-gray-500">{{currentPackage.currency}}</div>
+            <!-- Category Dropdown -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Category *
+              </label>
+              @if (serviceCategories.length === 0) {
+                <div class="mb-2">
+                  <div class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                  <span class="text-sm text-gray-500">Loading categories...</span>
+                </div>
+              }
+              <select [(ngModel)]="currentPackage.categoryId" name="categoryId" required
+                [disabled]="modalLoading || serviceCategories.length === 0" (ngModelChange)="onCategoryChange()"
+                #categoryInput="ngModel"
+                [class]="categoryInput.invalid && categoryInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+                class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50">
+                <option [ngValue]="0">-- Select Category --</option>
+                @for (category of serviceCategories; track category) {
+                  <option [value]="category.id">
+                    {{category.name}}
+                  </option>
+                }
+              </select>
+              @if (categoryInput.invalid && categoryInput.touched) {
+                <div class="mt-1 text-sm text-red-600">
+                  @if (categoryInput.errors?.['required']) {
+                    <div>Please select a category</div>
+                  }
+                  @if (currentPackage.categoryId === 0) {
+                    <div>Please select a valid category</div>
+                  }
+                </div>
+              }
+              @if (serviceCategories.length === 0) {
+                <p class="text-xs text-amber-600 mt-1">
+                  No active categories found. Please create categories first.
+                </p>
+              }
+              @if (currentPackage.categoryId > 0 && serviceCategories.length > 0) {
+                <p class="text-xs text-gray-500 mt-1">
+                  Selected: {{getCategoryName(currentPackage.categoryId)}}
+                </p>
+              }
             </div>
           </div>
-          <div *ngIf="currentPackage.totalPrice > 1000000" class="mt-2 p-2 bg-red-50 border border-red-200 rounded">
-            <p class="text-xs text-red-700">
-              <strong>Warning:</strong> Total price exceeds maximum recommended limit of ₹1,000,000
-            </p>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Currency -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Currency *
-            </label>
-            <select [(ngModel)]="currentPackage.currency" name="currency" required [disabled]="modalLoading"
-              (change)="calculateTotalPrice()"
-              #currencyInput="ngModel"
-              [class]="currencyInput.invalid && currencyInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
-              class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50">
-              <option *ngFor="let currency of currencyOptions" [value]="currency.value">
-                {{currency.label}}
-              </option>
-            </select>
-            <div *ngIf="currencyInput.invalid && currencyInput.touched" class="mt-1 text-sm text-red-600">
-              <div *ngIf="currencyInput.errors?.['required']">Please select a currency</div>
-            </div>
-          </div>
-
-          <!-- Description -->
-          <div class="md:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Description (Optional)
-            </label>
-            <textarea [(ngModel)]="currentPackage.description" name="description" rows="3" maxlength="2000"
-              [disabled]="modalLoading" #descInput="ngModel"
-              [class]="descInput.invalid && descInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
-              class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50"
-              placeholder="Enter package description"></textarea>
-            <div *ngIf="descInput.invalid && descInput.touched" class="mt-1 text-sm text-red-600">
-              <div *ngIf="descInput.errors?.['maxlength']">Description cannot exceed 2000 characters</div>
-            </div>
-            <p class="text-xs text-gray-500 mt-1">
-              {{currentPackage.description?.length || 0}}/2000 characters
-            </p>
-          </div>
-        </div>
-
-        <!-- Status (Only in Edit Mode) -->
-        <div *ngIf="isEditMode" class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-          <div>
-            <h4 class="font-medium text-gray-800">Active Status</h4>
-            <p class="text-sm text-gray-500">Package will be available for customers</p>
-          </div>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" [(ngModel)]="currentPackage.isActive" name="isActive" [disabled]="modalLoading"
-              class="sr-only peer">
-            <div [class]="modalLoading ? 'opacity-50' : ''"
-              class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
-            </div>
-          </label>
-        </div>
-
-        <!-- Example Packages (Only in Add Mode) -->
-        <div *ngIf="!isEditMode" class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-          <h4 class="text-sm font-medium text-blue-800 mb-2">Package Examples:</h4>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-            <div class="bg-white p-3 rounded border border-blue-200">
-              <div class="font-medium text-blue-700">Cooler Repair</div>
-              <div class="text-blue-600">Category: Home Services</div>
-              <div class="text-blue-500 text-xs mt-1">
-                Base: ₹800, Platform: ₹100, Visiting: ₹99, Total: ₹999
+          <!-- Pricing Section -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Base Price -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Base Price *
+              </label>
+              <input type="number" [(ngModel)]="currentPackage.basePrice" name="basePrice" required min="0" max="1000000"
+                step="0.01" [disabled]="modalLoading" #priceInput="ngModel"
+                (change)="calculateTotalPrice()"
+                [class]="priceInput.invalid && priceInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+                class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50" placeholder="0.00">
+                @if (priceInput.invalid && priceInput.touched) {
+                  <div class="mt-1 text-sm text-red-600">
+                    @if (priceInput.errors?.['required']) {
+                      <div>Base price is required</div>
+                    }
+                    @if (priceInput.errors?.['min']) {
+                      <div>Price must be at least ₹0</div>
+                    }
+                    @if (priceInput.errors?.['max']) {
+                      <div>Price cannot exceed ₹1,000,000</div>
+                    }
+                  </div>
+                }
+                <p class="text-xs text-gray-500 mt-1">Enter amount between ₹0 and ₹1,000,000</p>
               </div>
-            </div>
-            <div class="bg-white p-3 rounded border border-blue-200">
-              <div class="font-medium text-blue-700">AC Installation</div>
-              <div class="text-blue-600">Category: Home Services</div>
-              <div class="text-blue-500 text-xs mt-1">
-                Base: ₹1500, Platform: ₹200, Visiting: ₹299, Total: ₹1999
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Validation Summary -->
-        <div *ngIf="(priceInput.invalid && priceInput.touched) || 
-                    (platformInput.invalid && platformInput.touched) || 
+              <!-- Platform Charges -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Platform Charges
+                </label>
+                <input type="number" [(ngModel)]="currentPackage.platformCharges" name="platformCharges" min="0" max="100000"
+                  step="0.01" [disabled]="modalLoading" #platformInput="ngModel"
+                  (change)="calculateTotalPrice()"
+                  [class]="platformInput.invalid && platformInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+                  class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50" placeholder="0.00">
+                  @if (platformInput.invalid && platformInput.touched) {
+                    <div class="mt-1 text-sm text-red-600">
+                      @if (platformInput.errors?.['min']) {
+                        <div>Platform charges cannot be negative</div>
+                      }
+                      @if (platformInput.errors?.['max']) {
+                        <div>Platform charges cannot exceed ₹100,000</div>
+                      }
+                    </div>
+                  }
+                  <p class="text-xs text-gray-500 mt-1">Optional platform service charges (₹0 to ₹100,000)</p>
+                </div>
+                <!-- Visiting Charges -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Visiting Charges
+                  </label>
+                  <input type="number" [(ngModel)]="currentPackage.visitingCharges" name="visitingCharges" min="0" max="100000"
+                    step="0.01" [disabled]="modalLoading" #visitingInput="ngModel"
+                    (change)="calculateTotalPrice()"
+                    [class]="visitingInput.invalid && visitingInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+                    class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50" placeholder="0.00">
+                    @if (visitingInput.invalid && visitingInput.touched) {
+                      <div class="mt-1 text-sm text-red-600">
+                        @if (visitingInput.errors?.['min']) {
+                          <div>Visiting charges cannot be negative</div>
+                        }
+                        @if (visitingInput.errors?.['max']) {
+                          <div>Visiting charges cannot exceed ₹100,000</div>
+                        }
+                      </div>
+                    }
+                    <p class="text-xs text-gray-500 mt-1">Optional technician visiting charges (₹0 to ₹100,000)</p>
+                  </div>
+                </div>
+                <!-- Total Price Display -->
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h4 class="font-medium text-gray-800">Total Price</h4>
+                      <p class="text-sm text-gray-500">Base + Platform + Visiting Charges</p>
+                    </div>
+                    <div class="text-right">
+                      <div class="text-2xl font-bold text-gray-800">{{formatCurrency(calculateTotalPrice(), currentPackage.currency)}}</div>
+                      <div class="text-sm text-gray-500">{{currentPackage.currency}}</div>
+                    </div>
+                  </div>
+                  @if (currentPackage.totalPrice > 1000000) {
+                    <div class="mt-2 p-2 bg-red-50 border border-red-200 rounded">
+                      <p class="text-xs text-red-700">
+                        <strong>Warning:</strong> Total price exceeds maximum recommended limit of ₹1,000,000
+                      </p>
+                    </div>
+                  }
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <!-- Currency -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Currency *
+                    </label>
+                    <select [(ngModel)]="currentPackage.currency" name="currency" required [disabled]="modalLoading"
+                      (change)="calculateTotalPrice()"
+                      #currencyInput="ngModel"
+                      [class]="currencyInput.invalid && currencyInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+                      class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50">
+                      @for (currency of currencyOptions; track currency) {
+                        <option [value]="currency.value">
+                          {{currency.label}}
+                        </option>
+                      }
+                    </select>
+                    @if (currencyInput.invalid && currencyInput.touched) {
+                      <div class="mt-1 text-sm text-red-600">
+                        @if (currencyInput.errors?.['required']) {
+                          <div>Please select a currency</div>
+                        }
+                      </div>
+                    }
+                  </div>
+                  <!-- Description -->
+                  <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Description (Optional)
+                    </label>
+                    <textarea [(ngModel)]="currentPackage.description" name="description" rows="3" maxlength="2000"
+                      [disabled]="modalLoading" #descInput="ngModel"
+                      [class]="descInput.invalid && descInput.touched ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'"
+                      class="w-full px-4 py-3 border rounded-lg focus:ring-2 disabled:opacity-50"
+                    placeholder="Enter package description"></textarea>
+                    @if (descInput.invalid && descInput.touched) {
+                      <div class="mt-1 text-sm text-red-600">
+                        @if (descInput.errors?.['maxlength']) {
+                          <div>Description cannot exceed 2000 characters</div>
+                        }
+                      </div>
+                    }
+                    <p class="text-xs text-gray-500 mt-1">
+                      {{currentPackage.description?.length || 0}}/2000 characters
+                    </p>
+                  </div>
+                </div>
+                <!-- Status (Only in Edit Mode) -->
+                @if (isEditMode) {
+                  <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                      <h4 class="font-medium text-gray-800">Active Status</h4>
+                      <p class="text-sm text-gray-500">Package will be available for customers</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" [(ngModel)]="currentPackage.isActive" name="isActive" [disabled]="modalLoading"
+                        class="sr-only peer">
+                        <div [class]="modalLoading ? 'opacity-50' : ''"
+                          class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+                        </div>
+                      </label>
+                    </div>
+                  }
+                  <!-- Example Packages (Only in Add Mode) -->
+                  @if (!isEditMode) {
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                      <h4 class="text-sm font-medium text-blue-800 mb-2">Package Examples:</h4>
+                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                        <div class="bg-white p-3 rounded border border-blue-200">
+                          <div class="font-medium text-blue-700">Cooler Repair</div>
+                          <div class="text-blue-600">Category: Home Services</div>
+                          <div class="text-blue-500 text-xs mt-1">
+                            Base: ₹800, Platform: ₹100, Visiting: ₹99, Total: ₹999
+                          </div>
+                        </div>
+                        <div class="bg-white p-3 rounded border border-blue-200">
+                          <div class="font-medium text-blue-700">AC Installation</div>
+                          <div class="text-blue-600">Category: Home Services</div>
+                          <div class="text-blue-500 text-xs mt-1">
+                            Base: ₹1500, Platform: ₹200, Visiting: ₹299, Total: ₹1999
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                  <!-- Validation Summary -->
+                  @if ((priceInput.invalid && priceInput.touched) ||
+                    (platformInput.invalid && platformInput.touched) ||
                     (visitingInput.invalid && visitingInput.touched) ||
-                    (currentPackage.totalPrice > 1000000)"
-             class="bg-red-50 border border-red-200 rounded-lg p-4">
-          <h4 class="text-sm font-medium text-red-800 mb-2">Please fix the following errors:</h4>
-          <ul class="text-sm text-red-700 space-y-1">
-            <li *ngIf="priceInput.errors?.['required'] && priceInput.touched">• Base price is required</li>
-            <li *ngIf="priceInput.errors?.['min'] && priceInput.touched">• Base price must be at least ₹0</li>
-            <li *ngIf="priceInput.errors?.['max'] && priceInput.touched">• Base price cannot exceed ₹1,000,000</li>
-            <li *ngIf="platformInput.errors?.['min'] && platformInput.touched">• Platform charges cannot be negative</li>
-            <li *ngIf="platformInput.errors?.['max'] && platformInput.touched">• Platform charges cannot exceed ₹100,000</li>
-            <li *ngIf="visitingInput.errors?.['min'] && visitingInput.touched">• Visiting charges cannot be negative</li>
-            <li *ngIf="visitingInput.errors?.['max'] && visitingInput.touched">• Visiting charges cannot exceed ₹100,000</li>
-            <li *ngIf="currentPackage.totalPrice > 1000000">• Total price exceeds maximum recommended limit of ₹1,000,000</li>
-          </ul>
-        </div>
-
-        <!-- Form Actions -->
-        <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
-          <button type="button" (click)="closeModal()" [disabled]="modalLoading"
-            class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50">
-            Cancel
-          </button>
-          <button type="submit" [disabled]="!packageForm.form.valid || modalLoading || serviceCategories.length === 0 || currentPackage.totalPrice > 1000000"
-            class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]">
-            <span *ngIf="!modalLoading">
-              {{isEditMode ? 'Update Package' : 'Create Package'}}
-            </span>
-            <span *ngIf="modalLoading" class="flex items-center">
-              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                </path>
-              </svg>
-              {{isEditMode ? 'Updating...' : 'Creating...'}}
-            </span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
+                    (currentPackage.totalPrice > 1000000)) {
+                    <div
+                      class="bg-red-50 border border-red-200 rounded-lg p-4">
+                      <h4 class="text-sm font-medium text-red-800 mb-2">Please fix the following errors:</h4>
+                      <ul class="text-sm text-red-700 space-y-1">
+                        @if (priceInput.errors?.['required'] && priceInput.touched) {
+                          <li>• Base price is required</li>
+                        }
+                        @if (priceInput.errors?.['min'] && priceInput.touched) {
+                          <li>• Base price must be at least ₹0</li>
+                        }
+                        @if (priceInput.errors?.['max'] && priceInput.touched) {
+                          <li>• Base price cannot exceed ₹1,000,000</li>
+                        }
+                        @if (platformInput.errors?.['min'] && platformInput.touched) {
+                          <li>• Platform charges cannot be negative</li>
+                        }
+                        @if (platformInput.errors?.['max'] && platformInput.touched) {
+                          <li>• Platform charges cannot exceed ₹100,000</li>
+                        }
+                        @if (visitingInput.errors?.['min'] && visitingInput.touched) {
+                          <li>• Visiting charges cannot be negative</li>
+                        }
+                        @if (visitingInput.errors?.['max'] && visitingInput.touched) {
+                          <li>• Visiting charges cannot exceed ₹100,000</li>
+                        }
+                        @if (currentPackage.totalPrice > 1000000) {
+                          <li>• Total price exceeds maximum recommended limit of ₹1,000,000</li>
+                        }
+                      </ul>
+                    </div>
+                  }
+                  <!-- Form Actions -->
+                  <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
+                    <button type="button" (click)="closeModal()" [disabled]="modalLoading"
+                      class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50">
+                      Cancel
+                    </button>
+                    <button type="submit" [disabled]="!packageForm.form.valid || modalLoading || serviceCategories.length === 0 || currentPackage.totalPrice > 1000000"
+                      class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]">
+                      @if (!modalLoading) {
+                        <span>
+                          {{isEditMode ? 'Update Package' : 'Create Package'}}
+                        </span>
+                      }
+                      @if (modalLoading) {
+                        <span class="flex items-center">
+                          <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                          </svg>
+                          {{isEditMode ? 'Updating...' : 'Creating...'}}
+                        </span>
+                      }
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        }

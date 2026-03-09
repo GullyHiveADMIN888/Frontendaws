@@ -7,59 +7,55 @@
     <a
       routerLink="/seller/leads"
       class="text-orange-600 hover:text-orange-700 font-medium text-sm flex items-center whitespace-nowrap"
-    >
+      >
       View All
       <i class="ri-arrow-right-line ml-1"></i>
     </a>
   </div>
 
   <div class="divide-y divide-gray-200">
-    <div
-      *ngFor="let lead of leads"
-      class="p-6 hover:bg-gray-50 transition-colors"
-    >
-      <div class="flex items-start justify-between">
-        <div class="flex items-start space-x-4 flex-1">
-          <div
-            class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-semibold"
-          >
-            {{ lead.avatar }}
-          </div>
-
-          <div class="flex-1">
-            <div class="flex items-center space-x-2 mb-1">
-              <h3 class="font-semibold text-gray-900">
-                {{ lead.name }}
-              </h3>
-
-              <span
-                class="px-3 py-1 text-xs font-medium rounded-full"
-                [ngClass]="getStatusClass(lead.status)"
-              >
-                {{ lead.status | titlecase }}
-              </span>
-            </div>
-
-            <p class="text-sm text-gray-600 mb-2">
-              {{ lead.service }}
-            </p>
-
-            <div class="flex flex-wrap gap-4 text-sm text-gray-500">
-              <span><i class="ri-map-pin-line mr-1"></i>{{ lead.location }}</span>
-              <span><i class="ri-time-line mr-1"></i>{{ lead.time }}</span>
-              <span><i class="ri-money-dollar-circle-line mr-1"></i>{{ lead.budget }}</span>
-            </div>
-          </div>
-        </div>
-
-        <a
-          [routerLink]="['/seller/leads', lead.id]"
-          class="ml-4 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium whitespace-nowrap"
+    @for (lead of leads; track lead) {
+      <div
+        class="p-6 hover:bg-gray-50 transition-colors"
         >
-          View Details
-        </a>
+        <div class="flex items-start justify-between">
+          <div class="flex items-start space-x-4 flex-1">
+            <div
+              class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-semibold"
+              >
+              {{ lead.avatar }}
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center space-x-2 mb-1">
+                <h3 class="font-semibold text-gray-900">
+                  {{ lead.name }}
+                </h3>
+                <span
+                  class="px-3 py-1 text-xs font-medium rounded-full"
+                  [ngClass]="getStatusClass(lead.status)"
+                  >
+                  {{ lead.status | titlecase }}
+                </span>
+              </div>
+              <p class="text-sm text-gray-600 mb-2">
+                {{ lead.service }}
+              </p>
+              <div class="flex flex-wrap gap-4 text-sm text-gray-500">
+                <span><i class="ri-map-pin-line mr-1"></i>{{ lead.location }}</span>
+                <span><i class="ri-time-line mr-1"></i>{{ lead.time }}</span>
+                <span><i class="ri-money-dollar-circle-line mr-1"></i>{{ lead.budget }}</span>
+              </div>
+            </div>
+          </div>
+          <a
+            [routerLink]="['/seller/leads', lead.id]"
+            class="ml-4 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium whitespace-nowrap"
+            >
+            View Details
+          </a>
+        </div>
       </div>
-    </div>
+    }
   </div>
 </div>
 

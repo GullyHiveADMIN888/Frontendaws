@@ -12,13 +12,13 @@ import {
   Inject,
   PLATFORM_ID
 } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { interval, Subscription } from 'rxjs';
 import { AuthService } from '../auth.service';
 @Component({
     selector: 'app-otp-verification',
-    imports: [CommonModule, FormsModule],
+    imports: [FormsModule],
     // imports: [CommonModule],
     templateUrl: './otp-verification.component.html'
 })

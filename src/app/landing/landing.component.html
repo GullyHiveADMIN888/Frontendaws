@@ -14,21 +14,21 @@
         </div>
         <div class="hidden md:flex items-center space-x-8">
           <a href="#services"
-            class="font-medium transition-colors cursor-pointer font-inter text-gray-700 hover:text-orange-600">Services</a>
+          class="font-medium transition-colors cursor-pointer font-inter text-gray-700 hover:text-orange-600">Services</a>
           <a href="#how-it-works"
             class="font-medium transition-colors cursor-pointer font-inter text-gray-700 hover:text-orange-600">How It
-            Works</a>
+          Works</a>
           <a href="#providers"
-            class="font-medium transition-colors cursor-pointer font-inter text-gray-700 hover:text-orange-600">Providers</a>
+          class="font-medium transition-colors cursor-pointer font-inter text-gray-700 hover:text-orange-600">Providers</a>
           <a href="#testimonials"
-            class="font-medium transition-colors cursor-pointer font-inter text-gray-700 hover:text-orange-600">Reviews</a>
+          class="font-medium transition-colors cursor-pointer font-inter text-gray-700 hover:text-orange-600">Reviews</a>
           <button (click)="openLoginModal()"
             class="font-medium transition-colors cursor-pointer font-inter text-gray-700 hover:text-orange-600">
             Login
           </button>
           <a routerLink="/register"
             class="bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-orange-700 transition-colors whitespace-nowrap cursor-pointer font-inter">Join
-            as Provider</a>
+          as Provider</a>
         </div>
         <button class="md:hidden text-gray-900 cursor-pointer">
           <i class="ri-menu-line text-2xl"></i>
@@ -40,1016 +40,1022 @@
   <!-- Login Modal -->
 
 
-  <div *ngIf="showLoginModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
-      <button (click)="closeLoginModal()"
-        class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
-        <i class="ri-close-line text-2xl text-gray-600"></i>
-      </button>
-
-      <div class="text-center mb-8">
-        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <i class="ri-user-line text-3xl text-orange-600"></i>
-        </div>
-        <h2 class="text-3xl font-bold text-gray-900 font-poppins">Welcome Back</h2>
-        <p class="text-gray-600 font-inter mt-2">Login to your account</p>
-      </div>
-
-      <div *ngIf="loginError" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-        <p class="text-red-800 font-inter text-sm">{{ loginError }}</p>
-      </div>
-
-      <!-- Using reactive form approach -->
-      <form [formGroup]="loginForm" (ngSubmit)="onLoginSubmit($event)" class="space-y-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
-            Email Address
-          </label>
-          <input type="email" formControlName="email"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-            placeholder="your.email@example.com"
-            [class.border-red-500]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" />
-          <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
-            class="mt-1 text-sm text-red-600">
-            <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
-            <span *ngIf="loginForm.get('email')?.errors?.['email']">Please enter a valid email</span>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
-            Password
-          </label>
-          <input type="password" formControlName="password"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-            placeholder="Enter your password"
-            [class.border-red-500]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" />
-          <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-            class="mt-1 text-sm text-red-600">
-            <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
-            <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
-          </div>
-        </div>
-
-
- <div>
-  <label class="block text-sm font-medium text-gray-700 mb-2">
-    Captcha
-  </label>
-
-  <div class="flex items-center gap-3">
-    
-  
-    <img
-      [src]="captchaUrl"
-      alt="captcha"
-      class="w-2/5 h-11 border rounded"
-      crossorigin="use-credentials"
-    />
-
-
-    <button
-      type="button"
-      (click)="refreshCaptcha()"
-      class="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300"
-    >
-      ↻
-    </button>
-
-   
-    <input
-      type="text"
-      formControlName="captcha"
-      placeholder="Enter captcha"
-      class="w-3/5 px-4 py-2 border rounded" maxlength="6"
-    />
-
-  </div>
-
-    <!-- Error -->
-  <div *ngIf="loginForm.get('captcha')?.invalid && loginForm.get('captcha')?.touched"
-       class="mt-1 text-sm text-red-600 font-inter">
-    <span *ngIf="loginForm.get('captcha')?.errors?.['required']">
-      Captcha is required
-    </span>
-  </div>
-</div> 
-
-
-
-        <div class="flex items-center justify-between">
-          <label class="flex items-center cursor-pointer">
-            <input type="checkbox" formControlName="rememberMe"
-              class="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500 cursor-pointer" />
-            <span class="ml-2 text-sm text-gray-600 font-inter">Remember me</span>
-          </label>
-          <a href="#" class="text-sm text-orange-600 hover:text-orange-700 font-inter cursor-pointer"
-            (click)="forgotPassword($event)">
-            Forgot password?
-          </a>
-        </div>
-
-        <button type="submit" [disabled]="isLoggingIn || loginForm.invalid"
-          class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap cursor-pointer font-inter">
-          {{ isLoggingIn ? 'Logging in...' : 'Login' }}
+  @if (showLoginModal) {
+    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
+        <button (click)="closeLoginModal()"
+          class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
+          <i class="ri-close-line text-2xl text-gray-600"></i>
         </button>
-      </form>
-
-      <div class="mt-6 text-center">
-        <p class="text-sm text-gray-600 font-inter">
-          Don't have an account?{{' '}}
-          <a routerLink="/register" class="text-orange-600 hover:text-orange-700 font-semibold cursor-pointer">
-            Register as Provider
-          </a>
-        </p>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- Hero Section -->
-  <section class="relative min-h-screen flex items-center bg-gradient-to-br from-orange-50 via-white to-orange-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
-      <div class="text-center mb-12">
-        <h1 class="text-5xl lg:text-7xl font-bold text-gray-900 mb-6 font-poppins leading-tight">
-          Find Trusted <span class="text-orange-600">Professional Services</span><br />Near You
-        </h1>
-        <p class="text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto font-inter leading-relaxed">
-          Connect with verified <strong>service providers</strong> for all your home and business needs. Get instant
-          quotes from qualified professionals in your area.
-        </p>
-      </div>
-
-      <div class="max-w-4xl mx-auto mb-12">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 border border-gray-100">
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-            <div class="md:col-span-3">
-              <div class="relative">
-                <i
-                  class="ri-map-pin-line absolute left-4 top-1/2 transform -translate-y-1/2 text-orange-600 text-xl"></i>
-                <select
-                  class="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent appearance-none cursor-pointer font-inter text-sm bg-white">
-                  <option value="">Select City</option>
-                  <option value="Mumbai">Mumbai</option>
-                  <option value="Delhi">Delhi</option>
-                  <option value="Bangalore">Bangalore</option>
-                  <option value="Hyderabad">Hyderabad</option>
-                  <option value="Chennai">Chennai</option>
-                  <option value="Kolkata">Kolkata</option>
-                  <option value="Pune">Pune</option>
-                  <option value="Ahmedabad">Ahmedabad</option>
-                  <option value="Lucknow">Lucknow</option>
-                  <option value="Jaipur">Jaipur</option>
-                </select>
-              </div>
-            </div>
-            <div class="md:col-span-7">
-              <div class="relative">
-                <i class="ri-search-line absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl"></i>
-                <input placeholder="Search for services (e.g., plumber, electrician, cleaning...)"
-                  class="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter text-sm" />
-              </div>
-            </div>
-            <div class="md:col-span-2">
-              <button
-                class="w-full bg-orange-600 text-white py-4 rounded-lg font-semibold hover:bg-orange-700 transition-colors whitespace-nowrap cursor-pointer font-inter text-sm">
-                Search
-              </button>
-            </div>
+        <div class="text-center mb-8">
+          <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="ri-user-line text-3xl text-orange-600"></i>
           </div>
-
-          <div class="mt-6 pt-6 border-t border-gray-100">
-            <p class="text-sm text-gray-600 mb-4 font-inter">Popular Services:</p>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-              <button *ngFor="let service of popularServices; let i = index"
-                class="flex flex-col items-center p-3 bg-orange-50 rounded-xl hover:bg-orange-100 transition-all hover:shadow-md cursor-pointer group">
-                <div class="w-16 h-16 mb-2 rounded-lg overflow-hidden">
-                  <img [src]="service.image" [alt]="service.name"
-                    class="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-300" />
+          <h2 class="text-3xl font-bold text-gray-900 font-poppins">Welcome Back</h2>
+          <p class="text-gray-600 font-inter mt-2">Login to your account</p>
+        </div>
+        @if (loginError) {
+          <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p class="text-red-800 font-inter text-sm">{{ loginError }}</p>
+          </div>
+        }
+        <!-- Using reactive form approach -->
+        <form [formGroup]="loginForm" (ngSubmit)="onLoginSubmit($event)" class="space-y-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
+              Email Address
+            </label>
+            <input type="email" formControlName="email"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+              placeholder="your.email@example.com"
+              [class.border-red-500]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" />
+              @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+                <div
+                  class="mt-1 text-sm text-red-600">
+                  @if (loginForm.get('email')?.errors?.['required']) {
+                    <span>Email is required</span>
+                  }
+                  @if (loginForm.get('email')?.errors?.['email']) {
+                    <span>Please enter a valid email</span>
+                  }
                 </div>
-                <span class="text-xs font-medium text-orange-700 text-center font-inter">{{ service.name }}</span>
-              </button>
+              }
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex flex-wrap justify-center items-center gap-8 text-center">
-        <div class="flex items-center space-x-2">
-          <i class="ri-shield-check-line text-3xl text-orange-600"></i>
-          <div class="text-left">
-            <p class="text-2xl font-bold text-gray-900 font-poppins">100% Verified</p>
-            <p class="text-sm text-gray-600 font-inter">Background Checked</p>
-          </div>
-        </div>
-        <div class="flex items-center space-x-2">
-          <i class="ri-time-line text-3xl text-orange-600"></i>
-          <div class="text-left">
-            <p class="text-2xl font-bold text-gray-900 font-poppins">2 Hour Response</p>
-            <p class="text-sm text-gray-600 font-inter">Quick Matching</p>
-          </div>
-        </div>
-        <div class="flex items-center space-x-2">
-          <i class="ri-star-fill text-3xl text-orange-600"></i>
-          <div class="text-left">
-            <p class="text-2xl font-bold text-gray-900 font-poppins">4.8/5 Rating</p>
-            <p class="text-sm text-gray-600 font-inter">100,000+ Reviews</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Service Categories Section -->
-  <section id="services" class="py-20 bg-gradient-to-b from-white to-orange-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h3 class="text-4xl font-bold text-gray-900 mb-6 font-poppins">Our Service Categories</h3>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto font-inter leading-relaxed">
-          Browse through our comprehensive range of <strong>professional services</strong>. From home maintenance to
-          business solutions, we've got you covered.
-        </p>
-      </div>
-
-      <div class="space-y-12">
-        <div *ngFor="let category of serviceCategories; let i = index"
-          class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 p-8">
-          <div class="mb-6">
-            <div class="flex items-center justify-between mb-3">
-              <h4 class="text-2xl font-bold text-gray-900 font-poppins">{{ category.title }}</h4>
-              <span class="text-sm text-orange-600 font-medium font-inter">{{ category.servicesCount }}</span>
-            </div>
-            <p class="text-gray-600 font-inter leading-relaxed">{{ category.description }}</p>
-          </div>
-
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div *ngFor="let sub of category.subcategories" class="group cursor-pointer">
-              <div class="relative h-32 rounded-xl overflow-hidden mb-3">
-                <img [src]="sub.image" [alt]="sub.name"
-                  class="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-300" />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-              </div>
-              <h5 class="text-sm font-semibold text-gray-900 text-center font-inter">{{ sub.name }}</h5>
-            </div>
-          </div>
-
-          <div class="mt-6 text-center">
-            <button
-              class="px-6 py-2 bg-orange-50 text-orange-700 rounded-lg font-medium hover:bg-orange-100 transition-colors text-sm whitespace-nowrap cursor-pointer font-inter">
-              View All Services
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="text-center mt-12">
-        <button
-          class="bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors whitespace-nowrap cursor-pointer font-inter">
-          Explore All Categories
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- How It Works -->
-  <section id="how-it-works" class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h3 class="text-4xl font-bold text-gray-900 mb-6 font-poppins">How GULLYHIVE Works</h3>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto font-inter leading-relaxed">
-          Getting started with <strong>professional services</strong> is simple and straightforward. Follow these easy
-          steps to connect with verified providers.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
-        <div
-          class="hidden md:block absolute top-24 left-0 right-0 h-1 bg-gradient-to-r from-orange-200 via-orange-300 to-orange-200">
-        </div>
-
-        <div class="relative">
-          <div
-            class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 text-center relative z-10">
-            <div
-              class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <i class="ri-edit-line text-3xl text-white"></i>
-            </div>
-            <div
-              class="absolute -top-3 -right-3 w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg font-poppins">
-              1</div>
-            <h4 class="text-xl font-bold text-gray-900 mb-3 font-inter">Tell Us What You Need</h4>
-            <p class="text-gray-600 font-inter leading-relaxed">Describe your service requirements, location, and
-              preferred timing. Our smart matching system will understand your needs.</p>
-          </div>
-        </div>
-
-        <div class="relative">
-          <div
-            class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 text-center relative z-10">
-            <div
-              class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <i class="ri-team-line text-3xl text-white"></i>
-            </div>
-            <div
-              class="absolute -top-3 -right-3 w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg font-poppins">
-              2</div>
-            <h4 class="text-xl font-bold text-gray-900 mb-3 font-inter">Get Matched with Professionals</h4>
-            <p class="text-gray-600 font-inter leading-relaxed">Receive quotes from verified service providers in your
-              area. Compare profiles, ratings, and pricing to make the best choice.</p>
-          </div>
-        </div>
-
-        <div class="relative">
-          <div
-            class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 text-center relative z-10">
-            <div
-              class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <i class="ri-calendar-check-line text-3xl text-white"></i>
-            </div>
-            <div
-              class="absolute -top-3 -right-3 w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg font-poppins">
-              3</div>
-            <h4 class="text-xl font-bold text-gray-900 mb-3 font-inter">Book & Schedule Service</h4>
-            <p class="text-gray-600 font-inter leading-relaxed">Choose your preferred professional and schedule the
-              service at your convenience. Track progress and communicate directly.</p>
-          </div>
-        </div>
-
-        <div class="relative">
-          <div
-            class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 text-center relative z-10">
-            <div
-              class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <i class="ri-star-line text-3xl text-white"></i>
-            </div>
-            <div
-              class="absolute -top-3 -right-3 w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg font-poppins">
-              4</div>
-            <h4 class="text-xl font-bold text-gray-900 mb-3 font-inter">Get Quality Work Done</h4>
-            <p class="text-gray-600 font-inter leading-relaxed">Enjoy professional service delivery with quality
-              assurance. Rate your experience and help others make informed decisions.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-16 bg-gradient-to-r from-orange-50 to-orange-100 rounded-2xl p-8 text-center">
-        <h4 class="text-2xl font-bold text-gray-900 mb-4 font-poppins">Ready to Get Started?</h4>
-        <p class="text-gray-700 mb-6 font-inter text-lg">Join thousands of satisfied customers who trust GULLYHIVE for
-          their service needs</p>
-        <button
-          class="bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors whitespace-nowrap cursor-pointer font-inter">
-          Post Your Requirement
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- Stats Section -->
-  <section class="py-20 bg-gradient-to-r from-orange-600 to-orange-500">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-        <div class="text-center">
-          <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="ri-shield-check-line text-3xl text-white"></i>
-          </div>
-          <div class="text-4xl font-bold text-white mb-2 font-poppins">10,000+</div>
-          <div class="text-orange-100 font-inter">Verified Providers</div>
-        </div>
-        <div class="text-center">
-          <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="ri-checkbox-circle-line text-3xl text-white"></i>
-          </div>
-          <div class="text-4xl font-bold text-white mb-2 font-poppins">50,000+</div>
-          <div class="text-orange-100 font-inter">Projects Completed</div>
-        </div>
-        <div class="text-center">
-          <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="ri-heart-line text-3xl text-white"></i>
-          </div>
-          <div class="text-4xl font-bold text-white mb-2 font-poppins">4.8/5</div>
-          <div class="text-orange-100 font-inter">Client Satisfaction</div>
-        </div>
-        <div class="text-center">
-          <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="ri-customer-service-line text-3xl text-white"></i>
-          </div>
-          <div class="text-4xl font-bold text-white mb-2 font-poppins">24/7</div>
-          <div class="text-orange-100 font-inter">Support Available</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Testimonials -->
-  <section id="testimonials" class="py-20 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h3 class="text-4xl font-bold text-gray-900 mb-6 font-poppins">What Our Clients Say</h3>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto font-inter leading-relaxed">
-          Don't just take our word for it. Here's what business owners say about their experience finding
-          <strong>professional services</strong> through GULLYHIVE.
-        </p>
-      </div>
-
-      <div class="relative">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div *ngFor="let testimonial of testimonials"
-            class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-8 border border-gray-100">
-            <div class="flex items-center mb-4">
-              <i *ngFor="let star of [1,2,3,4,5]" class="ri-star-fill text-yellow-400 text-lg"></i>
-            </div>
-            <blockquote class="text-gray-700 mb-6 font-inter leading-relaxed">"{{ testimonial.content }}"</blockquote>
-            <div class="flex items-center">
-              <img [alt]="testimonial.name" class="w-12 h-12 rounded-full object-cover object-top mr-4"
-                [src]="testimonial.avatar" />
-              <div>
-                <h4 class="font-semibold text-gray-900 font-inter">{{ testimonial.name }}</h4>
-                <p class="text-sm text-gray-600 font-inter">{{ testimonial.role }}</p>
-                <p class="text-sm text-orange-600 font-medium font-inter">{{ testimonial.company }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <button (click)="prevTestimonial()"
-          class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors cursor-pointer"
-          aria-label="Previous testimonials">
-          <i class="ri-arrow-left-s-line text-2xl text-gray-700"></i>
-        </button>
-        <button (click)="nextTestimonial()"
-          class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors cursor-pointer"
-          aria-label="Next testimonials">
-          <i class="ri-arrow-right-s-line text-2xl text-gray-700"></i>
-        </button>
-      </div>
-
-      <div class="flex justify-center mt-8 gap-2">
-        <button class="w-2 h-2 rounded-full transition-all cursor-pointer bg-orange-600 w-8"
-          aria-label="Go to testimonial group 1"></button>
-        <button class="w-2 h-2 rounded-full transition-all cursor-pointer bg-gray-300"
-          aria-label="Go to testimonial group 2"></button>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA with Form Section -->
-  <section class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="bg-gradient-to-r from-orange-600 to-orange-500 rounded-3xl overflow-hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
-          <div class="p-12 lg:p-16 text-white">
-            <h3 class="text-4xl lg:text-5xl font-bold mb-6 font-poppins leading-tight">
-              Ready to Find Your Perfect Service Provider?
-            </h3>
-            <p class="text-xl mb-8 text-orange-50 font-inter leading-relaxed">
-              Join thousands of satisfied customers who trust GULLYHIVE for quality <strong>professional
-                services</strong>. Get matched with verified experts in minutes, not hours.
-            </p>
-            <div class="space-y-4 mb-8">
-              <div class="flex items-center">
-                <i class="ri-shield-check-line text-2xl text-orange-200 mr-4"></i>
-                <span class="text-lg font-inter">Verified & background-checked professionals</span>
-              </div>
-              <div class="flex items-center">
-                <i class="ri-money-rupee-circle-line text-2xl text-orange-200 mr-4"></i>
-                <span class="text-lg font-inter">Transparent pricing with no hidden costs</span>
-              </div>
-              <div class="flex items-center">
-                <i class="ri-time-line text-2xl text-orange-200 mr-4"></i>
-                <span class="text-lg font-inter">Quick response within 2 hours</span>
-              </div>
-              <div class="flex items-center">
-                <i class="ri-customer-service-2-line text-2xl text-orange-200 mr-4"></i>
-                <span class="text-lg font-inter">24/7 customer support & quality assurance</span>
-              </div>
-            </div>
-            <div class="flex items-center space-x-4">
-              <div class="flex -space-x-2">
-                <div class="w-10 h-10 rounded-full bg-white/20 border-2 border-white"></div>
-                <div class="w-10 h-10 rounded-full bg-white/20 border-2 border-white"></div>
-                <div class="w-10 h-10 rounded-full bg-white/20 border-2 border-white"></div>
-                <div class="w-10 h-10 rounded-full bg-white/20 border-2 border-white"></div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
+                Password
+              </label>
+              <input type="password" formControlName="password"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+                placeholder="Enter your password"
+                [class.border-red-500]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" />
+                @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+                  <div
+                    class="mt-1 text-sm text-red-600">
+                    @if (loginForm.get('password')?.errors?.['required']) {
+                      <span>Password is required</span>
+                    }
+                    @if (loginForm.get('password')?.errors?.['minlength']) {
+                      <span>Password must be at least 6 characters</span>
+                    }
+                  </div>
+                }
               </div>
               <div>
-                <p class="text-sm text-orange-100 font-inter">Join 100,000+ satisfied customers</p>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Captcha
+                </label>
+                <div class="flex items-center gap-3">
+                  <img
+                    [src]="captchaUrl"
+                    alt="captcha"
+                    class="w-2/5 h-11 border rounded"
+                    crossorigin="use-credentials"
+                    />
+                    <button
+                      type="button"
+                      (click)="refreshCaptcha()"
+                      class="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                      >
+                      ↻
+                    </button>
+                    <input
+                      type="text"
+                      formControlName="captcha"
+                      placeholder="Enter captcha"
+                      class="w-3/5 px-4 py-2 border rounded" maxlength="6"
+                      />
+                    </div>
+                    <!-- Error -->
+                    @if (loginForm.get('captcha')?.invalid && loginForm.get('captcha')?.touched) {
+                      <div
+                        class="mt-1 text-sm text-red-600 font-inter">
+                        @if (loginForm.get('captcha')?.errors?.['required']) {
+                          <span>
+                            Captcha is required
+                          </span>
+                        }
+                      </div>
+                    }
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <label class="flex items-center cursor-pointer">
+                      <input type="checkbox" formControlName="rememberMe"
+                        class="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500 cursor-pointer" />
+                        <span class="ml-2 text-sm text-gray-600 font-inter">Remember me</span>
+                      </label>
+                      <a href="#" class="text-sm text-orange-600 hover:text-orange-700 font-inter cursor-pointer"
+                        (click)="forgotPassword($event)">
+                        Forgot password?
+                      </a>
+                    </div>
+                    <button type="submit" [disabled]="isLoggingIn || loginForm.invalid"
+                      class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap cursor-pointer font-inter">
+                      {{ isLoggingIn ? 'Logging in...' : 'Login' }}
+                    </button>
+                  </form>
+                  <div class="mt-6 text-center">
+                    <p class="text-sm text-gray-600 font-inter">
+                      Don't have an account?{{' '}}
+                      <a routerLink="/register" class="text-orange-600 hover:text-orange-700 font-semibold cursor-pointer">
+                        Register as Provider
+                      </a>
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-
-          <div class="bg-white p-12 lg:p-16">
-            <h4 class="text-2xl font-bold text-gray-900 mb-6 font-poppins">Get Free Quotes Today</h4>
-
-            <div *ngIf="submitStatus === 'success'" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <p class="text-green-800 font-inter text-sm">Thank you! Your request has been submitted successfully.
-                We'll contact you soon.</p>
-            </div>
-
-            <div *ngIf="submitStatus === 'error'" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p class="text-red-800 font-inter text-sm">Something went wrong. Please try again.</p>
-            </div>
-
-            <form id="service-request-form" data-readdy-form (submit)="onSubmit($event)" class="space-y-6">
-              <div>
-                <input placeholder="Your Full Name" required
-                  class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-                  name="name" [value]="formData.name" (input)="onInputChanges('name', $event)" />
-              </div>
-              <div>
-                <input placeholder="Email Address" required
-                  class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-                  type="email" name="email" [value]="formData.email" (input)="onInputChanges('email', $event)" />
-              </div>
-              <div>
-                <input placeholder="Phone Number" required
-                  class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-                  type="tel" name="phone" [value]="formData.phone" (input)="onInputChanges('phone', $event)" />
-              </div>
-              <div>
-                <select name="service" required
-                  class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter appearance-none cursor-pointer"
-                  [value]="formData.service" (change)="onInputChanges('service', $event)">
-                  <option value="">Select Service Category</option>
-                  <option *ngFor="let cat of serviceCategories" [value]="cat.title">{{ cat.title }}</option>
-                </select>
-              </div>
-              <div>
-                <input placeholder="Your Location (City/Area)" required
-                  class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-                  name="location" [value]="formData.location" (input)="onInputChanges('location', $event)" />
-              </div>
-              <div>
-                <textarea name="message" placeholder="Describe your service requirements (max 500 characters)"
-                  maxlength="500" rows="4"
-                  class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none font-inter"
-                  [value]="formData.message" (input)="onInputChanges('message', $event)"></textarea>
-                <div class="text-sm text-gray-500 mt-1 font-inter">{{ charCount }}/500 characters</div>
-              </div>
-              <button type="submit" [disabled]="isSubmitting || formData.message.length > 500"
-                class="w-full bg-orange-600 text-white py-4 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap cursor-pointer font-inter">
-                {{ isSubmitting ? 'Submitting...' : 'Get Free Quotes Now' }}
-              </button>
-            </form>
-            <p class="text-xs text-gray-500 mt-4 text-center font-inter">
-              By submitting this form, you agree to our Terms of Service and Privacy Policy.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-orange-600 text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-        <div class="lg:col-span-1">
-          <h3 class="text-2xl font-bold mb-4 font-poppins">GULLYHIVE</h3>
-          <p class="text-orange-100 mb-6 font-inter leading-relaxed">
-            Connecting businesses with qualified service providers across industries. Your trusted platform for
-            professional growth.
-          </p>
-          <div class="flex space-x-4">
-            <a href="#"
-              class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center hover:bg-orange-400 transition-colors cursor-pointer">
-              <i class="ri-facebook-fill text-lg"></i>
-            </a>
-            <a href="#"
-              class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center hover:bg-orange-400 transition-colors cursor-pointer">
-              <i class="ri-twitter-fill text-lg"></i>
-            </a>
-            <a href="#"
-              class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center hover:bg-orange-400 transition-colors cursor-pointer">
-              <i class="ri-linkedin-fill text-lg"></i>
-            </a>
-            <a href="#"
-              class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center hover:bg-orange-400 transition-colors cursor-pointer">
-              <i class="ri-instagram-fill text-lg"></i>
-            </a>
-          </div>
-        </div>
-
-        <div>
-          <h4 class="font-semibold mb-4 font-inter">For Businesses</h4>
-          <ul class="space-y-3">
-            <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Post a
-                Project</a></li>
-            <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Browse
-                Providers</a></li>
-            <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">How It
-                Works</a></li>
-            <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Success
-                Stories</a></li>
-            <li><a href="#"
-                class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Pricing</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="font-semibold mb-4 font-inter">For Providers</h4>
-          <ul class="space-y-3">
-            <li><a routerLink="/register"
-                class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Join as
-                Provider</a></li>
-            <li><a href="#"
-                class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Provider
-                Resources</a></li>
-            <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Success
-                Tips</a></li>
-            <li><a href="#"
-                class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Community</a></li>
-            <li><a href="#"
-                class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Support</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="font-semibold mb-4 font-inter">Company</h4>
-          <ul class="space-y-3">
-            <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">About
-                Us</a></li>
-            <li><a href="#"
-                class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Careers</a></li>
-            <li><a href="#"
-                class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Press</a></li>
-            <li><a href="#"
-                class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Blog</a></li>
-            <li><a href="#"
-                class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Contact</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="font-semibold mb-4 font-inter">Support</h4>
-          <ul class="space-y-3">
-            <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Help
-                Center</a></li>
-            <li><a href="#"
-                class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Safety</a></li>
-            <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Terms
-                of Service</a></li>
-            <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Privacy
-                Policy</a></li>
-            <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Cookie
-                Policy</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="border-t border-orange-500 mt-12 pt-8">
-        <div class="flex flex-col md:flex-row justify-between items-center">
-          <p class="text-orange-100 text-sm font-inter">© 2025 GULLYHIVE. All rights reserved.</p>
-          <div class="flex items-center space-x-6 mt-4 md:mt-0">
-            <a href="https://readdy.ai/?ref=logo"
-              class="text-orange-100 hover:text-white text-sm transition-colors cursor-pointer font-inter">
-              Powered by Readdy
-            </a>
-            <div class="flex items-center space-x-2">
-              <i class="ri-shield-check-line text-orange-200"></i>
-              <span class="text-orange-100 text-sm font-inter">Secure Platform</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </footer>
-<!-- Forgot Password Modal -->
-<div *ngIf="showForgotPasswordModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
-  <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
-    <button (click)="closeForgotPasswordModal()"
-      class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
-      <i class="ri-close-line text-2xl text-gray-600"></i>
-    </button>
-
-    <div class="text-center mb-6">
-      <h2 class="text-2xl font-bold text-gray-900 font-poppins">Reset Password</h2>
-      <p class="text-gray-600 font-inter mt-2">Enter your mobile number to receive an OTP</p>
-    </div>
-
-    <form [formGroup]="forgotPasswordForm" (ngSubmit)="sendOtp()" class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">Mobile Number</label>
-        <input type="tel" formControlName="mobile"
-          class="w-full px-4 py-3 pb-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-          placeholder="Enter your mobile number"
-          [class.border-red-500]="forgotPasswordForm.get('mobile')?.invalid && forgotPasswordForm.get('mobile')?.touched"/>
-        <div *ngIf="forgotPasswordForm.get('mobile')?.invalid && forgotPasswordForm.get('mobile')?.touched"
-          class="mt-1 text-sm text-red-600">
-          <span *ngIf="forgotPasswordForm.get('mobile')?.errors?.['required']">Mobile number is required</span>
-          <span *ngIf="forgotPasswordForm.get('mobile')?.errors?.['pattern']">Invalid mobile number</span>
-        </div>
-      </div>
-
- 
-  <div *ngIf="error" class="text-sm text-red-600">
-    {{ error }}
-  </div>
-
-<!-- Error Alert -->
-<!-- <div *ngIf="error" class="mb-4 text-red-600 font-inter text-sm bg-red-50 border border-red-200 p-3 rounded">
-  {{ error }}
-</div> -->
-
-      <button type="submit" [disabled]="forgotPasswordForm.invalid || isSendingOtp"
-        class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-inter">
-        {{ isSendingOtp ? 'Sending OTP...' : 'Send OTP' }}
-      </button>
-    </form>
-      <!-- <div #recaptchaContainer></div> -->
-  </div>
-</div>
-
-</div>
-
-<!-- OTP Modal -->
-<div *ngIf="showOtpModals" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
-  <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
-    <button (click)="showOtpModals = false"
-      class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
-      <i class="ri-close-line text-2xl text-gray-600"></i>
-    </button>
-
-    <div class="text-center mb-6">
-      <h2 class="text-2xl font-bold text-gray-900 font-poppins">Verify Mobile Number</h2>
-      <p class="text-gray-600 font-inter mt-2">We've sent a 6-digit OTP to <span class="font-semibold text-gray-900">{{ otpMobile }}</span></p>
-    </div>
-
- <div class="flex justify-center gap-3" (paste)="onPaste($event)">
-        <input
-  #otpInput
-  *ngFor="let digit of otp; let i = index; trackBy: trackByIndex"
-  type="text"
-  inputmode="numeric"
-  maxlength="1"
-  [value]="otp[i]"
-  (input)="onInputChange($event, i)"
-  (keydown)="onKeyDown($event, i)"
-  class="w-14 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-/>
-
-      </div>
-
- 
-    <p *ngIf="error" class="text-red-600 text-sm mb-4 text-center font-inter">
-      {{ error }}
-    </p>
-
-    <div class="text-center mb-4">
-      <ng-container *ngIf="canResend; else timerTemplate">
-        <button type="button" (click)="onResend()" class="text-orange-600 hover:text-orange-700 font-medium text-sm font-inter">Resend OTP</button>
-      </ng-container>
-      <ng-template #timerTemplate>
-        <p class="text-gray-600 text-sm font-inter">Resend OTP in <span class="font-semibold text-orange-600">{{ timer }}s</span></p>
-      </ng-template>
-    </div>
-
-    <button (click)="onVerify()" [disabled]="isVerifying || otp.join('').length !== 6"
-      class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-inter">
-      {{ isVerifying ? 'Verifying...' : 'Verify & Continue' }}
-    </button>
-  </div>
-
-</div>
-
-<!-- <div id="recaptcha-container"></div> -->
-
-<!-- Password Popup -->
-<div *ngIf="showPasswordPopup" class="fixed inset-0 z-[100] bg-black bg-opacity-50 flex items-center justify-center z-50">
-
-  <div class="bg-white rounded-lg p-6 w-96 shadow-lg">
-    <h3 class="text-lg font-semibold mb-4">Set New Password</h3>
-
-    <input
-      type="password"
-      placeholder="New Password"
-      [(ngModel)]="newPassword"
-      class="w-full border p-2 mb-3 rounded"
-    />
-
-    <input
-      type="password"
-      placeholder="Confirm Password"
-      [(ngModel)]="confirmPassword"
-      class="w-full border p-2 mb-3 rounded"
-    />
-
-    <p *ngIf="passwordError" class="text-red-500 text-sm mb-2">
-      {{ passwordError }}
-    </p>
-
-    <div class="flex justify-end gap-2">
-      <button
-        class="px-4 py-2 bg-gray-300 rounded"
-        (click)="closePasswordPopup()">
-        Cancel
-      </button>
-
-      <button
-        class="px-4 py-2 bg-orange-500 text-white rounded"
-        (click)="submitNewPassword()">
-        Submit
-      </button>
-    </div>
-  </div>
-
-</div>
-
-
-
-<!-- ACCOUNT VERIFICATION MODAL -->
-<!-- <div *ngIf="showVerificationModal"
-     class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-
-  
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
-      <button
-        (click)="closeVerificationModal()"
-        class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">
-        ✕
-      </button>
-
-      <div class="text-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-800">Verify Your Account</h2>
-        <p class="text-sm text-gray-500 mt-1">Please verify your details to continue</p>
-      </div>
-
-  
-      <div class="flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-4">
-        <div>
-          <p class="text-xs text-gray-500">Mobile Number</p>
-          <p class="font-semibold text-gray-800">{{ verificationData.phone }}</p>
-        </div>
-
-        <button
-          (click)="openMobileVerification()"
-          class="min-w-[90px] bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
-          Verify
-        </button>
-      </div>
-
-  
-      <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
-        <div>
-          <p class="text-xs text-gray-500">Email Address</p>
-          <p class="font-semibold text-gray-800">{{ verificationData.email }}</p>
-        </div>
-
-        <button
-          class="min-w-[90px] bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
-          Verify
-        </button>
-      </div>
-    </div>
- 
-</div> -->
-
-
-<!-- <div *ngIf="showVerificationModal"
-     class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-
-  <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
-
-    <button
-      (click)="closeVerificationModal()"
-      class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">
-      ✕
-    </button>
-
-    <ng-container *ngIf="!showOtpModal">
-
-      <div class="flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-4">
-        <div>
-          <p class="text-xs text-gray-500">Mobile Number</p>
-        
-                  <p class="font-semibold text-gray-800">{{ verificationData?.phone }}</p>
-       
-
-        </div>
-
-        <button
-          (click)="openMobileVerification()"
-          class="min-w-[90px] bg-orange-600 text-white text-sm px-4 py-2 rounded-lg">
-          Verify
-        </button>
-      </div>
-
-   
-      <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
-        <div>
-          <p class="text-xs text-gray-500">Email Address</p>
-        
-           <p class="font-semibold text-gray-800"> {{ verificationData?.email }}</p>
-      
-        </div>
-
-        <button
-          (click)="openEmailVerification()"
-          class="min-w-[90px] bg-blue-600 text-white text-sm px-4 py-2 rounded-lg">
-          Verify
-        </button>
-      </div>
-
-    </ng-container>
-
-   
-    <ng-container *ngIf="showOtpModals">
-
-      
-      <app-otp-verification
-        *ngIf="verificationType === 'email'"
-        [email]="verificationData?.email"
-        [otpToken]="pendingLoginResponse?.emailOtpToken || ''"
-        (onVerifiedEmail)="onOTPVerifiedEmail($event)"
-        (onBack)="handleOtpBack()">
-      </app-otp-verification>
-
-     
-      <app-otp-verification
-        *ngIf="verificationType === 'mobile'"
-       
-        [mobile]="pendingLoginResponse.phone"
-        (onVerified)="onOTPVerified()"
-        (onBack)="handleOtpBack()">
-      </app-otp-verification>
-
-    </ng-container>
-
-  </div>
-</div> -->
-
-<!-- 🔹 VERIFICATION MODAL -->
-<div *ngIf="showVerificationModal"
-     class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
-
-  <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
-
-    <button
-      (click)="closeVerificationModal()"
-      class="absolute top-3 right-3 text-gray-400 text-xl">
-      ✕
-    </button>
-
-    <!-- MOBILE -->
-    <div class="flex justify-between bg-orange-50 border rounded-xl px-4 py-3 mb-4">
-      <div>
-        <p class="text-xs text-gray-500">Mobile Number</p>
-        <p class="font-semibold">{{ verificationData?.phone }}</p>
-      </div>
-
-      <button
-        (click)="openMobileVerification()"
-        class="bg-orange-600 text-white text-sm px-4 py-2 rounded-lg">
-        Verify
-      </button>
-    </div>
-
-    <!-- EMAIL -->
-    <div class="flex justify-between bg-blue-50 border rounded-xl px-4 py-3">
-      <div>
-        <p class="text-xs text-gray-500">Email Address</p>
-        <p class="font-semibold">{{ verificationData?.email }}</p>
-      </div>
-
-      <button
-        (click)="openEmailVerification()"
-        class="bg-blue-600 text-white text-sm px-4 py-2 rounded-lg">
-        Verify
-      </button>
-    </div>
-
-  </div>
-</div>
-
-<!-- 🔹 OTP MODAL -->
-<div *ngIf="showOtpModal"
-     class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
-
-  <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
-
-    <app-otp-verification
-      *ngIf="verificationType === 'email'"
-      [email]="verificationData?.email"
-      [otpToken]="pendingLoginResponse?.emailOtpToken || ''"
-      (onVerifiedEmail)="onOTPVerifiedEmail($event)"
-      (onBack)="handleOtpBackotp()">
-    </app-otp-verification>
-
-   <!-- when Seprate function on otp comopnet .... -->
-    <!-- <app-otp-verification
-      *ngIf="verificationType === 'mobile'"
-      [mobile]="pendingLoginResponse.phone"
-      [userId]="pendingLoginResponse!.userId.toString()"
-      (onVerified)="onOTPVerified()"
-      (onBack)="handleOtpBackotp()">
-    </app-otp-verification> -->
-<!-- 
-    when both for regisret and login time manage ...... -->
-    <app-otp-verification
-  *ngIf="verificationType === 'mobile'"
-  [mobile]="pendingLoginResponse?.phone || ''"
-  [userId]="pendingLoginResponse?.userId?.toString() || ''"
-  (onVerified)="onOTPVerified()"
-  (onBack)="handleOtpBackotp()">
-</app-otp-verification>
-
-  </div>
-</div>
+            }
+
+
+            <!-- Hero Section -->
+            <section class="relative min-h-screen flex items-center bg-gradient-to-br from-orange-50 via-white to-orange-50">
+              <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
+                <div class="text-center mb-12">
+                  <h1 class="text-5xl lg:text-7xl font-bold text-gray-900 mb-6 font-poppins leading-tight">
+                    Find Trusted <span class="text-orange-600">Professional Services</span><br />Near You
+                  </h1>
+                  <p class="text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto font-inter leading-relaxed">
+                    Connect with verified <strong>service providers</strong> for all your home and business needs. Get instant
+                    quotes from qualified professionals in your area.
+                  </p>
+                </div>
+
+                <div class="max-w-4xl mx-auto mb-12">
+                  <div class="bg-white rounded-2xl shadow-2xl p-6 border border-gray-100">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                      <div class="md:col-span-3">
+                        <div class="relative">
+                          <i
+                          class="ri-map-pin-line absolute left-4 top-1/2 transform -translate-y-1/2 text-orange-600 text-xl"></i>
+                          <select
+                            class="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent appearance-none cursor-pointer font-inter text-sm bg-white">
+                            <option value="">Select City</option>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Bangalore">Bangalore</option>
+                            <option value="Hyderabad">Hyderabad</option>
+                            <option value="Chennai">Chennai</option>
+                            <option value="Kolkata">Kolkata</option>
+                            <option value="Pune">Pune</option>
+                            <option value="Ahmedabad">Ahmedabad</option>
+                            <option value="Lucknow">Lucknow</option>
+                            <option value="Jaipur">Jaipur</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="md:col-span-7">
+                        <div class="relative">
+                          <i class="ri-search-line absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl"></i>
+                          <input placeholder="Search for services (e.g., plumber, electrician, cleaning...)"
+                            class="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter text-sm" />
+                          </div>
+                        </div>
+                        <div class="md:col-span-2">
+                          <button
+                            class="w-full bg-orange-600 text-white py-4 rounded-lg font-semibold hover:bg-orange-700 transition-colors whitespace-nowrap cursor-pointer font-inter text-sm">
+                            Search
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="mt-6 pt-6 border-t border-gray-100">
+                        <p class="text-sm text-gray-600 mb-4 font-inter">Popular Services:</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+                          @for (service of popularServices; track service; let i = $index) {
+                            <button
+                              class="flex flex-col items-center p-3 bg-orange-50 rounded-xl hover:bg-orange-100 transition-all hover:shadow-md cursor-pointer group">
+                              <div class="w-16 h-16 mb-2 rounded-lg overflow-hidden">
+                                <img [src]="service.image" [alt]="service.name"
+                                  class="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-300" />
+                                </div>
+                                <span class="text-xs font-medium text-orange-700 text-center font-inter">{{ service.name }}</span>
+                              </button>
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="flex flex-wrap justify-center items-center gap-8 text-center">
+                      <div class="flex items-center space-x-2">
+                        <i class="ri-shield-check-line text-3xl text-orange-600"></i>
+                        <div class="text-left">
+                          <p class="text-2xl font-bold text-gray-900 font-poppins">100% Verified</p>
+                          <p class="text-sm text-gray-600 font-inter">Background Checked</p>
+                        </div>
+                      </div>
+                      <div class="flex items-center space-x-2">
+                        <i class="ri-time-line text-3xl text-orange-600"></i>
+                        <div class="text-left">
+                          <p class="text-2xl font-bold text-gray-900 font-poppins">2 Hour Response</p>
+                          <p class="text-sm text-gray-600 font-inter">Quick Matching</p>
+                        </div>
+                      </div>
+                      <div class="flex items-center space-x-2">
+                        <i class="ri-star-fill text-3xl text-orange-600"></i>
+                        <div class="text-left">
+                          <p class="text-2xl font-bold text-gray-900 font-poppins">4.8/5 Rating</p>
+                          <p class="text-sm text-gray-600 font-inter">100,000+ Reviews</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Service Categories Section -->
+                <section id="services" class="py-20 bg-gradient-to-b from-white to-orange-50">
+                  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-16">
+                      <h3 class="text-4xl font-bold text-gray-900 mb-6 font-poppins">Our Service Categories</h3>
+                      <p class="text-xl text-gray-600 max-w-3xl mx-auto font-inter leading-relaxed">
+                        Browse through our comprehensive range of <strong>professional services</strong>. From home maintenance to
+                        business solutions, we've got you covered.
+                      </p>
+                    </div>
+
+                    <div class="space-y-12">
+                      @for (category of serviceCategories; track category; let i = $index) {
+                        <div
+                          class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 p-8">
+                          <div class="mb-6">
+                            <div class="flex items-center justify-between mb-3">
+                              <h4 class="text-2xl font-bold text-gray-900 font-poppins">{{ category.title }}</h4>
+                              <span class="text-sm text-orange-600 font-medium font-inter">{{ category.servicesCount }}</span>
+                            </div>
+                            <p class="text-gray-600 font-inter leading-relaxed">{{ category.description }}</p>
+                          </div>
+                          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            @for (sub of category.subcategories; track sub) {
+                              <div class="group cursor-pointer">
+                                <div class="relative h-32 rounded-xl overflow-hidden mb-3">
+                                  <img [src]="sub.image" [alt]="sub.name"
+                                    class="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-300" />
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                  </div>
+                                  <h5 class="text-sm font-semibold text-gray-900 text-center font-inter">{{ sub.name }}</h5>
+                                </div>
+                              }
+                            </div>
+                            <div class="mt-6 text-center">
+                              <button
+                                class="px-6 py-2 bg-orange-50 text-orange-700 rounded-lg font-medium hover:bg-orange-100 transition-colors text-sm whitespace-nowrap cursor-pointer font-inter">
+                                View All Services
+                              </button>
+                            </div>
+                          </div>
+                        }
+                      </div>
+
+                      <div class="text-center mt-12">
+                        <button
+                          class="bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors whitespace-nowrap cursor-pointer font-inter">
+                          Explore All Categories
+                        </button>
+                      </div>
+                    </div>
+                  </section>
+
+                  <!-- How It Works -->
+                  <section id="how-it-works" class="py-20 bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                      <div class="text-center mb-16">
+                        <h3 class="text-4xl font-bold text-gray-900 mb-6 font-poppins">How GULLYHIVE Works</h3>
+                        <p class="text-xl text-gray-600 max-w-3xl mx-auto font-inter leading-relaxed">
+                          Getting started with <strong>professional services</strong> is simple and straightforward. Follow these easy
+                          steps to connect with verified providers.
+                        </p>
+                      </div>
+
+                      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+                        <div
+                          class="hidden md:block absolute top-24 left-0 right-0 h-1 bg-gradient-to-r from-orange-200 via-orange-300 to-orange-200">
+                        </div>
+
+                        <div class="relative">
+                          <div
+                            class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 text-center relative z-10">
+                            <div
+                              class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                              <i class="ri-edit-line text-3xl text-white"></i>
+                            </div>
+                            <div
+                              class="absolute -top-3 -right-3 w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg font-poppins">
+                            1</div>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3 font-inter">Tell Us What You Need</h4>
+                            <p class="text-gray-600 font-inter leading-relaxed">Describe your service requirements, location, and
+                            preferred timing. Our smart matching system will understand your needs.</p>
+                          </div>
+                        </div>
+
+                        <div class="relative">
+                          <div
+                            class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 text-center relative z-10">
+                            <div
+                              class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                              <i class="ri-team-line text-3xl text-white"></i>
+                            </div>
+                            <div
+                              class="absolute -top-3 -right-3 w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg font-poppins">
+                            2</div>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3 font-inter">Get Matched with Professionals</h4>
+                            <p class="text-gray-600 font-inter leading-relaxed">Receive quotes from verified service providers in your
+                            area. Compare profiles, ratings, and pricing to make the best choice.</p>
+                          </div>
+                        </div>
+
+                        <div class="relative">
+                          <div
+                            class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 text-center relative z-10">
+                            <div
+                              class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                              <i class="ri-calendar-check-line text-3xl text-white"></i>
+                            </div>
+                            <div
+                              class="absolute -top-3 -right-3 w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg font-poppins">
+                            3</div>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3 font-inter">Book & Schedule Service</h4>
+                            <p class="text-gray-600 font-inter leading-relaxed">Choose your preferred professional and schedule the
+                            service at your convenience. Track progress and communicate directly.</p>
+                          </div>
+                        </div>
+
+                        <div class="relative">
+                          <div
+                            class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 text-center relative z-10">
+                            <div
+                              class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                              <i class="ri-star-line text-3xl text-white"></i>
+                            </div>
+                            <div
+                              class="absolute -top-3 -right-3 w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg font-poppins">
+                            4</div>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3 font-inter">Get Quality Work Done</h4>
+                            <p class="text-gray-600 font-inter leading-relaxed">Enjoy professional service delivery with quality
+                            assurance. Rate your experience and help others make informed decisions.</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="mt-16 bg-gradient-to-r from-orange-50 to-orange-100 rounded-2xl p-8 text-center">
+                        <h4 class="text-2xl font-bold text-gray-900 mb-4 font-poppins">Ready to Get Started?</h4>
+                        <p class="text-gray-700 mb-6 font-inter text-lg">Join thousands of satisfied customers who trust GULLYHIVE for
+                        their service needs</p>
+                        <button
+                          class="bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors whitespace-nowrap cursor-pointer font-inter">
+                          Post Your Requirement
+                        </button>
+                      </div>
+                    </div>
+                  </section>
+
+                  <!-- Stats Section -->
+                  <section class="py-20 bg-gradient-to-r from-orange-600 to-orange-500">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div class="text-center">
+                          <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="ri-shield-check-line text-3xl text-white"></i>
+                          </div>
+                          <div class="text-4xl font-bold text-white mb-2 font-poppins">10,000+</div>
+                          <div class="text-orange-100 font-inter">Verified Providers</div>
+                        </div>
+                        <div class="text-center">
+                          <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="ri-checkbox-circle-line text-3xl text-white"></i>
+                          </div>
+                          <div class="text-4xl font-bold text-white mb-2 font-poppins">50,000+</div>
+                          <div class="text-orange-100 font-inter">Projects Completed</div>
+                        </div>
+                        <div class="text-center">
+                          <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="ri-heart-line text-3xl text-white"></i>
+                          </div>
+                          <div class="text-4xl font-bold text-white mb-2 font-poppins">4.8/5</div>
+                          <div class="text-orange-100 font-inter">Client Satisfaction</div>
+                        </div>
+                        <div class="text-center">
+                          <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="ri-customer-service-line text-3xl text-white"></i>
+                          </div>
+                          <div class="text-4xl font-bold text-white mb-2 font-poppins">24/7</div>
+                          <div class="text-orange-100 font-inter">Support Available</div>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  <!-- Testimonials -->
+                  <section id="testimonials" class="py-20 bg-gray-50">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                      <div class="text-center mb-16">
+                        <h3 class="text-4xl font-bold text-gray-900 mb-6 font-poppins">What Our Clients Say</h3>
+                        <p class="text-xl text-gray-600 max-w-3xl mx-auto font-inter leading-relaxed">
+                          Don't just take our word for it. Here's what business owners say about their experience finding
+                          <strong>professional services</strong> through GULLYHIVE.
+                        </p>
+                      </div>
+
+                      <div class="relative">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                          @for (testimonial of testimonials; track testimonial) {
+                            <div
+                              class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-8 border border-gray-100">
+                              <div class="flex items-center mb-4">
+                                @for (star of [1,2,3,4,5]; track star) {
+                                  <i class="ri-star-fill text-yellow-400 text-lg"></i>
+                                }
+                              </div>
+                              <blockquote class="text-gray-700 mb-6 font-inter leading-relaxed">"{{ testimonial.content }}"</blockquote>
+                              <div class="flex items-center">
+                                <img [alt]="testimonial.name" class="w-12 h-12 rounded-full object-cover object-top mr-4"
+                                  [src]="testimonial.avatar" />
+                                  <div>
+                                    <h4 class="font-semibold text-gray-900 font-inter">{{ testimonial.name }}</h4>
+                                    <p class="text-sm text-gray-600 font-inter">{{ testimonial.role }}</p>
+                                    <p class="text-sm text-orange-600 font-medium font-inter">{{ testimonial.company }}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            }
+                          </div>
+
+                          <button (click)="prevTestimonial()"
+                            class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors cursor-pointer"
+                            aria-label="Previous testimonials">
+                            <i class="ri-arrow-left-s-line text-2xl text-gray-700"></i>
+                          </button>
+                          <button (click)="nextTestimonial()"
+                            class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors cursor-pointer"
+                            aria-label="Next testimonials">
+                            <i class="ri-arrow-right-s-line text-2xl text-gray-700"></i>
+                          </button>
+                        </div>
+
+                        <div class="flex justify-center mt-8 gap-2">
+                          <button class="w-2 h-2 rounded-full transition-all cursor-pointer bg-orange-600 w-8"
+                          aria-label="Go to testimonial group 1"></button>
+                          <button class="w-2 h-2 rounded-full transition-all cursor-pointer bg-gray-300"
+                          aria-label="Go to testimonial group 2"></button>
+                        </div>
+                      </div>
+                    </section>
+
+                    <!-- CTA with Form Section -->
+                    <section class="py-20 bg-white">
+                      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="bg-gradient-to-r from-orange-600 to-orange-500 rounded-3xl overflow-hidden">
+                          <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                            <div class="p-12 lg:p-16 text-white">
+                              <h3 class="text-4xl lg:text-5xl font-bold mb-6 font-poppins leading-tight">
+                                Ready to Find Your Perfect Service Provider?
+                              </h3>
+                              <p class="text-xl mb-8 text-orange-50 font-inter leading-relaxed">
+                                Join thousands of satisfied customers who trust GULLYHIVE for quality <strong>professional
+                              services</strong>. Get matched with verified experts in minutes, not hours.
+                            </p>
+                            <div class="space-y-4 mb-8">
+                              <div class="flex items-center">
+                                <i class="ri-shield-check-line text-2xl text-orange-200 mr-4"></i>
+                                <span class="text-lg font-inter">Verified & background-checked professionals</span>
+                              </div>
+                              <div class="flex items-center">
+                                <i class="ri-money-rupee-circle-line text-2xl text-orange-200 mr-4"></i>
+                                <span class="text-lg font-inter">Transparent pricing with no hidden costs</span>
+                              </div>
+                              <div class="flex items-center">
+                                <i class="ri-time-line text-2xl text-orange-200 mr-4"></i>
+                                <span class="text-lg font-inter">Quick response within 2 hours</span>
+                              </div>
+                              <div class="flex items-center">
+                                <i class="ri-customer-service-2-line text-2xl text-orange-200 mr-4"></i>
+                                <span class="text-lg font-inter">24/7 customer support & quality assurance</span>
+                              </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                              <div class="flex -space-x-2">
+                                <div class="w-10 h-10 rounded-full bg-white/20 border-2 border-white"></div>
+                                <div class="w-10 h-10 rounded-full bg-white/20 border-2 border-white"></div>
+                                <div class="w-10 h-10 rounded-full bg-white/20 border-2 border-white"></div>
+                                <div class="w-10 h-10 rounded-full bg-white/20 border-2 border-white"></div>
+                              </div>
+                              <div>
+                                <p class="text-sm text-orange-100 font-inter">Join 100,000+ satisfied customers</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="bg-white p-12 lg:p-16">
+                            <h4 class="text-2xl font-bold text-gray-900 mb-6 font-poppins">Get Free Quotes Today</h4>
+
+                            @if (submitStatus === 'success') {
+                              <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                                <p class="text-green-800 font-inter text-sm">Thank you! Your request has been submitted successfully.
+                                We'll contact you soon.</p>
+                              </div>
+                            }
+
+                            @if (submitStatus === 'error') {
+                              <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                                <p class="text-red-800 font-inter text-sm">Something went wrong. Please try again.</p>
+                              </div>
+                            }
+
+                            <form id="service-request-form" data-readdy-form (submit)="onSubmit($event)" class="space-y-6">
+                              <div>
+                                <input placeholder="Your Full Name" required
+                                  class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+                                  name="name" [value]="formData.name" (input)="onInputChanges('name', $event)" />
+                                </div>
+                                <div>
+                                  <input placeholder="Email Address" required
+                                    class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+                                    type="email" name="email" [value]="formData.email" (input)="onInputChanges('email', $event)" />
+                                  </div>
+                                  <div>
+                                    <input placeholder="Phone Number" required
+                                      class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+                                      type="tel" name="phone" [value]="formData.phone" (input)="onInputChanges('phone', $event)" />
+                                    </div>
+                                    <div>
+                                      <select name="service" required
+                                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter appearance-none cursor-pointer"
+                                        [value]="formData.service" (change)="onInputChanges('service', $event)">
+                                        <option value="">Select Service Category</option>
+                                        @for (cat of serviceCategories; track cat) {
+                                          <option [value]="cat.title">{{ cat.title }}</option>
+                                        }
+                                      </select>
+                                    </div>
+                                    <div>
+                                      <input placeholder="Your Location (City/Area)" required
+                                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+                                        name="location" [value]="formData.location" (input)="onInputChanges('location', $event)" />
+                                      </div>
+                                      <div>
+                                        <textarea name="message" placeholder="Describe your service requirements (max 500 characters)"
+                                          maxlength="500" rows="4"
+                                          class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none font-inter"
+                                        [value]="formData.message" (input)="onInputChanges('message', $event)"></textarea>
+                                        <div class="text-sm text-gray-500 mt-1 font-inter">{{ charCount }}/500 characters</div>
+                                      </div>
+                                      <button type="submit" [disabled]="isSubmitting || formData.message.length > 500"
+                                        class="w-full bg-orange-600 text-white py-4 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap cursor-pointer font-inter">
+                                        {{ isSubmitting ? 'Submitting...' : 'Get Free Quotes Now' }}
+                                      </button>
+                                    </form>
+                                    <p class="text-xs text-gray-500 mt-4 text-center font-inter">
+                                      By submitting this form, you agree to our Terms of Service and Privacy Policy.
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </section>
+
+                          <!-- Footer -->
+                          <footer class="bg-orange-600 text-white">
+                            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+                                <div class="lg:col-span-1">
+                                  <h3 class="text-2xl font-bold mb-4 font-poppins">GULLYHIVE</h3>
+                                  <p class="text-orange-100 mb-6 font-inter leading-relaxed">
+                                    Connecting businesses with qualified service providers across industries. Your trusted platform for
+                                    professional growth.
+                                  </p>
+                                  <div class="flex space-x-4">
+                                    <a href="#"
+                                      class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center hover:bg-orange-400 transition-colors cursor-pointer">
+                                      <i class="ri-facebook-fill text-lg"></i>
+                                    </a>
+                                    <a href="#"
+                                      class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center hover:bg-orange-400 transition-colors cursor-pointer">
+                                      <i class="ri-twitter-fill text-lg"></i>
+                                    </a>
+                                    <a href="#"
+                                      class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center hover:bg-orange-400 transition-colors cursor-pointer">
+                                      <i class="ri-linkedin-fill text-lg"></i>
+                                    </a>
+                                    <a href="#"
+                                      class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center hover:bg-orange-400 transition-colors cursor-pointer">
+                                      <i class="ri-instagram-fill text-lg"></i>
+                                    </a>
+                                  </div>
+                                </div>
+
+                                <div>
+                                  <h4 class="font-semibold mb-4 font-inter">For Businesses</h4>
+                                  <ul class="space-y-3">
+                                    <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Post a
+                                    Project</a></li>
+                                    <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Browse
+                                    Providers</a></li>
+                                    <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">How It
+                                    Works</a></li>
+                                    <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Success
+                                    Stories</a></li>
+                                    <li><a href="#"
+                                    class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Pricing</a></li>
+                                  </ul>
+                                </div>
+
+                                <div>
+                                  <h4 class="font-semibold mb-4 font-inter">For Providers</h4>
+                                  <ul class="space-y-3">
+                                    <li><a routerLink="/register"
+                                      class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Join as
+                                    Provider</a></li>
+                                    <li><a href="#"
+                                      class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Provider
+                                    Resources</a></li>
+                                    <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Success
+                                    Tips</a></li>
+                                    <li><a href="#"
+                                    class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Community</a></li>
+                                    <li><a href="#"
+                                    class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Support</a></li>
+                                  </ul>
+                                </div>
+
+                                <div>
+                                  <h4 class="font-semibold mb-4 font-inter">Company</h4>
+                                  <ul class="space-y-3">
+                                    <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">About
+                                    Us</a></li>
+                                    <li><a href="#"
+                                    class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Careers</a></li>
+                                    <li><a href="#"
+                                    class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Press</a></li>
+                                    <li><a href="#"
+                                    class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Blog</a></li>
+                                    <li><a href="#"
+                                    class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Contact</a></li>
+                                  </ul>
+                                </div>
+
+                                <div>
+                                  <h4 class="font-semibold mb-4 font-inter">Support</h4>
+                                  <ul class="space-y-3">
+                                    <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Help
+                                    Center</a></li>
+                                    <li><a href="#"
+                                    class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Safety</a></li>
+                                    <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Terms
+                                    of Service</a></li>
+                                    <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Privacy
+                                    Policy</a></li>
+                                    <li><a href="#" class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Cookie
+                                    Policy</a></li>
+                                  </ul>
+                                </div>
+                              </div>
+
+                              <div class="border-t border-orange-500 mt-12 pt-8">
+                                <div class="flex flex-col md:flex-row justify-between items-center">
+                                  <p class="text-orange-100 text-sm font-inter">© 2025 GULLYHIVE. All rights reserved.</p>
+                                  <div class="flex items-center space-x-6 mt-4 md:mt-0">
+                                    <a href="https://readdy.ai/?ref=logo"
+                                      class="text-orange-100 hover:text-white text-sm transition-colors cursor-pointer font-inter">
+                                      Powered by Readdy
+                                    </a>
+                                    <div class="flex items-center space-x-2">
+                                      <i class="ri-shield-check-line text-orange-200"></i>
+                                      <span class="text-orange-100 text-sm font-inter">Secure Platform</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </footer>
+                          <!-- Forgot Password Modal -->
+                          @if (showForgotPasswordModal) {
+                            <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
+                              <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
+                                <button (click)="closeForgotPasswordModal()"
+                                  class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
+                                  <i class="ri-close-line text-2xl text-gray-600"></i>
+                                </button>
+                                <div class="text-center mb-6">
+                                  <h2 class="text-2xl font-bold text-gray-900 font-poppins">Reset Password</h2>
+                                  <p class="text-gray-600 font-inter mt-2">Enter your mobile number to receive an OTP</p>
+                                </div>
+                                <form [formGroup]="forgotPasswordForm" (ngSubmit)="sendOtp()" class="space-y-4">
+                                  <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">Mobile Number</label>
+                                    <input type="tel" formControlName="mobile"
+                                      class="w-full px-4 py-3 pb-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+                                      placeholder="Enter your mobile number"
+                                      [class.border-red-500]="forgotPasswordForm.get('mobile')?.invalid && forgotPasswordForm.get('mobile')?.touched"/>
+                                      @if (forgotPasswordForm.get('mobile')?.invalid && forgotPasswordForm.get('mobile')?.touched) {
+                                        <div
+                                          class="mt-1 text-sm text-red-600">
+                                          @if (forgotPasswordForm.get('mobile')?.errors?.['required']) {
+                                            <span>Mobile number is required</span>
+                                          }
+                                          @if (forgotPasswordForm.get('mobile')?.errors?.['pattern']) {
+                                            <span>Invalid mobile number</span>
+                                          }
+                                        </div>
+                                      }
+                                    </div>
+                                    @if (error) {
+                                      <div class="text-sm text-red-600">
+                                        {{ error }}
+                                      </div>
+                                    }
+                                    <!-- Error Alert -->
+                                    <!-- <div *ngIf="error" class="mb-4 text-red-600 font-inter text-sm bg-red-50 border border-red-200 p-3 rounded">
+                                    {{ error }}
+                                  </div> -->
+                                  <button type="submit" [disabled]="forgotPasswordForm.invalid || isSendingOtp"
+                                    class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-inter">
+                                    {{ isSendingOtp ? 'Sending OTP...' : 'Send OTP' }}
+                                  </button>
+                                </form>
+                                <!-- <div #recaptchaContainer></div> -->
+                              </div>
+                            </div>
+                          }
+
+                        </div>
+
+                        <!-- OTP Modal -->
+                        @if (showOtpModals) {
+                          <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
+                            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
+                              <button (click)="showOtpModals = false"
+                                class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
+                                <i class="ri-close-line text-2xl text-gray-600"></i>
+                              </button>
+                              <div class="text-center mb-6">
+                                <h2 class="text-2xl font-bold text-gray-900 font-poppins">Verify Mobile Number</h2>
+                                <p class="text-gray-600 font-inter mt-2">We've sent a 6-digit OTP to <span class="font-semibold text-gray-900">{{ otpMobile }}</span></p>
+                              </div>
+                              <div class="flex justify-center gap-3" (paste)="onPaste($event)">
+                                @for (digit of otp; track trackByIndex(i, digit); let i = $index) {
+                                  <input
+                                    #otpInput
+                                    type="text"
+                                    inputmode="numeric"
+                                    maxlength="1"
+                                    [value]="otp[i]"
+                                    (input)="onInputChange($event, i)"
+                                    (keydown)="onKeyDown($event, i)"
+                                    class="w-14 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                    />
+                                }
+                              </div>
+                              @if (error) {
+                                <p class="text-red-600 text-sm mb-4 text-center font-inter">
+                                  {{ error }}
+                                </p>
+                              }
+                              <div class="text-center mb-4">
+                                @if (canResend) {
+                                  <button type="button" (click)="onResend()" class="text-orange-600 hover:text-orange-700 font-medium text-sm font-inter">Resend OTP</button>
+                                } @else {
+                                  <p class="text-gray-600 text-sm font-inter">Resend OTP in <span class="font-semibold text-orange-600">{{ timer }}s</span></p>
+                                }
+                              </div>
+                              <button (click)="onVerify()" [disabled]="isVerifying || otp.join('').length !== 6"
+                                class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-inter">
+                                {{ isVerifying ? 'Verifying...' : 'Verify & Continue' }}
+                              </button>
+                            </div>
+                          </div>
+                        }
+
+                        <!-- <div id="recaptcha-container"></div> -->
+
+                        <!-- Password Popup -->
+                        @if (showPasswordPopup) {
+                          <div class="fixed inset-0 z-[100] bg-black bg-opacity-50 flex items-center justify-center z-50">
+                            <div class="bg-white rounded-lg p-6 w-96 shadow-lg">
+                              <h3 class="text-lg font-semibold mb-4">Set New Password</h3>
+                              <input
+                                type="password"
+                                placeholder="New Password"
+                                [(ngModel)]="newPassword"
+                                class="w-full border p-2 mb-3 rounded"
+                                />
+                                <input
+                                  type="password"
+                                  placeholder="Confirm Password"
+                                  [(ngModel)]="confirmPassword"
+                                  class="w-full border p-2 mb-3 rounded"
+                                  />
+                                  @if (passwordError) {
+                                    <p class="text-red-500 text-sm mb-2">
+                                      {{ passwordError }}
+                                    </p>
+                                  }
+                                  <div class="flex justify-end gap-2">
+                                    <button
+                                      class="px-4 py-2 bg-gray-300 rounded"
+                                      (click)="closePasswordPopup()">
+                                      Cancel
+                                    </button>
+                                    <button
+                                      class="px-4 py-2 bg-orange-500 text-white rounded"
+                                      (click)="submitNewPassword()">
+                                      Submit
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            }
+
+
+
+                            <!-- ACCOUNT VERIFICATION MODAL -->
+                            <!-- <div *ngIf="showVerificationModal"
+                            class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+
+
+                            <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
+                              <button
+                                (click)="closeVerificationModal()"
+                                class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">
+                                ✕
+                              </button>
+
+                              <div class="text-center mb-6">
+                                <h2 class="text-2xl font-bold text-gray-800">Verify Your Account</h2>
+                                <p class="text-sm text-gray-500 mt-1">Please verify your details to continue</p>
+                              </div>
+
+
+                              <div class="flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-4">
+                                <div>
+                                  <p class="text-xs text-gray-500">Mobile Number</p>
+                                  <p class="font-semibold text-gray-800">{{ verificationData.phone }}</p>
+                                </div>
+
+                                <button
+                                  (click)="openMobileVerification()"
+                                  class="min-w-[90px] bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
+                                  Verify
+                                </button>
+                              </div>
+
+
+                              <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+                                <div>
+                                  <p class="text-xs text-gray-500">Email Address</p>
+                                  <p class="font-semibold text-gray-800">{{ verificationData.email }}</p>
+                                </div>
+
+                                <button
+                                  class="min-w-[90px] bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
+                                  Verify
+                                </button>
+                              </div>
+                            </div>
+
+                          </div> -->
+
+
+                          <!-- <div *ngIf="showVerificationModal"
+                          class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+
+                          <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
+
+                            <button
+                              (click)="closeVerificationModal()"
+                              class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">
+                              ✕
+                            </button>
+
+                            <ng-container *ngIf="!showOtpModal">
+
+                              <div class="flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-4">
+                                <div>
+                                  <p class="text-xs text-gray-500">Mobile Number</p>
+
+                                  <p class="font-semibold text-gray-800">{{ verificationData?.phone }}</p>
+
+
+                                </div>
+
+                                <button
+                                  (click)="openMobileVerification()"
+                                  class="min-w-[90px] bg-orange-600 text-white text-sm px-4 py-2 rounded-lg">
+                                  Verify
+                                </button>
+                              </div>
+
+
+                              <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+                                <div>
+                                  <p class="text-xs text-gray-500">Email Address</p>
+
+                                  <p class="font-semibold text-gray-800"> {{ verificationData?.email }}</p>
+
+                                </div>
+
+                                <button
+                                  (click)="openEmailVerification()"
+                                  class="min-w-[90px] bg-blue-600 text-white text-sm px-4 py-2 rounded-lg">
+                                  Verify
+                                </button>
+                              </div>
+
+                            </ng-container>
+
+
+                            <ng-container *ngIf="showOtpModals">
+
+
+                              <app-otp-verification
+                                *ngIf="verificationType === 'email'"
+                                [email]="verificationData?.email"
+                                [otpToken]="pendingLoginResponse?.emailOtpToken || ''"
+                                (onVerifiedEmail)="onOTPVerifiedEmail($event)"
+                                (onBack)="handleOtpBack()">
+                              </app-otp-verification>
+
+
+                              <app-otp-verification
+                                *ngIf="verificationType === 'mobile'"
+
+                                [mobile]="pendingLoginResponse.phone"
+                                (onVerified)="onOTPVerified()"
+                                (onBack)="handleOtpBack()">
+                              </app-otp-verification>
+
+                            </ng-container>
+
+                          </div>
+                        </div> -->
+
+                        <!-- 🔹 VERIFICATION MODAL -->
+                        @if (showVerificationModal) {
+                          <div
+                            class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
+                            <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
+                              <button
+                                (click)="closeVerificationModal()"
+                                class="absolute top-3 right-3 text-gray-400 text-xl">
+                                ✕
+                              </button>
+                              <!-- MOBILE -->
+                              <div class="flex justify-between bg-orange-50 border rounded-xl px-4 py-3 mb-4">
+                                <div>
+                                  <p class="text-xs text-gray-500">Mobile Number</p>
+                                  <p class="font-semibold">{{ verificationData?.phone }}</p>
+                                </div>
+                                <button
+                                  (click)="openMobileVerification()"
+                                  class="bg-orange-600 text-white text-sm px-4 py-2 rounded-lg">
+                                  Verify
+                                </button>
+                              </div>
+                              <!-- EMAIL -->
+                              <div class="flex justify-between bg-blue-50 border rounded-xl px-4 py-3">
+                                <div>
+                                  <p class="text-xs text-gray-500">Email Address</p>
+                                  <p class="font-semibold">{{ verificationData?.email }}</p>
+                                </div>
+                                <button
+                                  (click)="openEmailVerification()"
+                                  class="bg-blue-600 text-white text-sm px-4 py-2 rounded-lg">
+                                  Verify
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        }
+
+                        <!-- 🔹 OTP MODAL -->
+                        @if (showOtpModal) {
+                          <div
+                            class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
+                            <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
+                              @if (verificationType === 'email') {
+                                <app-otp-verification
+                                  [email]="verificationData?.email"
+                                  [otpToken]="pendingLoginResponse?.emailOtpToken || ''"
+                                  (onVerifiedEmail)="onOTPVerifiedEmail($event)"
+                                  (onBack)="handleOtpBackotp()">
+                                </app-otp-verification>
+                              }
+                              <!-- when Seprate function on otp comopnet .... -->
+                              <!-- <app-otp-verification
+                              *ngIf="verificationType === 'mobile'"
+                              [mobile]="pendingLoginResponse.phone"
+                              [userId]="pendingLoginResponse!.userId.toString()"
+                              (onVerified)="onOTPVerified()"
+                              (onBack)="handleOtpBackotp()">
+                            </app-otp-verification> -->
+                            <!--
+                            when both for regisret and login time manage ...... -->
+                            @if (verificationType === 'mobile') {
+                              <app-otp-verification
+                                [mobile]="pendingLoginResponse?.phone || ''"
+                                [userId]="pendingLoginResponse?.userId?.toString() || ''"
+                                (onVerified)="onOTPVerified()"
+                                (onBack)="handleOtpBackotp()">
+                              </app-otp-verification>
+                            }
+                          </div>
+                        </div>
+                      }

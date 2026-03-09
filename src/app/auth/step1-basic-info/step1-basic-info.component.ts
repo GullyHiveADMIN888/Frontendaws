@@ -1,6 +1,6 @@
 
 import { Component, Input, Output, EventEmitter, Inject } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PLATFORM_ID } from '@angular/core';
 import { AuthService } from '../auth.service';
@@ -13,7 +13,7 @@ import { SimpleChanges } from '@angular/core';
 
 @Component({
     selector: 'app-step1-basic-info',
-    imports: [CommonModule, FormsModule],
+    imports: [FormsModule],
     templateUrl: './step1-basic-info.component.html'
 })
 export class Step1BasicInfoComponent {

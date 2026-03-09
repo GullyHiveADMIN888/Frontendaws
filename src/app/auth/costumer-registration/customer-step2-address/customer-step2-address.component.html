@@ -27,15 +27,19 @@
           (blur)="onBlur('stateId')"
           [class]="'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 bg-white transition-colors ' + getFieldClass('stateId')">
           <option [ngValue]="null">Select State</option>
-          <option *ngFor="let state of states" [ngValue]="state.id">
-            {{ state.name }}
-          </option>
+          @for (state of states; track state) {
+            <option [ngValue]="state.id">
+              {{ state.name }}
+            </option>
+          }
         </select>
-        <div *ngIf="touchedFields.has('stateId') && addressValidationErrors['stateId']" 
-             class="flex items-center mt-1 text-red-500 text-sm">
-          <i class="ri-error-warning-line mr-1"></i>
-          {{ addressValidationErrors['stateId'] }}
-        </div>
+        @if (touchedFields.has('stateId') && addressValidationErrors['stateId']) {
+          <div
+            class="flex items-center mt-1 text-red-500 text-sm">
+            <i class="ri-error-warning-line mr-1"></i>
+            {{ addressValidationErrors['stateId'] }}
+          </div>
+        }
       </div>
 
       <!-- City -->
@@ -50,15 +54,19 @@
           [class]="'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 bg-white transition-colors ' + getFieldClass('cityId')"
           [disabled]="!cities.length">
           <option [ngValue]="null">Select City</option>
-          <option *ngFor="let city of cities" [ngValue]="city.id">
-            {{ city.name }}
-          </option>
+          @for (city of cities; track city) {
+            <option [ngValue]="city.id">
+              {{ city.name }}
+            </option>
+          }
         </select>
-        <div *ngIf="touchedFields.has('cityId') && addressValidationErrors['cityId']" 
-             class="flex items-center mt-1 text-red-500 text-sm">
-          <i class="ri-error-warning-line mr-1"></i>
-          {{ addressValidationErrors['cityId'] }}
-        </div>
+        @if (touchedFields.has('cityId') && addressValidationErrors['cityId']) {
+          <div
+            class="flex items-center mt-1 text-red-500 text-sm">
+            <i class="ri-error-warning-line mr-1"></i>
+            {{ addressValidationErrors['cityId'] }}
+          </div>
+        }
       </div>
 
     </div>
@@ -70,148 +78,166 @@
           Address Line 1 <span class="text-gray-500">(Optional)</span>
         </label>
         <input type="text"
-               [value]="formData.addressLine1 || ''"
-               (input)="onInput('addressLine1', $any($event.target).value)"
-               (blur)="onBlur('addressLine1')"
-               [class]="'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 transition-colors ' + getFieldClass('addressLine1')"
-               placeholder="House/Flat No., Building Name"
-               maxlength="100" />
-        <div *ngIf="touchedFields.has('addressLine1') && addressValidationErrors['addressLine1']" 
-             class="flex items-center mt-1 text-red-500 text-sm">
-          <i class="ri-error-warning-line mr-1"></i>
-          {{ addressValidationErrors['addressLine1'] }}
+          [value]="formData.addressLine1 || ''"
+          (input)="onInput('addressLine1', $any($event.target).value)"
+          (blur)="onBlur('addressLine1')"
+          [class]="'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 transition-colors ' + getFieldClass('addressLine1')"
+          placeholder="House/Flat No., Building Name"
+          maxlength="100" />
+          @if (touchedFields.has('addressLine1') && addressValidationErrors['addressLine1']) {
+            <div
+              class="flex items-center mt-1 text-red-500 text-sm">
+              <i class="ri-error-warning-line mr-1"></i>
+              {{ addressValidationErrors['addressLine1'] }}
+            </div>
+          }
+          <div class="flex justify-end mt-1">
+            <span class="text-xs text-gray-500">
+              {{ formData.addressLine1?.length || 0 }}/100
+            </span>
+          </div>
         </div>
-        <div class="flex justify-end mt-1">
-          <span class="text-xs text-gray-500">
-            {{ formData.addressLine1?.length || 0 }}/100
-          </span>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Address Line 2 <span class="text-gray-500">(Optional)</span>
+          </label>
+          <input type="text"
+            [value]="formData.addressLine2 || ''"
+            (input)="onInput('addressLine2', $any($event.target).value)"
+            (blur)="onBlur('addressLine2')"
+            [class]="'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 transition-colors ' + getFieldClass('addressLine2')"
+            placeholder="Street, Area, Colony"
+            maxlength="100" />
+            @if (touchedFields.has('addressLine2') && addressValidationErrors['addressLine2']) {
+              <div
+                class="flex items-center mt-1 text-red-500 text-sm">
+                <i class="ri-error-warning-line mr-1"></i>
+                {{ addressValidationErrors['addressLine2'] }}
+              </div>
+            }
+            <div class="flex justify-end mt-1">
+              <span class="text-xs text-gray-500">
+                {{ formData.addressLine2?.length || 0 }}/100
+              </span>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          Address Line 2 <span class="text-gray-500">(Optional)</span>
-        </label>
-        <input type="text"
-               [value]="formData.addressLine2 || ''"
-               (input)="onInput('addressLine2', $any($event.target).value)"
-               (blur)="onBlur('addressLine2')"
-               [class]="'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 transition-colors ' + getFieldClass('addressLine2')"
-               placeholder="Street, Area, Colony"
-               maxlength="100" />
-        <div *ngIf="touchedFields.has('addressLine2') && addressValidationErrors['addressLine2']" 
-             class="flex items-center mt-1 text-red-500 text-sm">
-          <i class="ri-error-warning-line mr-1"></i>
-          {{ addressValidationErrors['addressLine2'] }}
+        <!-- Locality/Area -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Locality <span class="text-gray-500">(Optional)</span>
+          </label>
+          <select
+            [(ngModel)]="formData.areaId"
+            (ngModelChange)="onInput('areaId', $event); validateField('areaId', $event)"
+            (blur)="onBlur('areaId')"
+            [class]="'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 bg-white transition-colors ' + getFieldClass('areaId')"
+            [disabled]="!areas.length">
+            <option [ngValue]="null">Select Locality</option>
+            @for (area of areas; track area) {
+              <option [ngValue]="area.id">
+                {{ area.area_name }}
+              </option>
+            }
+          </select>
+          @if (touchedFields.has('areaId') && addressValidationErrors['areaId']) {
+            <div
+              class="flex items-center mt-1 text-red-500 text-sm">
+              <i class="ri-error-warning-line mr-1"></i>
+              {{ addressValidationErrors['areaId'] }}
+            </div>
+          }
         </div>
-        <div class="flex justify-end mt-1">
-          <span class="text-xs text-gray-500">
-            {{ formData.addressLine2?.length || 0 }}/100
-          </span>
+
+        <!-- Landmark & PIN Code -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Landmark <span class="text-gray-500">(Optional)</span>
+            </label>
+            <input type="text"
+              [value]="formData.landmark || ''"
+              (input)="onInput('landmark', $any($event.target).value)"
+              (blur)="onBlur('landmark')"
+              [class]="'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 transition-colors ' + getFieldClass('landmark')"
+              placeholder="Near..."
+              maxlength="50" />
+              @if (touchedFields.has('landmark') && addressValidationErrors['landmark']) {
+                <div
+                  class="flex items-center mt-1 text-red-500 text-sm">
+                  <i class="ri-error-warning-line mr-1"></i>
+                  {{ addressValidationErrors['landmark'] }}
+                </div>
+              }
+              <div class="flex justify-end mt-1">
+                <span class="text-xs text-gray-500">
+                  {{ formData.landmark?.length || 0 }}/50
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                PIN Code <span class="text-gray-500">(Optional)</span>
+              </label>
+              <input type="text"
+                [value]="formData.pinCode || ''"
+                (input)="onPinCodeInput($event)"
+                (blur)="onBlur('pinCode')"
+                [class]="'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 transition-colors ' + getFieldClass('pinCode')"
+                placeholder="6-digit PIN code"
+                maxlength="6" />
+                @if (touchedFields.has('pinCode') && addressValidationErrors['pinCode']) {
+                  <div
+                    class="flex items-center mt-1 text-red-500 text-sm">
+                    <i class="ri-error-warning-line mr-1"></i>
+                    {{ addressValidationErrors['pinCode'] }}
+                  </div>
+                }
+                @if (touchedFields.has('pinCode') && formData.pinCode && formData.pinCode.length === 6 && !addressValidationErrors['pinCode']) {
+                  <div
+                    class="flex items-center mt-1 text-green-600 text-sm">
+                    <i class="ri-checkbox-circle-line mr-1"></i>
+                    Valid PIN code
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Validation Summary -->
+            @if (touchedFields.size > 0 && hasAddressErrors) {
+              <div
+                class="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+                <div class="flex items-center text-red-600 mb-2">
+                  <i class="ri-error-warning-line mr-2"></i>
+                  <span class="font-semibold">Please fix the following address errors:</span>
+                </div>
+                <ul class="list-disc list-inside text-sm text-red-600 space-y-1">
+                  @for (error of errorList; track error) {
+                    <li>{{ error }}</li>
+                  }
+                </ul>
+              </div>
+            }
+
+            <!-- Navigation -->
+            <div class="flex justify-between pt-6 border-t border-gray-200">
+              <button type="button"
+                (click)="back.emit()"
+                class="px-8 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                <i class="ri-arrow-left-line mr-2"></i>
+                Back
+              </button>
+
+              <button type="button"
+                (click)="onNext()"
+                class="px-8 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium">
+                Continue to Preferences
+                <i class="ri-arrow-right-line ml-2"></i>
+              </button>
+            </div>
+
+          </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Locality/Area -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-2">
-        Locality <span class="text-gray-500">(Optional)</span>
-      </label>
-      <select
-        [(ngModel)]="formData.areaId"
-        (ngModelChange)="onInput('areaId', $event); validateField('areaId', $event)"
-        (blur)="onBlur('areaId')"
-        [class]="'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 bg-white transition-colors ' + getFieldClass('areaId')"
-        [disabled]="!areas.length">
-        <option [ngValue]="null">Select Locality</option>
-        <option *ngFor="let area of areas" [ngValue]="area.id">
-          {{ area.area_name }}
-        </option>
-      </select>
-      <div *ngIf="touchedFields.has('areaId') && addressValidationErrors['areaId']" 
-           class="flex items-center mt-1 text-red-500 text-sm">
-        <i class="ri-error-warning-line mr-1"></i>
-        {{ addressValidationErrors['areaId'] }}
-      </div>
-    </div>
-
-    <!-- Landmark & PIN Code -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          Landmark <span class="text-gray-500">(Optional)</span>
-        </label>
-        <input type="text"
-               [value]="formData.landmark || ''"
-               (input)="onInput('landmark', $any($event.target).value)"
-               (blur)="onBlur('landmark')"
-               [class]="'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 transition-colors ' + getFieldClass('landmark')"
-               placeholder="Near..."
-               maxlength="50" />
-        <div *ngIf="touchedFields.has('landmark') && addressValidationErrors['landmark']" 
-             class="flex items-center mt-1 text-red-500 text-sm">
-          <i class="ri-error-warning-line mr-1"></i>
-          {{ addressValidationErrors['landmark'] }}
-        </div>
-        <div class="flex justify-end mt-1">
-          <span class="text-xs text-gray-500">
-            {{ formData.landmark?.length || 0 }}/50
-          </span>
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          PIN Code <span class="text-gray-500">(Optional)</span>
-        </label>
-        <input type="text"
-               [value]="formData.pinCode || ''"
-               (input)="onPinCodeInput($event)"
-               (blur)="onBlur('pinCode')"
-               [class]="'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 transition-colors ' + getFieldClass('pinCode')"
-               placeholder="6-digit PIN code"
-               maxlength="6" />
-        <div *ngIf="touchedFields.has('pinCode') && addressValidationErrors['pinCode']" 
-             class="flex items-center mt-1 text-red-500 text-sm">
-          <i class="ri-error-warning-line mr-1"></i>
-          {{ addressValidationErrors['pinCode'] }}
-        </div>
-        <div *ngIf="touchedFields.has('pinCode') && formData.pinCode && formData.pinCode.length === 6 && !addressValidationErrors['pinCode']" 
-             class="flex items-center mt-1 text-green-600 text-sm">
-          <i class="ri-checkbox-circle-line mr-1"></i>
-          Valid PIN code
-        </div>
-      </div>
-    </div>
-
-    <!-- Validation Summary -->
-    <div *ngIf="touchedFields.size > 0 && hasAddressErrors" 
-         class="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-      <div class="flex items-center text-red-600 mb-2">
-        <i class="ri-error-warning-line mr-2"></i>
-        <span class="font-semibold">Please fix the following address errors:</span>
-      </div>
-      <ul class="list-disc list-inside text-sm text-red-600 space-y-1">
-        <li *ngFor="let error of errorList">{{ error }}</li>
-      </ul>
-    </div>
-
-    <!-- Navigation -->
-    <div class="flex justify-between pt-6 border-t border-gray-200">
-      <button type="button"
-              (click)="back.emit()"
-              class="px-8 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium">
-        <i class="ri-arrow-left-line mr-2"></i>
-        Back
-      </button>
-
-      <button type="button"
-              (click)="onNext()"
-              class="px-8 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium">
-        Continue to Preferences
-        <i class="ri-arrow-right-line ml-2"></i>
-      </button>
-    </div>
-
-  </div>
-</div>

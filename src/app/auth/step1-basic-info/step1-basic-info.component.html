@@ -19,217 +19,244 @@
         </label>
         <div class="relative">
           <div class="w-32 h-32 rounded-full border-4 border-gray-200 overflow-hidden bg-gray-100 mx-auto">
-            <ng-container *ngIf="profilePreview; else noPhotoTemplate">
+            @if (profilePreview) {
               <img [src]="profilePreview" alt="Profile" class="w-full h-full object-cover object-top" />
-            </ng-container>
-
-            <ng-template #noPhotoTemplate>
+            } @else {
               <div class="w-full h-full flex items-center justify-center">
                 <i class="ri-user-line text-5xl text-gray-400"></i>
               </div>
-            </ng-template>
+            }
+
           </div>
           <input aria-label="Upload Profile Picture" type="file" accept="image/*"
             (change)="onProfilePictureChange($event)" class="hidden" [id]="fileInputId" />
-          <label [for]="fileInputId"
-            class="absolute bottom-0 right-1/2 transform translate-x-16 bg-orange-600 text-white w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:bg-orange-700 transition-colors shadow-lg">
-            <i class="ri-camera-line text-xl"></i>
+            <label [for]="fileInputId"
+              class="absolute bottom-0 right-1/2 transform translate-x-16 bg-orange-600 text-white w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:bg-orange-700 transition-colors shadow-lg">
+              <i class="ri-camera-line text-xl"></i>
+            </label>
+          </div>
+          @if (profilePreview) {
+            <button type="button" (click)="removeProfilePicture()"
+              class="mt-3 text-sm text-red-600 hover:text-red-700 font-inter whitespace-nowrap cursor-pointer">
+              <i class="ri-delete-bin-line mr-1"></i>
+              Remove Photo
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Personal Details -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Full Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
+            Full Name <span class="text-orange-600">*</span>
           </label>
-        </div>
-        <button *ngIf="profilePreview" type="button" (click)="removeProfilePicture()"
-          class="mt-3 text-sm text-red-600 hover:text-red-700 font-inter whitespace-nowrap cursor-pointer">
-          <i class="ri-delete-bin-line mr-1"></i>
-          Remove Photo
-        </button>
-      </div>
-    </div>
-
-    <!-- Personal Details -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Full Name -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
-          Full Name <span class="text-orange-600">*</span>
-        </label>
-        <input type="text" [value]="formData?.fullName || ''"
-          (input)="onInputFieldChange('fullName', $any($event.target).value)"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-          placeholder="Enter your full name" maxlength="50" />
-        <p *ngIf="errors?.fullName" class="text-red-500 text-sm mt-1 font-inter">
-          {{ errors.fullName }}
-        </p>
-      </div>
+          <input type="text" [value]="formData?.fullName || ''"
+            (input)="onInputFieldChange('fullName', $any($event.target).value)"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+            placeholder="Enter your full name" maxlength="50" />
+            @if (errors?.fullName) {
+              <p class="text-red-500 text-sm mt-1 font-inter">
+                {{ errors.fullName }}
+              </p>
+            }
+          </div>
 
 
 
-      <!-- Mobile with OTP -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
-          Mobile Number <span class="text-orange-600">*</span>
-        </label>
+          <!-- Mobile with OTP -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
+              Mobile Number <span class="text-orange-600">*</span>
+            </label>
 
-        <input type="tel" [value]="formData?.mobile || ''"
-          (input)="onInputFieldChange('mobile', $any($event.target).value, $event)"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-          placeholder="10-digit mobile number" maxlength="10" />
+            <input type="tel" [value]="formData?.mobile || ''"
+              (input)="onInputFieldChange('mobile', $any($event.target).value, $event)"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+              placeholder="10-digit mobile number" maxlength="10" />
 
 
 
-        <p *ngIf="errors?.mobile" class="text-red-500 text-sm mt-1 font-inter">
-          {{ errors.mobile }}
-        </p>
-      </div>
-    </div>
+              @if (errors?.mobile) {
+                <p class="text-red-500 text-sm mt-1 font-inter">
+                  {{ errors.mobile }}
+                </p>
+              }
+            </div>
+          </div>
 
 
 
 
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
 
-      <!-- Email -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
-          Email Address <span class="text-orange-600">*</span>
-        </label>
-        <input type="email" [value]="formData?.email || ''"
-          (input)="onInputFieldChange('email', $any($event.target).value)"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-          placeholder="your.email@example.com" maxlength="50" />
-        <p *ngIf="errors?.email" class="text-red-500 text-sm mt-1 font-inter">
-          {{ errors.email }}
-        </p>
-      </div>
+            <!-- Email -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
+                Email Address <span class="text-orange-600">*</span>
+              </label>
+              <input type="email" [value]="formData?.email || ''"
+                (input)="onInputFieldChange('email', $any($event.target).value)"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+                placeholder="your.email@example.com" maxlength="50" />
+                @if (errors?.email) {
+                  <p class="text-red-500 text-sm mt-1 font-inter">
+                    {{ errors.email }}
+                  </p>
+                }
+              </div>
 
-      <div class="relative">
-        <label class="block text-sm font-medium mb-2 font-inter">
-          Password *
-        </label>
-        <input [type]="showPassword ? 'text' : 'password'" [value]="formData?.password || ''"
-          (input)="onInputFieldChange('password', $any($event.target).value)"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-          placeholder="Enter password" minlength="6" maxlength="34" />
-        <button type="button" (click)="togglePasswordVisibility()"
-          class="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none flex items-center justify-center">
-          <i class="ri-eye-line pt-5" *ngIf="!showPassword"></i>
-          <i class="ri-eye-off-line pt-5" *ngIf="showPassword"></i>
-        </button>
-        <p *ngIf="errors?.password" class="text-red-500 text-sm mt-1 font-inter">
-          {{ errors.password }}
-        </p>
-      </div>
+              <div class="relative">
+                <label class="block text-sm font-medium mb-2 font-inter">
+                  Password *
+                </label>
+                <input [type]="showPassword ? 'text' : 'password'" [value]="formData?.password || ''"
+                  (input)="onInputFieldChange('password', $any($event.target).value)"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+                  placeholder="Enter password" minlength="6" maxlength="34" />
+                  <button type="button" (click)="togglePasswordVisibility()"
+                    class="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none flex items-center justify-center">
+                    @if (!showPassword) {
+                      <i class="ri-eye-line pt-5"></i>
+                    }
+                    @if (showPassword) {
+                      <i class="ri-eye-off-line pt-5"></i>
+                    }
+                  </button>
+                  @if (errors?.password) {
+                    <p class="text-red-500 text-sm mt-1 font-inter">
+                      {{ errors.password }}
+                    </p>
+                  }
+                </div>
 
-    </div>
-
-
-    <!-- Mobile with OTP -->
-    <!-- <div class="md:col-span-2">
-        <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
-          Mobile Number <span class="text-orange-600">*</span>
-        </label>
-        <div class="flex gap-3">
-          <input type="tel" [value]="formData?.mobile || ''"
-            (input)="onInputFieldChange('mobile', $any($event.target).value, $event)"
-            class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-            placeholder="10-digit mobile number" maxlength="10" />
-
-          <button type="button" (click)="onSendOTP()"
-            class="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium font-inter whitespace-nowrap cursor-pointer">
-            <i class="ri-mail-send-line mr-2"></i>
-            Send OTP
-          </button>
-        </div>
-        <p *ngIf="errors?.mobile" class="text-red-500 text-sm mt-1 font-inter">
-          {{ errors.mobile }}
-        </p>
-      </div> -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
-          Service Category <span class="text-orange-600">*</span>
-        </label>
-        <select [(ngModel)]="formData.serviceCategoryId" (ngModelChange)="onCategoryChange($event)"
-          name="serviceCategoryId" class="w-full px-4 py-3 border border-gray-300 rounded-lg">
-
-          <option [ngValue]="null">Select Category</option>
-
-          <option *ngFor="let cat of parentCategories" [ngValue]="cat.id">
-            {{ cat.name }}
-          </option>
-        </select>
-        <p *ngIf="errors?.serviceCategoryId" class="text-red-500 text-sm mt-1 font-inter">
-          {{ errors.serviceCategoryId }}
-        </p>
-
-      </div>
-      <!-- Professional Type -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
-          Professional Type <span class="text-orange-600">*</span>
-        </label>
+              </div>
 
 
-        <select [(ngModel)]="formData.professionalType" name="professionalType"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+              <!-- Mobile with OTP -->
+              <!-- <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
+                Mobile Number <span class="text-orange-600">*</span>
+              </label>
+              <div class="flex gap-3">
+                <input type="tel" [value]="formData?.mobile || ''"
+                  (input)="onInputFieldChange('mobile', $any($event.target).value, $event)"
+                  class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+                  placeholder="10-digit mobile number" maxlength="10" />
 
-          <option [ngValue]="null">Select Professional Type</option>
+                  <button type="button" (click)="onSendOTP()"
+                    class="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium font-inter whitespace-nowrap cursor-pointer">
+                    <i class="ri-mail-send-line mr-2"></i>
+                    Send OTP
+                  </button>
+                </div>
+                <p *ngIf="errors?.mobile" class="text-red-500 text-sm mt-1 font-inter">
+                  {{ errors.mobile }}
+                </p>
+              </div> -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          <option *ngFor="let type of professionalTypes" [ngValue]="type.value">
-            {{ type.label }}
-          </option>
-        </select>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
+                    Service Category <span class="text-orange-600">*</span>
+                  </label>
+                  <select [(ngModel)]="formData.serviceCategoryId" (ngModelChange)="onCategoryChange($event)"
+                    name="serviceCategoryId" class="w-full px-4 py-3 border border-gray-300 rounded-lg">
 
-        <p *ngIf="errors?.professionalType" class="text-red-500 text-sm mt-1 font-inter">
-          {{ errors.professionalType }}
-        </p>
-      </div>
-    </div>
+                    <option [ngValue]="null">Select Category</option>
 
-    <div>
+                    @for (cat of parentCategories; track cat) {
+                      <option [ngValue]="cat.id">
+                        {{ cat.name }}
+                      </option>
+                    }
+                  </select>
+                  @if (errors?.serviceCategoryId) {
+                    <p class="text-red-500 text-sm mt-1 font-inter">
+                      {{ errors.serviceCategoryId }}
+                    </p>
+                  }
 
-      <!-- Subcategory Checkboxes -->
-      <div *ngIf="subCategories.length" class="mt-4">
-        <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
-          Sub Categories <span class="text-orange-600">*</span>
-        </label>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-80 overflow-y-auto pr-2">
-          <label *ngFor="let sub of subCategories"
-            class="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all"
-            [class.border-orange-500]="formData.subCategoryIds?.includes(sub.id)"
-            [class.bg-orange-50]="formData.subCategoryIds?.includes(sub.id)">
-            <input type="checkbox"
-              class="w-5 h-5 text-orange-600 border-gray-300 rounded focus:ring-orange-500 cursor-pointer"
-              [checked]="formData.subCategoryIds?.includes(sub.id)" (change)="toggleSubCategory(sub.id)" />
-            <span class="ml-3">{{ sub.name }}</span>
-          </label>
-        </div>
-        <p *ngIf="errors?.subCategoryIds" class="text-red-500 text-sm mt-1 font-inter">
-          {{ errors.subCategoryIds }}
-        </p>
-      </div>
+                </div>
+                <!-- Professional Type -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
+                    Professional Type <span class="text-orange-600">*</span>
+                  </label>
 
 
+                  <select [(ngModel)]="formData.professionalType" name="professionalType"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+
+                    <option [ngValue]="null">Select Professional Type</option>
+
+                    @for (type of professionalTypes; track type) {
+                      <option [ngValue]="type.value">
+                        {{ type.label }}
+                      </option>
+                    }
+                  </select>
+
+                  @if (errors?.professionalType) {
+                    <p class="text-red-500 text-sm mt-1 font-inter">
+                      {{ errors.professionalType }}
+                    </p>
+                  }
+                </div>
+              </div>
+
+              <div>
+
+                <!-- Subcategory Checkboxes -->
+                @if (subCategories.length) {
+                  <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
+                      Sub Categories <span class="text-orange-600">*</span>
+                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-80 overflow-y-auto pr-2">
+                      @for (sub of subCategories; track sub) {
+                        <label
+                          class="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all"
+                          [class.border-orange-500]="formData.subCategoryIds?.includes(sub.id)"
+                          [class.bg-orange-50]="formData.subCategoryIds?.includes(sub.id)">
+                          <input type="checkbox"
+                            class="w-5 h-5 text-orange-600 border-gray-300 rounded focus:ring-orange-500 cursor-pointer"
+                            [checked]="formData.subCategoryIds?.includes(sub.id)" (change)="toggleSubCategory(sub.id)" />
+                            <span class="ml-3">{{ sub.name }}</span>
+                          </label>
+                        }
+                      </div>
+                      @if (errors?.subCategoryIds) {
+                        <p class="text-red-500 text-sm mt-1 font-inter">
+                          {{ errors.subCategoryIds }}
+                        </p>
+                      }
+                    </div>
+                  }
 
 
 
-    </div>
 
-    <!-- Navigation -->
-    <div class="flex justify-end pt-6 border-t border-gray-200">
 
-      <button type="button" (click)="onNextClick()"
-        class="px-8 py-3 bg-orange-600 text-white rounded-lg transition-colors font-medium font-inter">
-        Continue to Legal Identity
-      </button>
+                </div>
 
-    </div>
-    <!-- <p *ngIf="!isMobileVerified" class="text-sm text-gray-500 mt-2 font-inter text-right">
-        Please verify your mobile number to continue
-      </p> -->
-  </div>
+                <!-- Navigation -->
+                <div class="flex justify-end pt-6 border-t border-gray-200">
 
-  <!-- [class.opacity-50]="!isMobileVerified"
-  [class.cursor-not-allowed]="!isMobileVerified" -->
-</div>
+                  <button type="button" (click)="onNextClick()"
+                    class="px-8 py-3 bg-orange-600 text-white rounded-lg transition-colors font-medium font-inter">
+                    Continue to Legal Identity
+                  </button>
+
+                </div>
+                <!-- <p *ngIf="!isMobileVerified" class="text-sm text-gray-500 mt-2 font-inter text-right">
+                Please verify your mobile number to continue
+              </p> -->
+            </div>
+
+            <!-- [class.opacity-50]="!isMobileVerified"
+            [class.cursor-not-allowed]="!isMobileVerified" -->
+          </div>

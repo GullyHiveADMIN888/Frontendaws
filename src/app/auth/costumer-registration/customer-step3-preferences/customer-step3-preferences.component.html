@@ -45,59 +45,62 @@
         <i class="ri-information-line text-orange-600 mr-2"></i>
         Registration Summary
       </h3>
-      
+
       <div class="space-y-2 text-sm">
         <p><span class="font-medium">Name:</span> {{ formData.fullName || 'Not provided' }}</p>
         <p><span class="font-medium">Mobile:</span> {{ formData.mobile || 'Not provided' }}</p>
         <p><span class="font-medium">Email:</span> {{ formData.email || 'Not provided' }}</p>
-        <p *ngIf="formData.addressLine1">
-          <span class="font-medium">Address:</span> {{ formData.addressLine1 }}{{ formData.addressLine2 ? ', ' + formData.addressLine2 : '' }}
-        </p>
+        @if (formData.addressLine1) {
+          <p>
+            <span class="font-medium">Address:</span> {{ formData.addressLine1 }}{{ formData.addressLine2 ? ', ' + formData.addressLine2 : '' }}
+          </p>
+        }
         <p><span class="font-medium">Language:</span> {{ getLanguageName(formData.preferredLanguage) }}</p>
       </div>
     </div>
 
     <!-- Terms -->
     <div class="flex items-start">
-      <input type="checkbox" 
-             id="terms" 
-             [(ngModel)]="termsAccepted"
-             (change)="onTermsChange()"
-             class="mt-1 mr-3 w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500">
-      <label for="terms" class="text-sm text-gray-600">
-        I agree to the <a href="#" class="text-orange-600 hover:underline">Terms and Conditions</a> and 
-        <a href="#" class="text-orange-600 hover:underline">Privacy Policy</a>
-      </label>
+      <input type="checkbox"
+        id="terms"
+        [(ngModel)]="termsAccepted"
+        (change)="onTermsChange()"
+        class="mt-1 mr-3 w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500">
+        <label for="terms" class="text-sm text-gray-600">
+          I agree to the <a href="#" class="text-orange-600 hover:underline">Terms and Conditions</a> and
+          <a href="#" class="text-orange-600 hover:underline">Privacy Policy</a>
+        </label>
+      </div>
+      @if (termsError) {
+        <p class="text-red-500 text-sm mt-1">{{ termsError }}</p>
+      }
+
+      <!-- Navigation -->
+      <div class="flex justify-between pt-6 border-t border-gray-200">
+        <button type="button"
+          (click)="back.emit()"
+          [disabled]="isSubmitting"
+          class="px-8 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50">
+          <i class="ri-arrow-left-line mr-2"></i>
+          Back
+        </button>
+
+        <button type="button"
+          (click)="onSubmit()"
+          [disabled]="isSubmitting"
+          class="px-8 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+
+          @if (isSubmitting) {
+            <i class="ri-loader-4-line animate-spin mr-2"></i>
+            Registering...
+          } @else {
+            <i class="ri-check-line mr-2"></i>
+            Complete Registration
+          }
+
+
+        </button>
+      </div>
+
     </div>
-    <p *ngIf="termsError" class="text-red-500 text-sm mt-1">{{ termsError }}</p>
-
-    <!-- Navigation -->
-    <div class="flex justify-between pt-6 border-t border-gray-200">
-      <button type="button"
-              (click)="back.emit()"
-              [disabled]="isSubmitting"
-              class="px-8 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50">
-        <i class="ri-arrow-left-line mr-2"></i>
-        Back
-      </button>
-
-      <button type="button"
-              (click)="onSubmit()"
-              [disabled]="isSubmitting"
-              class="px-8 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed">
-
-        <ng-container *ngIf="isSubmitting; else submitText">
-          <i class="ri-loader-4-line animate-spin mr-2"></i>
-          Registering...
-        </ng-container>
-
-        <ng-template #submitText>
-          <i class="ri-check-line mr-2"></i>
-          Complete Registration
-        </ng-template>
-
-      </button>
-    </div>
-
   </div>
-</div>

@@ -1,6 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { StepIndicatorComponent } from '../step-indicator/step-indicator.component';
 import { Step1BasicInfoComponent } from '../step1-basic-info/step1-basic-info.component';
 import { Step2LegalIdentityComponent } from '../step2-legal-identity/step2-legal-identity.component';
@@ -16,14 +16,13 @@ import { ViewChild } from '@angular/core';
 @Component({
     selector: 'app-register',
     imports: [
-        RouterModule,
-        CommonModule,
-        StepIndicatorComponent,
-        Step1BasicInfoComponent,
-        Step2LegalIdentityComponent,
-        Step3ProfessionalDetailsComponent,
-        OTPVerificationComponent,
-    ],
+    RouterModule,
+    StepIndicatorComponent,
+    Step1BasicInfoComponent,
+    Step2LegalIdentityComponent,
+    Step3ProfessionalDetailsComponent,
+    OTPVerificationComponent
+],
     templateUrl: './register.component.html'
 })
 

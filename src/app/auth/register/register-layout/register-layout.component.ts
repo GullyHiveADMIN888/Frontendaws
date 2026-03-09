@@ -1,10 +1,10 @@
  import { Component } from '@angular/core';
  import { RouterModule, RouterOutlet } from '@angular/router';
- import { CommonModule } from '@angular/common';
+ 
 
 @Component({
     selector: 'app-register-layout',
-    imports: [RouterOutlet, CommonModule, RouterModule], // ✅ include CommonModule
+    imports: [RouterOutlet, RouterModule], // ✅ include CommonModule
     templateUrl: './register-layout.component.html'
 })
 export class RegisterLayoutComponent {

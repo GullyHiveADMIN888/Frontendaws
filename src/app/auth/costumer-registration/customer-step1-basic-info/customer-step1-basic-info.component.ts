@@ -1,12 +1,12 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { CustomerAuthService } from '../services/customer-auth.service';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 
 @Component({
     selector: 'app-customer-step1-basic-info',
-    imports: [CommonModule, FormsModule],
+    imports: [FormsModule],
     templateUrl: './customer-step1-basic-info.component.html'
 })
 export class CustomerStep1BasicInfoComponent implements OnInit, OnChanges {

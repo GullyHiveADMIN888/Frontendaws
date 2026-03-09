@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit , Inject} from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../auth.service';
 import { PLATFORM_ID } from '@angular/core';
@@ -11,7 +11,7 @@ import {  HostListener } from '@angular/core';
 
 @Component({
     selector: 'app-step2-legal-identity',
-    imports: [CommonModule, FormsModule],
+    imports: [FormsModule],
     templateUrl: './step2-legal-identity.component.html'
 })
 export class Step2LegalIdentityComponent implements OnInit {
