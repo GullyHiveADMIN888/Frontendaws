@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
-// import { environment } from '../../environments/environment'
- import { environment } from '../../environments/environment.prod';
+ // import { environment } from '../../environments/environment'
+  import { environment } from '../../environments/environment.prod';
 
 
 
@@ -74,16 +74,39 @@ export class AuthService implements CanActivate {
     if (name) localStorage.setItem('name', name);
   }
 
-  redirectByRole(role: string) {
-    const routes: Record<string, string> = {
-      Admin: '/admin',
-      SuperAdmin: '/admin',
-      Buyer: '/buyer',
-      Seller: '/seller'
-    };
+  // redirectByRole(role: string) {
+  //   const routes: Record<string, string> = {
+  //     Admin: '/admin',
+  //     SuperAdmin: '/admin',
+  //     Buyer: '/buyer',
+  //     Seller: '/seller'
+  //   };
 
-    this.router.navigate([routes[role] ?? '/login']);
+  //   this.router.navigate([routes[role] ?? '/login']);
+  // }
+
+  redirectByRole(role: string, providerType?: string | null) {
+  const routes: Record<string, string> = {
+    Admin: '/admin',
+    SuperAdmin: '/admin',
+    Buyer: '/buyer'
+  };
+
+  // Special case for Seller
+  if (role === 'Seller') {
+
+    if (providerType === 'business') {
+      this.router.navigate(['/business']);
+      return;
+    }
+
+    // default seller (individual)
+    this.router.navigate(['/seller']);
+    return;
   }
+
+  this.router.navigate([routes[role] ?? '/login']);
+}
 
   logout() {
     localStorage.clear();

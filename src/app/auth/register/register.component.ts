@@ -42,6 +42,8 @@ export class RegisterComponent {
 
   formData: any = {
     fullName: '',
+    firstName: '',
+    lastName: '',
     email: '',
     mobile: '',
     serviceCategory: [],
@@ -57,6 +59,7 @@ export class RegisterComponent {
     pinCode: '',
     role: '',
     password: '',
+    confirmPassword: '',
     registrationDocument: File,
     addressProof: File,
     // Step 2 - Business Address
@@ -180,7 +183,10 @@ export class RegisterComponent {
     const formData = new FormData();
 
     // Step 1
-    formData.append('FullName', this.formData.fullName || '');
+  //  formData.append('FullName', this.formData.fullName || '');
+    const fullName = `${this.formData.firstName || ''} ${this.formData.lastName || ''}`.trim();
+
+  formData.append('FullName', fullName);
     formData.append('Email', this.formData.email || '');
     formData.append('Mobile', this.formData.mobile || '');
     formData.append('ProfessionalType', this.formData.professionalType || '');

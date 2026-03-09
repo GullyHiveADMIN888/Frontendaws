@@ -688,7 +688,8 @@ onLoginSubmit(event: Event): void {
     this.closeLoginModal();
 
     if (this.authService) {
-      this.authService.redirectByRole(response.role);
+     // this.authService.redirectByRole(response.role);
+     this.authService.redirectByRole(response.role, response.providerType);
     } else {
       window.location.href = '/dashboard';
     }
