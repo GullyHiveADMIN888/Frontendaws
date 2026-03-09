@@ -91,28 +91,28 @@ ngOnInit(): void {
             title: 'Legal Identity Address Proof', 
             description: 'Manage your business information and credentials', 
             link: ['/seller/leagelIdentity/business', this.sellerId] 
-          },
-          { 
-            icon: 'ri-tools-line', 
-            title: 'Services & Pricing', 
-            description: 'Edit services you offer and pricing', 
-            link: ['/seller/settings/services'] 
-          },
-          { 
-            icon: 'ri-tools-line', 
-            title: 'Services & Pricingssss', 
-            description: 'Edit services you offer and pricing', 
-            link: ['/seller/settings/services'] 
           }
+          // { 
+          //   icon: 'ri-tools-line', 
+          //   title: 'Services & Pricing', 
+          //   description: 'Edit services you offer and pricing', 
+          //   link: ['/seller/settings/services'] 
+          // },
+          // { 
+          //   icon: 'ri-tools-line', 
+          //   title: 'Services & Pricingssss', 
+          //   description: 'Edit services you offer and pricing', 
+          //   link: ['/seller/settings/services'] 
+          // }
         ]
       },
-      {
-        title: 'Availability & Notifications',
-        items: [
-          { icon: 'ri-calendar-line', title: 'Availability', description: 'Set your working hours and schedule', link: ['/seller/settings/availability'] },
-          { icon: 'ri-notification-line', title: 'Notifications', description: 'Manage email and push notifications', link: ['/seller/settings/notifications'] }
-        ]
-      },
+      // {
+      //   title: 'Availability & Notifications',
+      //   items: [
+      //     { icon: 'ri-calendar-line', title: 'Availability', description: 'Set your working hours and schedule', link: ['/seller/settings/availability'] },
+      //     { icon: 'ri-notification-line', title: 'Notifications', description: 'Manage email and push notifications', link: ['/seller/settings/notifications'] }
+      //   ]
+      // },
       {
         title: 'Account & Security',
         items: [
@@ -122,9 +122,9 @@ ngOnInit(): void {
             title: 'Bank Account Management', 
             description: 'Edit services you offer and pricing', 
             link: ['/seller/settings/services'] 
-          },
-          { icon: 'ri-bank-card-line', title: 'Payment Methods', description: 'Manage your payment and billing information', link: ['/seller/settings/payment'] },
-          { icon: 'ri-shield-check-line', title: 'Privacy Settings', description: 'Control your privacy and data preferences', link: ['/seller/settings/privacy'] }
+          }
+          // { icon: 'ri-bank-card-line', title: 'Payment Methods', description: 'Manage your payment and billing information', link: ['/seller/settings/payment'] },
+          // { icon: 'ri-shield-check-line', title: 'Privacy Settings', description: 'Control your privacy and data preferences', link: ['/seller/settings/privacy'] }
          
         ]
       }

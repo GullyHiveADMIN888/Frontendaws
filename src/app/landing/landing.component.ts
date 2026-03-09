@@ -17,7 +17,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { interval,Subscription } from 'rxjs';
 // import { environment } from '../../environments/environment';
-  import { environment } from '../../environments/environment.prod';
+ import { environment } from '../../environments/environment.prod';
 
 
 import {  Inject, PLATFORM_ID } from '@angular/core';
@@ -321,9 +321,9 @@ passwordError = '';
   this.loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
-    rememberMe: [false],
+    rememberMe: [false]
      // Captcha login
-     captcha: ['', Validators.required] 
+    // captcha: ['', Validators.required] 
      //...
   });
 
@@ -337,20 +337,27 @@ passwordError = '';
 
 
   // Captcha login
-captchaUrl: string = '';
+// captchaUrl: string = '';
 
-loadCaptcha() {
-  this.captchaUrl = `${this.apiUrl}/auth/captcha?${new Date().getTime()}`;
-}
 
-refreshCaptcha() {
-  this.loadCaptcha();
-}
+// loadCaptcha() {
+//   this.http.get(`${this.apiUrl}/auth/captcha`, {
+//     responseType: 'blob',
+//     withCredentials: true
+//   }).subscribe(blob => {
+//     this.captchaUrl = URL.createObjectURL(blob);
+//   });
+// }
+
+
+// refreshCaptcha() {
+//   this.loadCaptcha();
+// }
 
 //...
     ngOnInit(): void {
        // Captcha login
-     this.loadCaptcha();
+   //  this.loadCaptcha();
 
    
        //...
@@ -602,8 +609,8 @@ onLoginSubmit(event: Event): void {
   const formValue = this.loginForm.value;
  const loginPayload = {
   username: this.loginForm.value.email,
-  password: this.loginForm.value.password,
-  captcha: this.loginForm.value.captcha
+  password: this.loginForm.value.password
+ // captcha: this.loginForm.value.captcha
 };
 
 
@@ -617,7 +624,8 @@ onLoginSubmit(event: Event): void {
   }
 
   // Make API call to .NET Core 8 backend
-  this.http.post(`${this.apiUrl}/auth/login`, loginPayload, { withCredentials: true })
+//  this.http.post(`${this.apiUrl}/auth/login`, loginPayload, { withCredentials: true })
+    this.http.post(`${this.apiUrl}/auth/login`, loginPayload)
     .pipe(
       catchError((error: HttpErrorResponse) => {
         this.isLoggingIn = false;
@@ -632,7 +640,7 @@ onLoginSubmit(event: Event): void {
       error: () => {
         // Error already handled in catchError
           this.loginForm.patchValue({ captcha: '' });
-         this.refreshCaptcha(); 
+       //  this.refreshCaptcha(); 
          
       }
     });
@@ -697,22 +705,20 @@ onLoginSubmit(event: Event): void {
       case 401:
         this.loginError = 'Invalid email or password';
         break;
-      // case 400:
+      
+      //  case 400:
+      // if (error.error?.message === 'Invalid captcha') {
+      //   this.loginError = 'Invalid captcha. Please try again.';
+        
+      //   // Clear captcha input
+      //   this.loginForm.get('captcha')?.reset();
+        
+      //   // Refresh captcha image
+      //   this.refreshCaptcha();
+      // } else {
       //   this.loginError = 'Invalid request. Please check your input';
-      //   break;
-       case 400:
-      if (error.error?.message === 'Invalid captcha') {
-        this.loginError = 'Invalid captcha. Please try again.';
-        
-        // Clear captcha input
-        this.loginForm.get('captcha')?.reset();
-        
-        // Refresh captcha image
-        this.refreshCaptcha();
-      } else {
-        this.loginError = 'Invalid request. Please check your input';
-      }
-      break;
+      // }
+      // break;
       case 403:
         this.loginError = 'Account not verified. Please verify your email';
         break;
@@ -740,7 +746,7 @@ onLoginSubmit(event: Event): void {
     this.showLoginModal = true;
     this.loginError = '';
     this.loginData = { email: '', password: '' };
-    this.refreshCaptcha();
+  //  this.refreshCaptcha();
   }
 
   closeLoginModal(): void {
@@ -754,7 +760,7 @@ onLoginSubmit(event: Event): void {
   this.loginForm.reset();
 
   // Optional: refresh captcha when modal opens next time
-  this.captchaUrl = '';
+//  this.captchaUrl = '';
   }
 
 
