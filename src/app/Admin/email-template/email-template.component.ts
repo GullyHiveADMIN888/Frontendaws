@@ -1,13 +1,26 @@
 import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EmailTemplateService, EmailTemplate, TemplatePathInfo, UpdateTemplateResponse } from './services/email-template.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { FooterComponent } from '../footer/footer.component';
+import { HeaderComponent } from '../header/header.component';
+import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-email-template',
-  templateUrl: './email-template.component.html',
-  styleUrls: ['./email-template.component.css']
+    selector: 'app-email-template',
+    templateUrl: './email-template.component.html',
+    styleUrls: ['./email-template.component.css'],
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,          
+        ReactiveFormsModule,   
+        RouterModule,           
+        HeaderComponent,
+        FooterComponent
+    ]
 })
 export class EmailTemplateComponent implements OnInit, OnDestroy {
   templates: string[] = [];

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { SellerService } from '../seller.service';
 import { Router } from '@angular/router';
 import { NavigationEnd } from '@angular/router';
@@ -9,10 +9,9 @@ import { filter } from 'rxjs/operators';
 
 
 @Component({
-  selector: 'app-seller-layout',
-  standalone: true,
-  imports: [RouterOutlet, RouterModule, CommonModule],
-  templateUrl: './seller-layout.component.html'
+    selector: 'app-seller-layout',
+    imports: [RouterOutlet, RouterModule],
+    templateUrl: './seller-layout.component.html'
 })
 export class SellerLayoutComponent implements OnInit {
   showUserMenu = false;

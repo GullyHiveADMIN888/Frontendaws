@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StepIndicatorComponent } from '../step-indicator/step-indicator.component';
@@ -249,7 +248,7 @@ export class RegisterComponent {
  
 
     this.service.submitRegistration(formData).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         console.log('Backend response:', res);
 
         if (res.userId) {

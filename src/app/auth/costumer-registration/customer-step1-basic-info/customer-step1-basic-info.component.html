@@ -1,0 +1,294 @@
+<div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12 border border-gray-100">
+
+  <!-- Header -->
+  <div class="flex items-center mb-8">
+    <div class="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center mr-4">
+      <i class="ri-user-line text-2xl text-white"></i>
+    </div>
+    <div>
+      <h2 class="text-3xl font-bold text-gray-900">Basic Information</h2>
+      <p class="text-gray-600 mt-1">Let's start with your basic details</p>
+    </div>
+  </div>
+
+  <div class="space-y-6">
+
+    <!-- Profile Picture -->
+    <div class="flex justify-center">
+      <div class="text-center">
+        <label class="block text-sm font-medium text-gray-700 mb-4">
+          Profile Picture <span class="text-gray-500">(Optional)</span>
+        </label>
+        <div class="relative">
+          <div class="w-32 h-32 rounded-full border-4 border-gray-200 overflow-hidden bg-gray-100 mx-auto">
+            @if (profilePreview) {
+              <img [src]="profilePreview" alt="Profile" class="w-full h-full object-cover object-top" />
+            } @else {
+              <div class="w-full h-full flex items-center justify-center">
+                <i class="ri-user-line text-5xl text-gray-400"></i>
+              </div>
+            }
+          </div>
+          <input type="file"
+            accept="image/*"
+            (change)="onProfilePictureChange($event)"
+            class="hidden"
+            [id]="fileInputId" />
+            <label [for]="fileInputId"
+              class="absolute bottom-0 right-1/2 transform translate-x-16 bg-orange-600 text-white w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:bg-orange-700 transition-colors shadow-lg">
+              <i class="ri-camera-line text-xl"></i>
+            </label>
+          </div>
+          @if (profilePreview) {
+            <button
+              type="button"
+              (click)="removeProfilePicture()"
+              class="mt-3 text-sm text-red-600 hover:text-red-700">
+              <i class="ri-delete-bin-line mr-1"></i>
+              Remove Photo
+            </button>
+          }
+          <p class="text-xs text-gray-500 mt-2">Max size: 5MB. Allowed: JPG, PNG, GIF</p>
+        </div>
+      </div>
+
+      <!-- Form Fields -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Full Name -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Full Name <span class="text-orange-600">*</span>
+          </label>
+          <input type="text"
+            [value]="formData?.fullName || ''"
+            (input)="onInput('fullName', $any($event.target).value)"
+            (blur)="onBlur('fullName')"
+            [class]="'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 transition-colors ' + getFieldClass('fullName')"
+            placeholder="Enter your full name"
+            maxlength="100" />
+
+            <!-- Error Message -->
+            @if (touchedFields.has('fullName') && errors?.fullName) {
+              <div
+                class="flex items-center mt-1 text-red-500 text-sm">
+                <i class="ri-error-warning-line mr-1"></i>
+                {{ errors.fullName }}
+              </div>
+            }
+
+            <!-- Character Count -->
+            <div class="flex justify-end mt-1">
+              <span class="text-xs text-gray-500">
+                {{ formData?.fullName?.length || 0 }}/100
+              </span>
+            </div>
+          </div>
+
+          <!-- Email with duplicate check -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Email Address <span class="text-orange-600">*</span>
+            </label>
+            <div class="relative">
+              <input type="email"
+                [value]="formData?.email || ''"
+                (input)="onInput('email', $any($event.target).value)"
+                (blur)="onBlur('email')"
+                [class]="'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 transition-colors pr-10 ' + getFieldClass('email')"
+                placeholder="your.email@example.com"
+                maxlength="100"
+                required />  <!-- Added required attribute -->
+
+                <!-- Loading indicator for email check -->
+                @if (emailChecking) {
+                  <div class="absolute right-3 top-3">
+                    <i class="ri-loader-4-line animate-spin text-gray-400"></i>
+                  </div>
+                }
+              </div>
+
+              <!-- Email validation messages -->
+              @if (touchedFields.has('email')) {
+                <div>
+                  @if (errors?.email) {
+                    <div class="flex items-center mt-1 text-red-500 text-sm">
+                      <i class="ri-error-warning-line mr-1"></i>
+                      {{ errors.email }}
+                    </div>
+                  }
+                  @if (!errors?.email && formData?.email && isValidEmail(formData.email) && !emailExists && !emailChecking) {
+                    <div
+                      class="flex items-center mt-1 text-green-600 text-sm">
+                      <i class="ri-checkbox-circle-line mr-1"></i>
+                      Email is available
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- Help text -->
+              <p class="text-xs text-gray-500 mt-1">
+                We'll send important updates and verification to this email
+              </p>
+            </div>
+
+            <!-- Mobile with duplicate check -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Mobile Number <span class="text-orange-600">*</span>
+              </label>
+              <div class="relative">
+                <div class="flex">
+                  <span class="inline-flex items-center px-3 bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg text-gray-600">
+                    +91
+                  </span>
+                  <input type="tel"
+                    [value]="formData?.mobile || ''"
+                    (input)="onMobileInput($event)"
+                    (blur)="onBlur('mobile')"
+                    [class]="'flex-1 px-4 py-3 border rounded-r-lg focus:ring-2 focus:ring-orange-500 transition-colors ' + getFieldClass('mobile')"
+                    placeholder="10-digit mobile number"
+                    maxlength="10" />
+                  </div>
+
+                  <!-- Loading indicator for mobile check -->
+                  @if (mobileChecking) {
+                    <div class="absolute right-3 top-3">
+                      <i class="ri-loader-4-line animate-spin text-gray-400"></i>
+                    </div>
+                  }
+                </div>
+
+                <!-- Mobile validation messages -->
+                @if (touchedFields.has('mobile')) {
+                  <div>
+                    @if (errors?.mobile) {
+                      <div class="flex items-center mt-1 text-red-500 text-sm">
+                        <i class="ri-error-warning-line mr-1"></i>
+                        {{ errors.mobile }}
+                      </div>
+                    }
+                    @if (shouldShowMobileSuccess) {
+                      <div
+                        class="flex items-center mt-1 text-green-600 text-sm">
+                        <i class="ri-checkbox-circle-line mr-1"></i>
+                        Mobile number is available
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Password -->
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Password <span class="text-orange-600">*</span>
+                </label>
+                <div class="relative">
+                  <input [type]="showPassword ? 'text' : 'password'"
+                    [value]="formData?.password || ''"
+                    (input)="onInput('password', $any($event.target).value)"
+                    (blur)="onBlur('password')"
+                    [class]="'w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 transition-colors pr-12 ' + getFieldClass('password')"
+                    placeholder="Create a strong password"
+                    maxlength="100" />
+                    <button type="button"
+                      (click)="togglePassword()"
+                      class="absolute right-3 top-3 text-gray-500 hover:text-gray-700">
+                      <i [class.ri-eye-line]="!showPassword" [class.ri-eye-off-line]="showPassword" class="text-xl"></i>
+                    </button>
+                  </div>
+
+                  @if (touchedFields.has('password') && errors?.password) {
+                    <div
+                      class="flex items-center mt-1 text-red-500 text-sm">
+                      <i class="ri-error-warning-line mr-1"></i>
+                      {{ errors.password }}
+                    </div>
+                  }
+
+                  <!-- Password strength indicator -->
+                  @if (formData?.password) {
+                    <div class="mt-2">
+                      <div class="flex items-center space-x-1">
+                        <div class="h-1 w-1/4 rounded-full"
+                          [class.bg-red-500]="isPasswordWeak"
+                          [class.bg-yellow-500]="isPasswordMedium"
+                          [class.bg-green-500]="isPasswordStrong"
+                          [class.bg-gray-200]="!formData.password">
+                        </div>
+                        <div class="h-1 w-1/4 rounded-full bg-gray-200"></div>
+                        <div class="h-1 w-1/4 rounded-full bg-gray-200"></div>
+                        <div class="h-1 w-1/4 rounded-full bg-gray-200"></div>
+                      </div>
+                      <p class="text-xs text-gray-500 mt-1">
+                        Password must be at least 6 characters with 1 uppercase, 1 number, and 1 special character
+                      </p>
+                    </div>
+                  }
+                </div>
+
+                <!-- Referral Code -->
+                <div class="md:col-span-2">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Referral Code <span class="text-gray-500">(Optional)</span>
+                  </label>
+                  <input type="text"
+                    [value]="formData?.referralCode || ''"
+                    (input)="onInput('referralCode', $any($event.target).value.toUpperCase())"
+                    (blur)="onBlur('referralCode')"
+                    [class]="'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 transition-colors uppercase ' + (errors?.referralCode ? 'border-red-500' : '')"
+                    placeholder="Enter referral code if you have one"
+                    maxlength="50" />
+
+                    @if (touchedFields.has('referralCode') && errors?.referralCode) {
+                      <div
+                        class="flex items-center mt-1 text-red-500 text-sm">
+                        <i class="ri-error-warning-line mr-1"></i>
+                        {{ errors.referralCode }}
+                      </div>
+                    }
+                  </div>
+
+                </div>
+
+                <!-- Validation Summary -->
+                @if (touchedFields.size > 0 && hasErrors) {
+                  <div
+                    class="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div class="flex items-center text-red-600 mb-2">
+                      <i class="ri-error-warning-line mr-2"></i>
+                      <span class="font-semibold">Please fix the following errors:</span>
+                    </div>
+                    <ul class="list-disc list-inside text-sm text-red-600 space-y-1">
+                      @for (error of errorList; track error) {
+                        <li>{{ error }}</li>
+                      }
+                    </ul>
+                  </div>
+                }
+
+                <!-- Navigation -->
+                <div class="flex justify-end pt-6 border-t border-gray-200">
+                  <button type="button"
+                    (click)="onNext()"
+                    [disabled]="mobileChecking || emailChecking"
+                    class="px-8 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                    @if (!mobileChecking && !emailChecking) {
+                      <span>Continue to Address</span>
+                    }
+                    @if (mobileChecking || emailChecking) {
+                      <span class="flex items-center">
+                        <i class="ri-loader-4-line animate-spin mr-2"></i>
+                        Checking...
+                      </span>
+                    }
+                    @if (!mobileChecking && !emailChecking) {
+                      <i class="ri-arrow-right-line ml-2"></i>
+                    }
+                  </button>
+                </div>
+
+              </div>
+            </div>

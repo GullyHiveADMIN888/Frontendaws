@@ -22,8 +22,8 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { roles: ['Admin', 'SuperAdmin'] },
     loadChildren: () =>
-      import('./Admin/admin-routing.module')
-        .then(m => m.AdminRoutingModule)
+      import('./Admin/admin.module')
+        .then(m => m.AdminModule)
   },
 
   {
@@ -40,6 +40,18 @@ export const routes: Routes = [
     import('./business/business.module').then(m => m.BusinessModule)
   },
 
+// customer routes
+ {
+    path: 'buyer',
+    canActivate: [authGuard],
+    data: { roles: ['Buyer'] },
+    loadChildren: () =>
+      import('./customer/customer.module')
+        .then(m => m.CustomerModule)
+  },
+
+
+  { path: '**', redirectTo: '' }
 // this path redirect to home page if the url is not get 
  // { path: '**', redirectTo: '' }
 ];

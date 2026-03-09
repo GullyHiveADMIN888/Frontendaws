@@ -3,9 +3,10 @@ import { ActivatedRoute } from '@angular/router';
 import { SellerService, Response } from '../seller.service';
 
 @Component({
-  selector: 'app-responses',
-  templateUrl: './responses.component.html',
-  styleUrls: ['./responses.component.css']
+    selector: 'app-responses',
+    templateUrl: './responses.component.html',
+    styleUrls: ['./responses.component.css'],
+    standalone: false
 })
 export class ResponsesComponent implements OnInit {
   responses: any[] = [];

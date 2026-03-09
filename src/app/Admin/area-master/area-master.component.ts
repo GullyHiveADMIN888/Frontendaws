@@ -8,8 +8,12 @@ import {
   StateDto,
   CityDto 
 } from './models/area-master.model';
-import { NgForm } from '@angular/forms';
+import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
 
 interface PaginationInfo {
   page: number;
@@ -19,9 +23,18 @@ interface PaginationInfo {
 }
 
 @Component({
-  selector: 'app-area-master',
-  templateUrl: './area-master.component.html',
-  styleUrls: ['./area-master.component.css']
+    selector: 'app-area-master',
+    templateUrl: './area-master.component.html',
+    styleUrls: ['./area-master.component.css'],
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,          
+        ReactiveFormsModule,   
+        RouterModule,           
+        HeaderComponent,
+        FooterComponent
+    ]
 })
 export class AreaMasterComponent implements OnInit {
   @ViewChild('areaForm') areaForm!: NgForm;

@@ -3,11 +3,25 @@ import { HttpClient } from '@angular/common/http';
 import { CityService } from './services/city.service';
 import { environment } from '../../../environments/environment.prod';
 import { City, CreateCity, UpdateCity, State } from './models/city.model';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
-  selector: 'app-city-master',
-  templateUrl: './city-master.component.html',
-  styleUrls: ['./city-master.component.css']
+    selector: 'app-city-master',
+    templateUrl: './city-master.component.html',
+    styleUrls: ['./city-master.component.css'],
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,          
+        ReactiveFormsModule,   
+        RouterModule,           
+        HeaderComponent,
+        FooterComponent
+    ]
 })
 export class CityMasterComponent implements OnInit {
   // Data properties

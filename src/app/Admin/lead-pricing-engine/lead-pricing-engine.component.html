@@ -1,1014 +1,1060 @@
 <div class="min-h-screen bg-gray-50">
-    <!-- Alert/Message System -->
-    <div *ngIf="showAlert" [class]="'fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg border ' + 
+  <!-- Alert/Message System -->
+  @if (showAlert) {
+<div [class]="'fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg border ' + 
                 (alertType === 'success' ? 'bg-green-50 border-green-200 text-green-800' :
                  alertType === 'error' ? 'bg-red-50 border-red-200 text-red-800' :
                  alertType === 'warning' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
                  'bg-blue-50 border-blue-200 text-blue-800')">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center">
-                <i *ngIf="alertType === 'success'" class="text-lg mr-2">✅</i>
-                <i *ngIf="alertType === 'error'" class="text-lg mr-2">❌</i>
-                <i *ngIf="alertType === 'warning'" class="text-lg mr-2">⚠️</i>
-                <i *ngIf="alertType === 'info'" class="text-lg mr-2">ℹ️</i>
-                <span>{{alertMessage}}</span>
-            </div>
-            <button (click)="hideMessage()" class="ml-4 text-gray-500 hover:text-gray-700">
-                <i>✕</i>
-            </button>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          @if (alertType === 'success') {
+            <i class="text-lg mr-2">✅</i>
+          }
+          @if (alertType === 'error') {
+            <i class="text-lg mr-2">❌</i>
+          }
+          @if (alertType === 'warning') {
+            <i class="text-lg mr-2">⚠️</i>
+          }
+          @if (alertType === 'info') {
+            <i class="text-lg mr-2">ℹ️</i>
+          }
+          <span>{{alertMessage}}</span>
         </div>
+        <button (click)="hideMessage()" class="ml-4 text-gray-500 hover:text-gray-700">
+          <i>✕</i>
+        </button>
+      </div>
     </div>
+  }
 
-    <!-- Full Page Loading Overlay -->
-    <div *ngIf="initialLoading" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
-        <div class="text-center">
-            <!-- Animated Logo or Icon -->
-            <div class="mb-8">
-                <svg class="w-24 h-24 mx-auto text-blue-600 animate-pulse" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6M9 16h6" />
-                </svg>
-            </div>
-
-            <!-- Loading Text with Animation -->
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Loading Lead Pricing Engine</h2>
-            <div class="flex items-center justify-center space-x-2 mb-4">
-                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0s"></div>
-                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
-            </div>
-
-            <!-- Loading Progress Message -->
-            <p class="text-gray-600 text-sm">
-                Please wait while we fetch your data...
+  <!-- Full Page Loading Overlay -->
+  @if (initialLoading) {
+    <div class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+      <div class="text-center">
+        <!-- Animated Logo or Icon -->
+        <div class="mb-8">
+          <svg class="w-24 h-24 mx-auto text-blue-600 animate-pulse" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6M9 16h6" />
+            </svg>
+          </div>
+          <!-- Loading Text with Animation -->
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">Loading Lead Pricing Engine</h2>
+          <div class="flex items-center justify-center space-x-2 mb-4">
+            <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+            <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+            <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+          </div>
+          <!-- Loading Progress Message -->
+          <p class="text-gray-600 text-sm">
+            Please wait while we fetch your data...
+          </p>
+          <!-- Optional: Loading Tips -->
+          <!-- <div class="mt-8 max-w-md mx-auto">
+          <div class="bg-blue-50 rounded-lg p-4">
+            <p class="text-xs text-blue-700">
+              <span class="font-semibold">Tip:</span> You can filter assignments by provider, city, category, and date range once the data loads.
             </p>
+          </div>
+        </div> -->
+      </div>
+    </div>
+  }
 
-            <!-- Optional: Loading Tips -->
-            <!-- <div class="mt-8 max-w-md mx-auto">
-                <div class="bg-blue-50 rounded-lg p-4">
-                    <p class="text-xs text-blue-700">
-                        <span class="font-semibold">Tip:</span> You can filter assignments by provider, city, category, and date range once the data loads.
-                    </p>
-                </div>
-            </div> -->
-        </div>
+  <app-admin-header></app-admin-header>
+
+  <div class="max-w-7xl mx-auto my-12 px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8 flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+          Lead Pricing Engine
+        </h1>
+        <p class="text-gray-600">
+          Manage pricing rules and percentage changes for lead configurations
+        </p>
+      </div>
+      <button (click)="openCreateModal()"
+        class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md flex items-center">
+        <i class="mr-2">➕</i>
+        Create New Rule
+      </button>
     </div>
 
-    <app-admin-header></app-admin-header>
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-blue-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Total Rules</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{totalCount}}</h3>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
+            <i class="text-blue-600 text-xl">⚙️</i>
+          </div>
+        </div>
+      </div>
 
-    <div class="max-w-7xl mx-auto my-12 px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="mb-8 flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-                    Lead Pricing Engine
-                </h1>
-                <p class="text-gray-600">
-                    Manage pricing rules and percentage changes for lead configurations
-                </p>
-            </div>
-            <button (click)="openCreateModal()"
-                class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md flex items-center">
-                <i class="mr-2">➕</i>
-                Create New Rule
+      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-green-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Active Rules</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{getActiveRulesCount()}}</h3>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center">
+            <i class="text-green-600 text-xl">✅</i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-yellow-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Upcoming Rules</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{getUpcomingRulesCount()}}</h3>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-yellow-50 flex items-center justify-center">
+            <i class="text-yellow-600 text-xl">⏳</i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-5 border-l-4 border-purple-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Active Filters</p>
+            <h3 class="text-2xl font-bold text-gray-800">{{getActiveFiltersCount()}}</h3>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
+            <i class="text-purple-600 text-xl">🔍</i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="bg-white rounded-xl shadow mb-6 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-800">Filters</h3>
+      </div>
+
+      <div class="p-6">
+        <!-- Quick Date Range Buttons -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-3">
+            Quick Date Range
+          </label>
+          <div class="flex flex-wrap gap-2">
+            <button (click)="setDateRange('today')"
+              class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              Today
             </button>
+            <button (click)="setDateRange('yesterday')"
+              class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              Yesterday
+            </button>
+            <button (click)="setDateRange('last7days')"
+              class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              Last 7 Days
+            </button>
+            <button (click)="setDateRange('last30days')"
+              class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              Last 30 Days
+            </button>
+            <button (click)="setDateRange('thismonth')"
+              class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              This Month
+            </button>
+            <button (click)="setDateRange('lastmonth')"
+              class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              Last Month
+            </button>
+          </div>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-blue-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 mb-1">Total Rules</p>
-                        <h3 class="text-2xl font-bold text-gray-800">{{totalCount}}</h3>
-                    </div>
-                    <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
-                        <i class="text-blue-600 text-xl">⚙️</i>
-                    </div>
-                </div>
+        <!-- Filter Rows -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+          <!-- Search -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Search by Name
+            </label>
+            <input type="text" placeholder="Search pricing rules..." [(ngModel)]="filter.searchTerm"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
             </div>
 
-            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-green-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 mb-1">Active Rules</p>
-                        <h3 class="text-2xl font-bold text-gray-800">{{getActiveRulesCount()}}</h3>
-                    </div>
-                    <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center">
-                        <i class="text-green-600 text-xl">✅</i>
-                    </div>
-                </div>
+            <!-- Config Filter -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Lead Price Config
+              </label>
+              <select [(ngModel)]="filter.leadPriceConfigId"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option [ngValue]="undefined">All Configs</option>
+                @for (config of configOptions; track config) {
+                  <option [ngValue]="config.id">
+                    {{config.displayName}}
+                  </option>
+                }
+              </select>
             </div>
 
-            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-yellow-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 mb-1">Upcoming Rules</p>
-                        <h3 class="text-2xl font-bold text-gray-800">{{getUpcomingRulesCount()}}</h3>
-                    </div>
-                    <div class="w-12 h-12 rounded-lg bg-yellow-50 flex items-center justify-center">
-                        <i class="text-yellow-600 text-xl">⏳</i>
-                    </div>
-                </div>
+            <!-- Hike/Decrease Filter -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Price Change Type
+              </label>
+              <select [(ngModel)]="filter.isHike"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option [ngValue]="undefined">All Types</option>
+                <option [ngValue]="true">Hike (+)</option>
+                <option [ngValue]="false">Decrease (-)</option>
+              </select>
             </div>
+          </div>
 
-            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-purple-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 mb-1">Active Filters</p>
-                        <h3 class="text-2xl font-bold text-gray-800">{{getActiveFiltersCount()}}</h3>
-                    </div>
-                    <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
-                        <i class="text-purple-600 text-xl">🔍</i>
-                    </div>
+          <!-- Date Range Filters -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                From Date
+              </label>
+              <input type="date" [(ngModel)]="filter.fromDate"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  To Date
+                </label>
+                <input type="date" [(ngModel)]="filter.toDate"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                 </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="flex items-center justify-between gap-3 mt-6 pt-6 border-t border-gray-200">
+                <div class="flex items-center gap-3">
+                  <span class="text-sm text-gray-500">
+                    {{getActiveFiltersCount()}} active filter(s)
+                  </span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <button (click)="resetFilters()"
+                    class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg font-medium hover:bg-gray-200 transition-colors border border-gray-300">
+                    <i class="mr-2">🔄</i> Reset All Filters
+                  </button>
+                  <button (click)="applyFilters()"
+                    class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
+                    Apply Filters
+                  </button>
+                </div>
+              </div>
             </div>
-        </div>
+          </div>
 
-        <!-- Filters Card -->
-        <div class="bg-white rounded-xl shadow mb-6 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800">Filters</h3>
-            </div>
-
-            <div class="p-6">
-                <!-- Quick Date Range Buttons -->
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-3">
-                        Quick Date Range
-                    </label>
-                    <div class="flex flex-wrap gap-2">
-                        <button (click)="setDateRange('today')"
-                            class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
-                            Today
-                        </button>
-                        <button (click)="setDateRange('yesterday')"
-                            class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
-                            Yesterday
-                        </button>
-                        <button (click)="setDateRange('last7days')"
-                            class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
-                            Last 7 Days
-                        </button>
-                        <button (click)="setDateRange('last30days')"
-                            class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
-                            Last 30 Days
-                        </button>
-                        <button (click)="setDateRange('thismonth')"
-                            class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
-                            This Month
-                        </button>
-                        <button (click)="setDateRange('lastmonth')"
-                            class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
-                            Last Month
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Filter Rows -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-                    <!-- Search -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Search by Name
-                        </label>
-                        <input type="text" placeholder="Search pricing rules..." [(ngModel)]="filter.searchTerm"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                    </div>
-
-                    <!-- Config Filter -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Lead Price Config
-                        </label>
-                        <select [(ngModel)]="filter.leadPriceConfigId"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option [ngValue]="undefined">All Configs</option>
-                            <option *ngFor="let config of configOptions" [ngValue]="config.id">
-                                {{config.displayName}}
-                            </option>
-                        </select>
-                    </div>
-
-                    <!-- Hike/Decrease Filter -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Price Change Type
-                        </label>
-                        <select [(ngModel)]="filter.isHike"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option [ngValue]="undefined">All Types</option>
-                            <option [ngValue]="true">Hike (+)</option>
-                            <option [ngValue]="false">Decrease (-)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Date Range Filters -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            From Date
-                        </label>
-                        <input type="date" [(ngModel)]="filter.fromDate"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            To Date
-                        </label>
-                        <input type="date" [(ngModel)]="filter.toDate"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex items-center justify-between gap-3 mt-6 pt-6 border-t border-gray-200">
-                    <div class="flex items-center gap-3">
-                        <span class="text-sm text-gray-500">
-                            {{getActiveFiltersCount()}} active filter(s)
-                        </span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <button (click)="resetFilters()"
-                            class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg font-medium hover:bg-gray-200 transition-colors border border-gray-300">
-                            <i class="mr-2">🔄</i> Reset All Filters
-                        </button>
-                        <button (click)="applyFilters()"
-                            class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
-                            Apply Filters
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Table Card -->
-        <div class="bg-white rounded-xl shadow overflow-hidden">
+          <!-- Table Card -->
+          <div class="bg-white rounded-xl shadow overflow-hidden">
             <div
-                class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <h2 class="text-lg font-semibold text-gray-800">
-                        Pricing Rules
-                    </h2>
-                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                        {{totalCount}} Rules
-                    </span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <select [(ngModel)]="pageSize" (change)="applyFilters()"
-                        class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="10">10 per page</option>
-                        <option value="20">20 per page</option>
-                        <option value="50">50 per page</option>
-                        <option value="100">100 per page</option>
-                    </select>
-                    <!-- <select [(ngModel)]="filter.sortBy" (change)="applyFilters()"
-                        class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="startDate">Sort by Start Date</option>
-                        <option value="name">Sort by Name</option>
-                        <option value="percentageChange">Sort by Percentage</option>
-                        <option value="createdAt">Sort by Created Date</option>
-                    </select> -->
-                    <!-- <button (click)="filter.sortDesc = !filter.sortDesc; applyFilters()"
-                        class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">
-                        {{filter.sortDesc ? '↓ Desc' : '↑ Asc'}}
-                    </button> -->
-                </div>
-            </div>
-
-            <!-- Loading State -->
-            <div *ngIf="loading" class="p-8 text-center">
-                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-                <p class="text-gray-600">Loading pricing rules...</p>
-            </div>
-
-            <!-- Table -->
-            <div *ngIf="!loading && pricingEngines.length > 0" class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Rule Name
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Configuration
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Date Range
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Price Change
-                            </th>
-                            <!-- <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status
-                            </th> -->
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Actions
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Details
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <ng-container *ngFor="let engine of pricingEngines">
-                            <tr class="hover:bg-gray-50 transition-colors">
-                                <!-- Rule Name -->
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div>
-                                        <div class="text-sm font-semibold text-gray-900">
-                                            {{engine.name}}
-                                        </div>
-                                        <div class="text-xs text-gray-500">
-                                            ID: {{engine.id}}
-                                        </div>
-                                    </div>
-                                </td>
-
-                                <!-- Configuration -->
-                                <!-- Compact Configuration Column with Price Comparison -->
-                                <td class="px-6 py-4">
-                                    <ng-container *ngIf="getConfigDisplayName(engine.leadPriceConfigId) as configName">
-                                        <div class="text-sm">
-                                            <!-- Config name (truncated) -->
-                                            <div class="font-medium text-gray-900 truncate max-w-xs"
-                                                [title]="configName">
-                                                {{configName.split(' - ').slice(0, 3).join(' - ')}}
-                                            </div>
-
-                                            <!-- Price with comparison -->
-                                            <ng-container
-                                                *ngIf="getPriceComparison(engine.leadPriceConfigId) as priceComp">
-                                                <div class="flex items-center gap-2 mt-1 flex-wrap">
-                                                    <!-- Current Price -->
-                                                    <span
-                                                        [class]="getPriceClassForConfig(engine.leadPriceConfigId) + ' font-medium'">
-                                                        ₹{{priceComp.currentPrice?.toLocaleString('en-IN') ||
-                                                        priceComp.normalPrice?.toLocaleString('en-IN')}}
-                                                    </span>
-
-                                                    <!-- Price Difference Indicator -->
-                                                    <span *ngIf="priceComp.hasDifference"
-                                                        [class]="priceComp.differenceType === 'higher' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-                                                        class="px-1.5 py-0.5 rounded text-xs font-medium"
-                                                        title="Normal: ₹{{priceComp.normalPrice?.toLocaleString('en-IN')}}">
-                                                        {{priceComp.differenceType === 'higher' ? '▲' : '▼'}}
-                                                        {{Math.abs(priceComp.differencePercentage).toFixed(1)}}%
-                                                    </span>
-
-                                                    <!-- Default Price Indicator -->
-                                                    <span *ngIf="!priceComp.currentPrice && priceComp.normalPrice"
-                                                        class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded text-xs font-medium"
-                                                        title="Using default price">
-                                                        Default
-                                                    </span>
-                                                </div>
-                                            </ng-container>
-
-                                            <!-- Config ID -->
-                                            <div class="text-xs text-gray-400 mt-1">
-                                                ID: {{engine.leadPriceConfigId}}
-                                            </div>
-                                        </div>
-                                    </ng-container>
-                                </td>
-
-                                <!-- Date Range -->
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">
-                                        {{formatDate(engine.startDate)}}
-                                    </div>
-                                    <div class="text-xs text-gray-500">
-                                        {{engine.endDate ? '→ ' + formatDate(engine.endDate) : 'No end date'}}
-                                    </div>
-                                </td>
-
-                                <!-- Price Change -->
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div
-                                        [class]="'text-sm font-bold ' + getPercentageClass(engine.isHike, engine.percentageChange)">
-                                        {{getPercentageSymbol(engine.isHike)}}{{engine.percentageChange}}%
-                                    </div>
-                                </td>
-
-                                <!-- Status -->
-                                <!-- <td class="px-6 py-4 whitespace-nowrap">
-                                    <span
-                                        [class]="getStatusBadge(engine).class + ' px-2 py-1 rounded text-xs font-medium'">
-                                        {{getStatusBadge(engine).text}}
-                                    </span>
-                                </td> -->
-
-                                <!-- Actions (Edit/Delete) -->
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex items-center gap-2">
-                                        <button (click)="openEditModal(engine)"
-                                            class="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition-colors"
-                                            title="Edit">
-                                            <i class="text-lg">✏️</i>
-                                        </button>
-                                        <button (click)="openDeleteModal(engine)"
-                                            class="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
-                                            title="Delete">
-                                            <i class="text-lg">🗑️</i>
-                                        </button>
-                                    </div>
-                                </td>
-
-                                <!-- Details (Expand/Collapse) -->
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <button (click)="toggleExpand(engine.id)"
-                                        class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors flex items-center">
-                                        <i class="text-lg mr-1">{{ expandedEngineId === engine.id ? '📖' : '👁️' }}</i>
-                                        <span class="text-sm">{{ expandedEngineId === engine.id ? 'Hide' : 'View'
-                                            }}</span>
-                                    </button>
-                                </td>
-                            </tr>
-
-                            <!-- Expanded Row - Details -->
-                            <tr *ngIf="expandedEngineId === engine.id">
-                                <td colspan="7" class="bg-gray-50 p-6">
-                                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                        <!-- Rule Details -->
-                                        <div>
-                                            <div class="flex items-center justify-between mb-3">
-                                                <h4 class="font-semibold text-gray-800 flex items-center">
-                                                    <i class="mr-2">📋</i> Rule Details
-                                                </h4>
-                                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                                                    Rule Information
-                                                </span>
-                                            </div>
-                                            <div class="bg-white rounded-lg border border-gray-200 p-4">
-                                                <div class="space-y-3">
-                                                    <div class="grid grid-cols-2 gap-4">
-                                                        <div>
-                                                            <label class="text-xs text-gray-500">Rule Name</label>
-                                                            <p class="text-sm font-medium">{{engine.name}}</p>
-                                                        </div>
-                                                        <div>
-                                                            <label class="text-xs text-gray-500">Rule ID</label>
-                                                            <p class="text-sm font-medium">{{engine.id}}</p>
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <label class="text-xs text-gray-500">Price Change</label>
-                                                        <p class="text-sm">
-                                                            {{engine.isHike ? 'Increase' : 'Decrease'}} by
-                                                            <span
-                                                                [class]="getPercentageClass(engine.isHike, engine.percentageChange)">
-                                                                {{engine.percentageChange}}%
-                                                            </span>
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Configuration Details -->
-                                        <!-- In the expanded row, update the Configuration Details section -->
-
-                                        <!-- Configuration Details -->
-                                        <div>
-                                            <div class="flex items-center justify-between mb-3">
-                                                <h4 class="font-semibold text-gray-800 flex items-center">
-                                                    <i class="mr-2">⚙️</i> Configuration
-                                                </h4>
-                                                <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">
-                                                    Lead Price Config
-                                                </span>
-                                            </div>
-                                            <div class="bg-white rounded-lg border border-gray-200 p-4">
-                                                <div class="space-y-3">
-                                                    <!-- Config Name -->
-                                                    <p class="text-sm font-medium text-gray-900 break-words">
-                                                        {{getConfigDisplayName(engine.leadPriceConfigId)}}
-                                                    </p>
-
-                                                    <!-- Price Details -->
-                                                    <ng-container
-                                                        *ngIf="getPriceComparison(engine.leadPriceConfigId) as priceComp">
-                                                        <div class="border-t border-gray-100 pt-2 mt-2">
-                                                            <h5 class="text-xs font-medium text-gray-500 mb-2">Pricing
-                                                                Details</h5>
-
-                                                            <div class="grid grid-cols-2 gap-3">
-                                                                <!-- Current Price -->
-                                                                <div>
-                                                                    <label class="text-xs text-gray-500">Current
-                                                                        Price</label>
-                                                                    <p
-                                                                        [class]="getPriceClassForConfig(engine.leadPriceConfigId) + ' text-sm font-semibold'">
-                                                                        ₹{{priceComp.currentPrice?.toLocaleString('en-IN')
-                                                                        || 'Not set'}}
-                                                                    </p>
-                                                                </div>
-
-                                                                <!-- Normal Price -->
-                                                                <div>
-                                                                    <label class="text-xs text-gray-500">Normal
-                                                                        Price</label>
-                                                                    <p class="text-sm text-gray-700">
-                                                                        ₹{{priceComp.normalPrice?.toLocaleString('en-IN')
-                                                                        || 'Not set'}}
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-
-                                                            <!-- Price Difference -->
-                                                            <div *ngIf="priceComp.hasDifference"
-                                                                class="mt-2 p-2 rounded-lg"
-                                                                [class.bg-green-50]="priceComp.differenceType === 'higher'"
-                                                                [class.bg-red-50]="priceComp.differenceType === 'lower'">
-                                                                <div class="flex items-center justify-between">
-                                                                    <span
-                                                                        class="text-xs text-gray-600">Difference</span>
-                                                                    <span
-                                                                        [class]="priceComp.differenceType === 'higher' ? 'text-green-700' : 'text-red-700'"
-                                                                        class="text-sm font-semibold">
-                                                                        {{priceComp.differenceType === 'higher' ? '+' :
-                                                                        '-'}}
-                                                                        {{Math.abs(priceComp.differencePercentage).toFixed(1)}}%
-                                                                    </span>
-                                                                </div>
-                                                                <p class="text-xs text-gray-500 mt-1">
-                                                                    {{priceComp.differenceType === 'higher' ? 'Premium
-                                                                    pricing' : 'Discounted pricing'}}
-                                                                    compared to normal price
-                                                                </p>
-                                                            </div>
-
-                                                            <!-- Same Price -->
-                                                            <div *ngIf="!priceComp.hasDifference && priceComp.currentPrice && priceComp.normalPrice"
-                                                                class="mt-2 p-2 bg-gray-50 rounded-lg">
-                                                                <span class="text-xs text-gray-600">Pricing is at
-                                                                    standard rate</span>
-                                                            </div>
-
-                                                            <!-- Using Default -->
-                                                            <div *ngIf="!priceComp.currentPrice && priceComp.normalPrice"
-                                                                class="mt-2 p-2 bg-amber-50 rounded-lg">
-                                                                <span class="text-xs text-amber-700">Using default
-                                                                    normal price</span>
-                                                            </div>
-                                                        </div>
-                                                    </ng-container>
-
-                                                    <!-- Config ID -->
-                                                    <div class="text-xs text-gray-400 pt-2 border-t border-gray-100">
-                                                        Config ID: {{engine.leadPriceConfigId}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Timeline -->
-                                        <div>
-                                            <div class="flex items-center justify-between mb-3">
-                                                <h4 class="font-semibold text-gray-800 flex items-center">
-                                                    <i class="mr-2">📅</i> Timeline
-                                                </h4>
-                                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
-                                                    Date Information
-                                                </span>
-                                            </div>
-                                            <div class="bg-white rounded-lg border border-gray-200 p-4">
-                                                <div class="space-y-3">
-                                                    <div>
-                                                        <label class="text-xs text-gray-500">Start Date</label>
-                                                        <p class="text-sm font-medium">
-                                                            {{formatDateTime(engine.startDate)}}</p>
-                                                    </div>
-                                                    <div *ngIf="engine.endDate">
-                                                        <label class="text-xs text-gray-500">End Date</label>
-                                                        <p class="text-sm font-medium">
-                                                            {{formatDateTime(engine.endDate)}}</p>
-                                                    </div>
-                                                    <div>
-                                                        <label class="text-xs text-gray-500">Created</label>
-                                                        <p class="text-sm">{{formatDateTime(engine.createdAt)}}</p>
-                                                    </div>
-                                                    <div>
-                                                        <label class="text-xs text-gray-500">Last Updated</label>
-                                                        <p class="text-sm">{{formatDateTime(engine.updatedAt)}}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Close Button -->
-                                    <div class="mt-4 text-right">
-                                        <button (click)="toggleExpand(engine.id)"
-                                            class="text-gray-600 hover:text-gray-800 text-sm font-medium flex items-center ml-auto">
-                                            <i class="mr-1">↑</i> Collapse Details
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </ng-container>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Empty State -->
-            <div *ngIf="!loading && pricingEngines.length === 0" class="p-12 text-center">
-                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="text-gray-400 text-3xl">⚙️</i>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">No Pricing Rules Found</h3>
-                <p class="text-gray-600 mb-6">
-                    No pricing rules match your current filters or there are no rules in the system.
-                </p>
-                <div class="flex gap-3 justify-center">
-                    <button (click)="resetFilters()"
-                        class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
-                        <i class="mr-2">🔄</i> Reset Filters
-                    </button>
-                    <button (click)="openCreateModal()"
-                        class="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors border border-gray-300">
-                        <i class="mr-2">➕</i> Create New Rule
-                    </button>
-                </div>
-            </div>
-
-            <!-- Pagination -->
-            <div *ngIf="!loading && pricingEngines.length > 0"
-                class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                <div class="text-sm text-gray-500">
-                    Showing <span class="font-medium">{{getStartIndex()}}</span> to
-                    <span class="font-medium">{{getEndIndex()}}</span> of
-                    <span class="font-medium">{{totalCount}}</span> rules
-                </div>
-                <div class="flex items-center gap-2">
-                    <button (click)="changePage(-1)" [disabled]="page === 1"
-                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i class="mr-1">←</i> Previous
-                    </button>
-
-                    <div class="flex items-center gap-1">
-                        <button *ngFor="let pageNum of getPageNumbers()" (click)="goToPage(pageNum)"
-                            [class]="pageNum === page ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'"
-                            class="px-3 py-1 rounded text-sm">
-                            {{pageNum}}
-                        </button>
-                    </div>
-
-                    <button (click)="changePage(1)" [disabled]="page * pageSize >= totalCount"
-                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        Next <i class="ml-1">→</i>
-                    </button>
-                </div>
-            </div>
+              class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <h2 class="text-lg font-semibold text-gray-800">
+                  Pricing Rules
+                </h2>
+                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                  {{totalCount}} Rules
+                </span>
+              </div>
+              <div class="flex items-center gap-2">
+                <select [(ngModel)]="pageSize" (change)="applyFilters()"
+                  class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <option value="10">10 per page</option>
+                  <option value="20">20 per page</option>
+                  <option value="50">50 per page</option>
+                  <option value="100">100 per page</option>
+                </select>
+                <!-- <select [(ngModel)]="filter.sortBy" (change)="applyFilters()"
+                class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="startDate">Sort by Start Date</option>
+                <option value="name">Sort by Name</option>
+                <option value="percentageChange">Sort by Percentage</option>
+                <option value="createdAt">Sort by Created Date</option>
+              </select> -->
+              <!-- <button (click)="filter.sortDesc = !filter.sortDesc; applyFilters()"
+              class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">
+              {{filter.sortDesc ? '↓ Desc' : '↑ Asc'}}
+            </button> -->
+          </div>
         </div>
-    </div>
 
-    <app-admin-footer></app-admin-footer>
+        <!-- Loading State -->
+        @if (loading) {
+          <div class="p-8 text-center">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+            <p class="text-gray-600">Loading pricing rules...</p>
+          </div>
+        }
 
-    <!-- ============= CREATE MODAL ============= -->
-    <div *ngIf="showCreateModal"
-        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-        <div class="relative mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-medium text-gray-900">Create New Pricing Rule</h3>
-                <button (click)="closeCreateModal()" class="text-gray-400 hover:text-gray-600">
-                    <i class="text-xl">✕</i>
-                </button>
-            </div>
-
-            <form [formGroup]="createForm" (ngSubmit)="createPricingEngine()">
-                <div class="space-y-4">
-                    <!-- Rule Name -->
+        <!-- Table -->
+        @if (!loading && pricingEngines.length > 0) {
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Rule Name
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Configuration
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date Range
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Price Change
+                  </th>
+                  <!-- <th scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th> -->
+                <th scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+                <th scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Details
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              @for (engine of pricingEngines; track engine) {
+                <tr class="hover:bg-gray-50 transition-colors">
+                  <!-- Rule Name -->
+                  <td class="px-6 py-4 whitespace-nowrap">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Rule Name <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" formControlName="name" placeholder="e.g., Summer Discount 2026"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            [class.border-red-500]="createForm.get('name')?.invalid && createForm.get('name')?.touched">
-                        <div *ngIf="createForm.get('name')?.invalid && createForm.get('name')?.touched"
-                            class="text-red-500 text-xs mt-1">
-                            <span *ngIf="createForm.get('name')?.errors?.['required']">Rule name is required</span>
-                            <span *ngIf="createForm.get('name')?.errors?.['minlength']">Minimum 3 characters</span>
-                        </div>
+                      <div class="text-sm font-semibold text-gray-900">
+                        {{engine.name}}
+                      </div>
+                      <div class="text-xs text-gray-500">
+                        ID: {{engine.id}}
+                      </div>
                     </div>
-
-                    <!-- Lead Price Config Dropdown -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Lead Price Configuration <span class="text-red-500">*</span>
-                        </label>
-
-                        <!-- Selected config display -->
-                        <div *ngIf="selectedConfig"
-                            class="flex items-center justify-between p-2 mb-2 bg-blue-50 border border-blue-200 rounded-md">
-                            <span class="text-sm text-blue-800">{{selectedConfig.displayName}}</span>
-                            <button type="button"
-                                (click)="selectedConfig = null; createForm.patchValue({leadPriceConfigId: null})"
-                                class="text-blue-600 hover:text-blue-800">
-                                <i>✕</i>
-                            </button>
+                  </td>
+                  <!-- Configuration -->
+                  <!-- Compact Configuration Column with Price Comparison -->
+                  <td class="px-6 py-4">
+                    @if (getConfigDisplayName(engine.leadPriceConfigId); as configName) {
+                      <div class="text-sm">
+                        <!-- Config name (truncated) -->
+                        <div class="font-medium text-gray-900 truncate max-w-xs"
+                          [title]="configName">
+                          {{configName.split(' - ').slice(0, 3).join(' - ')}}
                         </div>
-
-                        <!-- Search input when no config selected -->
-                        <div *ngIf="!selectedConfig" class="relative">
-                            <div
-                                class="flex items-center border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-blue-500">
-                                <input type="text" (input)="onConfigSearch($event)" (focus)="loadConfigOptions()"
-                                    placeholder="Type to search configurations..."
-                                    class="w-full px-3 py-2 rounded-md focus:outline-none"
-                                    [value]="configDropdownSearch" autocomplete="off">
-                                <i *ngIf="configDropdownLoading" class="px-3 text-gray-400 animate-spin">🔄</i>
-                                <i *ngIf="!configDropdownLoading" class="px-3 text-gray-400">🔍</i>
+                        <!-- Price with comparison -->
+                        @if (getPriceComparison(engine.leadPriceConfigId); as priceComp) {
+                          <div class="flex items-center gap-2 mt-1 flex-wrap">
+                            <!-- Current Price -->
+                            <span
+                              [class]="getPriceClassForConfig(engine.leadPriceConfigId) + ' font-medium'">
+                              ₹{{priceComp.currentPrice?.toLocaleString('en-IN') ||
+                              priceComp.normalPrice?.toLocaleString('en-IN')}}
+                            </span>
+                            <!-- Price Difference Indicator -->
+                            @if (priceComp.hasDifference) {
+                              <span
+                                [class]="priceComp.differenceType === 'higher' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                                class="px-1.5 py-0.5 rounded text-xs font-medium"
+                                title="Normal: ₹{{priceComp.normalPrice?.toLocaleString('en-IN')}}">
+                                {{priceComp.differenceType === 'higher' ? '▲' : '▼'}}
+                                {{Math.abs(priceComp.differencePercentage).toFixed(1)}}%
+                              </span>
+                            }
+                            <!-- Default Price Indicator -->
+                            @if (!priceComp.currentPrice && priceComp.normalPrice) {
+                              <span
+                                class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded text-xs font-medium"
+                                title="Using default price">
+                                Default
+                              </span>
+                            }
+                          </div>
+                        }
+                        <!-- Config ID -->
+                        <div class="text-xs text-gray-400 mt-1">
+                          ID: {{engine.leadPriceConfigId}}
+                        </div>
+                      </div>
+                    }
+                  </td>
+                  <!-- Date Range -->
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">
+                      {{formatDate(engine.startDate)}}
+                    </div>
+                    <div class="text-xs text-gray-500">
+                      {{engine.endDate ? '→ ' + formatDate(engine.endDate) : 'No end date'}}
+                    </div>
+                  </td>
+                  <!-- Price Change -->
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div
+                      [class]="'text-sm font-bold ' + getPercentageClass(engine.isHike, engine.percentageChange)">
+                      {{getPercentageSymbol(engine.isHike)}}{{engine.percentageChange}}%
+                    </div>
+                  </td>
+                  <!-- Status -->
+                  <!-- <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                    [class]="getStatusBadge(engine).class + ' px-2 py-1 rounded text-xs font-medium'">
+                    {{getStatusBadge(engine).text}}
+                  </span>
+                </td> -->
+                <!-- Actions (Edit/Delete) -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div class="flex items-center gap-2">
+                    <button (click)="openEditModal(engine)"
+                      class="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition-colors"
+                      title="Edit">
+                      <i class="text-lg">✏️</i>
+                    </button>
+                    <button (click)="openDeleteModal(engine)"
+                      class="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
+                      title="Delete">
+                      <i class="text-lg">🗑️</i>
+                    </button>
+                  </div>
+                </td>
+                <!-- Details (Expand/Collapse) -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <button (click)="toggleExpand(engine.id)"
+                    class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors flex items-center">
+                    <i class="text-lg mr-1">{{ expandedEngineId === engine.id ? '📖' : '👁️' }}</i>
+                    <span class="text-sm">{{ expandedEngineId === engine.id ? 'Hide' : 'View'
+                    }}</span>
+                  </button>
+                </td>
+              </tr>
+              <!-- Expanded Row - Details -->
+              @if (expandedEngineId === engine.id) {
+                <tr>
+                  <td colspan="7" class="bg-gray-50 p-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      <!-- Rule Details -->
+                      <div>
+                        <div class="flex items-center justify-between mb-3">
+                          <h4 class="font-semibold text-gray-800 flex items-center">
+                            <i class="mr-2">📋</i> Rule Details
+                          </h4>
+                          <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                            Rule Information
+                          </span>
+                        </div>
+                        <div class="bg-white rounded-lg border border-gray-200 p-4">
+                          <div class="space-y-3">
+                            <div class="grid grid-cols-2 gap-4">
+                              <div>
+                                <label class="text-xs text-gray-500">Rule Name</label>
+                                <p class="text-sm font-medium">{{engine.name}}</p>
+                              </div>
+                              <div>
+                                <label class="text-xs text-gray-500">Rule ID</label>
+                                <p class="text-sm font-medium">{{engine.id}}</p>
+                              </div>
                             </div>
-
-                            <!-- Dropdown results -->
-                            <div *ngIf="configOptions.length > 0 && !configDropdownLoading"
-                                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                                <div *ngFor="let config of configOptions" (click)="onCreateConfigSelect(config)"
-                                    class="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm border-b border-gray-100 last:border-0">
-                                    {{config.displayName}}
+                            <div>
+                              <label class="text-xs text-gray-500">Price Change</label>
+                              <p class="text-sm">
+                                {{engine.isHike ? 'Increase' : 'Decrease'}} by
+                                <span
+                                  [class]="getPercentageClass(engine.isHike, engine.percentageChange)">
+                                  {{engine.percentageChange}}%
+                                </span>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- Configuration Details -->
+                      <!-- In the expanded row, update the Configuration Details section -->
+                      <!-- Configuration Details -->
+                      <div>
+                        <div class="flex items-center justify-between mb-3">
+                          <h4 class="font-semibold text-gray-800 flex items-center">
+                            <i class="mr-2">⚙️</i> Configuration
+                          </h4>
+                          <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">
+                            Lead Price Config
+                          </span>
+                        </div>
+                        <div class="bg-white rounded-lg border border-gray-200 p-4">
+                          <div class="space-y-3">
+                            <!-- Config Name -->
+                            <p class="text-sm font-medium text-gray-900 break-words">
+                              {{getConfigDisplayName(engine.leadPriceConfigId)}}
+                            </p>
+                            <!-- Price Details -->
+                            @if (getPriceComparison(engine.leadPriceConfigId); as priceComp) {
+                              <div class="border-t border-gray-100 pt-2 mt-2">
+                                <h5 class="text-xs font-medium text-gray-500 mb-2">Pricing
+                                Details</h5>
+                                <div class="grid grid-cols-2 gap-3">
+                                  <!-- Current Price -->
+                                  <div>
+                                    <label class="text-xs text-gray-500">Current
+                                    Price</label>
+                                    <p
+                                      [class]="getPriceClassForConfig(engine.leadPriceConfigId) + ' text-sm font-semibold'">
+                                      ₹{{priceComp.currentPrice?.toLocaleString('en-IN')
+                                      || 'Not set'}}
+                                    </p>
+                                  </div>
+                                  <!-- Normal Price -->
+                                  <div>
+                                    <label class="text-xs text-gray-500">Normal
+                                    Price</label>
+                                    <p class="text-sm text-gray-700">
+                                      ₹{{priceComp.normalPrice?.toLocaleString('en-IN')
+                                      || 'Not set'}}
+                                    </p>
+                                  </div>
                                 </div>
+                                <!-- Price Difference -->
+                                @if (priceComp.hasDifference) {
+                                  <div
+                                    class="mt-2 p-2 rounded-lg"
+                                    [class.bg-green-50]="priceComp.differenceType === 'higher'"
+                                    [class.bg-red-50]="priceComp.differenceType === 'lower'">
+                                    <div class="flex items-center justify-between">
+                                      <span
+                                      class="text-xs text-gray-600">Difference</span>
+                                      <span
+                                        [class]="priceComp.differenceType === 'higher' ? 'text-green-700' : 'text-red-700'"
+                                        class="text-sm font-semibold">
+                                        {{priceComp.differenceType === 'higher' ? '+' :
+                                        '-'}}
+                                        {{Math.abs(priceComp.differencePercentage).toFixed(1)}}%
+                                      </span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                      {{priceComp.differenceType === 'higher' ? 'Premium
+                                      pricing' : 'Discounted pricing'}}
+                                      compared to normal price
+                                    </p>
+                                  </div>
+                                }
+                                <!-- Same Price -->
+                                @if (!priceComp.hasDifference && priceComp.currentPrice && priceComp.normalPrice) {
+                                  <div
+                                    class="mt-2 p-2 bg-gray-50 rounded-lg">
+                                    <span class="text-xs text-gray-600">Pricing is at
+                                    standard rate</span>
+                                  </div>
+                                }
+                                <!-- Using Default -->
+                                @if (!priceComp.currentPrice && priceComp.normalPrice) {
+                                  <div
+                                    class="mt-2 p-2 bg-amber-50 rounded-lg">
+                                    <span class="text-xs text-amber-700">Using default
+                                    normal price</span>
+                                  </div>
+                                }
+                              </div>
+                            }
+                            <!-- Config ID -->
+                            <div class="text-xs text-gray-400 pt-2 border-t border-gray-100">
+                              Config ID: {{engine.leadPriceConfigId}}
                             </div>
-
-                            <!-- Loading state -->
-                            <div *ngIf="configDropdownLoading"
-                                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 text-center">
-                                <span class="text-sm text-gray-600">Loading configurations...</span>
-                            </div>
-
-                            <!-- No results - ONLY show when search term exists AND no results AND not loading -->
-                            <div *ngIf="configOptions.length === 0 && !configDropdownLoading && configDropdownSearch && configDropdownSearch.trim() !== ''"
-                                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 text-sm text-gray-500">
-                                No configurations found for "{{configDropdownSearch}}"
-                            </div>
-
-                            <!-- Empty state when no search term and no results -->
-                            <div *ngIf="configOptions.length === 0 && !configDropdownLoading && (!configDropdownSearch || configDropdownSearch.trim() === '')"
-                                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 text-sm text-gray-500">
-                                Type to search configurations...
-                            </div>
-
-                            <!-- Loading state -->
-                            <div *ngIf="configDropdownLoading"
-                                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 text-center">
-                                <span class="text-sm text-gray-600">Loading configurations...</span>
-                            </div>
-
-                            <!-- No results -->
-                            <div *ngIf="configOptions.length === 0 && !configDropdownLoading && configDropdownSearch"
-                                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 text-sm text-gray-500">
-                                No configurations found
-                            </div>
+                          </div>
                         </div>
-
-                        <div *ngIf="createForm.get('leadPriceConfigId')?.invalid && createForm.get('leadPriceConfigId')?.touched"
-                            class="text-red-500 text-xs mt-1">
-                            Please select a configuration
+                      </div>
+                      <!-- Timeline -->
+                      <div>
+                        <div class="flex items-center justify-between mb-3">
+                          <h4 class="font-semibold text-gray-800 flex items-center">
+                            <i class="mr-2">📅</i> Timeline
+                          </h4>
+                          <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                            Date Information
+                          </span>
                         </div>
+                        <div class="bg-white rounded-lg border border-gray-200 p-4">
+                          <div class="space-y-3">
+                            <div>
+                              <label class="text-xs text-gray-500">Start Date</label>
+                              <p class="text-sm font-medium">
+                              {{formatDateTime(engine.startDate)}}</p>
+                            </div>
+                            @if (engine.endDate) {
+                              <div>
+                                <label class="text-xs text-gray-500">End Date</label>
+                                <p class="text-sm font-medium">
+                                {{formatDateTime(engine.endDate)}}</p>
+                              </div>
+                            }
+                            <div>
+                              <label class="text-xs text-gray-500">Created</label>
+                              <p class="text-sm">{{formatDateTime(engine.createdAt)}}</p>
+                            </div>
+                            <div>
+                              <label class="text-xs text-gray-500">Last Updated</label>
+                              <p class="text-sm">{{formatDateTime(engine.updatedAt)}}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-
-                    <!-- Date Range -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Start Date <span class="text-red-500">*</span>
-                            </label>
-                            <input type="date" formControlName="startDate"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                [class.border-red-500]="createForm.get('startDate')?.invalid && createForm.get('startDate')?.touched">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                End Date
-                            </label>
-                            <input type="date" formControlName="endDate"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
+                    <!-- Close Button -->
+                    <div class="mt-4 text-right">
+                      <button (click)="toggleExpand(engine.id)"
+                        class="text-gray-600 hover:text-gray-800 text-sm font-medium flex items-center ml-auto">
+                        <i class="mr-1">↑</i> Collapse Details
+                      </button>
                     </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    }
 
-                    <!-- Price Change Type and Percentage -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Change Type <span class="text-red-500">*</span>
-                            </label>
-                            <select formControlName="isHike"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option [ngValue]="true">Hike (+)</option>
-                                <option [ngValue]="false">Decrease (-)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Percentage <span class="text-red-500">*</span>
-                            </label>
-                            <div class="relative">
-                                <input type="number" formControlName="percentageChange" step="0.01" min="0" max="100"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8"
-                                    [class.border-red-500]="createForm.get('percentageChange')?.invalid && createForm.get('percentageChange')?.touched">
-                                <span class="absolute right-3 top-2 text-gray-500">%</span>
-                            </div>
-                            <div *ngIf="createForm.get('percentageChange')?.invalid && createForm.get('percentageChange')?.touched"
-                                class="text-red-500 text-xs mt-1">
-                                <span *ngIf="createForm.get('percentageChange')?.errors?.['required']">Percentage is
-                                    required</span>
-                                <span *ngIf="createForm.get('percentageChange')?.errors?.['min']">Minimum 0%</span>
-                                <span *ngIf="createForm.get('percentageChange')?.errors?.['max']">Maximum 100%</span>
-                            </div>
-                        </div>
-                    </div>
+    <!-- Empty State -->
+    @if (!loading && pricingEngines.length === 0) {
+      <div class="p-12 text-center">
+        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="text-gray-400 text-3xl">⚙️</i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">No Pricing Rules Found</h3>
+        <p class="text-gray-600 mb-6">
+          No pricing rules match your current filters or there are no rules in the system.
+        </p>
+        <div class="flex gap-3 justify-center">
+          <button (click)="resetFilters()"
+            class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
+            <i class="mr-2">🔄</i> Reset Filters
+          </button>
+          <button (click)="openCreateModal()"
+            class="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors border border-gray-300">
+            <i class="mr-2">➕</i> Create New Rule
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Pagination -->
+    @if (!loading && pricingEngines.length > 0) {
+      <div
+        class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+        <div class="text-sm text-gray-500">
+          Showing <span class="font-medium">{{getStartIndex()}}</span> to
+          <span class="font-medium">{{getEndIndex()}}</span> of
+          <span class="font-medium">{{totalCount}}</span> rules
+        </div>
+        <div class="flex items-center gap-2">
+          <button (click)="changePage(-1)" [disabled]="page === 1"
+            class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            <i class="mr-1">←</i> Previous
+          </button>
+          <div class="flex items-center gap-1">
+            @for (pageNum of getPageNumbers(); track pageNum) {
+              <button (click)="goToPage(pageNum)"
+                [class]="pageNum === page ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'"
+                class="px-3 py-1 rounded text-sm">
+                {{pageNum}}
+              </button>
+            }
+          </div>
+          <button (click)="changePage(1)" [disabled]="page * pageSize >= totalCount"
+            class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            Next <i class="ml-1">→</i>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<app-admin-footer></app-admin-footer>
+
+<!-- ============= CREATE MODAL ============= -->
+@if (showCreateModal) {
+  <div
+    class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+    <div class="relative mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-medium text-gray-900">Create New Pricing Rule</h3>
+        <button (click)="closeCreateModal()" class="text-gray-400 hover:text-gray-600">
+          <i class="text-xl">✕</i>
+        </button>
+      </div>
+      <form [formGroup]="createForm" (ngSubmit)="createPricingEngine()">
+        <div class="space-y-4">
+          <!-- Rule Name -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Rule Name <span class="text-red-500">*</span>
+            </label>
+            <input type="text" formControlName="name" placeholder="e.g., Summer Discount 2026"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [class.border-red-500]="createForm.get('name')?.invalid && createForm.get('name')?.touched">
+              @if (createForm.get('name')?.invalid && createForm.get('name')?.touched) {
+                <div
+                  class="text-red-500 text-xs mt-1">
+                  @if (createForm.get('name')?.errors?.['required']) {
+                    <span>Rule name is required</span>
+                  }
+                  @if (createForm.get('name')?.errors?.['minlength']) {
+                    <span>Minimum 3 characters</span>
+                  }
                 </div>
-
-                <!-- Form Actions -->
-                <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+              }
+            </div>
+            <!-- Lead Price Config Dropdown -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Lead Price Configuration <span class="text-red-500">*</span>
+              </label>
+              <!-- Selected config display -->
+              @if (selectedConfig) {
+                <div
+                  class="flex items-center justify-between p-2 mb-2 bg-blue-50 border border-blue-200 rounded-md">
+                  <span class="text-sm text-blue-800">{{selectedConfig.displayName}}</span>
+                  <button type="button"
+                    (click)="selectedConfig = null; createForm.patchValue({leadPriceConfigId: null})"
+                    class="text-blue-600 hover:text-blue-800">
+                    <i>✕</i>
+                  </button>
+                </div>
+              }
+              <!-- Search input when no config selected -->
+              @if (!selectedConfig) {
+                <div class="relative">
+                  <div
+                    class="flex items-center border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-blue-500">
+                    <input type="text" (input)="onConfigSearch($event)" (focus)="loadConfigOptions()"
+                      placeholder="Type to search configurations..."
+                      class="w-full px-3 py-2 rounded-md focus:outline-none"
+                      [value]="configDropdownSearch" autocomplete="off">
+                      @if (configDropdownLoading) {
+                        <i class="px-3 text-gray-400 animate-spin">🔄</i>
+                      }
+                      @if (!configDropdownLoading) {
+                        <i class="px-3 text-gray-400">🔍</i>
+                      }
+                    </div>
+                    <!-- Dropdown results -->
+                    @if (configOptions.length > 0 && !configDropdownLoading) {
+                      <div
+                        class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                        @for (config of configOptions; track config) {
+                          <div (click)="onCreateConfigSelect(config)"
+                            class="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm border-b border-gray-100 last:border-0">
+                            {{config.displayName}}
+                          </div>
+                        }
+                      </div>
+                    }
+                    <!-- Loading state -->
+                    @if (configDropdownLoading) {
+                      <div
+                        class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 text-center">
+                        <span class="text-sm text-gray-600">Loading configurations...</span>
+                      </div>
+                    }
+                    <!-- No results - ONLY show when search term exists AND no results AND not loading -->
+                    @if (configOptions.length === 0 && !configDropdownLoading && configDropdownSearch && configDropdownSearch.trim() !== '') {
+                      <div
+                        class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 text-sm text-gray-500">
+                        No configurations found for "{{configDropdownSearch}}"
+                      </div>
+                    }
+                    <!-- Empty state when no search term and no results -->
+                    @if (configOptions.length === 0 && !configDropdownLoading && (!configDropdownSearch || configDropdownSearch.trim() === '')) {
+                      <div
+                        class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 text-sm text-gray-500">
+                        Type to search configurations...
+                      </div>
+                    }
+                    <!-- Loading state -->
+                    @if (configDropdownLoading) {
+                      <div
+                        class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 text-center">
+                        <span class="text-sm text-gray-600">Loading configurations...</span>
+                      </div>
+                    }
+                    <!-- No results -->
+                    @if (configOptions.length === 0 && !configDropdownLoading && configDropdownSearch) {
+                      <div
+                        class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 text-sm text-gray-500">
+                        No configurations found
+                      </div>
+                    }
+                  </div>
+                }
+                @if (createForm.get('leadPriceConfigId')?.invalid && createForm.get('leadPriceConfigId')?.touched) {
+                  <div
+                    class="text-red-500 text-xs mt-1">
+                    Please select a configuration
+                  </div>
+                }
+              </div>
+              <!-- Date Range -->
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Start Date <span class="text-red-500">*</span>
+                  </label>
+                  <input type="date" formControlName="startDate"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    [class.border-red-500]="createForm.get('startDate')?.invalid && createForm.get('startDate')?.touched">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                      End Date
+                    </label>
+                    <input type="date" formControlName="endDate"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                  </div>
+                  <!-- Price Change Type and Percentage -->
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Change Type <span class="text-red-500">*</span>
+                      </label>
+                      <select formControlName="isHike"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option [ngValue]="true">Hike (+)</option>
+                        <option [ngValue]="false">Decrease (-)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Percentage <span class="text-red-500">*</span>
+                      </label>
+                      <div class="relative">
+                        <input type="number" formControlName="percentageChange" step="0.01" min="0" max="100"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8"
+                          [class.border-red-500]="createForm.get('percentageChange')?.invalid && createForm.get('percentageChange')?.touched">
+                          <span class="absolute right-3 top-2 text-gray-500">%</span>
+                        </div>
+                        @if (createForm.get('percentageChange')?.invalid && createForm.get('percentageChange')?.touched) {
+                          <div
+                            class="text-red-500 text-xs mt-1">
+                            @if (createForm.get('percentageChange')?.errors?.['required']) {
+                              <span>Percentage is
+                              required</span>
+                            }
+                            @if (createForm.get('percentageChange')?.errors?.['min']) {
+                              <span>Minimum 0%</span>
+                            }
+                            @if (createForm.get('percentageChange')?.errors?.['max']) {
+                              <span>Maximum 100%</span>
+                            }
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Form Actions -->
+                  <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
                     <button type="button" (click)="closeCreateModal()"
-                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
-                        Cancel
+                      class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
+                      Cancel
                     </button>
                     <button type="submit" [disabled]="createForm.invalid"
-                        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Create Rule
+                      class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                      Create Rule
                     </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ============= EDIT MODAL ============= -->
-    <div *ngIf="showEditModal"
-        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-        <div class="relative mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-medium text-gray-900">Edit Pricing Rule</h3>
-                <button (click)="closeEditModal()" class="text-gray-400 hover:text-gray-600">
-                    <i class="text-xl">✕</i>
-                </button>
+                  </div>
+                </form>
+              </div>
             </div>
+          }
 
-            <form [formGroup]="editForm" (ngSubmit)="updatePricingEngine()">
-                <div class="space-y-4">
+          <!-- ============= EDIT MODAL ============= -->
+          @if (showEditModal) {
+            <div
+              class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+              <div class="relative mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+                <div class="flex justify-between items-center mb-4">
+                  <h3 class="text-lg font-medium text-gray-900">Edit Pricing Rule</h3>
+                  <button (click)="closeEditModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="text-xl">✕</i>
+                  </button>
+                </div>
+                <form [formGroup]="editForm" (ngSubmit)="updatePricingEngine()">
+                  <div class="space-y-4">
                     <!-- Rule Name -->
                     <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Rule Name <span class="text-red-500">*</span>
+                      </label>
+                      <input type="text" formControlName="name"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        [class.border-red-500]="editForm.get('name')?.invalid && editForm.get('name')?.touched">
+                      </div>
+                      <!-- Lead Price Config Dropdown -->
+                      <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Rule Name <span class="text-red-500">*</span>
+                          Lead Price Configuration <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" formControlName="name"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            [class.border-red-500]="editForm.get('name')?.invalid && editForm.get('name')?.touched">
-                    </div>
-
-                    <!-- Lead Price Config Dropdown -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Lead Price Configuration <span class="text-red-500">*</span>
-                        </label>
-
                         <!-- Selected config display -->
-                        <div *ngIf="selectedConfig"
+                        @if (selectedConfig) {
+                          <div
                             class="flex items-center justify-between p-2 mb-2 bg-blue-50 border border-blue-200 rounded-md">
                             <span class="text-sm text-blue-800">{{selectedConfig.displayName}}</span>
                             <button type="button"
-                                (click)="selectedConfig = null; editForm.patchValue({leadPriceConfigId: null})"
-                                class="text-blue-600 hover:text-blue-800">
-                                <i>✕</i>
+                              (click)="selectedConfig = null; editForm.patchValue({leadPriceConfigId: null})"
+                              class="text-blue-600 hover:text-blue-800">
+                              <i>✕</i>
                             </button>
-                        </div>
-
+                          </div>
+                        }
                         <!-- Search input when no config selected -->
-                        <div *ngIf="!selectedConfig" class="relative">
+                        @if (!selectedConfig) {
+                          <div class="relative">
                             <div
-                                class="flex items-center border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-blue-500">
-                                <input type="text" (input)="onConfigSearch($event)" (focus)="loadConfigOptions()"
-                                    placeholder="Type to search configurations..."
-                                    class="w-full px-3 py-2 rounded-md focus:outline-none"
-                                    [value]="configDropdownSearch" autocomplete="off">
-                                <i *ngIf="configDropdownLoading" class="px-3 text-gray-400 animate-spin">🔄</i>
-                                <i *ngIf="!configDropdownLoading" class="px-3 text-gray-400">🔍</i>
-                            </div>
-
-                            <!-- Dropdown results -->
-                            <div *ngIf="configOptions.length > 0 && !configDropdownLoading"
-                                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                                <div *ngFor="let config of configOptions" (click)="onEditConfigSelect(config)"
-                                    class="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm border-b border-gray-100 last:border-0">
-                                    {{config.displayName}}
+                              class="flex items-center border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-blue-500">
+                              <input type="text" (input)="onConfigSearch($event)" (focus)="loadConfigOptions()"
+                                placeholder="Type to search configurations..."
+                                class="w-full px-3 py-2 rounded-md focus:outline-none"
+                                [value]="configDropdownSearch" autocomplete="off">
+                                @if (configDropdownLoading) {
+                                  <i class="px-3 text-gray-400 animate-spin">🔄</i>
+                                }
+                                @if (!configDropdownLoading) {
+                                  <i class="px-3 text-gray-400">🔍</i>
+                                }
+                              </div>
+                              <!-- Dropdown results -->
+                              @if (configOptions.length > 0 && !configDropdownLoading) {
+                                <div
+                                  class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                                  @for (config of configOptions; track config) {
+                                    <div (click)="onEditConfigSelect(config)"
+                                      class="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm border-b border-gray-100 last:border-0">
+                                      {{config.displayName}}
+                                    </div>
+                                  }
                                 </div>
+                              }
+                              <!-- Loading state -->
+                              @if (configDropdownLoading) {
+                                <div
+                                  class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 text-center">
+                                  <span class="text-sm text-gray-600">Loading configurations...</span>
+                                </div>
+                              }
+                              <!-- No results -->
+                              @if (configOptions.length === 0 && !configDropdownLoading && configDropdownSearch) {
+                                <div
+                                  class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 text-sm text-gray-500">
+                                  No configurations found
+                                </div>
+                              }
                             </div>
-
-                            <!-- Loading state -->
-                            <div *ngIf="configDropdownLoading"
-                                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 text-center">
-                                <span class="text-sm text-gray-600">Loading configurations...</span>
+                          }
+                          @if (editForm.get('leadPriceConfigId')?.invalid && editForm.get('leadPriceConfigId')?.touched) {
+                            <div
+                              class="text-red-500 text-xs mt-1">
+                              Please select a configuration
                             </div>
-
-                            <!-- No results -->
-                            <div *ngIf="configOptions.length === 0 && !configDropdownLoading && configDropdownSearch"
-                                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 text-sm text-gray-500">
-                                No configurations found
-                            </div>
+                          }
                         </div>
-
-                        <div *ngIf="editForm.get('leadPriceConfigId')?.invalid && editForm.get('leadPriceConfigId')?.touched"
-                            class="text-red-500 text-xs mt-1">
-                            Please select a configuration
-                        </div>
-                    </div>
-
-                    <!-- Date Range -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
+                        <!-- Date Range -->
+                        <div class="grid grid-cols-2 gap-4">
+                          <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Start Date <span class="text-red-500">*</span>
+                              Start Date <span class="text-red-500">*</span>
                             </label>
                             <input type="date" formControlName="startDate"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                End Date
-                            </label>
-                            <input type="date" formControlName="endDate"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                    </div>
-
-                    <!-- Price Change Type and Percentage -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Change Type <span class="text-red-500">*</span>
-                            </label>
-                            <select formControlName="isHike"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option [ngValue]="true">Hike (+)</option>
-                                <option [ngValue]="false">Decrease (-)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Percentage <span class="text-red-500">*</span>
-                            </label>
-                            <div class="relative">
-                                <input type="number" formControlName="percentageChange" step="0.01" min="0" max="100"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8">
-                                <span class="absolute right-3 top-2 text-gray-500">%</span>
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
+                            <div>
+                              <label class="block text-sm font-medium text-gray-700 mb-1">
+                                End Date
+                              </label>
+                              <input type="date" formControlName="endDate"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                              </div>
+                            </div>
+                            <!-- Price Change Type and Percentage -->
+                            <div class="grid grid-cols-2 gap-4">
+                              <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                  Change Type <span class="text-red-500">*</span>
+                                </label>
+                                <select formControlName="isHike"
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                  <option [ngValue]="true">Hike (+)</option>
+                                  <option [ngValue]="false">Decrease (-)</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                  Percentage <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                  <input type="number" formControlName="percentageChange" step="0.01" min="0" max="100"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8">
+                                    <span class="absolute right-3 top-2 text-gray-500">%</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <!-- Form Actions -->
+                            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+                              <button type="button" (click)="closeEditModal()"
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
+                                Cancel
+                              </button>
+                              <button type="submit" [disabled]="editForm.invalid"
+                                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                                Update Rule
+                              </button>
+                            </div>
+                          </form>
                         </div>
-                    </div>
-                </div>
+                      </div>
+                    }
 
-                <!-- Form Actions -->
-                <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
-                    <button type="button" (click)="closeEditModal()"
-                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
-                        Cancel
-                    </button>
-                    <button type="submit" [disabled]="editForm.invalid"
-                        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Update Rule
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ============= DELETE CONFIRMATION MODAL ============= -->
-    <div *ngIf="showDeleteModal"
-        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-        <div class="relative mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div class="text-center">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                    <i class="text-red-600 text-xl">⚠️</i>
-                </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">Delete Pricing Rule</h3>
-                <p class="text-sm text-gray-500 mb-4">
-                    Are you sure you want to delete <span class="font-semibold">{{selectedEngine?.name}}</span>?
-                    This action cannot be undone.
-                </p>
-                <div class="flex justify-center gap-3">
-                    <button (click)="closeDeleteModal()"
-                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
-                        Cancel
-                    </button>
-                    <button (click)="deletePricingEngine()"
-                        class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
-                        Delete
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                    <!-- ============= DELETE CONFIRMATION MODAL ============= -->
+                    @if (showDeleteModal) {
+                      <div
+                        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+                        <div class="relative mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                          <div class="text-center">
+                            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                              <i class="text-red-600 text-xl">⚠️</i>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Delete Pricing Rule</h3>
+                            <p class="text-sm text-gray-500 mb-4">
+                              Are you sure you want to delete <span class="font-semibold">{{selectedEngine?.name}}</span>?
+                              This action cannot be undone.
+                            </p>
+                            <div class="flex justify-center gap-3">
+                              <button (click)="closeDeleteModal()"
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
+                                Cancel
+                              </button>
+                              <button (click)="deletePricingEngine()"
+                                class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div>

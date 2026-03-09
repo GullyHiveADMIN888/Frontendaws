@@ -4,9 +4,10 @@ import { Component, OnInit, Input } from '@angular/core';
 import { SellerService, Lead } from '../seller.service';
 
 @Component({
-  selector: 'app-leads',
-  templateUrl: './leads.component.html',
-  styleUrls: ['./leads.component.css']
+    selector: 'app-leads',
+    templateUrl: './leads.component.html',
+    styleUrls: ['./leads.component.css'],
+    standalone: false
 })
 export class LeadsComponent implements OnInit {
 

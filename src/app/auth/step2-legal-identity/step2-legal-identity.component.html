@@ -22,323 +22,365 @@
       [value]="formData.businessName"
       (input)="onInput('businessName', $any($event.target).value)"
       class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"  maxlength="50"
-    />
-     <p class="text-red-500 text-sm" *ngIf="errors.businessName">{{ errors.businessName }}</p> 
-  </div>
-
-  <!-- Registration -->
-  <div class="grid md:grid-cols-2 gap-6 mb-6">
-
-    <div>
-         <label class="block text-sm font-medium mb-2">Identity Proof Type *</label>
-     
-      <select
-  [(ngModel)]="formData.registrationType"
-  name="registrationType"
-  class="w-full px-4 py-3 border rounded-lg bg-white">
-
-  <option [ngValue]="null">Select</option>
-
-  <option *ngFor="let t of registrationTypes"
-          [ngValue]="t">
-    {{ t }}
-  </option>
-</select>
-
-      <p class="text-red-500 text-sm" *ngIf="errors.registrationType">{{ errors.registrationType }}</p>
+      />
+      @if (errors.businessName) {
+        <p class="text-red-500 text-sm">{{ errors.businessName }}</p>
+      }
     </div>
 
-    <div>
-         <label class="block text-sm font-medium mb-2">Identity Proof Number *</label>
-      <input
-        type="text"
-        [value]="formData.registrationNumber"
-        (input)="onInput('registrationNumber', $any($event.target).value)"
-        class="w-full px-4 py-3 border rounded-lg"  maxlength="15" />
-       <p class="text-red-500 text-sm" *ngIf="errors.registrationNumber">{{ errors.registrationNumber }}</p>
-    </div>
+    <!-- Registration -->
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
 
-  </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">Identity Proof Type *</label>
 
- 
+        <select
+          [(ngModel)]="formData.registrationType"
+          name="registrationType"
+          class="w-full px-4 py-3 border rounded-lg bg-white">
 
+          <option [ngValue]="null">Select</option>
 
-  <!-- File Uploads -->
-<div class="grid md:grid-cols-2 gap-6 mb-6">
+          @for (t of registrationTypes; track t) {
+            <option
+              [ngValue]="t">
+              {{ t }}
+            </option>
+          }
+        </select>
 
-  <!-- Registration Doc -->
-  <div>
-    <label class="block text-sm font-medium mb-2">Identity Proof Document </label> 
-    <input type="file"
-           hidden
-           id="regDoc"
-           accept=".pdf,.doc,.docx,image/*"
-           (change)="handleFileChange('registrationDocument', $event)">
+        @if (errors.registrationType) {
+          <p class="text-red-500 text-sm">{{ errors.registrationType }}</p>
+        }
+      </div>
 
-    <label for="regDoc" class="block border-2 border-dashed p-6 rounded-lg text-center cursor-pointer">
-      
-      <!-- Image Preview -->
-      <img *ngIf="regDocPreview && regDocPreview.startsWith('data:image')" 
-           [src]="regDocPreview" 
-           class="h-32 mx-auto object-cover rounded">
+      <div>
+        <label class="block text-sm font-medium mb-2">Identity Proof Number *</label>
+        <input
+          type="text"
+          [value]="formData.registrationNumber"
+          (input)="onInput('registrationNumber', $any($event.target).value)"
+          class="w-full px-4 py-3 border rounded-lg"  maxlength="15" />
+          @if (errors.registrationNumber) {
+            <p class="text-red-500 text-sm">{{ errors.registrationNumber }}</p>
+          }
+        </div>
 
-      <!-- PDF/DOC File Name -->
-      <span *ngIf="regDocPreview && !regDocPreview.startsWith('data:image')">
-        {{ regDocPreview }}
-      </span>
-
-      <!-- Default Upload Icon -->
-      <i *ngIf="!regDocPreview" class="ri-upload-cloud-line text-4xl text-gray-400"></i>
-    </label>
-
-    <p class="text-red-500 text-sm" *ngIf="errors.registrationDocument">{{ errors.registrationDocument }}</p> 
-  </div>
-
-  <!-- Address Proof -->
-  <div>
-    <label class="block text-sm font-medium mb-2">Address Proof </label>
-    <input type="file"
-           hidden
-           id="addrDoc"
-           accept=".pdf,.doc,.docx,image/*"
-           (change)="handleFileChange('addressProof', $event)">
-
-    <label for="addrDoc" class="block border-2 border-dashed p-6 rounded-lg text-center cursor-pointer">
-      
-      <!-- Image Preview -->
-      <img *ngIf="addressProofPreview && addressProofPreview.startsWith('data:image')" 
-           [src]="addressProofPreview" 
-           class="h-32 mx-auto object-cover rounded">
-
-      <!-- PDF/DOC File Name -->
-      <span *ngIf="addressProofPreview && !addressProofPreview.startsWith('data:image')">
-        {{ addressProofPreview }}
-      </span>
-
-      <!-- Default Upload Icon -->
-      <i *ngIf="!addressProofPreview" class="ri-upload-cloud-line text-4xl text-gray-400"></i>
-    </label>
-
-    <p class="text-red-500 text-sm" *ngIf="errors.addressProof">{{ errors.addressProof }}</p> 
-  </div>
-
-</div>
-
-
-  <!-- Address -->
-  <div class="border-t pt-6 mt-6">
-     <div class="flex items-center mb-8">
-    <div class="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center mr-4">
-      <i class="ri-home-line text-2xl text-white"></i>
-    </div>
-    <div>
-      <h2 class="text-3xl font-bold text-gray-900">Business Address</h2>
-      <p class="text-gray-600 mt-1">Provide your business address</p>
-    </div>
-  </div>
-
-
-  </div>
-   
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div>
-  <label class="block text-sm font-medium mb-2">
-    Line 1 <span class="text-orange-600">*</span>
-  </label>
-  <input
-    type="text"
-     placeholder="Line 1"
-    [value]="formData.line1 || ''"
-    (input)="onInput('line1', $any($event.target).value)"
-    class="w-full px-4 py-3 border rounded-lg"  maxlength="50"
-  />
-  <p *ngIf="errors.line1" class="text-red-500 text-sm mt-1">{{ errors.line1 }}</p>
-  </div>
-
-    <div>
-      <label class="block text-sm font-medium mb-2">Line 2</label>
-      <input type="text"
-       placeholder="Line 2"
-        [value]="formData.line2 || ''"
-        (input)="onInput('line2', $any($event.target).value)"
-        class="w-full px-4 py-3 border rounded-lg"  maxlength="50" />
-    </div>
-  </div>   
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-  <!-- State -->
- <div>
-    <label class="block text-sm font-medium mb-2">State *</label>
-  <select
-  [(ngModel)]="formData.stateId"
-  (ngModelChange)="onStateChange($event)"
-  name="stateId"
-  class="w-full px-4 py-3 border rounded-lg bg-white">
-
-  <option [ngValue]="null">Select State</option>
-
-  <option *ngFor="let s of states"
-          [ngValue]="s.id">
-    {{ s.name }}
-  </option>
-</select>
-
-
-   
-    <p *ngIf="errors?.stateId" class="text-red-500 text-sm mt-1">{{ errors.stateId }}</p>
-  </div>
-
-  <!-- City -->
-  <div>
-    <label class="block text-sm font-medium mb-2">City *</label>
-  
-<select
-  [(ngModel)]="formData.cityId"
-  (ngModelChange)="onCityChange($event)"
-  name="cityId"
-  class="w-full px-4 py-3 border rounded-lg bg-white"
-  [disabled]="!cities.length">
-
-  <option [ngValue]="null">Select City</option>
-
-  <option *ngFor="let c of cities"
-          [ngValue]="c.id">
-    {{ c.name }}
-  </option>
-</select>
-   
-<p *ngIf="errors?.city" class="text-red-500 text-sm mt-1">{{ errors.city }}</p>
-  </div>
-</div>
-
-    
-  <div class="grid md:grid-cols-2 gap-6 mt-6">
- 
-<div>
-  <label class="block text-sm font-medium mb-2">Locality </label>
-  <select [(ngModel)]="formData.areaId" 
-          name="areaId"
-          class="w-full px-4 py-3 border rounded-lg bg-white"
-          [disabled]="!areas.length">
-    <option [ngValue]="null">Select Locality</option>
-    <option *ngFor="let area of areas" [ngValue]="area.id">
-      {{ area.area_name }}
-    </option>
-  </select>
-  <p *ngIf="errors.areaId" class="text-red-500 text-sm mt-1">{{ errors.areaId }}</p>
-</div>
-
-  <div>
-    <label class="block text-sm font-medium mb-2">Landmark</label>
-    <input
-      placeholder="Landmark"
-      [value]="formData.landmark || ''"
-      (input)="onInput('landmark', $any($event.target).value)"
-      class="w-full px-4 py-3 border rounded-lg"  maxlength="20"
-    />
-  </div>
-</div>
+      </div>
 
 
 
 
-     <div class="grid md:grid-cols-2 gap-6 mt-6">
-     
-    <div>
-  <label class="block text-sm font-medium mb-2">PIN Code *</label> 
-  <input 
-    type="text" 
-    placeholder="PIN Code" 
-    maxlength="6"
-    [value]="formData.pinCode"
-    (input)="onPinCodeInput($event)"
-    class="w-full px-4 py-3 border rounded-lg" 
-  />
-  <p *ngIf="errors.pinCode" class="text-red-500 text-sm mt-1">{{ errors.pinCode }}</p>
-</div>
+      <!-- File Uploads -->
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
 
-</div>
+        <!-- Registration Doc -->
+        <div>
+          <label class="block text-sm font-medium mb-2">Identity Proof Document </label>
+          <input type="file"
+            hidden
+            id="regDoc"
+            accept=".pdf,.doc,.docx,image/*"
+            (change)="handleFileChange('registrationDocument', $event)">
 
-<!-- Provider Service Area -->
+            <label for="regDoc" class="block border-2 border-dashed p-6 rounded-lg text-center cursor-pointer">
 
-<div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12 border border-gray-100 mt-8 w-full">
+              <!-- Image Preview -->
+              @if (regDocPreview && regDocPreview.startsWith('data:image')) {
+                <img
+                  [src]="regDocPreview"
+                  class="h-32 mx-auto object-cover rounded">
+              }
 
-  <!-- Header -->
-  <div class="flex items-center mb-8">
-    <div class="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center mr-4">
-      <i class="ri-map-pin-line text-2xl text-white"></i>
-    </div>
-    <div>
-      <h2 class="text-3xl font-bold text-gray-900">Service Areas</h2>
-      <p class="text-gray-600 mt-1">Define the areas you serve</p>
-    </div>
-  </div>
+              <!-- PDF/DOC File Name -->
+              @if (regDocPreview && !regDocPreview.startsWith('data:image')) {
+                <span>
+                  {{ regDocPreview }}
+                </span>
+              }
 
-  <!-- Dropdown with Checkbox -->
-  <div class="relative w-full">
-    <label class="block text-sm font-medium mb-2">Service Areas *</label>
+              <!-- Default Upload Icon -->
+              @if (!regDocPreview) {
+                <i class="ri-upload-cloud-line text-4xl text-gray-400"></i>
+              }
+            </label>
 
-    <!-- Dropdown Button -->
-    <div class="border rounded-lg px-4 py-3 cursor-pointer bg-white flex justify-between items-center"
-         (click)="toggleDropdown()">
-      <span>
-        {{ getSelectedAreaNames() || 'Select Service Areas' }}
-      </span>
-      <i class="ri-arrow-down-s-line text-xl"></i>
-    </div>
+            @if (errors.registrationDocument) {
+              <p class="text-red-500 text-sm">{{ errors.registrationDocument }}</p>
+            }
+          </div>
 
-  
-    <!-- Dropdown List -->
-<div *ngIf="dropdownOpen"
-     class="absolute z-10 mt-2 w-full bg-white border rounded-lg shadow-lg max-h-72 overflow-y-auto">
+          <!-- Address Proof -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Address Proof </label>
+            <input type="file"
+              hidden
+              id="addrDoc"
+              accept=".pdf,.doc,.docx,image/*"
+              (change)="handleFileChange('addressProof', $event)">
 
-  <!-- 🔍 Search Box -->
-  <div class="p-3 border-b sticky top-0 bg-white">
-    <input type="text"
-           [(ngModel)]="searchText"
-           placeholder="Search area..."
-           class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
-  </div>
+              <label for="addrDoc" class="block border-2 border-dashed p-6 rounded-lg text-center cursor-pointer">
 
-  <!-- Checkbox List -->
-  <div *ngFor="let area of filteredAreas()" 
-       class="flex items-center px-4 py-2 hover:bg-gray-100">
+                <!-- Image Preview -->
+                @if (addressProofPreview && addressProofPreview.startsWith('data:image')) {
+                  <img
+                    [src]="addressProofPreview"
+                    class="h-32 mx-auto object-cover rounded">
+                }
 
-    <input type="checkbox"
-           [checked]="isSelected(area.id)"
-           (change)="onAreaChange($event, area.id)"
-           class="mr-3 w-4 h-4">
+                <!-- PDF/DOC File Name -->
+                @if (addressProofPreview && !addressProofPreview.startsWith('data:image')) {
+                  <span>
+                    {{ addressProofPreview }}
+                  </span>
+                }
 
-    <label>{{ area.area_name }}</label>
-  </div>
+                <!-- Default Upload Icon -->
+                @if (!addressProofPreview) {
+                  <i class="ri-upload-cloud-line text-4xl text-gray-400"></i>
+                }
+              </label>
 
-  <!-- No Data -->
-  <div *ngIf="filteredAreas().length === 0"
-       class="text-center py-4 text-gray-500">
-    No areas found
-  </div>
+              @if (errors.addressProof) {
+                <p class="text-red-500 text-sm">{{ errors.addressProof }}</p>
+              }
+            </div>
 
-</div>
-
-    <!-- Error -->
-    <p *ngIf="errors?.selectedAreaIds" class="text-red-500 text-sm mt-1">
-      {{ errors.selectedAreaIds }}
-    </p>
-  </div>
-
-</div>
+          </div>
 
 
-  <!-- Navigation -->
-  <div class="flex justify-between mt-8">
-    <button (click)="back.emit()" class="px-6 py-3 border rounded-lg"> <i class="ri-arrow-left-line ml-2"></i> Back</button>
-    <!-- <button (click)="next.emit()" class="px-6 py-3 bg-orange-600 text-white rounded-lg">
-      Continue to Professional Details
-      <i class="ri-arrow-right-line ml-2"></i>
-    </button> -->
-    <button (click)="onNextClick()" class="px-6 py-3 bg-orange-600 text-white rounded-lg">
-  Continue to Professional Details
-  <i class="ri-arrow-right-line ml-2"></i>
-</button>
-  </div>
+          <!-- Address -->
+          <div class="border-t pt-6 mt-6">
+            <div class="flex items-center mb-8">
+              <div class="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center mr-4">
+                <i class="ri-home-line text-2xl text-white"></i>
+              </div>
+              <div>
+                <h2 class="text-3xl font-bold text-gray-900">Business Address</h2>
+                <p class="text-gray-600 mt-1">Provide your business address</p>
+              </div>
+            </div>
 
-</div>
+
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium mb-2">
+                Line 1 <span class="text-orange-600">*</span>
+              </label>
+              <input
+                type="text"
+                placeholder="Line 1"
+                [value]="formData.line1 || ''"
+                (input)="onInput('line1', $any($event.target).value)"
+                class="w-full px-4 py-3 border rounded-lg"  maxlength="50"
+                />
+                @if (errors.line1) {
+                  <p class="text-red-500 text-sm mt-1">{{ errors.line1 }}</p>
+                }
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium mb-2">Line 2</label>
+                <input type="text"
+                  placeholder="Line 2"
+                  [value]="formData.line2 || ''"
+                  (input)="onInput('line2', $any($event.target).value)"
+                  class="w-full px-4 py-3 border rounded-lg"  maxlength="50" />
+                </div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <!-- State -->
+                <div>
+                  <label class="block text-sm font-medium mb-2">State *</label>
+                  <select
+                    [(ngModel)]="formData.stateId"
+                    (ngModelChange)="onStateChange($event)"
+                    name="stateId"
+                    class="w-full px-4 py-3 border rounded-lg bg-white">
+
+                    <option [ngValue]="null">Select State</option>
+
+                    @for (s of states; track s) {
+                      <option
+                        [ngValue]="s.id">
+                        {{ s.name }}
+                      </option>
+                    }
+                  </select>
+
+
+
+                  @if (errors?.stateId) {
+                    <p class="text-red-500 text-sm mt-1">{{ errors.stateId }}</p>
+                  }
+                </div>
+
+                <!-- City -->
+                <div>
+                  <label class="block text-sm font-medium mb-2">City *</label>
+
+                  <select
+                    [(ngModel)]="formData.cityId"
+                    (ngModelChange)="onCityChange($event)"
+                    name="cityId"
+                    class="w-full px-4 py-3 border rounded-lg bg-white"
+                    [disabled]="!cities.length">
+
+                    <option [ngValue]="null">Select City</option>
+
+                    @for (c of cities; track c) {
+                      <option
+                        [ngValue]="c.id">
+                        {{ c.name }}
+                      </option>
+                    }
+                  </select>
+
+                  @if (errors?.city) {
+                    <p class="text-red-500 text-sm mt-1">{{ errors.city }}</p>
+                  }
+                </div>
+              </div>
+
+
+              <div class="grid md:grid-cols-2 gap-6 mt-6">
+
+                <div>
+                  <label class="block text-sm font-medium mb-2">Locality </label>
+                  <select [(ngModel)]="formData.areaId"
+                    name="areaId"
+                    class="w-full px-4 py-3 border rounded-lg bg-white"
+                    [disabled]="!areas.length">
+                    <option [ngValue]="null">Select Locality</option>
+                    @for (area of areas; track area) {
+                      <option [ngValue]="area.id">
+                        {{ area.area_name }}
+                      </option>
+                    }
+                  </select>
+                  @if (errors.areaId) {
+                    <p class="text-red-500 text-sm mt-1">{{ errors.areaId }}</p>
+                  }
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium mb-2">Landmark</label>
+                  <input
+                    placeholder="Landmark"
+                    [value]="formData.landmark || ''"
+                    (input)="onInput('landmark', $any($event.target).value)"
+                    class="w-full px-4 py-3 border rounded-lg"  maxlength="20"
+                    />
+                  </div>
+                </div>
+
+
+
+
+                <div class="grid md:grid-cols-2 gap-6 mt-6">
+
+                  <div>
+                    <label class="block text-sm font-medium mb-2">PIN Code *</label>
+                    <input
+                      type="text"
+                      placeholder="PIN Code"
+                      maxlength="6"
+                      [value]="formData.pinCode"
+                      (input)="onPinCodeInput($event)"
+                      class="w-full px-4 py-3 border rounded-lg"
+                      />
+                      @if (errors.pinCode) {
+                        <p class="text-red-500 text-sm mt-1">{{ errors.pinCode }}</p>
+                      }
+                    </div>
+
+                  </div>
+
+                  <!-- Provider Service Area -->
+
+                  <div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12 border border-gray-100 mt-8 w-full">
+
+                    <!-- Header -->
+                    <div class="flex items-center mb-8">
+                      <div class="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center mr-4">
+                        <i class="ri-map-pin-line text-2xl text-white"></i>
+                      </div>
+                      <div>
+                        <h2 class="text-3xl font-bold text-gray-900">Service Areas</h2>
+                        <p class="text-gray-600 mt-1">Define the areas you serve</p>
+                      </div>
+                    </div>
+
+                    <!-- Dropdown with Checkbox -->
+                    <div class="relative w-full">
+                      <label class="block text-sm font-medium mb-2">Service Areas *</label>
+
+                      <!-- Dropdown Button -->
+                      <div class="border rounded-lg px-4 py-3 cursor-pointer bg-white flex justify-between items-center"
+                        (click)="toggleDropdown()">
+                        <span>
+                          {{ getSelectedAreaNames() || 'Select Service Areas' }}
+                        </span>
+                        <i class="ri-arrow-down-s-line text-xl"></i>
+                      </div>
+
+
+                      <!-- Dropdown List -->
+                      @if (dropdownOpen) {
+                        <div
+                          class="absolute z-10 mt-2 w-full bg-white border rounded-lg shadow-lg max-h-72 overflow-y-auto">
+                          <!-- 🔍 Search Box -->
+                          <div class="p-3 border-b sticky top-0 bg-white">
+                            <input type="text"
+                              [(ngModel)]="searchText"
+                              placeholder="Search area..."
+                              class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            </div>
+                            <!-- Checkbox List -->
+                            @for (area of filteredAreas(); track area) {
+                              <div
+                                class="flex items-center px-4 py-2 hover:bg-gray-100">
+                                <input type="checkbox"
+                                  [checked]="isSelected(area.id)"
+                                  (change)="onAreaChange($event, area.id)"
+                                  class="mr-3 w-4 h-4">
+                                  <label>{{ area.area_name }}</label>
+                                </div>
+                              }
+                              <!-- No Data -->
+                              @if (filteredAreas().length === 0) {
+                                <div
+                                  class="text-center py-4 text-gray-500">
+                                  No areas found
+                                </div>
+                              }
+                            </div>
+                          }
+
+                          <!-- Error -->
+                          @if (errors?.selectedAreaIds) {
+                            <p class="text-red-500 text-sm mt-1">
+                              {{ errors.selectedAreaIds }}
+                            </p>
+                          }
+                        </div>
+
+                      </div>
+
+
+                      <!-- Navigation -->
+                      <div class="flex justify-between mt-8">
+                        <button (click)="back.emit()" class="px-6 py-3 border rounded-lg"> <i class="ri-arrow-left-line ml-2"></i> Back</button>
+                        <!-- <button (click)="next.emit()" class="px-6 py-3 bg-orange-600 text-white rounded-lg">
+                        Continue to Professional Details
+                        <i class="ri-arrow-right-line ml-2"></i>
+                      </button> -->
+                      <button (click)="onNextClick()" class="px-6 py-3 bg-orange-600 text-white rounded-lg">
+                        Continue to Professional Details
+                        <i class="ri-arrow-right-line ml-2"></i>
+                      </button>
+                    </div>
+
+                  </div>

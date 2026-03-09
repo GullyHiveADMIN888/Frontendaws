@@ -1,0 +1,394 @@
+<div class="w-full p-4 sm:p-6 lg:p-8">
+  <!-- Header -->
+  <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 font-poppins">
+        My Quotes
+      </h1>
+      <p class="text-sm sm:text-base text-gray-600 font-inter">View and manage quotes from providers</p>
+    </div>
+
+    <!-- Summary Cards in Header (visible on mobile) -->
+    <div class="flex gap-3 sm:hidden w-full">
+      <div class="flex-1 bg-white rounded-xl p-3 shadow-sm border border-gray-200">
+        <p class="text-xs text-gray-500">Total Quotes</p>
+        <p class="text-xl font-bold text-gray-900">{{ summary?.totalquotes || 0 }}</p>
+      </div>
+      <div class="flex-1 bg-white rounded-xl p-3 shadow-sm border border-gray-200">
+        <p class="text-xs text-gray-500">Providers</p>
+        <p class="text-xl font-bold text-gray-900">{{ summary?.totaluniqueproviders || 0 }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Cards - Desktop -->
+  <div class="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm text-gray-600 font-inter">Total Quotes</span>
+        <i class="ri-file-list-3-line text-orange-600 text-xl"></i>
+      </div>
+      <p class="text-2xl font-bold text-gray-900">{{ summary?.totalquotes || 0 }}</p>
+    </div>
+
+    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm text-gray-600 font-inter">Active Quotes</span>
+        <i class="ri-loader-4-line text-green-600 text-xl"></i>
+      </div>
+      <p class="text-2xl font-bold text-gray-900">{{ getActiveQuotesCount() }}</p>
+      <p class="text-xs text-gray-500 mt-1">Submitted: {{ summary?.submittedcount || 0 }}</p>
+    </div>
+
+    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm text-gray-600 font-inter">Providers</span>
+        <i class="ri-team-line text-blue-600 text-xl"></i>
+      </div>
+      <p class="text-2xl font-bold text-gray-900">{{ summary?.totaluniqueproviders || 0 }}</p>
+      <p class="text-xs text-gray-500 mt-1">Unique providers</p>
+    </div>
+
+    <!-- <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-sm text-gray-600 font-inter">Avg. Price</span>
+      <i class="ri-money-rupee-circle-line text-purple-600 text-xl"></i>
+    </div>
+    <p class="text-2xl font-bold text-gray-900">₹{{ getAveragePrice() | number:'1.0-0' }}</p>
+    <p class="text-xs text-gray-500 mt-1">Min: ₹{{ summary?.minprice || 0 }} | Max: ₹{{ summary?.maxprice || 0 }}</p>
+  </div> -->
+</div>
+
+<!-- Filters and Search -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+  <div class="flex flex-col sm:flex-row gap-4">
+    <!-- Search -->
+    <div class="flex-1 relative">
+      <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="loadQuotes()"
+                    placeholder="Search by provider or lead..." class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg 
+               focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500
+               transition duration-200 font-inter text-sm">
+        <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+        @if (searchTerm) {
+          <button (click)="clearSearch()"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <i class="ri-close-line text-lg"></i>
+          </button>
+        }
+      </div>
+
+      <!-- Status Filter -->
+            <select [(ngModel)]="filter.status" (change)="loadQuotes()" class="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none 
+             focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-sm min-w-[140px]">
+        <option value="">All Status</option>
+        <option value="submitted">Submitted</option>
+        <option value="accepted">Accepted</option>
+        <option value="rejected">Rejected</option>
+        <option value="expired">Expired</option>
+        <option value="withdrawn">Withdrawn</option>
+      </select>
+
+      <!-- Date Range -->
+      <div class="flex gap-2">
+                <input type="date" [(ngModel)]="filter.fromDate" (change)="loadQuotes()" class="px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none 
+               focus:ring-2 focus:ring-orange-500 text-sm" placeholder="From">
+                <input type="date" [(ngModel)]="filter.toDate" (change)="loadQuotes()" class="px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none 
+               focus:ring-2 focus:ring-orange-500 text-sm" placeholder="To">
+          </div>
+        </div>
+
+        <!-- Quick Filters -->
+        <div class="flex flex-wrap gap-2 mt-4 pt-3 border-t border-gray-100">
+          <span class="text-sm text-gray-600 mr-2 py-1">Quick:</span>
+          <button (click)="setQuickFilter('today')"
+            class="px-3 py-1 text-xs rounded-full border transition-colors"
+            [ngClass]="quickFilter === 'today' ? 'bg-orange-600 text-white border-orange-600' : 'border-gray-300 hover:border-orange-500'">
+            Today
+          </button>
+          <button (click)="setQuickFilter('week')" class="px-3 py-1 text-xs rounded-full border transition-colors"
+            [ngClass]="quickFilter === 'week' ? 'bg-orange-600 text-white border-orange-600' : 'border-gray-300 hover:border-orange-500'">
+            This Week
+          </button>
+          <button (click)="setQuickFilter('month')"
+            class="px-3 py-1 text-xs rounded-full border transition-colors"
+            [ngClass]="quickFilter === 'month' ? 'bg-orange-600 text-white border-orange-600' : 'border-gray-300 hover:border-orange-500'">
+            This Month
+          </button>
+        </div>
+      </div>
+
+      <!-- Quotes List -->
+      <div class="space-y-4">
+        <!-- Loading State -->
+        @if (loading) {
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-orange-600 border-t-transparent">
+            </div>
+            <p class="mt-2 text-gray-600 font-inter">Loading your quotes...</p>
+          </div>
+        }
+
+        <!-- Empty State -->
+        @if (!loading && quotes.length === 0) {
+          <div
+            class="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+            <div class="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="ri-price-tag-3-line text-3xl text-orange-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2 font-poppins">No quotes yet</h3>
+            <p class="text-gray-600 mb-6 font-inter max-w-md mx-auto">
+              When providers respond to your leads, their quotes will appear here
+            </p>
+            <button routerLink="/customer/leads" class="px-6 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 
+                   font-medium inline-flex items-center gap-2">
+              <i class="ri-arrow-left-line"></i>
+              View My Leads
+            </button>
+          </div>
+        }
+
+        <!-- Quote Cards -->
+        @for (quote of quotes; track quote) {
+          <div
+            class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+            <!-- Quote Header -->
+            <div class="p-4 sm:p-5 border-b border-gray-100 bg-gradient-to-r from-orange-50 to-white">
+              <div class="flex flex-wrap items-start justify-between gap-3">
+                <div class="flex items-start gap-3">
+                  <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="ri-store-2-line text-orange-600"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-gray-900">{{ quote.provider?.legalName || 'Provider' }}</h3>
+                    <p class="text-xs text-gray-500">Quote #{{ quote.id }} • Lead #{{ quote.leadId }} • Description: {{ quote.lead?.description }}</p>
+                  </div>
+                </div>
+                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  [ngClass]="getStatusBadgeClass(quote)">
+                  {{ quote.status | titlecase }}
+                </span>
+              </div>
+            </div>
+            <!-- Quote Content -->
+            <div class="p-4 sm:p-5">
+              <!-- Price & Validity -->
+              <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <div>
+                  <span class="text-xs text-gray-500 block">Price By Provider</span>
+                  <span class="text-xl font-bold text-gray-900">
+                    ₹{{ quote.priceMin | number:'1.0-0' }}
+                    <!-- - ₹{{ quote.priceMax | number:'1.0-0' }} -->
+                  </span>
+                  @if (quote.visitFeeIncluded) {
+                    <span
+                      class="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
+                      Visit Fee Included
+                    </span>
+                  }
+                </div>
+                <div class="text-right">
+                  <span class="text-xs text-gray-500 block">Valid Until</span>
+                  <span class="text-sm font-medium text-gray-900"
+                    [ngClass]="{'text-red-600': isExpiringSoon(quote)}">
+                    {{ quote.lead?.scheduledEnd| date:'mediumDate' }}
+                    @if (isExpiringSoon(quote)) {
+                      <span class="text-xs text-red-600 ml-1">(Expiring soon)</span>
+                    }
+                  </span>
+                </div>
+              </div>
+              <!-- Notes Section -->
+              @if (quote.notes) {
+                <div
+                  class="mb-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-200">
+                  <div class="flex gap-3">
+                    <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <i class="ri-file-text-line text-orange-600"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <h4 class="text-sm font-semibold text-gray-900 mb-2">Notes from Provider</h4>
+                      <div class="relative">
+                        <p class="text-sm text-gray-700 leading-relaxed"
+                          [class.line-clamp-3]="!expandedNotes.has(quote.id)"
+                          [class.whitespace-pre-line]="true">
+                          {{ quote.notes }}
+                        </p>
+                        @if (quote.notes.length > 150) {
+                          <button
+                            (click)="toggleNotes(quote); $event.stopPropagation()"
+                            class="mt-2 text-sm text-orange-600 hover:text-orange-800 font-medium flex items-center gap-1">
+                            {{ expandedNotes.has(quote.id) ? 'Show less' : 'Read more' }}
+                            <i [class]="expandedNotes.has(quote.id) ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"></i>
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+              <!-- Line Items Preview -->
+              @if (quote.lineItems) {
+                <div class="mb-4">
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-600">{{ getLineItemsSummary(quote.lineItems) }}</span>
+                    <button (click)="toggleQuoteExpand(quote)"
+                      class="text-orange-600 hover:text-orange-800 text-sm font-medium flex items-center gap-1">
+                      {{ isQuoteExpanded(quote) ? 'Show less' : 'View details' }}
+                      <i [class]="isQuoteExpanded(quote) ? 'ri-subtract-line' : 'ri-add-line'"></i>
+                    </button>
+                  </div>
+                </div>
+              }
+              <!-- Lead Info -->
+              <div class="flex flex-wrap gap-4 text-xs text-gray-500 border-t border-gray-100 pt-3">
+                <div class="flex items-center gap-1">
+                  <i class="ri-price-tag-3-line"></i>
+                  <span>{{ quote.lead?.categoryName || 'Category' }}</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <i class="ri-map-pin-line"></i>
+                  <span>{{ quote.lead?.cityName || 'City' }}</span>
+                  @if (quote.lead?.areaName) {
+                    <span> • {{ quote.lead?.areaName }}</span>
+                  }
+                </div>
+                <div class="flex items-center gap-1">
+                  <i class="ri-time-line"></i>
+                  <span>Submitted: {{ quote.submittedAt | date:'mediumDate' }}</span>
+                </div>
+              </div>
+              <!-- Expanded Details -->
+              @if (isQuoteExpanded(quote)) {
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                  <!-- Provider Details -->
+                  <div class="mb-4">
+                    <h4 class="font-medium text-gray-900 mb-2 flex items-center gap-1">
+                      <i class="ri-store-2-line text-orange-600"></i>
+                      Provider Details
+                    </h4>
+                    <div class="grid grid-cols-2 gap-3 text-sm bg-gray-50 p-3 rounded-lg">
+                      <div>
+                        <span class="text-gray-500 text-xs">Provider Type</span>
+                        <p class="font-medium">{{ quote.provider?.providerType || 'N/A' }}</p>
+                      </div>
+                      <div>
+                        <span class="text-gray-500 text-xs">Rating</span>
+                        <p class="font-medium">
+                          <i class="ri-star-fill text-yellow-400"></i>
+                          {{ quote.provider?.avgRating | number:'1.1-1' }} ({{ quote.provider?.ratingCount || 0 }} reviews)
+                        </p>
+                      </div>
+                      <div>
+                        <span class="text-gray-500 text-xs">Jobs Completed</span>
+                        <p class="font-medium">{{ quote.provider?.totalJobsCompleted || 0 }}</p>
+                      </div>
+                      <div>
+                        <span class="text-gray-500 text-xs">Verification</span>
+                        <p class="font-medium">
+                          @if (quote.provider?.isVerified) {
+                            <span class="text-green-600">Verified</span>
+                          }
+                          @if (!quote.provider?.isVerified) {
+                            <span class="text-gray-600">Not Verified</span>
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Contact Info -->
+                  @if (quote.provider?.user) {
+                    <div class="mb-4">
+                      <h4 class="font-medium text-gray-900 mb-2 flex items-center gap-1">
+                        <i class="ri-contacts-line text-orange-600"></i>
+                        Contact Information
+                      </h4>
+                      <div class="bg-gray-50 p-3 rounded-lg text-sm space-y-2">
+                        @if (quote.provider?.user?.name) {
+                          <p class="flex items-center gap-2">
+                            <i class="ri-user-line text-gray-400"></i>
+                            {{ quote.provider?.user?.name }}
+                          </p>
+                        }
+                        @if (quote.provider?.user?.email) {
+                          <p class="flex items-center gap-2">
+                            <i class="ri-mail-line text-gray-400"></i>
+                            {{ quote.provider?.user?.email }}
+                          </p>
+                        }
+                        @if (quote.provider?.user?.phone) {
+                          <p class="flex items-center gap-2">
+                            <i class="ri-phone-line text-gray-400"></i>
+                            {{ quote.provider?.user?.phone }}
+                          </p>
+                        }
+                      </div>
+                    </div>
+                  }
+                  <!-- Full Line Items -->
+                  @if (quote.lineItems && quote.lineItems.length > 0) {
+                    <div class="mb-4">
+                      <h4 class="font-medium text-gray-900 mb-2 flex items-center gap-1">
+                        <i class="ri-list-check-2 line text-orange-600"></i>
+                        Line Items
+                      </h4>
+                      <div class="bg-gray-50 p-3 rounded-lg">
+                        @for (item of quote.lineItems; track item) {
+                          <div
+                            class="flex justify-between text-sm py-1 border-b border-gray-200 last:border-0">
+                            <span>{{ item?.description || 'Item' }}</span>
+                            <span class="font-medium">₹{{ item?.price | number:'1.0-0' }}</span>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                  <!-- Action Buttons -->
+                  <div class="flex flex-wrap gap-2 mt-4">
+                    @if (quote.status === 'submitted') {
+                      <button (click)="acceptQuote(quote)"
+                        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium flex items-center gap-1">
+                        <i class="ri-check-line"></i>
+                        Accept Quote
+                      </button>
+                    }
+                    @if (quote.status === 'submitted') {
+                      <button (click)="rejectQuote(quote)"
+                        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium flex items-center gap-1">
+                        <i class="ri-close-line"></i>
+                        Reject Quote
+                      </button>
+                    }
+                    <button (click)="viewLeadDetails(quote.leadId)"
+                      class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center gap-1">
+                      <i class="ri-eye-line"></i>
+                      View Lead
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Pagination -->
+        @if (!loading && quotes.length > 0) {
+          <div
+            class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
+            <div class="text-sm text-gray-700">
+              Showing {{ (currentPage - 1) * pageSize + 1 }} to
+              {{ Math.min(currentPage * pageSize, totalQuotes) }} of {{ totalQuotes }} quotes
+            </div>
+            <div class="flex gap-2">
+                <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium
+               hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                Previous
+              </button>
+                <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium
+               hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                Next
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>

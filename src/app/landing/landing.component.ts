@@ -11,7 +11,7 @@ import {
   ElementRef,
 }  from '@angular/core';
 import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -44,11 +44,10 @@ interface LoginResponse {
 }
 
 @Component({
-  selector: 'app-landing',
-  templateUrl: './landing.component.html',
-  styleUrls: ['./landing.component.css'],
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule, OTPVerificationComponent]
+    selector: 'app-landing',
+    templateUrl: './landing.component.html',
+    styleUrls: ['./landing.component.css'],
+    imports: [FormsModule, RouterModule, ReactiveFormsModule, OTPVerificationComponent]
 })
 
 export class LandingPageComponent implements OnInit, OnDestroy {

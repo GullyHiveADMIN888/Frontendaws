@@ -1,0 +1,61 @@
+<div class="mb-12">
+  <div class="flex items-center justify-between max-w-3xl mx-auto">
+
+    @for (step of steps; track step; let i = $index) {
+      <div class="flex items-center flex-1">
+        <div class="flex flex-col items-center flex-1">
+          <!-- Step Circle -->
+          <div
+            class="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300"
+            [ngClass]="{
+              'bg-orange-600 text-white shadow-lg': currentStep >= step.key,
+              'bg-gray-200 text-gray-500': currentStep < step.key
+            }"
+            >
+            @if (currentStep > step.key) {
+              <i
+                class="ri-check-line text-2xl"
+              ></i>
+            } @else {
+              <i [class]="step.icon + ' text-2xl'"></i>
+            }
+          </div>
+          <!-- Step Labels -->
+          <div class="mt-3 text-center">
+            <p
+              class="text-sm font-semibold font-inter"
+              [ngClass]="{
+                'text-orange-600': currentStep >= step.key,
+                'text-gray-500': currentStep < step.key
+              }"
+              >
+              Step {{ i + 1 }}
+            </p>
+            <p
+              class="text-xs font-inter mt-1"
+              [ngClass]="{
+                'text-gray-900': currentStep >= step.key,
+                'text-gray-500': currentStep < step.key
+              }"
+              >
+              {{ step.title }}
+            </p>
+          </div>
+        </div>
+        <!-- Progress Line -->
+        @if (i < steps.length - 1) {
+          <div class="flex-1 h-1 mx-4 -mt-12">
+            <div
+              class="h-full transition-all duration-300"
+            [ngClass]="{
+              'bg-orange-600': currentStep > step.key,
+              'bg-gray-200': currentStep <= step.key
+            }"
+            ></div>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>

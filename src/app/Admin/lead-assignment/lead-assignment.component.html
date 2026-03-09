@@ -1,364 +1,396 @@
 <!-- src/app/Admin/lead-assignment/lead-assignment.component.html -->
 <div class="min-h-screen bg-gray-50">
 
-    <!-- Full Page Loading Overlay -->
-    <div *ngIf="initialLoading" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
-        <div class="text-center">
-            <!-- Animated Logo or Icon -->
-            <div class="mb-8">
-                <svg class="w-24 h-24 mx-auto text-blue-600 animate-pulse" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6M9 16h6" />
-                </svg>
-            </div>
-
-            <!-- Loading Text with Animation -->
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Loading Lead Assignments</h2>
-            <div class="flex items-center justify-center space-x-2 mb-4">
-                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0s"></div>
-                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
-            </div>
-
-            <!-- Loading Progress Message -->
-            <p class="text-gray-600 text-sm">
-                Please wait while we fetch your data...
-            </p>
+  <!-- Full Page Loading Overlay -->
+  @if (initialLoading) {
+    <div class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+      <div class="text-center">
+        <!-- Animated Logo or Icon -->
+        <div class="mb-8">
+          <svg class="w-24 h-24 mx-auto text-blue-600 animate-pulse" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6M9 16h6" />
+            </svg>
+          </div>
+          <!-- Loading Text with Animation -->
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">Loading Lead Assignments</h2>
+          <div class="flex items-center justify-center space-x-2 mb-4">
+            <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+            <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+            <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+          </div>
+          <!-- Loading Progress Message -->
+          <p class="text-gray-600 text-sm">
+            Please wait while we fetch your data...
+          </p>
         </div>
-    </div>
+      </div>
+    }
 
     <app-admin-header></app-admin-header>
     <div class="max-w-7xl mx-auto my-12">
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-                Lead Assignments
-            </h1>
-            <p class="text-gray-600">
-                View all lead assignments with provider and lead details
-            </p>
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+          Lead Assignments
+        </h1>
+        <p class="text-gray-600">
+          View all lead assignments with provider and lead details
+        </p>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+        <div class="bg-white rounded-xl shadow p-5 border-l-4 border-blue-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 mb-1">Total Assignments</p>
+              <h3 class="text-2xl font-bold text-gray-800">{{totalCount}}</h3>
+            </div>
+            <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
+              <i class="text-blue-600 text-xl">📋</i>
+            </div>
+          </div>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-blue-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 mb-1">Total Assignments</p>
-                        <h3 class="text-2xl font-bold text-gray-800">{{totalCount}}</h3>
-                    </div>
-                    <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
-                        <i class="text-blue-600 text-xl">📋</i>
-                    </div>
-                </div>
+        <div class="bg-white rounded-xl shadow p-5 border-l-4 border-yellow-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 mb-1">Offered</p>
+              <h3 class="text-2xl font-bold text-yellow-600">{{totalOffered}}</h3>
             </div>
-
-            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-yellow-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 mb-1">Offered</p>
-                        <h3 class="text-2xl font-bold text-yellow-600">{{totalOffered}}</h3>
-                    </div>
-                    <div class="w-12 h-12 rounded-lg bg-yellow-50 flex items-center justify-center">
-                        <i class="text-yellow-600 text-xl">📤</i>
-                    </div>
-                </div>
+            <div class="w-12 h-12 rounded-lg bg-yellow-50 flex items-center justify-center">
+              <i class="text-yellow-600 text-xl">📤</i>
             </div>
-
-            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-green-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 mb-1">Committed</p>
-                        <h3 class="text-2xl font-bold text-green-600">{{totalAccepted}}</h3>
-                    </div>
-                    <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center">
-                        <i class="text-green-600 text-xl">✅</i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-red-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 mb-1">Dismissed</p>
-                        <h3 class="text-2xl font-bold text-red-600">{{totalRejected}}</h3>
-                    </div>
-                    <div class="w-12 h-12 rounded-lg bg-red-50 flex items-center justify-center">
-                        <i class="text-red-600 text-xl">❌</i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow p-5 border-l-4 border-purple-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 mb-1">Pending</p>
-                        <h3 class="text-2xl font-bold text-purple-600">{{totalPending}}</h3>
-                    </div>
-                    <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
-                        <i class="text-purple-600 text-xl">⏳</i>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
 
-        <!-- Filters Card -->
-        <div class="bg-white rounded-xl shadow mb-6 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800">Filters</h3>
+        <div class="bg-white rounded-xl shadow p-5 border-l-4 border-green-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 mb-1">Committed</p>
+              <h3 class="text-2xl font-bold text-green-600">{{totalAccepted}}</h3>
             </div>
+            <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center">
+              <i class="text-green-600 text-xl">✅</i>
+            </div>
+          </div>
+        </div>
 
-            <div class="p-6">
-                <!-- Quick Date Range Buttons -->
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-3">
-                        Quick Date Range
-                    </label>
-                    <div class="flex flex-wrap gap-2">
-                        <button (click)="setDateRange('today')"
-                            class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
-                            Today
-                        </button>
-                        <button (click)="setDateRange('yesterday')"
-                            class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
-                            Yesterday
-                        </button>
-                        <button (click)="setDateRange('last7days')"
-                            class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
-                            Last 7 Days
-                        </button>
-                        <button (click)="setDateRange('last30days')"
-                            class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
-                            Last 30 Days
-                        </button>
-                        <button (click)="setDateRange('thismonth')"
-                            class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
-                            This Month
-                        </button>
-                        <button (click)="setDateRange('lastmonth')"
-                            class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
-                            Last Month
-                        </button>
-                    </div>
+        <div class="bg-white rounded-xl shadow p-5 border-l-4 border-red-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 mb-1">Dismissed</p>
+              <h3 class="text-2xl font-bold text-red-600">{{totalRejected}}</h3>
+            </div>
+            <div class="w-12 h-12 rounded-lg bg-red-50 flex items-center justify-center">
+              <i class="text-red-600 text-xl">❌</i>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-5 border-l-4 border-purple-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 mb-1">Pending</p>
+              <h3 class="text-2xl font-bold text-purple-600">{{totalPending}}</h3>
+            </div>
+            <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
+              <i class="text-purple-600 text-xl">⏳</i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters Card -->
+      <div class="bg-white rounded-xl shadow mb-6 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-800">Filters</h3>
+        </div>
+
+        <div class="p-6">
+          <!-- Quick Date Range Buttons -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+              Quick Date Range
+            </label>
+            <div class="flex flex-wrap gap-2">
+              <button (click)="setDateRange('today')"
+                class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                Today
+              </button>
+              <button (click)="setDateRange('yesterday')"
+                class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                Yesterday
+              </button>
+              <button (click)="setDateRange('last7days')"
+                class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                Last 7 Days
+              </button>
+              <button (click)="setDateRange('last30days')"
+                class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                Last 30 Days
+              </button>
+              <button (click)="setDateRange('thismonth')"
+                class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                This Month
+              </button>
+              <button (click)="setDateRange('lastmonth')"
+                class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                Last Month
+              </button>
+            </div>
+          </div>
+
+          <!-- Main Filter Form -->
+          <form [formGroup]="filterForm">
+            <!-- Filters Row 1 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <!-- Search Term -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Search
+                </label>
+                <input type="text" placeholder="Search by description, provider..."
+                  formControlName="searchTerm"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                 </div>
 
-                <!-- Main Filter Form -->
-                <form [formGroup]="filterForm">
-                    <!-- Filters Row 1 -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <!-- Search Term -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Search
-                            </label>
-                            <input type="text" placeholder="Search by description, provider..."
-                                formControlName="searchTerm"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                        </div>
+                <!-- Offer Status -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Offer Status
+                  </label>
+                  <select formControlName="offerStatus"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="">All Statuses</option>
+                    @for (status of offerStatuses; track status) {
+                      <option [value]="status">{{status | titlecase}}
+                      </option>
+                    }
+                  </select>
+                </div>
 
-                        <!-- Offer Status -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Offer Status
-                            </label>
-                            <select formControlName="offerStatus"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="">All Statuses</option>
-                                <option *ngFor="let status of offerStatuses" [value]="status">{{status | titlecase}}
-                                </option>
-                            </select>
-                        </div>
+                <!-- Lead Type -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Lead Type
+                  </label>
+                  <select formControlName="leadType"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="">All Types</option>
+                    @for (type of leadTypes; track type) {
+                      <option [value]="type">{{type | uppercase}}</option>
+                    }
+                  </select>
+                </div>
+              </div>
 
-                        <!-- Lead Type -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Lead Type
-                            </label>
-                            <select formControlName="leadType"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="">All Types</option>
-                                <option *ngFor="let type of leadTypes" [value]="type">{{type | uppercase}}</option>
-                            </select>
-                        </div>
-                    </div>
+              <!-- Filters Row 3 -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <!-- Category Search -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Category
+                  </label>
+                  <div class="relative" #filterCategoryDropdown>
+                    <div class="relative">
+                      <input #categorySearchInput type="text" placeholder="Search category by name..."
+                        formControlName="categorySearch" (input)="onCategorySearchInput()"
+                        (click)="onCategorySearchClick()" (keydown)="onCategoryInputKeydown($event)"
+                        class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        autocomplete="off" />
 
-                    <!-- Filters Row 3 -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <!-- Category Search -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Category
-                            </label>
-                            <div class="relative" #filterCategoryDropdown>
-                                <div class="relative">
-                                    <input #categorySearchInput type="text" placeholder="Search category by name..."
-                                        formControlName="categorySearch" (input)="onCategorySearchInput()"
-                                        (click)="onCategorySearchClick()" (keydown)="onCategoryInputKeydown($event)"
-                                        class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        autocomplete="off" />
+                        @if (selectedFilterCategory) {
+                          <button (click)="clearFilterCategorySelection()"
+                            (mousedown)="$event.preventDefault()" type="button"
+                            class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
+                            aria-label="Clear selection">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          }
 
-                                    <button *ngIf="selectedFilterCategory" (click)="clearFilterCategorySelection()"
-                                        (mousedown)="$event.preventDefault()" type="button"
-                                        class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
-                                        aria-label="Clear selection">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
+                          @if (!selectedFilterCategory) {
+                            <div
+                              class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                              </div>
+                            }
+                          </div>
 
-                                    <div *ngIf="!selectedFilterCategory"
-                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                        </svg>
-                                    </div>
+                          <!-- Loading State -->
+                          @if (loadingCategories) {
+                            <div
+                              class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                              <div class="flex items-center justify-center p-4">
+                                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2">
                                 </div>
-
-                                <!-- Loading State -->
-                                <div *ngIf="loadingCategories"
-                                    class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
-                                    <div class="flex items-center justify-center p-4">
-                                        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2">
-                                        </div>
-                                        <span class="text-sm text-gray-600">Searching categories...</span>
-                                    </div>
-                                </div>
-
-                                <!-- Dropdown Results -->
-                                <div *ngIf="showCategoryDropdown && !loadingCategories && filteredCategories.length > 0"
-                                    class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto">
-                                    <div class="py-1">
-                                        <div *ngFor="let category of filteredCategories; let i = index"
-                                            (click)="selectFilterCategory(category)"
-                                            (keydown.enter)="selectFilterCategory(category)"
-                                            (keydown.space)="selectFilterCategory(category)" tabindex="0"
-                                            class="category-dropdown-item px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors focus:outline-none focus:bg-gray-100"
-                                            [class.border-b]="i < filteredCategories.length - 1"
-                                            [class.border-gray-100]="i < filteredCategories.length - 1">
-                                            <div class="flex items-start">
-                                                <div class="flex-shrink-0 mt-1 mr-3">
-                                                    <div
-                                                        class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                                                        <span class="text-purple-600 text-sm font-medium">
-                                                            {{ (category.name && category.name.length > 0 ?
-                                                            category.name.charAt(0) : 'C') | uppercase }}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div class="flex-1 min-w-0">
-                                                    <div class="font-medium text-gray-900 truncate">{{ category.name }}
-                                                    </div>
-                                                    <div class="text-xs text-gray-400 mt-1">
-                                                        ID: {{ category.id }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- No Results -->
-                                <div *ngIf="showCategoryDropdown && filteredCategories.length === 0 && !loadingCategories"
-                                    class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
-                                    <div class="p-4 text-center">
-                                        <div class="w-10 h-10 mx-auto mb-2 text-gray-400">
-                                            <svg class="w-10 h-10" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l5 5a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-5-5A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                                            </svg>
-                                        </div>
-                                        <p class="text-sm text-gray-600">No categories found matching "{{
-                                            filterForm.get('categorySearch')?.value }}"</p>
-                                        <p class="text-xs text-gray-400 mt-1">Try a different search term</p>
-                                    </div>
-                                </div>
+                                <span class="text-sm text-gray-600">Searching categories...</span>
+                              </div>
                             </div>
+                          }
 
-                            <!-- Hidden input for actual Category ID -->
-                            <input type="hidden" formControlName="categoryId" />
+                          <!-- Dropdown Results -->
+                          @if (showCategoryDropdown && !loadingCategories && filteredCategories.length > 0) {
+                            <div
+                              class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                              <div class="py-1">
+                                @for (category of filteredCategories; track category; let i = $index) {
+                                  <div
+                                    (click)="selectFilterCategory(category)"
+                                    (keydown.enter)="selectFilterCategory(category)"
+                                    (keydown.space)="selectFilterCategory(category)" tabindex="0"
+                                    class="category-dropdown-item px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors focus:outline-none focus:bg-gray-100"
+                                    [class.border-b]="i < filteredCategories.length - 1"
+                                    [class.border-gray-100]="i < filteredCategories.length - 1">
+                                    <div class="flex items-start">
+                                      <div class="flex-shrink-0 mt-1 mr-3">
+                                        <div
+                                          class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                          <span class="text-purple-600 text-sm font-medium">
+                                            {{ (category.name && category.name.length > 0 ?
+                                            category.name.charAt(0) : 'C') | uppercase }}
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <div class="flex-1 min-w-0">
+                                        <div class="font-medium text-gray-900 truncate">{{ category.name }}
+                                        </div>
+                                        <div class="text-xs text-gray-400 mt-1">
+                                          ID: {{ category.id }}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                }
+                              </div>
+                            </div>
+                          }
+
+                          <!-- No Results -->
+                          @if (showCategoryDropdown && filteredCategories.length === 0 && !loadingCategories) {
+                            <div
+                              class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                              <div class="p-4 text-center">
+                                <div class="w-10 h-10 mx-auto mb-2 text-gray-400">
+                                  <svg class="w-10 h-10" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l5 5a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-5-5A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                    </svg>
+                                  </div>
+                                  <p class="text-sm text-gray-600">No categories found matching "{{
+                                  filterForm.get('categorySearch')?.value }}"</p>
+                                  <p class="text-xs text-gray-400 mt-1">Try a different search term</p>
+                                </div>
+                              </div>
+                            }
+                          </div>
+
+                          <!-- Hidden input for actual Category ID -->
+                          <input type="hidden" formControlName="categoryId" />
                         </div>
 
                         <!-- Subcategory Select -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Subcategory
-                            </label>
-                            <div class="relative">
-                                <select formControlName="subcategoryId" (change)="applyFilters()"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                    <option value="">All Subcategories</option>
-                                    <option *ngFor="let sub of subcategories" [value]="sub.id">
-                                        {{ sub.name }}
-                                    </option>
-                                </select>
-                                <div *ngIf="loadingSubcategories"
-                                    class="absolute right-2 top-1/2 transform -translate-y-1/2">
-                                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                                </div>
+                          <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Subcategory
+                          </label>
+                          <div class="relative">
+                            <select formControlName="subcategoryId" (change)="applyFilters()"
+                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                              <option value="">All Subcategories</option>
+                              @for (sub of subcategories; track sub) {
+                                <option [value]="sub.id">
+                                  {{ sub.name }}
+                                </option>
+                              }
+                            </select>
+                            @if (loadingSubcategories) {
+                              <div
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2">
+                                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                              </div>
+                            }
+                          </div>
+                          @if (!filterForm.get('categoryId')?.value) {
+                            <div class="text-xs text-gray-500 mt-1">
+                              Please select a category first
                             </div>
-                            <div *ngIf="!filterForm.get('categoryId')?.value" class="text-xs text-gray-500 mt-1">
-                                Please select a category first
+                          }
+                          @if (filterForm.get('categoryId')?.value && subcategories.length === 0 && !loadingSubcategories) {
+                            <div
+                              class="text-xs text-gray-500 mt-1">
+                              No subcategories found for this category
                             </div>
-                            <div *ngIf="filterForm.get('categoryId')?.value && subcategories.length === 0 && !loadingSubcategories"
-                                class="text-xs text-gray-500 mt-1">
-                                No subcategories found for this category
-                            </div>
+                          }
                         </div>
 
                         <!-- Provider search -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Provider
-                            </label>
-                            <div class="relative" #providerDropdown>
-                                <div class="relative">
-                                    <input #providerSearchInput type="text"
-                                        placeholder="Search provider by name or email..."
-                                        formControlName="providerSearch" (click)="onProviderInputClick()"
-                                        (keydown)="onProviderInputKeydown($event)"
-                                        class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        autocomplete="off" />
+                          <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Provider
+                          </label>
+                          <div class="relative" #providerDropdown>
+                            <div class="relative">
+                              <input #providerSearchInput type="text"
+                                placeholder="Search provider by name or email..."
+                                formControlName="providerSearch" (click)="onProviderInputClick()"
+                                (keydown)="onProviderInputKeydown($event)"
+                                class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                autocomplete="off" />
 
-                                    <button *ngIf="selectedProvider" (click)="clearProviderSelection()"
-                                        (mousedown)="$event.preventDefault()" type="button"
-                                        class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
-                                        aria-label="Clear selection">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
+                                @if (selectedProvider) {
+                                  <button (click)="clearProviderSelection()"
+                                    (mousedown)="$event.preventDefault()" type="button"
+                                    class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                    aria-label="Clear selection">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                      </svg>
                                     </button>
+                                  }
 
-                                    <div *ngIf="!selectedProvider"
-                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                  @if (!selectedProvider) {
+                                    <div
+                                      class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                         </svg>
-                                    </div>
-                                </div>
+                                      </div>
+                                    }
+                                  </div>
 
-                                <!-- Loading State -->
-                                <div *ngIf="loadingProviders"
-                                    class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
-                                    <div class="flex items-center justify-center p-4">
+                                  <!-- Loading State -->
+                                  @if (loadingProviders) {
+                                    <div
+                                      class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                                      <div class="flex items-center justify-center p-4">
                                         <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2">
                                         </div>
                                         <span class="text-sm text-gray-600">Searching providers...</span>
+                                      </div>
                                     </div>
-                                </div>
+                                  }
 
-                                <!-- Dropdown Results -->
-                                <div *ngIf="showProviderDropdown && !loadingProviders && filteredProviders.length > 0"
-                                    class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto">
-                                    <div class="py-1">
-                                        <div *ngFor="let provider of filteredProviders; let i = index"
+                                  <!-- Dropdown Results -->
+                                  @if (showProviderDropdown && !loadingProviders && filteredProviders.length > 0) {
+                                    <div
+                                      class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                                      <div class="py-1">
+                                        @for (provider of filteredProviders; track provider; let i = $index) {
+                                          <div
                                             (click)="selectProvider(provider)"
                                             (keydown.enter)="selectProvider(provider)"
                                             (keydown.space)="selectProvider(provider)" tabindex="0"
@@ -366,720 +398,750 @@
                                             [class.border-b]="i < filteredProviders.length - 1"
                                             [class.border-gray-100]="i < filteredProviders.length - 1">
                                             <div class="flex items-start">
-                                                <div class="flex-shrink-0 mt-1 mr-3">
-                                                    <div
-                                                        class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                                        <span class="text-blue-600 text-sm font-medium">
-                                                            {{ (provider.displayName && provider.displayName.length > 0
-                                                            ? provider.displayName.charAt(0) : 'P') | uppercase }}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div class="flex-1 min-w-0">
-                                                    <div class="font-medium text-gray-900 truncate">{{
-                                                        provider.displayName || 'Unknown' }}
-                                                    </div>
-                                                    <div class="text-sm text-gray-500 truncate">{{ provider.email || 'No
-                                                        email' }}</div>
-                                                    <div class="text-xs text-gray-400 mt-1">
-                                                        Phone: {{ provider.phone || 'N/A' }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- No Results -->
-                                <div *ngIf="showProviderDropdown && filteredProviders.length === 0 && !loadingProviders"
-                                    class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
-                                    <div class="p-4 text-center">
-                                        <div class="w-10 h-10 mx-auto mb-2 text-gray-400">
-                                            <svg class="w-10 h-10" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                        </div>
-                                        <p class="text-sm text-gray-600">No providers found matching "{{
-                                            filterForm.get('providerSearch')?.value }}"</p>
-                                        <p class="text-xs text-gray-400 mt-1">Try a different search term</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Hidden input for actual Provider ID -->
-                            <input type="hidden" formControlName="providerId" />
-                        </div>
-                    </div>
-
-                    <!-- Date-Time Filters -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Start Date & Time -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                From Date & Time (Offered At)
-                            </label>
-                            <div class="flex flex-col md:flex-row gap-2">
-                                <div class="flex-1">
-                                    <input type="date" formControlName="startDate"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                                </div>
-                                <div class="w-full md:w-40">
-                                    <input type="time" formControlName="startTime"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- End Date & Time -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                To Date & Time (Offered At)
-                            </label>
-                            <div class="flex flex-col md:flex-row gap-2">
-                                <div class="flex-1">
-                                    <input type="date" formControlName="endDate"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                                </div>
-                                <div class="w-full md:w-40">
-                                    <input type="time" formControlName="endTime"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-
-                <!-- Active Filters Display -->
-                <div *ngIf="getActiveFilters() > 0" class="mt-4 flex flex-wrap gap-2">
-                    <span class="text-xs text-gray-500 mr-2">Active filters:</span>
-                    <span *ngIf="filterForm.get('searchTerm')?.value"
-                        class="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">
-                        Search: {{filterForm.get('searchTerm')?.value}}
-                    </span>
-                    <span *ngIf="filterForm.get('providerId')?.value"
-                        class="inline-flex items-center px-2 py-1 rounded text-xs bg-purple-100 text-purple-800">
-                        Provider: {{selectedProvider?.displayName || filterForm.get('providerId')?.value}}
-                    </span>
-                    <span *ngIf="filterForm.get('categoryId')?.value"
-                        class="inline-flex items-center px-2 py-1 rounded text-xs bg-green-100 text-green-800">
-                        Category ID: {{filterForm.get('categoryId')?.value}}
-                    </span>
-                    <span *ngIf="filterForm.get('subcategoryId')?.value"
-                        class="inline-flex items-center px-2 py-1 rounded text-xs bg-yellow-100 text-yellow-800">
-                        Subcategory ID: {{filterForm.get('subcategoryId')?.value}}
-                    </span>
-                    <span *ngIf="filterForm.get('cityId')?.value"
-                        class="inline-flex items-center px-2 py-1 rounded text-xs bg-indigo-100 text-indigo-800">
-                        City ID: {{filterForm.get('cityId')?.value}}
-                    </span>
-                    <span *ngIf="filterForm.get('areaId')?.value"
-                        class="inline-flex items-center px-2 py-1 rounded text-xs bg-orange-100 text-orange-800">
-                        Area ID: {{filterForm.get('areaId')?.value}}
-                    </span>
-                    <span *ngIf="filterForm.get('offerStatus')?.value"
-                        class="inline-flex items-center px-2 py-1 rounded text-xs bg-pink-100 text-pink-800">
-                        Status: {{filterForm.get('offerStatus')?.value}}
-                    </span>
-                    <span *ngIf="filterForm.get('leadType')?.value"
-                        class="inline-flex items-center px-2 py-1 rounded text-xs bg-teal-100 text-teal-800">
-                        Type: {{filterForm.get('leadType')?.value}}
-                    </span>
-                    <span *ngIf="filterForm.get('leadStatus')?.value"
-                        class="inline-flex items-center px-2 py-1 rounded text-xs bg-gray-100 text-gray-800">
-                        Lead Status: {{filterForm.get('leadStatus')?.value}}
-                    </span>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-gray-200">
-                    <button (click)="resetFilters()"
-                        class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg font-medium hover:bg-gray-200 transition-colors border border-gray-300">
-                        <i class="mr-2">🔄</i> Reset All Filters
-                    </button>
-                    <button (click)="applyFilters()"
-                        class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
-                        Apply Filters
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Lead Assignments Card -->
-        <div class="bg-white rounded-xl shadow overflow-hidden">
-            <div
-                class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <h2 class="text-lg font-semibold text-gray-800">
-                        Lead Assignments
-                    </h2>
-                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                        {{assignments.length}} Assignments
-                    </span>
-                </div>
-            </div>
-
-            <!-- Loading State -->
-            <div *ngIf="loading" class="p-8 text-center">
-                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-                <p class="text-gray-600">Loading assignments...</p>
-            </div>
-
-            <!-- Assignments Table -->
-            <div *ngIf="!loading && assignments.length > 0" class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Offered At
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Provider
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Lead Info
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Category
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Location
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Price
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <ng-container *ngFor="let assignment of assignments">
-                            <tr class="hover:bg-gray-50 transition-colors">
-                                <!-- Offered At -->
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">
-                                        {{ assignment.offeredAt | date:'dd MMM yyyy' }}
-                                    </div>
-                                    <div class="text-xs text-gray-500">
-                                        {{ assignment.offeredAt | date:'hh:mm a' }}
-                                    </div>
-                                    <div *ngIf="assignment.offerExpiresAt" class="text-xs text-red-500 mt-1">
-                                        Expires: {{ assignment.offerExpiresAt | date:'dd MMM' }}
-                                    </div>
-                                </td>
-
-                                <!-- Provider -->
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center">
-                                        <div
-                                            class="flex-shrink-0 h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                            <span class="text-blue-600 text-sm font-medium">
-                                                {{ (assignment.providerDisplayName &&
-                                                assignment.providerDisplayName.length > 0 ?
-                                                assignment.providerDisplayName.charAt(0) : 'P') | uppercase }}
-                                            </span>
-                                        </div>
-                                        <div class="ml-3">
-                                            <div class="text-sm font-medium text-gray-900">
-                                                {{ assignment.providerDisplayName || 'Unknown' }}
-                                            </div>
-                                            <div class="text-xs text-gray-500">
-                                                {{ assignment.providerEmail || 'No email' }}
-                                            </div>
-                                            <div class="text-xs text-gray-400">
-                                                ID: {{ assignment.providerId }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-
-                                <!-- Lead Info -->
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center">
-                                        <div>
-                                            <div class="flex items-center gap-2">
-                                                <span class="text-sm font-medium text-gray-900">
-                                                    Lead #{{ assignment.leadId }}
-                                                </span>
-                                                <span [class]="getLeadTypeColor(assignment.leadType)"
-                                                    class="px-2 py-0.5 rounded text-xs font-medium">
-                                                    {{ assignment.leadType | uppercase }}
-                                                </span>
-                                            </div>
-                                            <div class="text-xs text-gray-500 mt-1 max-w-xs truncate">
-                                                {{ assignment.leadDescription || 'No description' }}
-                                            </div>
-                                            <div class="text-xs text-gray-400 mt-1">
-                                                Wave: {{ assignment.offerWave }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-
-                                <!-- Category -->
-                                <td class="px-6 py-4">
-                                    <div class="text-sm text-gray-900">
-                                        {{ assignment.categoryName || 'N/A' }}
-                                    </div>
-                                    <div class="text-xs text-gray-500 mt-1">
-                                        {{ assignment.subcategoryName || 'No subcategory' }}
-                                    </div>
-                                </td>
-
-                                <!-- Location -->
-                                <td class="px-6 py-4">
-                                    <div class="text-sm text-gray-900">
-                                        {{ assignment.cityName || 'N/A' }}
-                                    </div>
-                                    <div class="text-xs text-gray-500">
-                                        {{ assignment.areaName || 'N/A' }}
-                                    </div>
-                                    <div *ngIf="assignment.pincode" class="text-xs text-gray-400">
-                                        {{ assignment.pincode }}
-                                    </div>
-                                </td>
-
-                                <!-- Status -->
-                                <td class="px-6 py-4">
-                                    <span [class]="getOfferStatusColor(assignment.offerStatus)"
-                                        class="px-2 py-1 rounded-full text-xs font-medium">
-                                        {{ assignment.offerStatus | titlecase }}
-                                    </span>
-                                    <div *ngIf="assignment.isFreeLead" class="text-xs text-purple-600 mt-1">
-                                        Free Lead
-                                    </div>
-                                </td>
-
-                                <!-- Price -->
-                                <td class="px-6 py-4 text-right">
-                                    <div class="text-sm font-semibold text-gray-900">
-                                        {{ formatCurrency(assignment.pplPrice) }}
-                                    </div>
-                                    <div *ngIf="assignment.hasQuote" class="text-xs text-blue-600 mt-1">
-                                        Has Quote
-                                    </div>
-                                </td>
-
-                                <!-- Actions -->
-                                <td class="px-6 py-4 text-center">
-                                    <div class="flex items-center justify-center gap-2">
-                                        <button (click)="toggleRow(assignment.id)"
-                                            class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors"
-                                            title="View Details">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
-                                        </button>
-                                       <!-- <button (click)="openAssignmentModal(assignment)"
-                                            class="text-purple-600 hover:text-purple-900 p-2 rounded-lg hover:bg-purple-50 transition-colors"
-                                            title="Assign to Provider">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                                            </svg>
-                                        </button> -->
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- Expanded Row -->
-                            <tr *ngIf="expandedRowId === assignment.id">
-                                <td colspan="8" class="bg-gray-50 p-6">
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <!-- Assignment Details -->
-                                        <div>
-                                            <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
-                                                <i class="mr-2">📋</i> Assignment Details
-                                            </h4>
-                                            <div class="bg-white rounded-lg border border-gray-200 p-4">
-                                                <dl class="grid grid-cols-2 gap-2 text-sm">
-                                                    <dt class="text-gray-500">Assignment ID:</dt>
-                                                    <dd class="text-gray-900 font-mono">{{ assignment.id }}</dd>
-
-                                                    <dt class="text-gray-500">Lead ID:</dt>
-                                                    <dd class="text-gray-900 font-mono">{{ assignment.leadId }}</dd>
-
-                                                    <dt class="text-gray-500">Offer Wave:</dt>
-                                                    <dd class="text-gray-900">{{ assignment.offerWave }}</dd>
-
-                                                    <dt class="text-gray-500">Offered At:</dt>
-                                                    <dd class="text-gray-900">{{ formatDateTime(assignment.offeredAt) }}
-                                                    </dd>
-
-                                                    <dt class="text-gray-500">Responded At:</dt>
-                                                    <dd class="text-gray-900">{{ formatDateTime(assignment.respondedAt)
-                                                        }}</dd>
-
-                                                    <dt class="text-gray-500">Committed At:</dt>
-                                                    <dd class="text-gray-900">{{ formatDateTime(assignment.committedAt)
-                                                        }}</dd>
-
-                                                    <dt class="text-gray-500">Unlocked At:</dt>
-                                                    <dd class="text-gray-900">{{ formatDateTime(assignment.unlockedAt)
-                                                        }}</dd>
-
-                                                    <dt class="text-gray-500">Is Free Lead:</dt>
-                                                    <dd class="text-gray-900">{{ assignment.isFreeLead ? 'Yes' : 'No' }}
-                                                    </dd>
-
-                                                    <dt class="text-gray-500">Has Quote:</dt>
-                                                    <dd class="text-gray-900">{{ assignment.hasQuote ? 'Yes' : 'No' }}
-                                                    </dd>
-                                                </dl>
-                                            </div>
-                                        </div>
-
-                                        <!-- Lead Details -->
-                                        <div>
-                                            <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
-                                                <i class="mr-2">📄</i> Lead Details
-                                            </h4>
-                                            <div class="bg-white rounded-lg border border-gray-200 p-4">
-                                                <dl class="grid grid-cols-2 gap-2 text-sm">
-                                                    <dt class="text-gray-500">Lead Type:</dt>
-                                                    <dd class="text-gray-900">{{ assignment.leadType | uppercase }}</dd>
-
-                                                    <dt class="text-gray-500">Flow Type:</dt>
-                                                    <dd class="text-gray-900">{{ assignment.flowType | titlecase }}</dd>
-
-                                                    <dt class="text-gray-500">Lead Status:</dt>
-                                                    <dd class="text-gray-900">{{ assignment.leadStatus || 'N/A' }}</dd>
-
-                                                    <dt class="text-gray-500">Confirmed Status:</dt>
-                                                    <dd class="text-gray-900">{{ assignment.confirmedStatus || 'N/A' }}
-                                                    </dd>
-
-                                                    <dt class="text-gray-500">Budget Range:</dt>
-                                                    <dd class="text-gray-900">{{ formatCurrency(assignment.budgetMin) }}
-                                                        - {{ formatCurrency(assignment.budgetMax) }}</dd>
-
-                                                    <dt class="text-gray-500">Time Preference:</dt>
-                                                    <dd class="text-gray-900">{{ assignment.timePreference }}</dd>
-
-                                                    <dt class="text-gray-500">Scheduled:</dt>
-                                                    <dd class="text-gray-900">{{
-                                                        formatDateTime(assignment.scheduledStart) }} to {{
-                                                        formatDateTime(assignment.scheduledEnd) }}</dd>
-
-                                                    <dt class="text-gray-500">Is Instant:</dt>
-                                                    <dd class="text-gray-900">{{ assignment.isInstant ? 'Yes' : 'No' }}
-                                                    </dd>
-
-                                                    <dt class="text-gray-500">Quality Score:</dt>
-                                                    <dd class="text-gray-900">{{ assignment.leadQualityScore || 'N/A' }}
-                                                    </dd>
-                                                </dl>
-                                            </div>
-                                        </div>
-
-                                        <!-- Customer Details -->
-                                        <div>
-                                            <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
-                                                <i class="mr-2">👤</i> Customer Details
-                                            </h4>
-                                            <div class="bg-white rounded-lg border border-gray-200 p-4">
-                                                <div *ngIf="assignment.customerUserId; else noCustomer">
-                                                    <div class="flex items-center mb-3">
-                                                        <div
-                                                            class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                                            <span class="text-green-600 font-medium">
-                                                                {{ (assignment.customerDisplayName &&
-                                                                assignment.customerDisplayName.length > 0 ?
-                                                                assignment.customerDisplayName.charAt(0) : 'C') |
-                                                                uppercase }}
-                                                            </span>
-                                                        </div>
-                                                        <div>
-                                                            <div class="font-medium">{{ assignment.customerDisplayName
-                                                                || 'Unknown' }}</div>
-                                                            <div class="text-xs text-gray-500">{{
-                                                                assignment.customerEmail || 'No email' }}</div>
-                                                        </div>
-                                                    </div>
-                                                    <dl class="grid grid-cols-2 gap-2 text-sm">
-                                                        <dt class="text-gray-500">Customer ID:</dt>
-                                                        <dd class="text-gray-900">{{ assignment.customerUserId }}</dd>
-
-                                                        <dt class="text-gray-500">Phone:</dt>
-                                                        <dd class="text-gray-900">{{ assignment.customerPhone || 'N/A'
-                                                            }}</dd>
-                                                    </dl>
-                                                </div>
-                                                <ng-template #noCustomer>
-                                                    <p class="text-gray-500 text-center py-4">No customer information
-                                                        available</p>
-                                                </ng-template>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Close Button -->
-                                    <div class="mt-4 text-right">
-                                        <button (click)="toggleRow(assignment.id)"
-                                            class="text-gray-600 hover:text-gray-800 text-sm font-medium flex items-center ml-auto">
-                                            <i class="mr-1">↑</i> Collapse Details
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </ng-container>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Empty State -->
-            <div *ngIf="!loading && assignments.length === 0" class="p-12 text-center">
-                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="text-gray-400 text-3xl">📋</i>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">No Assignments Found</h3>
-                <p class="text-gray-600 mb-6">
-                    No lead assignments match your current filters.
-                </p>
-                <button (click)="resetFilters()"
-                    class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
-                    <i class="mr-2">🔄</i>
-                    Reset Filters
-                </button>
-            </div>
-
-            <!-- Pagination -->
-            <div *ngIf="!loading && assignments.length > 0"
-                class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                <div class="text-sm text-gray-500">
-                    Showing <span class="font-medium">{{getStartIndex()}}</span> to
-                    <span class="font-medium">{{getEndIndex()}}</span> of
-                    <span class="font-medium">{{totalCount}}</span> assignments
-                </div>
-                <div class="flex items-center gap-2">
-                    <button (click)="changePage(-1)" [disabled]="pageNumber === 1"
-                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i class="mr-1">←</i> Previous
-                    </button>
-
-                    <div class="flex items-center gap-1">
-                        <button *ngFor="let page of getPageNumbers()" (click)="goToPage(page)"
-                            [class]="page === pageNumber ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'"
-                            class="px-3 py-1 rounded text-sm">
-                            {{page}}
-                        </button>
-                    </div>
-
-                    <button (click)="changePage(1)" [disabled]="pageNumber * pageSize >= totalCount"
-                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        Next <i class="ml-1">→</i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Manual Assignment Modal -->
-    <div *ngIf="showAssignmentModal && selectedAssignmentForAssignment"
-        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-        <div class="relative bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
-            <div class="flex items-center justify-between p-5 border-b">
-                <h3 class="text-xl font-semibold text-gray-900">Assign Lead #{{ selectedAssignmentForAssignment.leadId
-                    }} to Provider</h3>
-                <button (click)="closeAssignmentModal()" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-            <div class="p-6">
-                <form [formGroup]="assignmentForm" class="space-y-4">
-                    <!-- Lead Info Summary -->
-                    <div class="bg-blue-50 p-3 rounded-lg mb-4">
-                        <p class="text-sm text-blue-800">
-                            <span class="font-semibold">Lead:</span> #{{ selectedAssignmentForAssignment.leadId }} -
-                            {{ (selectedAssignmentForAssignment.leadDescription &&
-                            selectedAssignmentForAssignment.leadDescription.length > 50)
-                            ? (selectedAssignmentForAssignment.leadDescription | slice:0:50) + '...'
-                            : selectedAssignmentForAssignment.leadDescription || 'No description' }}
-                        </p>
-                        <p class="text-xs text-blue-600 mt-1">
-                            Category: {{ selectedAssignmentForAssignment.categoryName || 'N/A' }} |
-                            Location: {{ selectedAssignmentForAssignment.cityName || 'N/A' }}
-                        </p>
-                    </div>
-
-                    <!-- Provider Search -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Select Provider *</label>
-                        <div class="relative" #assignmentProviderDropdown>
-                            <div class="relative">
-                                <input #assignmentProviderSearchInput type="text"
-                                    placeholder="Search provider by name or email..." formControlName="providerSearch"
-                                    (click)="onAssignmentProviderInputClick()"
-                                    (keydown)="onAssignmentProviderInputKeydown($event)"
-                                    class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    [class.border-red-500]="assignmentForm.get('providerId')?.invalid && assignmentForm.get('providerId')?.touched"
-                                    autocomplete="off" />
-
-                                <button *ngIf="selectedAssignmentProvider" (click)="clearAssignmentProviderSelection()"
-                                    (mousedown)="$event.preventDefault()" type="button"
-                                    class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 focus:outline-none">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-
-                                <div *ngIf="!selectedAssignmentProvider"
-                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </div>
-                            </div>
-
-                            <!-- Loading State -->
-                            <div *ngIf="loadingAssignmentProviders"
-                                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
-                                <div class="flex items-center justify-center p-4">
-                                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600 mr-2">
-                                    </div>
-                                    <span class="text-sm text-gray-600">Searching providers...</span>
-                                </div>
-                            </div>
-
-                            <!-- Dropdown Results -->
-                            <div *ngIf="showAssignmentProviderDropdown && !loadingAssignmentProviders && filteredAssignmentProviders && filteredAssignmentProviders.length > 0"
-                                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto">
-                                <div class="py-1">
-                                    <div *ngFor="let provider of filteredAssignmentProviders; let i = index"
-                                        (click)="selectAssignmentProvider(provider)"
-                                        (keydown.enter)="selectAssignmentProvider(provider)" tabindex="0"
-                                        class="assignment-provider-dropdown-item px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors focus:outline-none focus:bg-gray-100 border-b border-gray-100 last:border-b-0">
-                                        <div class="flex items-start">
-                                            <div class="flex-shrink-0 mt-1 mr-3">
+                                              <div class="flex-shrink-0 mt-1 mr-3">
                                                 <div
-                                                    class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                                                    <span class="text-purple-600 text-sm font-medium">
-                                                        {{ (provider.displayName || provider.businessName ||
-                                                        'P').charAt(0) | uppercase }}
-                                                    </span>
+                                                  class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                  <span class="text-blue-600 text-sm font-medium">
+                                                    {{ (provider.displayName && provider.displayName.length > 0
+                                                    ? provider.displayName.charAt(0) : 'P') | uppercase }}
+                                                  </span>
                                                 </div>
-                                            </div>
-                                            <div class="flex-1 min-w-0">
-                                                <div class="font-medium text-gray-900">{{ provider.displayName ||
-                                                    provider.businessName || 'Unknown' }}</div>
-                                                <div class="text-sm text-gray-500">{{ provider.email || 'No email' }}
+                                              </div>
+                                              <div class="flex-1 min-w-0">
+                                                <div class="font-medium text-gray-900 truncate">{{
+                                                  provider.displayName || 'Unknown' }}
                                                 </div>
+                                                <div class="text-sm text-gray-500 truncate">{{ provider.email || 'No
+                                                email' }}</div>
                                                 <div class="text-xs text-gray-400 mt-1">
-                                                    <span *ngIf="provider.phone">📞 {{ provider.phone }}</span>
-                                                    <span *ngIf="!provider.phone">📞 N/A</span>
-                                                    <span class="mx-1">•</span>
-                                                    <span *ngIf="provider.providerTier"
-                                                        [class]="getProviderTierColor(provider.providerTier)"
-                                                        class="px-1.5 py-0.5 rounded text-xs">
-                                                        {{ provider.providerTier }}
-                                                    </span>
-                                                    <span *ngIf="provider.avgRating">⭐ {{ provider.avgRating }}</span>
+                                                  Phone: {{ provider.phone || 'N/A' }}
                                                 </div>
+                                              </div>
                                             </div>
-                                        </div>
+                                          </div>
+                                        }
+                                      </div>
                                     </div>
-                                </div>
-                            </div>
+                                  }
 
-                            <!-- No Results -->
-                            <div *ngIf="showAssignmentProviderDropdown && (!filteredAssignmentProviders || filteredAssignmentProviders.length === 0) && !loadingAssignmentProviders"
-                                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
-                                <div class="p-4 text-center">
-                                    <div class="w-10 h-10 mx-auto mb-2 text-gray-400">
-                                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <!-- No Results -->
+                                  @if (showProviderDropdown && filteredProviders.length === 0 && !loadingProviders) {
+                                    <div
+                                      class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                                      <div class="p-4 text-center">
+                                        <div class="w-10 h-10 mx-auto mb-2 text-gray-400">
+                                          <svg class="w-10 h-10" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    </div>
-                                    <p class="text-sm text-gray-600">No providers found</p>
-                                    <p class="text-xs text-gray-400 mt-1">Try a different search term</p>
+                                              d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                          </div>
+                                          <p class="text-sm text-gray-600">No providers found matching "{{
+                                          filterForm.get('providerSearch')?.value }}"</p>
+                                          <p class="text-xs text-gray-400 mt-1">Try a different search term</p>
+                                        </div>
+                                      </div>
+                                    }
+                                  </div>
+
+                                  <!-- Hidden input for actual Provider ID -->
+                                  <input type="hidden" formControlName="providerId" />
                                 </div>
-                            </div>
-                        </div>
-                        <input type="hidden" formControlName="providerId" />
-                        <div *ngIf="assignmentForm.get('providerId')?.invalid && assignmentForm.get('providerId')?.touched"
-                            class="text-xs text-red-500 mt-1">
-                            Provider is required
-                        </div>
-                    </div>
+                              </div>
 
-                    <!-- Offer Wave -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Offer Wave *</label>
-                        <input type="number" formControlName="offerWave" min="1"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                            [class.border-red-500]="assignmentForm.get('offerWave')?.invalid && assignmentForm.get('offerWave')?.touched" />
-                        <div *ngIf="assignmentForm.get('offerWave')?.invalid && assignmentForm.get('offerWave')?.touched"
-                            class="text-xs text-red-500 mt-1">
-                            Valid offer wave is required
-                        </div>
-                    </div>
+                              <!-- Date-Time Filters -->
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Start Date & Time -->
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    From Date & Time (Offered At)
+                                  </label>
+                                  <div class="flex flex-col md:flex-row gap-2">
+                                    <div class="flex-1">
+                                      <input type="date" formControlName="startDate"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                      </div>
+                                      <div class="w-full md:w-40">
+                                        <input type="time" formControlName="startTime"
+                                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                        </div>
+                                      </div>
+                                    </div>
 
-                    <!-- PPL Price -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">PPL Price</label>
-                        <input type="number" formControlName="pplPrice" step="0.01" min="0"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
-                    </div>
+                                    <!-- End Date & Time -->
+                                    <div>
+                                      <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        To Date & Time (Offered At)
+                                      </label>
+                                      <div class="flex flex-col md:flex-row gap-2">
+                                        <div class="flex-1">
+                                          <input type="date" formControlName="endDate"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                          </div>
+                                          <div class="w-full md:w-40">
+                                            <input type="time" formControlName="endTime"
+                                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </form>
 
-                    <!-- Is Free Lead -->
-                    <div class="flex items-center">
-                        <input type="checkbox" formControlName="isFreeLead" id="isFreeLead"
-                            class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded" />
-                        <label for="isFreeLead" class="ml-2 block text-sm text-gray-700">
-                            Is Free Lead
-                        </label>
-                    </div>
+                                    <!-- Active Filters Display -->
+                                    @if (getActiveFilters() > 0) {
+                                      <div class="mt-4 flex flex-wrap gap-2">
+                                        <span class="text-xs text-gray-500 mr-2">Active filters:</span>
+                                        @if (filterForm.get('searchTerm')?.value) {
+                                          <span
+                                            class="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">
+                                            Search: {{filterForm.get('searchTerm')?.value}}
+                                          </span>
+                                        }
+                                        @if (filterForm.get('providerId')?.value) {
+                                          <span
+                                            class="inline-flex items-center px-2 py-1 rounded text-xs bg-purple-100 text-purple-800">
+                                            Provider: {{selectedProvider?.displayName || filterForm.get('providerId')?.value}}
+                                          </span>
+                                        }
+                                        @if (filterForm.get('categoryId')?.value) {
+                                          <span
+                                            class="inline-flex items-center px-2 py-1 rounded text-xs bg-green-100 text-green-800">
+                                            Category ID: {{filterForm.get('categoryId')?.value}}
+                                          </span>
+                                        }
+                                        @if (filterForm.get('subcategoryId')?.value) {
+                                          <span
+                                            class="inline-flex items-center px-2 py-1 rounded text-xs bg-yellow-100 text-yellow-800">
+                                            Subcategory ID: {{filterForm.get('subcategoryId')?.value}}
+                                          </span>
+                                        }
+                                        @if (filterForm.get('cityId')?.value) {
+                                          <span
+                                            class="inline-flex items-center px-2 py-1 rounded text-xs bg-indigo-100 text-indigo-800">
+                                            City ID: {{filterForm.get('cityId')?.value}}
+                                          </span>
+                                        }
+                                        @if (filterForm.get('areaId')?.value) {
+                                          <span
+                                            class="inline-flex items-center px-2 py-1 rounded text-xs bg-orange-100 text-orange-800">
+                                            Area ID: {{filterForm.get('areaId')?.value}}
+                                          </span>
+                                        }
+                                        @if (filterForm.get('offerStatus')?.value) {
+                                          <span
+                                            class="inline-flex items-center px-2 py-1 rounded text-xs bg-pink-100 text-pink-800">
+                                            Status: {{filterForm.get('offerStatus')?.value}}
+                                          </span>
+                                        }
+                                        @if (filterForm.get('leadType')?.value) {
+                                          <span
+                                            class="inline-flex items-center px-2 py-1 rounded text-xs bg-teal-100 text-teal-800">
+                                            Type: {{filterForm.get('leadType')?.value}}
+                                          </span>
+                                        }
+                                        @if (filterForm.get('leadStatus')?.value) {
+                                          <span
+                                            class="inline-flex items-center px-2 py-1 rounded text-xs bg-gray-100 text-gray-800">
+                                            Lead Status: {{filterForm.get('leadStatus')?.value}}
+                                          </span>
+                                        }
+                                      </div>
+                                    }
 
-                    <!-- Offer Expires At -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Offer Expires At</label>
-                        <input type="datetime-local" formControlName="offerExpiresAt"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
-                    </div>
+                                    <!-- Action Buttons -->
+                                    <div class="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-gray-200">
+                                      <button (click)="resetFilters()"
+                                        class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg font-medium hover:bg-gray-200 transition-colors border border-gray-300">
+                                        <i class="mr-2">🔄</i> Reset All Filters
+                                      </button>
+                                      <button (click)="applyFilters()"
+                                        class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
+                                        Apply Filters
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
 
-                    <!-- Notes -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
-                        <textarea formControlName="notes" rows="2" placeholder="Optional notes..."
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="flex items-center justify-end gap-3 p-5 border-t">
-                <button (click)="closeAssignmentModal()"
-                    class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
-                    Cancel
-                </button>
-                <button (click)="assignToProvider()" [disabled]="assignmentForm.invalid"
-                    class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-700 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50">
-                    Assign to Provider
-                </button>
-            </div>
-        </div>
-    </div>
+                                <!-- Lead Assignments Card -->
+                                <div class="bg-white rounded-xl shadow overflow-hidden">
+                                  <div
+                                    class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                    <div class="flex items-center gap-4">
+                                      <h2 class="text-lg font-semibold text-gray-800">
+                                        Lead Assignments
+                                      </h2>
+                                      <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                                        {{assignments.length}} Assignments
+                                      </span>
+                                    </div>
+                                  </div>
 
-    <app-admin-footer></app-admin-footer>
-</div>
+                                  <!-- Loading State -->
+                                  @if (loading) {
+                                    <div class="p-8 text-center">
+                                      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+                                      <p class="text-gray-600">Loading assignments...</p>
+                                    </div>
+                                  }
+
+                                  <!-- Assignments Table -->
+                                  @if (!loading && assignments.length > 0) {
+                                    <div class="overflow-x-auto">
+                                      <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                          <tr>
+                                            <th scope="col"
+                                              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                              Offered At
+                                            </th>
+                                            <th scope="col"
+                                              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                              Provider
+                                            </th>
+                                            <th scope="col"
+                                              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                              Lead Info
+                                            </th>
+                                            <th scope="col"
+                                              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                              Category
+                                            </th>
+                                            <th scope="col"
+                                              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                              Location
+                                            </th>
+                                            <th scope="col"
+                                              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                              Status
+                                            </th>
+                                            <th scope="col"
+                                              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                              Price
+                                            </th>
+                                            <th scope="col"
+                                              class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                              Actions
+                                            </th>
+                                          </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                          @for (assignment of assignments; track assignment) {
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                              <!-- Offered At -->
+                                              <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900">
+                                                  {{ assignment.offeredAt | date:'dd MMM yyyy' }}
+                                                </div>
+                                                <div class="text-xs text-gray-500">
+                                                  {{ assignment.offeredAt | date:'hh:mm a' }}
+                                                </div>
+                                                @if (assignment.offerExpiresAt) {
+                                                  <div class="text-xs text-red-500 mt-1">
+                                                    Expires: {{ assignment.offerExpiresAt | date:'dd MMM' }}
+                                                  </div>
+                                                }
+                                              </td>
+                                              <!-- Provider -->
+                                              <td class="px-6 py-4">
+                                                <div class="flex items-center">
+                                                  <div
+                                                    class="flex-shrink-0 h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                    <span class="text-blue-600 text-sm font-medium">
+                                                      {{ (assignment.providerDisplayName &&
+                                                      assignment.providerDisplayName.length > 0 ?
+                                                      assignment.providerDisplayName.charAt(0) : 'P') | uppercase }}
+                                                    </span>
+                                                  </div>
+                                                  <div class="ml-3">
+                                                    <div class="text-sm font-medium text-gray-900">
+                                                      {{ assignment.providerDisplayName || 'Unknown' }}
+                                                    </div>
+                                                    <div class="text-xs text-gray-500">
+                                                      {{ assignment.providerEmail || 'No email' }}
+                                                    </div>
+                                                    <div class="text-xs text-gray-400">
+                                                      ID: {{ assignment.providerId }}
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </td>
+                                              <!-- Lead Info -->
+                                              <td class="px-6 py-4">
+                                                <div class="flex items-center">
+                                                  <div>
+                                                    <div class="flex items-center gap-2">
+                                                      <span class="text-sm font-medium text-gray-900">
+                                                        Lead #{{ assignment.leadId }}
+                                                      </span>
+                                                      <span [class]="getLeadTypeColor(assignment.leadType)"
+                                                        class="px-2 py-0.5 rounded text-xs font-medium">
+                                                        {{ assignment.leadType | uppercase }}
+                                                      </span>
+                                                    </div>
+                                                    <div class="text-xs text-gray-500 mt-1 max-w-xs truncate">
+                                                      {{ assignment.leadDescription || 'No description' }}
+                                                    </div>
+                                                    <div class="text-xs text-gray-400 mt-1">
+                                                      Wave: {{ assignment.offerWave }}
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </td>
+                                              <!-- Category -->
+                                              <td class="px-6 py-4">
+                                                <div class="text-sm text-gray-900">
+                                                  {{ assignment.categoryName || 'N/A' }}
+                                                </div>
+                                                <div class="text-xs text-gray-500 mt-1">
+                                                  {{ assignment.subcategoryName || 'No subcategory' }}
+                                                </div>
+                                              </td>
+                                              <!-- Location -->
+                                              <td class="px-6 py-4">
+                                                <div class="text-sm text-gray-900">
+                                                  {{ assignment.cityName || 'N/A' }}
+                                                </div>
+                                                <div class="text-xs text-gray-500">
+                                                  {{ assignment.areaName || 'N/A' }}
+                                                </div>
+                                                @if (assignment.pincode) {
+                                                  <div class="text-xs text-gray-400">
+                                                    {{ assignment.pincode }}
+                                                  </div>
+                                                }
+                                              </td>
+                                              <!-- Status -->
+                                              <td class="px-6 py-4">
+                                                <span [class]="getOfferStatusColor(assignment.offerStatus)"
+                                                  class="px-2 py-1 rounded-full text-xs font-medium">
+                                                  {{ assignment.offerStatus | titlecase }}
+                                                </span>
+                                                @if (assignment.isFreeLead) {
+                                                  <div class="text-xs text-purple-600 mt-1">
+                                                    Free Lead
+                                                  </div>
+                                                }
+                                              </td>
+                                              <!-- Price -->
+                                              <td class="px-6 py-4 text-right">
+                                                <div class="text-sm font-semibold text-gray-900">
+                                                  {{ formatCurrency(assignment.pplPrice) }}
+                                                </div>
+                                                @if (assignment.hasQuote) {
+                                                  <div class="text-xs text-blue-600 mt-1">
+                                                    Has Quote
+                                                  </div>
+                                                }
+                                              </td>
+                                              <!-- Actions -->
+                                              <td class="px-6 py-4 text-center">
+                                                <div class="flex items-center justify-center gap-2">
+                                                  <button (click)="toggleRow(assignment.id)"
+                                                    class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                                                    title="View Details">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                        </svg>
+                                                      </button>
+                                                      <!-- <button (click)="openAssignmentModal(assignment)"
+                                                      class="text-purple-600 hover:text-purple-900 p-2 rounded-lg hover:bg-purple-50 transition-colors"
+                                                      title="Assign to Provider">
+                                                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                          d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                                        </svg>
+                                                      </button> -->
+                                                    </div>
+                                                  </td>
+                                                </tr>
+                                                <!-- Expanded Row -->
+                                                @if (expandedRowId === assignment.id) {
+                                                  <tr>
+                                                    <td colspan="8" class="bg-gray-50 p-6">
+                                                      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                        <!-- Assignment Details -->
+                                                        <div>
+                                                          <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                                                            <i class="mr-2">📋</i> Assignment Details
+                                                          </h4>
+                                                          <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                                            <dl class="grid grid-cols-2 gap-2 text-sm">
+                                                              <dt class="text-gray-500">Assignment ID:</dt>
+                                                              <dd class="text-gray-900 font-mono">{{ assignment.id }}</dd>
+                                                              <dt class="text-gray-500">Lead ID:</dt>
+                                                              <dd class="text-gray-900 font-mono">{{ assignment.leadId }}</dd>
+                                                              <dt class="text-gray-500">Offer Wave:</dt>
+                                                              <dd class="text-gray-900">{{ assignment.offerWave }}</dd>
+                                                              <dt class="text-gray-500">Offered At:</dt>
+                                                              <dd class="text-gray-900">{{ formatDateTime(assignment.offeredAt) }}
+                                                              </dd>
+                                                              <dt class="text-gray-500">Responded At:</dt>
+                                                              <dd class="text-gray-900">{{ formatDateTime(assignment.respondedAt)
+                                                              }}</dd>
+                                                              <dt class="text-gray-500">Committed At:</dt>
+                                                              <dd class="text-gray-900">{{ formatDateTime(assignment.committedAt)
+                                                              }}</dd>
+                                                              <dt class="text-gray-500">Unlocked At:</dt>
+                                                              <dd class="text-gray-900">{{ formatDateTime(assignment.unlockedAt)
+                                                              }}</dd>
+                                                              <dt class="text-gray-500">Is Free Lead:</dt>
+                                                              <dd class="text-gray-900">{{ assignment.isFreeLead ? 'Yes' : 'No' }}
+                                                              </dd>
+                                                              <dt class="text-gray-500">Has Quote:</dt>
+                                                              <dd class="text-gray-900">{{ assignment.hasQuote ? 'Yes' : 'No' }}
+                                                              </dd>
+                                                            </dl>
+                                                          </div>
+                                                        </div>
+                                                        <!-- Lead Details -->
+                                                        <div>
+                                                          <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                                                            <i class="mr-2">📄</i> Lead Details
+                                                          </h4>
+                                                          <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                                            <dl class="grid grid-cols-2 gap-2 text-sm">
+                                                              <dt class="text-gray-500">Lead Type:</dt>
+                                                              <dd class="text-gray-900">{{ assignment.leadType | uppercase }}</dd>
+                                                              <dt class="text-gray-500">Flow Type:</dt>
+                                                              <dd class="text-gray-900">{{ assignment.flowType | titlecase }}</dd>
+                                                              <dt class="text-gray-500">Lead Status:</dt>
+                                                              <dd class="text-gray-900">{{ assignment.leadStatus || 'N/A' }}</dd>
+                                                              <dt class="text-gray-500">Confirmed Status:</dt>
+                                                              <dd class="text-gray-900">{{ assignment.confirmedStatus || 'N/A' }}
+                                                              </dd>
+                                                              <dt class="text-gray-500">Budget Range:</dt>
+                                                              <dd class="text-gray-900">{{ formatCurrency(assignment.budgetMin) }}
+                                                              - {{ formatCurrency(assignment.budgetMax) }}</dd>
+                                                              <dt class="text-gray-500">Time Preference:</dt>
+                                                              <dd class="text-gray-900">{{ assignment.timePreference }}</dd>
+                                                              <dt class="text-gray-500">Scheduled:</dt>
+                                                              <dd class="text-gray-900">{{
+                                                                formatDateTime(assignment.scheduledStart) }} to {{
+                                                              formatDateTime(assignment.scheduledEnd) }}</dd>
+                                                              <dt class="text-gray-500">Is Instant:</dt>
+                                                              <dd class="text-gray-900">{{ assignment.isInstant ? 'Yes' : 'No' }}
+                                                              </dd>
+                                                              <dt class="text-gray-500">Quality Score:</dt>
+                                                              <dd class="text-gray-900">{{ assignment.leadQualityScore || 'N/A' }}
+                                                              </dd>
+                                                            </dl>
+                                                          </div>
+                                                        </div>
+                                                        <!-- Customer Details -->
+                                                        <div>
+                                                          <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                                                            <i class="mr-2">👤</i> Customer Details
+                                                          </h4>
+                                                          <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                                            @if (assignment.customerUserId) {
+                                                              <div>
+                                                                <div class="flex items-center mb-3">
+                                                                  <div
+                                                                    class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                                                    <span class="text-green-600 font-medium">
+                                                                      {{ (assignment.customerDisplayName &&
+                                                                      assignment.customerDisplayName.length > 0 ?
+                                                                      assignment.customerDisplayName.charAt(0) : 'C') |
+                                                                      uppercase }}
+                                                                    </span>
+                                                                  </div>
+                                                                  <div>
+                                                                    <div class="font-medium">{{ assignment.customerDisplayName
+                                                                    || 'Unknown' }}</div>
+                                                                    <div class="text-xs text-gray-500">{{
+                                                                    assignment.customerEmail || 'No email' }}</div>
+                                                                  </div>
+                                                                </div>
+                                                                <dl class="grid grid-cols-2 gap-2 text-sm">
+                                                                  <dt class="text-gray-500">Customer ID:</dt>
+                                                                  <dd class="text-gray-900">{{ assignment.customerUserId }}</dd>
+                                                                  <dt class="text-gray-500">Phone:</dt>
+                                                                  <dd class="text-gray-900">{{ assignment.customerPhone || 'N/A'
+                                                                  }}</dd>
+                                                                </dl>
+                                                              </div>
+                                                            } @else {
+                                                              <p class="text-gray-500 text-center py-4">No customer information
+                                                              available</p>
+                                                            }
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                      <!-- Close Button -->
+                                                      <div class="mt-4 text-right">
+                                                        <button (click)="toggleRow(assignment.id)"
+                                                          class="text-gray-600 hover:text-gray-800 text-sm font-medium flex items-center ml-auto">
+                                                          <i class="mr-1">↑</i> Collapse Details
+                                                        </button>
+                                                      </div>
+                                                    </td>
+                                                  </tr>
+                                                }
+                                              }
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      }
+
+                                      <!-- Empty State -->
+                                      @if (!loading && assignments.length === 0) {
+                                        <div class="p-12 text-center">
+                                          <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <i class="text-gray-400 text-3xl">📋</i>
+                                          </div>
+                                          <h3 class="text-lg font-semibold text-gray-800 mb-2">No Assignments Found</h3>
+                                          <p class="text-gray-600 mb-6">
+                                            No lead assignments match your current filters.
+                                          </p>
+                                          <button (click)="resetFilters()"
+                                            class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md">
+                                            <i class="mr-2">🔄</i>
+                                            Reset Filters
+                                          </button>
+                                        </div>
+                                      }
+
+                                      <!-- Pagination -->
+                                      @if (!loading && assignments.length > 0) {
+                                        <div
+                                          class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                                          <div class="text-sm text-gray-500">
+                                            Showing <span class="font-medium">{{getStartIndex()}}</span> to
+                                            <span class="font-medium">{{getEndIndex()}}</span> of
+                                            <span class="font-medium">{{totalCount}}</span> assignments
+                                          </div>
+                                          <div class="flex items-center gap-2">
+                                            <button (click)="changePage(-1)" [disabled]="pageNumber === 1"
+                                              class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                              <i class="mr-1">←</i> Previous
+                                            </button>
+                                            <div class="flex items-center gap-1">
+                                              @for (page of getPageNumbers(); track page) {
+                                                <button (click)="goToPage(page)"
+                                                  [class]="page === pageNumber ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'"
+                                                  class="px-3 py-1 rounded text-sm">
+                                                  {{page}}
+                                                </button>
+                                              }
+                                            </div>
+                                            <button (click)="changePage(1)" [disabled]="pageNumber * pageSize >= totalCount"
+                                              class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                              Next <i class="ml-1">→</i>
+                                            </button>
+                                          </div>
+                                        </div>
+                                      }
+                                    </div>
+                                  </div>
+
+
+                                  <!-- Manual Assignment Modal -->
+                                  @if (showAssignmentModal && selectedAssignmentForAssignment) {
+                                    <div
+                                      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+                                      <div class="relative bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
+                                        <div class="flex items-center justify-between p-5 border-b">
+                                          <h3 class="text-xl font-semibold text-gray-900">Assign Lead #{{ selectedAssignmentForAssignment.leadId
+                                          }} to Provider</h3>
+                                          <button (click)="closeAssignmentModal()" class="text-gray-400 hover:text-gray-600">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                              </svg>
+                                            </button>
+                                          </div>
+                                          <div class="p-6">
+                                            <form [formGroup]="assignmentForm" class="space-y-4">
+                                              <!-- Lead Info Summary -->
+                                              <div class="bg-blue-50 p-3 rounded-lg mb-4">
+                                                <p class="text-sm text-blue-800">
+                                                  <span class="font-semibold">Lead:</span> #{{ selectedAssignmentForAssignment.leadId }} -
+                                                  {{ (selectedAssignmentForAssignment.leadDescription &&
+                                                  selectedAssignmentForAssignment.leadDescription.length > 50)
+                                                  ? (selectedAssignmentForAssignment.leadDescription | slice:0:50) + '...'
+                                                  : selectedAssignmentForAssignment.leadDescription || 'No description' }}
+                                                </p>
+                                                <p class="text-xs text-blue-600 mt-1">
+                                                  Category: {{ selectedAssignmentForAssignment.categoryName || 'N/A' }} |
+                                                  Location: {{ selectedAssignmentForAssignment.cityName || 'N/A' }}
+                                                </p>
+                                              </div>
+                                              <!-- Provider Search -->
+                                              <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Select Provider *</label>
+                                                <div class="relative" #assignmentProviderDropdown>
+                                                  <div class="relative">
+                                                    <input #assignmentProviderSearchInput type="text"
+                                                      placeholder="Search provider by name or email..." formControlName="providerSearch"
+                                                      (click)="onAssignmentProviderInputClick()"
+                                                      (keydown)="onAssignmentProviderInputKeydown($event)"
+                                                      class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                                      [class.border-red-500]="assignmentForm.get('providerId')?.invalid && assignmentForm.get('providerId')?.touched"
+                                                      autocomplete="off" />
+                                                      @if (selectedAssignmentProvider) {
+                                                        <button (click)="clearAssignmentProviderSelection()"
+                                                          (mousedown)="$event.preventDefault()" type="button"
+                                                          class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 focus:outline-none">
+                                                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                              d="M6 18L18 6M6 6l12 12" />
+                                                            </svg>
+                                                          </button>
+                                                        }
+                                                        @if (!selectedAssignmentProvider) {
+                                                          <div
+                                                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                                              </svg>
+                                                            </div>
+                                                          }
+                                                        </div>
+                                                        <!-- Loading State -->
+                                                        @if (loadingAssignmentProviders) {
+                                                          <div
+                                                            class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                                                            <div class="flex items-center justify-center p-4">
+                                                              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600 mr-2">
+                                                              </div>
+                                                              <span class="text-sm text-gray-600">Searching providers...</span>
+                                                            </div>
+                                                          </div>
+                                                        }
+                                                        <!-- Dropdown Results -->
+                                                        @if (showAssignmentProviderDropdown && !loadingAssignmentProviders && filteredAssignmentProviders && filteredAssignmentProviders.length > 0) {
+                                                          <div
+                                                            class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                                                            <div class="py-1">
+                                                              @for (provider of filteredAssignmentProviders; track provider; let i = $index) {
+                                                                <div
+                                                                  (click)="selectAssignmentProvider(provider)"
+                                                                  (keydown.enter)="selectAssignmentProvider(provider)" tabindex="0"
+                                                                  class="assignment-provider-dropdown-item px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors focus:outline-none focus:bg-gray-100 border-b border-gray-100 last:border-b-0">
+                                                                  <div class="flex items-start">
+                                                                    <div class="flex-shrink-0 mt-1 mr-3">
+                                                                      <div
+                                                                        class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                                                        <span class="text-purple-600 text-sm font-medium">
+                                                                          {{ (provider.displayName || provider.businessName ||
+                                                                          'P').charAt(0) | uppercase }}
+                                                                        </span>
+                                                                      </div>
+                                                                    </div>
+                                                                    <div class="flex-1 min-w-0">
+                                                                      <div class="font-medium text-gray-900">{{ provider.displayName ||
+                                                                      provider.businessName || 'Unknown' }}</div>
+                                                                      <div class="text-sm text-gray-500">{{ provider.email || 'No email' }}
+                                                                      </div>
+                                                                      <div class="text-xs text-gray-400 mt-1">
+                                                                        @if (provider.phone) {
+                                                                          <span>📞 {{ provider.phone }}</span>
+                                                                        }
+                                                                        @if (!provider.phone) {
+                                                                          <span>📞 N/A</span>
+                                                                        }
+                                                                        <span class="mx-1">•</span>
+                                                                        @if (provider.providerTier) {
+                                                                          <span
+                                                                            [class]="getProviderTierColor(provider.providerTier)"
+                                                                            class="px-1.5 py-0.5 rounded text-xs">
+                                                                            {{ provider.providerTier }}
+                                                                          </span>
+                                                                        }
+                                                                        @if (provider.avgRating) {
+                                                                          <span>⭐ {{ provider.avgRating }}</span>
+                                                                        }
+                                                                      </div>
+                                                                    </div>
+                                                                  </div>
+                                                                </div>
+                                                              }
+                                                            </div>
+                                                          </div>
+                                                        }
+                                                        <!-- No Results -->
+                                                        @if (showAssignmentProviderDropdown && (!filteredAssignmentProviders || filteredAssignmentProviders.length === 0) && !loadingAssignmentProviders) {
+                                                          <div
+                                                            class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                                                            <div class="p-4 text-center">
+                                                              <div class="w-10 h-10 mx-auto mb-2 text-gray-400">
+                                                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                  </svg>
+                                                                </div>
+                                                                <p class="text-sm text-gray-600">No providers found</p>
+                                                                <p class="text-xs text-gray-400 mt-1">Try a different search term</p>
+                                                              </div>
+                                                            </div>
+                                                          }
+                                                        </div>
+                                                        <input type="hidden" formControlName="providerId" />
+                                                        @if (assignmentForm.get('providerId')?.invalid && assignmentForm.get('providerId')?.touched) {
+                                                          <div
+                                                            class="text-xs text-red-500 mt-1">
+                                                            Provider is required
+                                                          </div>
+                                                        }
+                                                      </div>
+                                                      <!-- Offer Wave -->
+                                                      <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-2">Offer Wave *</label>
+                                                        <input type="number" formControlName="offerWave" min="1"
+                                                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                                          [class.border-red-500]="assignmentForm.get('offerWave')?.invalid && assignmentForm.get('offerWave')?.touched" />
+                                                          @if (assignmentForm.get('offerWave')?.invalid && assignmentForm.get('offerWave')?.touched) {
+                                                            <div
+                                                              class="text-xs text-red-500 mt-1">
+                                                              Valid offer wave is required
+                                                            </div>
+                                                          }
+                                                        </div>
+                                                        <!-- PPL Price -->
+                                                        <div>
+                                                          <label class="block text-sm font-medium text-gray-700 mb-2">PPL Price</label>
+                                                          <input type="number" formControlName="pplPrice" step="0.01" min="0"
+                                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+                                                          </div>
+                                                          <!-- Is Free Lead -->
+                                                          <div class="flex items-center">
+                                                            <input type="checkbox" formControlName="isFreeLead" id="isFreeLead"
+                                                              class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded" />
+                                                              <label for="isFreeLead" class="ml-2 block text-sm text-gray-700">
+                                                                Is Free Lead
+                                                              </label>
+                                                            </div>
+                                                            <!-- Offer Expires At -->
+                                                            <div>
+                                                              <label class="block text-sm font-medium text-gray-700 mb-2">Offer Expires At</label>
+                                                              <input type="datetime-local" formControlName="offerExpiresAt"
+                                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+                                                              </div>
+                                                              <!-- Notes -->
+                                                              <div>
+                                                                <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                                                                <textarea formControlName="notes" rows="2" placeholder="Optional notes..."
+                                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
+                                                              </div>
+                                                            </form>
+                                                          </div>
+                                                          <div class="flex items-center justify-end gap-3 p-5 border-t">
+                                                            <button (click)="closeAssignmentModal()"
+                                                              class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+                                                              Cancel
+                                                            </button>
+                                                            <button (click)="assignToProvider()" [disabled]="assignmentForm.invalid"
+                                                              class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-700 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50">
+                                                              Assign to Provider
+                                                            </button>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    }
+
+                                                    <app-admin-footer></app-admin-footer>
+                                                  </div>

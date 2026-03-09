@@ -1,0 +1,28 @@
+/* src/app/customer/layout/customer-layout.component.css */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Smooth transitions */
+.transition-colors {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.group:hover .group-hover\:border-orange-500 {
+  border-color: #f97316;
+}
+
+.group:hover .group-hover\:text-orange-600 {
+  color: #ea580c;
+}

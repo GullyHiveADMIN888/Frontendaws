@@ -9,11 +9,25 @@ import {
   CityTierEnum,
   PaginatedResponse
 } from './models/lead-pricing-config.model';
+import { FooterComponent } from '../footer/footer.component';
+import { HeaderComponent } from '../header/header.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-lead-pricing-config',
-  templateUrl: './lead-pricing-config.component.html',
-  styleUrls: ['./lead-pricing-config.component.css']
+    selector: 'app-lead-pricing-config',
+    templateUrl: './lead-pricing-config.component.html',
+    styleUrls: ['./lead-pricing-config.component.css'],
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,          
+        ReactiveFormsModule,   
+        RouterModule,           
+        HeaderComponent,
+        FooterComponent
+    ]
 })
 export class LeadPricingConfigComponent implements OnInit {
   // Data properties

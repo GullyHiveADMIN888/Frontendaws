@@ -34,25 +34,37 @@
 
 
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule, Router } from '@angular/router';
 
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
 
 import { AdminService } from '../admin.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-admin-dashboard',
-  // standalone: true,
-  // imports: [
-  //   CommonModule,
-  //   RouterModule,
-  //   HeaderComponent,
-  //   FooterComponent,
-  // ],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+    selector: 'app-admin-dashboard',
+    // standalone: true,
+    // imports: [
+    //   CommonModule,
+    //   RouterModule,
+    //   HeaderComponent,
+    //   FooterComponent,
+    //   RouterModule
+    // ],
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.css'],
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,          
+        ReactiveFormsModule,   
+        RouterModule,           
+        HeaderComponent,
+        FooterComponent
+    ]
 })
 export class DashboardComponent implements OnInit {
 
