@@ -1,25 +1,22 @@
+
+
+
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { SellerService, PublicProfile } from '../seller.service';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { environment } from '../../../environments/environment.prod';
+import { SellerService, PublicProfile } from '../business.service';
 
 @Component({
-    selector: 'app-sharable-profile',
-    standalone: true,
-    imports: [CommonModule, RouterModule],
-    templateUrl: './sharable-profile.component.html'
+    selector: 'app-public-profile',
+    templateUrl: './public-profile.component.html',
+    standalone: false
 })
-export class SharableProfileComponent implements OnInit {
 
+
+export class PublicProfileComponent implements OnInit {
   profile!: PublicProfile;
   loading = true;
   errorMessage = '';
   sellerId!: number;
-
-  shareUrl = '';
-  apiUrl = environment.apiBaseUrl;
 
   constructor(
     private route: ActivatedRoute,
@@ -31,8 +28,6 @@ export class SharableProfileComponent implements OnInit {
       const id = params.get('id');
       if (id) {
         this.sellerId = +id;
-        // this.shareUrl = `${this.apiUrl}/seller/sharableeProfile/${this.sellerId}`;
-        this.shareUrl = `https://gullyhivefrontend-z698.onrender.com/#/SharableSeller/sharableProfile/${this.sellerId}`;
         this.loadProfile(this.sellerId);
       } else {
         this.errorMessage = 'Invalid seller ID';
@@ -42,21 +37,22 @@ export class SharableProfileComponent implements OnInit {
   }
 
   loadProfile(sellerId: number): void {
-    this.sellerService.sharableProfile(sellerId).subscribe({
+    this.loading = true;
+    this.sellerService.getPublicProfile(sellerId).subscribe({
       next: (data) => {
-        this.profile = data;
+        if (data) {
+          this.profile = data;
+        } else {
+          this.errorMessage = 'Profile not found';
+        }
         this.loading = false;
       },
-      error: () => {
-        this.errorMessage = 'Profile not found';
+      error: (err) => {
+        console.error('Failed to load profile', err);
+        this.errorMessage = 'Failed to load profile. Please try again.';
         this.loading = false;
       }
     });
-  }
-
-  copyLink(): void {
-    navigator.clipboard.writeText(this.shareUrl);
-    alert('Profile link copied!');
   }
 
   getInitials(name: string): string {
@@ -67,3 +63,8 @@ export class SharableProfileComponent implements OnInit {
     return Array(5).fill(false).map((_, i) => i < rating);
   }
 }
+
+
+
+
+
