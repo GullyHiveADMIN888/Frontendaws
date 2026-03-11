@@ -9,6 +9,7 @@ interface User {
   email: string;
   phone: string;
   role: string;
+  aadhaar_number:string;
 }
 
 @Component({
@@ -21,10 +22,23 @@ interface User {
 })
 export class UsersComponent {
 
-  users: User[] = [
-    { id: 1, name: 'John Doe', email: 'john@gmail.com', phone: '9876543210', role: 'Admin' },
-    { id: 2, name: 'Sarah Khan', email: 'sarah@gmail.com', phone: '9123456780', role: 'Manager' }
-  ];
+  // users: User[] = [
+  //   { id: 1, name: 'John Doe', email: 'john@gmail.com', phone: '9876543210', role: 'Admin' },
+  //   { id: 2, name: 'Sarah Khan', email: 'sarah@gmail.com', phone: '9123456780', role: 'Manager' }
+  // ];
+
+users: any[] = [];
+
+ngOnInit() {
+  this.loadUsers();
+}
+
+loadUsers() {
+  this.sellerService.getBusinessUsers().subscribe((res:any) => {
+    this.users = res;
+  });
+}
+
 
   showModal = false;
 
@@ -33,19 +47,25 @@ export class UsersComponent {
     name: '',
     email: '',
     phone: '',
-    role: ''
+    role: '',
+    aadhaar_number: ''
   };
 
 searchId!: number;
-businessId: number = 1; // hardcoded
 profile:any = {};
   constructor(private sellerService: SellerService) { }
 openModal(){
 this.showModal = true;
 }
 
+resetForm(){
+  this.searchId = 0;
+  this.profile = {};
+}
+
 closeModal(){
-this.showModal = false;
+  this.showModal = false;
+  this.resetForm();
 }
 
 
@@ -63,42 +83,36 @@ fetchProvider() {
 saveUser(){
 
 const payload = {
-
-businessId: this.businessId,   // logged in business id
-userId: this.profile.sellerId,
-role: "member",
-status: "active"
-
+  userId: this.profile.sellerId,
+  role: "member",
+  status: "active"
 };
 
 this.sellerService.saveBusinessUser(payload)
 .subscribe({
 
-next: (res:any) => {
+next:(res:any)=>{
 
-alert("User Added Successfully");
-
-this.closeModal();
+  if(res.success){
+    alert("User Added Successfully");
+    this.closeModal();
+  }
+  else{
+    alert("User already exists");
+  }
 
 },
 
-error: (err) => {
-
-console.error(err);
-
+error:(err)=>{
+  console.error(err);
+  alert("Something went wrong");
 }
 
 });
 
 }
 
-  addUser() {
-    this.newUser.id = Date.now();
-    this.users.push({ ...this.newUser });
-
-    this.newUser = { id: 0, name: '', email: '', phone: '', role: '' };
-    this.closeModal();
-  }
+ 
 
   deleteUser(id: number) {
     this.users = this.users.filter(u => u.id !== id);

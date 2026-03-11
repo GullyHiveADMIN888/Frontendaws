@@ -24,6 +24,7 @@
           <th class="p-4">Name</th>
           <th class="p-4">Email</th>
           <th class="p-4">Phone</th>
+           <th class="p-4">Adhar Number</th>
           <th class="p-4">Role</th>
           <th class="p-4 text-center">Action</th>
         </tr>
@@ -38,6 +39,7 @@
           <td class="p-4 text-gray-600">{{user.email}}</td>
 
           <td class="p-4 text-gray-600">{{user.phone}}</td>
+          <td class="p-4 text-gray-600">{{user.aadhaar_number}}</td>
 
           <td class="p-4">
             <span class="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full text-sm">
@@ -68,75 +70,8 @@
 
 
 <!-- Popup Modal -->
-<!-- <div
-  *ngIf="showModal"
-  class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center"
->
-
-  <div class="bg-white rounded-xl w-[420px] p-6 shadow-xl">
-
-    <h3 class="text-xl font-bold mb-4">Add New User</h3>
-
-    <div class="space-y-4">
-
-      <input
-        type="text"
-        placeholder="Full Name"
-        [(ngModel)]="newUser.name"
-        class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-orange-400"
-      />
-
-      <input
-        type="email"
-        placeholder="Email"
-        [(ngModel)]="newUser.email"
-        class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-orange-400"
-      />
-
-      <input
-        type="text"
-        placeholder="Phone"
-        [(ngModel)]="newUser.phone"
-        class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-orange-400"
-      />
-
-      <select
-        [(ngModel)]="newUser.role"
-        class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-orange-400"
-      >
-        <option value="">Select Role</option>
-        <option>Admin</option>
-        <option>Manager</option>
-        <option>Staff</option>
-      </select>
-
-    </div>
-
-
-    <div class="flex justify-end gap-3 mt-6">
-
-      <button
-        (click)="closeModal()"
-        class="px-4 py-2 border rounded-lg hover:bg-gray-100"
-      >
-        Cancel
-      </button>
-
-      <button
-        (click)="addUser()"
-        class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
-      >
-        Save User
-      </button>
-
-    </div>
-
-  </div>
-
-</div> -->
-
 <div *ngIf="showModal"
-class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center mt-16">
 
 <div class="bg-white rounded-xl w-[700px] p-6 shadow-xl overflow-y-auto max-h-[90vh]">
 
@@ -162,13 +97,14 @@ Fetch
 </div>
 
 <!-- TWO COLUMN GRID -->
-<div class="grid grid-cols-2 gap-4">
+<!-- <div class="grid grid-cols-2 gap-4"> -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-<input class="border p-2 bg-gray-100"
+<!-- <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.providerId" readonly placeholder="Provider Id"/>
 
 <input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.sellerId" readonly placeholder="User Id"/>
+[(ngModel)]="profile.sellerId" readonly placeholder="User Id"/> -->
 
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.legalName" readonly placeholder="Legal Name"/>
@@ -200,8 +136,8 @@ Fetch
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.addressLine2" readonly placeholder="Address Line 2"/>
 
-<input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.locality" readonly placeholder="Locality"/>
+<!-- <input class="border p-2 bg-gray-100"
+[(ngModel)]="profile.locality" readonly placeholder="Locality"/> -->
 
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.landmark" readonly placeholder="Landmark"/>
@@ -218,14 +154,14 @@ Fetch
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.areaName" readonly placeholder="Area"/>
 
-<input class="border p-2 bg-gray-100"
+<!-- <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.totalJobsCompleted" readonly placeholder="Jobs Completed"/>
 
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.totalDisputes" readonly placeholder="Total Disputes"/>
 
 <input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.disputeRate" readonly placeholder="Dispute Rate"/>
+[(ngModel)]="profile.disputeRate" readonly placeholder="Dispute Rate"/> -->
 
 </div>
 

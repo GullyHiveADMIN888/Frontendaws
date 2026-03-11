@@ -11,7 +11,6 @@ import { SellerService, Lead } from '../business.service';
 })
 export class LeadsComponent implements OnInit {
 
- // filterStatus: 'all' | 'new' | 'Unlocked' | 'responded' | 'viewed' = 'all';
  filterStatus: 'all' | 'offered' | 'unlocked' | 'responded' | 'viewed' | 'committed' = 'all';
  statuses = [
   { label: 'All', value: 'all' },
@@ -238,16 +237,20 @@ export class LeadsComponent implements OnInit {
     if (!lead) return;
 
     this.sellerService.buyLead(lead.leadId).subscribe({
-    //   this.sellerService.buyLead(lead.id).subscribe({
       next: (res: any) => {
-        // ✅ Mark as purchased locally
+        // Mark as purchased locally
         lead.isPurchased = true;
         lead.leadPrice = `₹${res.pplPrice}`;
+         // ✅ ADD THIS LINE
+         lead.unlockedCount = (lead.unlockedCount ?? 0) + 1;
 
-        // ✅ ADD THIS LINE
-        lead.unlockedCount = (lead.unlockedCount ?? 0) + 1;
+  // // ✅ update values from backend
+  // lead.unlockedCount = res.unlockedCount ?? lead.unlockedCount;
+  // lead.committedCount = res.committedCount ?? lead.committedCount;
+  // lead.offerStatus = res.offerStatus ?? lead.offerStatus;
 
-
+  // trigger UI refresh
+  this.leads = [...this.leads];
         // ✅ Close modal
         this.showPaymentModal = false;
         this.showConfirmModal = false;
@@ -369,5 +372,56 @@ sendQuote() {
     this.quoteAmount = value;
   }
 
+
+  //Lead Assignmnents
+
+showAssignModal = false;
+selectedEmployeeId:number | null = null;
+employees:any[] = [];
+
+openAssignModal(lead:any){
+
+this.selectedLead = lead;
+this.showAssignModal = true;
+
+this.loadEmployees();
+
+}
+closeAssignModal(){
+
+this.showAssignModal = false;
+this.selectedEmployeeId = null;
+
+}
+loadEmployees(){
+
+this.sellerService.getEmployees()
+.subscribe((res:any)=>{
+
+this.employees = res;
+
+})
+
+}
+
+assignLead(){
+
+if(!this.selectedEmployeeId) return;
+
+const payload = {
+// leadId: this.selectedEmployeeId.leadId,
+employeeId: this.selectedEmployeeId
+}
+
+this.sellerService.assignLead(payload)
+.subscribe(()=>{
+
+alert("Lead assigned successfully");
+
+this.closeAssignModal();
+
+})
+
+}
 
 }

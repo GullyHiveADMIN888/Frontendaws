@@ -34,8 +34,6 @@ export const routes: Routes = [
   //  Business providers
   {
     path: 'business',
-   // canActivate: [authGuard],
-   // data: { roles: ['Seller'] },
    loadChildren: () =>
     import('./business/business.module').then(m => m.BusinessModule)
   },
@@ -50,6 +48,13 @@ export const routes: Routes = [
         .then(m => m.CustomerModule)
   },
 
+  {
+  path: 'business-user',
+  canActivate: [authGuard],
+  loadChildren: () =>
+    import('./business-user/business-user.module')
+      .then(m => m.BusinessUserModule)
+},
 
   { path: '**', redirectTo: '' }
 // this path redirect to home page if the url is not get 

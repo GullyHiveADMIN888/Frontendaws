@@ -1,6 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
-import { SellerService,  ProviderService, ProviderServicesResponse } from '../business.service';
+import { BusinessUserService,  ProviderService, ProviderServicesResponse } from '../business-user.service';
 
 
 @Component({
@@ -14,7 +14,7 @@ export class DashboardComponent implements OnInit {
   // UI state properties
   initialLoading = true;// For modal loading state
 
-  constructor(private sellerService: SellerService) {}
+  constructor(private sellerService: BusinessUserService) {}
 
 totalLeads = 0;
 totalResponses = 0;
@@ -378,45 +378,7 @@ onCityChange(cityId: number) {
   });
 }
 
-// openEditServices() {
-//   if (!this.sellerId) return;
 
-//   this.sellerService.getProviderServices(this.sellerId).subscribe({
-//     next: (data) => {
-//        console.log("Full provider services data:", data);
-//       // 1️⃣ Load services, categories, cities
-//       this.services = data.providerServices ?? [];
-//       this.parentCategories = data.categories ?? [];
-//       this.cities = data.cities ?? [];
-
-      
-//       if (data.serviceAreas && data.serviceAreas.length > 0) {
-
-//   const firstCity = data.serviceAreas[0].cityId;
-
-//   this.coverageArea.cityId = firstCity;
-
-//   this.coverageArea.areaIds = data.serviceAreas.map(a => a.areaId);
-
-//   this.onCityChange(firstCity);
-// }
-
-//       // 4️⃣ Preselect first service category/subcategories
-//       if (this.services.length > 0) {
-//         const firstService = this.services[0];
-//         this.editCategoryId = firstService.categoryId;
-//         this.editSubCategoryIds = [...firstService.subCategoryIds];
-
-//         this.sellerService.getSubCategories(this.editCategoryId)
-//           .subscribe(res => this.subCategories = res);
-//       }
-
-//       // Show modal
-//       this.showServicesModal = true;
-//     },
-//     error: err => console.error(err)
-//   });
-// }
 openEditServices() {
   if (!this.sellerId) return;
 

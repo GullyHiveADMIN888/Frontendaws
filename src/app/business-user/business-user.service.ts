@@ -212,8 +212,8 @@ export interface WalletTransaction {
 @Injectable({
   providedIn: 'root'
 })
-export class SellerService {
-  private apiUrl = `${environment.apiBaseUrl}/business`;
+export class BusinessUserService {
+  private apiUrl = `${environment.apiBaseUrl}/business-user`;
 
   // BehaviorSubject will store sellerId and emit it to subscribers
   private sellerIdSubject = new BehaviorSubject<number | null>(null);
@@ -520,16 +520,6 @@ updateLegalIdentity(providerId: number, formData: FormData) {
   return this.http.get(
     `${this.apiUrl}/business-users`
   );
-}
-
-
-//lead Assignments
-assignLead(data:any){
-return this.http.post('/api/leads/assign',data);
-}
-
-getEmployees(){
-return this.http.get('/api/business/employees');
 }
 
 }

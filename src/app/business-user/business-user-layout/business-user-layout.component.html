@@ -9,26 +9,26 @@
   </a>
 
   <div class="hidden md:flex gap-8">
-    <a routerLink="/business" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
+    <a routerLink="/business-user" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
       [routerLinkActiveOptions]="{ exact: true }" class="text-gray-600 font-medium pb-1">
       Dashboard
     </a>
 
 
-    <a routerLink="/business/leads" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
+    <a routerLink="/business-user/leads" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
     class="text-gray-600 font-medium pb-1">Leads</a>
   @if (sellerId) {
-    <a [routerLink]="['/business/responses', sellerId]"
+    <a [routerLink]="['/business-user/responses', sellerId]"
       routerLinkActive="text-orange-600 border-b-2 border-orange-600" class="text-gray-600 font-medium pb-1">
       Responses
     </a>
   }
 
 
-  <a routerLink="/business/settings" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
+  <a routerLink="/business-user/settings" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
   class="text-gray-600 font-medium pb-1">Settings</a>
 
-  <a routerLink="/business/help" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
+  <a routerLink="/business-user/help" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
   class="text-gray-600 font-medium pb-1">Help</a>
 </div>
 
@@ -51,21 +51,21 @@
     <div class="fixed inset-0 z-10" (click)="toggleUserMenu()"></div>
     <div class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-20">
       <div class="px-4 py-3 border-b border-gray-200">
-        <p class="text-sm font-semibold text-gray-900">{{ user?.name || 'Business' }}</p>
-        <p class="text-xs text-gray-500">{{ user?.email || 'business@gmail.com' }}</p>
+        <p class="text-sm font-semibold text-gray-900">{{ user?.name || 'business-User' }}</p>
+        <p class="text-xs text-gray-500">{{ user?.email || 'businessuser@gmail.com' }}</p>
       </div>
-      <a [routerLink]="['/business/sharableProfile', sellerId]"
+      <a [routerLink]="['/business-user/sharableProfile', sellerId]"
         class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
         <i class="ri-user-line mr-3 text-gray-400"></i> View Public Profile
       </a>
-      <a routerLink="/business/settings" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+      <a routerLink="/business-user/settings" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
         <i class="ri-settings-3-line mr-3 text-gray-400"></i> Settings
       </a>
       <a routerLink="/" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
         <i class="ri-arrow-left-right-line mr-3 text-gray-400"></i> Switch to Buyer
       </a>
     @if (sellerId) {
-      <a [routerLink]="['/business/refer', sellerId]"
+      <a [routerLink]="['/business-user/refer', sellerId]"
         class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
         <i class="ri-gift-line mr-3 text-gray-400"></i> Refer & Earn
       </a>
