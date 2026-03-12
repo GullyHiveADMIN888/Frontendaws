@@ -1,0 +1,35 @@
+<div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-6 mb-8 text-white">
+  <div class="flex items-start justify-between">
+    <div class="flex-1">
+      <h3 class="text-xl font-bold mb-2">
+        Complete Your Profile
+      </h3>
+
+      <p class="text-orange-100 mb-4">
+        Your profile is {{ completionPercentage }}% complete.
+        Add more details to get better leads!
+      </p>
+
+      <div class="w-full bg-orange-400 rounded-full h-2 mb-4">
+        <div
+          class="bg-white rounded-full h-2 transition-all"
+          [style.width.%]="completionPercentage"
+        ></div>
+      </div>
+
+      <a
+        [routerLink]="['/seller/completeProfile', sellerId]" 
+        class="inline-flex items-center px-4 py-2 bg-white text-orange-600 rounded-lg font-medium hover:bg-orange-50 transition-colors whitespace-nowrap"
+      >
+        Complete Profile
+        <i class="ri-arrow-right-line ml-2"></i>
+      </a>
+    </div>
+
+    <div class="hidden md:block ml-6">
+      <div class="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center">
+        <i class="ri-user-star-line text-5xl"></i>
+      </div>
+    </div>
+  </div>
+</div>

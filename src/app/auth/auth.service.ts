@@ -87,12 +87,17 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
   //   this.router.navigate([routes[role] ?? '/login']);
   // }
 
-  redirectByRole(role: string, providerType?: string | null) {
+  redirectByRole(role: string, providerType?: string | null,  businessUserId?: boolean) {
   const routes: Record<string, string> = {
     Admin: '/admin',
     SuperAdmin: '/admin',
     Buyer: '/buyer'
   };
+  // ⭐ Business staff dashboard
+  if (businessUserId) {
+    this.router.navigate(['/business-user']);
+    return;
+  }
 
   // Special case for Seller
   if (role === 'Seller') {

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-step3-professional-details',
+    standalone: true,
     imports: [FormsModule],
     templateUrl: './step3-professional-details.component.html'
 })

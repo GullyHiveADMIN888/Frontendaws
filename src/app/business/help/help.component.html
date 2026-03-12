@@ -1,0 +1,89 @@
+
+<!-- PAGE CONTENT -->
+<div class="max-w-7xl mx-auto px-4 py-8">
+
+  <h1 class="text-3xl font-bold mb-2">Help Center</h1>
+  <p class="text-gray-600 mb-8">Find answers and get support</p>
+
+  <!-- SEARCH -->
+  <!-- [(ngModel)]="searchQuery" -->
+  <div class="bg-white p-6 border rounded-lg mb-10">
+    <div class="relative">
+      <i class="ri-search-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+      <!-- <input
+
+      placeholder="Search for help articles..."
+      class="w-full pl-12 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"
+      /> -->
+      <input
+        [(ngModel)]="searchQuery"
+        (input)="applySearch()"
+        placeholder="Search for help articles..."
+        class="w-full pl-12 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"
+        />
+
+      </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      @for (c of helpCategories; track c) {
+        <div
+          class="bg-white p-6 border rounded-lg hover:shadow-lg transition cursor-pointer">
+          <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-lg flex items-center justify-center mb-4">
+            <i [class]="c.icon + ' text-2xl'"></i>
+          </div>
+          <h3 class="font-semibold">{{ c.title }}</h3>
+          <p class="text-sm text-gray-600 mb-2">{{ c.description }}</p>
+          <p class="text-xs text-gray-500">{{ c.articles }} articles</p>
+        </div>
+      }
+    </div>
+
+
+
+    <!-- FAQ -->
+    <div class="space-y-4 mb-12">
+      @for (faq of faqs; track faq; let i = $index) {
+        <div
+          class="bg-white border rounded-lg overflow-hidden">
+          <button
+            (click)="toggleFaq(i)"
+            class="w-full px-6 py-4 flex justify-between items-center hover:bg-gray-50">
+            <span class="font-semibold">{{ faq.question }}</span>
+            <i class="ri-arrow-down-s-line"
+            [ngClass]="{ 'rotate-180': expandedFaq === i }"></i>
+          </button>
+          @if (expandedFaq === i) {
+            <div
+              class="px-6 py-4 bg-gray-50 border-t">
+              {{ faq.answer }}
+            </div>
+          }
+        </div>
+      }
+
+
+      <!-- 👇 ADD THIS LINE HERE -->
+      @if (faqs.length === 0) {
+        <div
+          class="text-center text-gray-500 py-6">
+          No help articles found 😕
+        </div>
+      }
+
+    </div>
+
+
+
+    <!-- CONTACT -->
+    <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-8 text-white">
+      <h2 class="text-2xl font-bold mb-2">Still need help?</h2>
+      <p class="mb-4">Our support team is here for you</p>
+      <div class="flex gap-4">
+        <button class="bg-white text-orange-600 px-6 py-3 rounded-lg">Email Support</button>
+        <button class="bg-orange-700 px-6 py-3 rounded-lg">Live Chat</button>
+      </div>
+    </div>
+
+  </div>

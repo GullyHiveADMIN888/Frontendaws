@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment.prod';
 
 @Component({
     selector: 'app-sharable-profile',
+    standalone: true,
     imports: [CommonModule, RouterModule],
     templateUrl: './sharable-profile.component.html'
 })
