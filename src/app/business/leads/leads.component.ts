@@ -68,6 +68,7 @@ export class LeadsComponent implements OnInit {
 
           return {
             ...l,
+            offerStatus: l.offerStatus ?? 'offered',   // ✅ IMPORTANT
             description: l.description || 'No description provided',
             location: l.location || 'N/A',
             budget:
@@ -213,12 +214,6 @@ export class LeadsComponent implements OnInit {
   }
 
 
-
-
-
-
-
-
   showConfirmModal = false;
 
   // Open the confirmation modal
@@ -232,47 +227,89 @@ export class LeadsComponent implements OnInit {
     this.showConfirmModal = false;
   }
 
-  confirmBuyLead() {
-    const lead = this.selectedLead;
-    if (!lead) return;
+  // confirmBuyLead() {
+  //   const lead = this.selectedLead;
+  //   if (!lead) return;
 
-    this.sellerService.buyLead(lead.leadId).subscribe({
-      next: (res: any) => {
-        // Mark as purchased locally
-        lead.isPurchased = true;
-        lead.leadPrice = `₹${res.pplPrice}`;
-         // ✅ ADD THIS LINE
-         lead.unlockedCount = (lead.unlockedCount ?? 0) + 1;
+  //   this.sellerService.buyLead(lead.leadId).subscribe({
+  //     next: (res: any) => {
+  //       // Mark as purchased locally
+  //       lead.isPurchased = true;
+  //       lead.leadPrice = `₹${res.pplPrice}`;
+  //       // // ✅ ADD THIS LINE
+  //      //  lead.unlockedCount = (lead.unlockedCount ?? 0) + 1;
 
   // // ✅ update values from backend
   // lead.unlockedCount = res.unlockedCount ?? lead.unlockedCount;
   // lead.committedCount = res.committedCount ?? lead.committedCount;
   // lead.offerStatus = res.offerStatus ?? lead.offerStatus;
 
-  // trigger UI refresh
-  this.leads = [...this.leads];
-        // ✅ Close modal
-        this.showPaymentModal = false;
-        this.showConfirmModal = false;
-        this.showSendQuoteModal = true;
-        alert(`Lead purchased successfully for ₹${res.pplPrice}`);
-      },
+  // // trigger UI refresh
+  // this.leads = [...this.leads];
+  //       // ✅ Close modal
+  //       this.showPaymentModal = false;
+  //       this.showConfirmModal = false;
+  //       this.showSendQuoteModal = true;
+  //       alert(`Lead purchased successfully for ₹${res.pplPrice}`);
+  //     },
 
-      error: (err) => {
-        console.error('Failed to buy lead', err);
+  //     error: (err) => {
+  //       console.error('Failed to buy lead', err);
 
-        // ✅ Show backend message if available
-        const message =
-          err?.error?.message ||
-          'Failed to purchase lead. Please try again.';
+  //       // ✅ Show backend message if available
+  //       const message =
+  //         err?.error?.message ||
+  //         'Failed to purchase lead. Please try again.';
 
-        alert(message);
-        this.showConfirmModal = false;
-      }
-    });
-  }
+  //       alert(message);
+  //       this.showConfirmModal = false;
+  //     }
+  //   });
+  // }
+
+confirmBuyLead() {
+  const lead = this.selectedLead;
+  if (!lead) return;
+
+  this.sellerService.buyLead(lead.leadId).subscribe({
+    next: (res: any) => {
+
+       console.log("BUY LEAD API RESPONSE:", res);   // 👈 ADD THIS
 
 
+      lead.isPurchased = true;
+      lead.leadPrice = `₹${res.pplPrice}`;
+
+      // update values dynamically from backend
+      lead.unlockedCount = res.unlockedCount ?? lead.unlockedCount;
+      lead.committedCount = res.committedCount ?? lead.committedCount;
+      lead.offerStatus = res.offerStatus ?? lead.offerStatus;
+
+      // trigger UI refresh
+      this.leads = [...this.leads];
+
+      // ✅ IMPORTANT
+      this.updatePagination();
+
+      this.showPaymentModal = false;
+      this.showConfirmModal = false;
+      this.showSendQuoteModal = true;
+
+      alert(`Lead purchased successfully for ₹${res.pplPrice}`);
+    },
+
+    error: (err) => {
+      console.error('Failed to buy lead', err);
+
+      const message =
+        err?.error?.message ||
+        'Failed to purchase lead. Please try again.';
+
+      alert(message);
+      this.showConfirmModal = false;
+    }
+  });
+}
 
 
   
@@ -378,6 +415,7 @@ sendQuote() {
 showAssignModal = false;
 selectedEmployeeId:number | null = null;
 employees:any[] = [];
+selectedEmployee:any = null;
 
 openAssignModal(lead:any){
 
@@ -388,39 +426,54 @@ this.loadEmployees();
 
 }
 closeAssignModal(){
+  this.showAssignModal = false;
 
-this.showAssignModal = false;
-this.selectedEmployeeId = null;
+  // reset dropdown selection
+  this.selectedEmployeeId = null;
+
+  // reset selected employee details
+  this.selectedEmployee = null;
+
+  // reset selected lead
+  this.selectedLead = null;
+
+  // optional: clear employee list
+  this.employees = [];
+
 
 }
 loadEmployees(){
+  this.sellerService.getBusinessUsers().subscribe((res:any)=>{
+    console.log("EMPLOYEES:", res);
+    this.employees = res;
+  })
+}
+onEmployeeChange(){
 
-this.sellerService.getEmployees()
-.subscribe((res:any)=>{
+  this.selectedEmployee = this.employees.find(
+    e => e.id == this.selectedEmployeeId
+  );
 
-this.employees = res;
-
-})
+  console.log("Selected Employee:", this.selectedEmployee);
 
 }
-
 assignLead(){
 
-if(!this.selectedEmployeeId) return;
+  if(!this.selectedEmployeeId) return;
 
-const payload = {
-// leadId: this.selectedEmployeeId.leadId,
-employeeId: this.selectedEmployeeId
-}
+  const payload = {
+    leadId: this.selectedLead!.leadId,
+    employeeId: this.selectedEmployeeId
+  }
 
-this.sellerService.assignLead(payload)
-.subscribe(()=>{
+  this.sellerService.assignLead(payload)
+  .subscribe(()=>{
 
-alert("Lead assigned successfully");
+    alert("Lead assigned successfully");
 
-this.closeAssignModal();
+    this.closeAssignModal();
 
-})
+  })
 
 }
 

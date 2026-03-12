@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
-//  import { environment } from '../../environments/environment.prod';
-  import { environment } from '../../environments/environment';
+  import { environment } from '../../environments/environment.prod';
+ // import { environment } from '../../environments/environment';
 // --- Dashboard & Stats ---
 export interface SellerStats {
   totalLeads: number;
@@ -517,19 +517,17 @@ updateLegalIdentity(providerId: number, formData: FormData) {
   return this.http.post(`${this.apiUrl}/business-users`, data);
 }
   getBusinessUsers() {
-  return this.http.get(
-    `${this.apiUrl}/business-users`
-  );
+  return this.http.get(`${this.apiUrl}/business-users`);
 }
 
 
 //lead Assignments
 assignLead(data:any){
-return this.http.post('/api/leads/assign',data);
+return this.http.post(`${this.apiUrl}/assignLeadToBusinessuser`,data);
 }
 
-getEmployees(){
-return this.http.get('/api/business/employees');
-}
+// getEmployees(){
+// return this.http.get('/api/business/employees');
+// }
 
 }

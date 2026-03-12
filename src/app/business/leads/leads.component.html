@@ -51,7 +51,7 @@
               </h3>
               <div class="flex gap-2 flex-wrap">
                 <!-- STATUS -->
-                <span class="flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full shadow-sm" [ngClass]="{
+                <!-- <span class="flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full shadow-sm" [ngClass]="{
                 'bg-gradient-to-r from-green-100 to-green-200 text-green-800': lead.status === 'active',
                 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800': lead.status === 'pending',
                 'bg-gradient-to-r from-red-100 to-red-200 text-red-800': lead.status === 'expired',
@@ -63,6 +63,19 @@
                   'bg-red-600': lead.status === 'expired'
                 }"></span>
                   {{ lead.status || 'Unknown' | titlecase }}
+                </span> -->
+                 <span class="flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full shadow-sm" [ngClass]="{
+                'bg-gradient-to-r from-green-100 to-green-200 text-green-800': lead.offerStatus === 'active',
+                'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800': lead.offerStatus === 'pending',
+                'bg-gradient-to-r from-red-100 to-red-200 text-red-800': lead.offerStatus === 'expired',
+                'bg-gray-100 text-gray-700': !lead.offerStatus
+              }">
+                  <span class="w-2 h-2 rounded-full" [ngClass]="{
+                  'bg-green-600': lead.offerStatus === 'active',
+                  'bg-yellow-500': lead.offerStatus === 'pending',
+                  'bg-red-600': lead.offerStatus === 'expired'
+                }"></span>
+                  {{ lead.offerStatus || 'Unknown' | titlecase }}
                 </span>
                 <!-- LEAD TYPE -->
                 <span class="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full border" [ngClass]="{
@@ -615,42 +628,176 @@
   </div>
 }
 
+
+
+
 @if(showAssignModal){
 
-<div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+<div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4 py-6">
 
-  <div class="bg-white w-[400px] rounded-xl shadow-xl p-6">
+  <div class="bg-white w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-xl shadow-xl p-5 sm:p-6">
 
-    <h3 class="text-lg font-semibold mb-4">
+    <!-- Header -->
+    <h3 class="text-lg sm:text-xl font-semibold mb-4 text-gray-800">
       Assign Lead
     </h3>
 
+    <!-- Service Header -->
+    @if(selectedLead){
+
+    <div class="mb-4 p-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow">
+
+      <div class="flex items-center justify-between">
+
+        <div class="flex items-center gap-3">
+
+          <div class="h-10 w-10 flex items-center justify-center bg-white/20 rounded-lg text-lg">
+            🛠
+          </div>
+
+          <div>
+
+            <p class="text-xs uppercase opacity-80">
+              Service
+            </p>
+
+            <h4 class="text-lg font-semibold">
+              {{selectedLead.serviceName}}
+            </h4>
+
+            <p class="text-sm opacity-90">
+              {{selectedLead.serviceSubCategoryName}}
+            </p>
+
+          </div>
+
+        </div>
+
+        <div class="bg-white/20 px-3 py-1 rounded-full text-xs">
+          Lead
+        </div>
+
+      </div>
+
+    </div>
+
+    }
+
+    <!-- Lead Details -->
+    @if(selectedLead){
+
+    <div class="border rounded-xl p-4 bg-orange-50 mb-4">
+
+      <h4 class="font-semibold text-gray-800 mb-3">
+        Lead Details
+      </h4>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700">
+
+        <p><strong>Description:</strong> {{selectedLead.description}}</p>
+
+        <p><strong>Location:</strong> {{selectedLead.location}}</p>
+
+        <p><strong>Budget:</strong> {{selectedLead.budget}}</p>
+
+        <p><strong>Area:</strong> {{selectedLead.areaName}}</p>
+
+        <p class="sm:col-span-2"><strong>Time:</strong> {{selectedLead.time}}</p>
+
+      </div>
+
+    </div>
+
+    }
+
+    <!-- Employee Dropdown -->
+    <label class="text-sm font-medium text-gray-600 mb-1 block">
+      Select Employee
+    </label>
+
     <select
       [(ngModel)]="selectedEmployeeId"
-      class="w-full border p-2 rounded">
+      (change)="onEmployeeChange()"
+      class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-orange-500">
 
-      <option value="">Select Employee</option>
+      <option [ngValue]="null">Select Employee</option>
 
       @for(emp of employees; track emp){
-        <option [value]="emp.id">
-          {{emp.displayName}}
+        <option [ngValue]="emp.id">
+          {{emp.name}}
         </option>
       }
 
     </select>
 
-    <div class="flex justify-end gap-3 mt-5">
+    <!-- Employee Details -->
+    @if(selectedEmployee){
+
+    <div class="mt-4 border rounded-xl p-4 bg-gray-50">
+
+      <div class="flex items-center gap-3 mb-3">
+
+        <div class="h-10 w-10 flex items-center justify-center rounded-full bg-orange-100 text-orange-600 font-semibold">
+          {{selectedEmployee.name?.charAt(0)}}
+        </div>
+
+        <div>
+
+          <p class="font-medium text-gray-800">
+            {{selectedEmployee.name}}
+          </p>
+
+          <p class="text-xs text-gray-500">
+            {{selectedEmployee.role}}
+          </p>
+
+        </div>
+
+      </div>
+
+      <div class="text-sm text-gray-600 space-y-1">
+
+        <p><strong>Email:</strong> {{selectedEmployee.email}}</p>
+
+        <p><strong>Phone:</strong> {{selectedEmployee.phone}}</p>
+
+        <p>
+          <strong>Status:</strong>
+
+          <span
+            class="px-2 py-0.5 rounded text-xs"
+            [ngClass]="selectedEmployee.status === 'active'
+            ? 'bg-green-100 text-green-700'
+            : 'bg-gray-200 text-gray-600'">
+
+            {{selectedEmployee.status}}
+
+          </span>
+
+        </p>
+
+        <p><strong>Aadhaar:</strong> {{selectedEmployee.aadhaar_number}}</p>
+
+      </div>
+
+    </div>
+
+    }
+
+    <!-- Buttons -->
+    <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6">
 
       <button
         (click)="closeAssignModal()"
-        class="px-4 py-2 border rounded">
+        class="w-full sm:w-auto px-4 py-2 border rounded-lg hover:bg-gray-100">
         Cancel
       </button>
 
       <button
         (click)="assignLead()"
-        class="px-4 py-2 bg-orange-600 text-white rounded">
-        Assign
+        [disabled]="!selectedEmployeeId"
+        class="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white rounded-lg disabled:opacity-50 hover:bg-orange-700">
+        Assign Lead
       </button>
 
     </div>
