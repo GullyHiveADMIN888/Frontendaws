@@ -1,16 +1,37 @@
+// import { Component, EventEmitter, Input, Output } from '@angular/core';
+
+// @Component({
+//   selector: 'app-step3-msme-documents',
+//   templateUrl: './step3-msme-documents.component.html',
+//   styleUrls: ['./step3-msme-documents.component.css']
+// })
+// export class Step3MsmeDocumentsComponent {
+//   @Input() formData: any = {};  // make sure formData is initialized
+//   @Output() next = new EventEmitter<void>();
+//   @Output() back = new EventEmitter<void>();
+
+//   // Handle file selection safely
+//   onFileChange(event: Event, key: string) {
+//     const input = event.target as HTMLInputElement;
+//     if (input.files && input.files.length > 0) {
+//       this.formData[key] = input.files[0];
+//     }
+//   }
+// }
+
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 
 import { AuthService } from '../auth.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-    selector: 'app-step3-professional-details',
+    selector: 'app-step3-msme-documents',
     standalone: true,
     imports: [FormsModule],
-    templateUrl: './step3-professional-details.component.html'
+    templateUrl: './step3-msme-documents.component.html'
 })
-export class Step3ProfessionalDetailsComponent implements OnInit {
- @Input() errors: any = {};
+export class Step3MsmeDocumentsComponent implements OnInit {
+  @Input() errors: any;
   @Input() formData: any;
   @Input() isSubmitting = false;
 

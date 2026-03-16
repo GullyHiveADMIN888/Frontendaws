@@ -1,3 +1,23 @@
+// import { Component, Input, Output, EventEmitter } from '@angular/core';
+// import { CommonModule } from '@angular/common';
+// import { FormsModule } from '@angular/forms';
+
+// @Component({
+//   selector: 'app-step2-msme-business-details',
+//   standalone: true,
+//   imports: [CommonModule, FormsModule],
+//   templateUrl: './step2-msme-business-details.component.html',
+//   styleUrls: ['./step2-msme-business-details.component.css']
+// })
+// export class Step2MsmeBusinessDetailsComponent {
+
+//   @Input() formData: any;   // receive data from parent
+
+//   @Output() next = new EventEmitter<void>(); // go to next step
+//   @Output() back = new EventEmitter<void>(); // go to previous step
+
+// }
+
 import { Component, Input, Output, EventEmitter, OnInit , Inject} from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
@@ -10,13 +30,13 @@ import {  HostListener } from '@angular/core';
 
 
 @Component({
-    selector: 'app-step2-legal-identity',
+    selector: 'app-step2-msme-business-details',
     standalone: true,
     imports: [FormsModule],
-    templateUrl: './step2-legal-identity.component.html'
+    templateUrl: './step2-msme-business-details.component.html'
 })
-export class Step2LegalIdentityComponent implements OnInit {
-  @Input() errors: any;
+export class Step2MsmeBusinessDetailsComponent implements OnInit {
+ @Input() errors: any = {};
   @Input() formData: any;
 
   @Output() inputChange = new EventEmitter<{ field: string; value: string | File | null }>();

@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
- // import { environment } from '../../environments/environment'
-  import { environment } from '../../environments/environment.prod';
+  import { environment } from '../../environments/environment'
+ // import { environment } from '../../environments/environment.prod';
 
 
 
@@ -102,7 +102,7 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
   // Special case for Seller
   if (role === 'Seller') {
 
-    if (providerType === 'business') {
+    if (providerType === 'msme') {
       this.router.navigate(['/business']);
       return;
     }

@@ -18,9 +18,31 @@
     </label>
     <input type="text" [value]="formData.businessName" (input)="onInput('businessName', $any($event.target).value)"
       class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500" maxlength="50" />
-    @if (errors.businessName) {
-    <p class="text-red-500 text-sm">{{ errors.businessName }}</p>
+    @if (errors?.businessName) {
+    <p class="text-red-500 text-sm">{{ errors?.businessName }}</p>
     }
+  </div>
+
+
+ <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div>
+      <label class="block text-sm font-medium mb-2">
+        Company Name <span class="text-orange-600">*</span>
+      </label>
+      <input type="text" placeholder="Line 1" [value]="formData.line1 || ''"
+        (input)="onInput('Company Name', $any($event.target).value)" class="w-full px-4 py-3 border rounded-lg"
+        maxlength="50" />
+      @if (errors?.line1) {
+      <p class="text-red-500 text-sm mt-1">{{ errors?.line1 }}</p>
+      }
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-2">Legal Company Name</label>
+      <input type="text" placeholder="Legal Company Name" [value]="formData.line2 || ''"
+        (input)="onInput('line2', $any($event.target).value)" class="w-full px-4 py-3 border rounded-lg"
+        maxlength="50" />
+    </div>
   </div>
 
   <!-- Registration -->
@@ -29,7 +51,7 @@
     <div>
       <label class="block text-sm font-medium mb-2">Identity Proof Type *</label>
 
-      <select [(ngModel)]="formData.registrationType" name="registrationType"
+      <!-- <select [(ngModel)]="formData.registrationType" name="registrationType"
         class="w-full px-4 py-3 border rounded-lg bg-white">
 
         <option [ngValue]="null">Select</option>
@@ -39,10 +61,19 @@
           {{ t }}
         </option>
         }
-      </select>
+      </select> -->
+      <select [(ngModel)]="formData.registrationType" name="registrationType"
+        class="w-full px-4 py-3 border rounded-lg bg-white">
+        <option [ngValue]="null">Select</option>
 
-      @if (errors.registrationType) {
-      <p class="text-red-500 text-sm">{{ errors.registrationType }}</p>
+        @for (t of registrationTypes; track t) {
+        <option [ngValue]="t">
+          {{ t }}
+        </option>
+        }
+      </select>
+      @if (errors?.registrationType) {
+      <p class="text-red-500 text-sm">{{ errors?.registrationType }}</p>
       }
     </div>
 
@@ -51,8 +82,8 @@
       <input type="text" [value]="formData.registrationNumber"
         (input)="onInput('registrationNumber', $any($event.target).value)" class="w-full px-4 py-3 border rounded-lg"
         maxlength="15" />
-      @if (errors.registrationNumber) {
-      <p class="text-red-500 text-sm">{{ errors.registrationNumber }}</p>
+      @if (errors?.registrationNumber) {
+      <p class="text-red-500 text-sm">{{ errors?.registrationNumber }}</p>
       }
     </div>
 
@@ -90,8 +121,8 @@
         }
       </label>
 
-      @if (errors.registrationDocument) {
-      <p class="text-red-500 text-sm">{{ errors.registrationDocument }}</p>
+      @if (errors?.registrationDocument) {
+      <p class="text-red-500 text-sm">{{ errors?.registrationDocument }}</p>
       }
     </div>
 
@@ -121,8 +152,8 @@
         }
       </label>
 
-      @if (errors.addressProof) {
-      <p class="text-red-500 text-sm">{{ errors.addressProof }}</p>
+      @if (errors?.addressProof) {
+      <p class="text-red-500 text-sm">{{ errors?.addressProof }}</p>
       }
     </div>
 
@@ -152,8 +183,8 @@
       <input type="text" placeholder="Line 1" [value]="formData.line1 || ''"
         (input)="onInput('line1', $any($event.target).value)" class="w-full px-4 py-3 border rounded-lg"
         maxlength="50" />
-      @if (errors.line1) {
-      <p class="text-red-500 text-sm mt-1">{{ errors.line1 }}</p>
+      @if (errors?.line1) {
+      <p class="text-red-500 text-sm mt-1">{{ errors?.line1 }}</p>
       }
     </div>
 
@@ -183,7 +214,7 @@
 
 
       @if (errors?.stateId) {
-      <p class="text-red-500 text-sm mt-1">{{ errors.stateId }}</p>
+      <p class="text-red-500 text-sm mt-1">{{ errors?.stateId }}</p>
       }
     </div>
 
@@ -204,7 +235,7 @@
       </select>
 
       @if (errors?.city) {
-      <p class="text-red-500 text-sm mt-1">{{ errors.city }}</p>
+      <p class="text-red-500 text-sm mt-1">{{ errors?.city }}</p>
       }
     </div>
   </div>
@@ -223,8 +254,8 @@
         </option>
         }
       </select>
-      @if (errors.areaId) {
-      <p class="text-red-500 text-sm mt-1">{{ errors.areaId }}</p>
+      @if (errors?.areaId) {
+      <p class="text-red-500 text-sm mt-1">{{ errors?.areaId }}</p>
       }
     </div>
 
@@ -245,8 +276,8 @@
       <label class="block text-sm font-medium mb-2">PIN Code *</label>
       <input type="text" placeholder="PIN Code" maxlength="6" [value]="formData.pinCode"
         (input)="onPinCodeInput($event)" class="w-full px-4 py-3 border rounded-lg" />
-      @if (errors.pinCode) {
-      <p class="text-red-500 text-sm mt-1">{{ errors.pinCode }}</p>
+      @if (errors?.pinCode) {
+      <p class="text-red-500 text-sm mt-1">{{ errors?.pinCode }}</p>
       }
     </div>
 
@@ -286,11 +317,12 @@
       <div class="absolute z-10 mt-2 w-full bg-white border rounded-lg shadow-lg max-h-72 overflow-y-auto">
         <!-- 🔍 Search Box -->
         <div class="p-3 border-b sticky top-0 bg-white">
-            <input type="text" [(ngModel)]="searchText" placeholder="Search area..."
+          <input type="text" [(ngModel)]="searchText" placeholder="Search area..."
             class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
-          <input type="checkbox" [checked]="isAllSelected()" (change)="onSelectAll($event)" class="mt-4 ml-1 mr-3 w-4 h-4">
+          <input type="checkbox" [checked]="isAllSelected()" (change)="onSelectAll($event)"
+            class="mt-4 ml-1 mr-3 w-4 h-4">
           <label class="font-semibold text-orange-600">Entire City</label>
-        
+
         </div>
         <!-- Checkbox List -->
         @for (area of filteredAreas(); track area) {
@@ -312,7 +344,7 @@
       <!-- Error -->
       @if (errors?.selectedAreaIds) {
       <p class="text-red-500 text-sm mt-1">
-        {{ errors.selectedAreaIds }}
+        {{ errors?.selectedAreaIds }}
       </p>
       }
     </div>
