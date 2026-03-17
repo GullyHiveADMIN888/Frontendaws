@@ -81,6 +81,8 @@ export class RegisterComponent {
     professionalType: null,
     howToKnowId: null,
     howToKnowOther: '',
+    legalCompanyName: '',
+    CompanyName: '',
   };
 
   errors: any = {};
@@ -153,9 +155,24 @@ export class RegisterComponent {
   constructor(private service: AuthService) { }
 
 
-  submitForm() {
-   // if (!this.validateStep4()) return;
 
+
+
+submitForm() {
+
+  if (this.formData.providerType === 'INDIVIDUAL') {
+    this.submitIndividualRegistration();
+  }
+
+  if (this.formData.providerType === 'MSME' || this.formData.providerType === 'COMPANY') {
+    this.submitCompanyRegistration();
+  }
+
+}
+
+
+
+  submitIndividualRegistration() {
     this.isSubmitting = true;
 
     const formData = new FormData();
@@ -222,10 +239,6 @@ export class RegisterComponent {
     });
 
 
-
-
- 
-
     this.service.submitRegistration(formData).subscribe({
       next: (res: any) => {
         console.log('Backend response:', res);
@@ -249,7 +262,103 @@ export class RegisterComponent {
   }
 
 
+submitCompanyRegistration() {
 
+  this.isSubmitting = true;
+
+  const formData = new FormData();
+
+  formData.append('CompanyName', this.formData.companyName || '');
+  formData.append('LegalCompanyName', this.formData.legalCompanyName || '');
+
+     // Step 1
+  //  formData.append('FullName', this.formData.fullName || '');
+    const fullName = `${this.formData.firstName || ''} ${this.formData.lastName || ''}`.trim();
+
+  formData.append('FullName', fullName);
+    formData.append('Email', this.formData.email || '');
+    formData.append('Mobile', this.formData.mobile || '');
+    formData.append('ProfessionalType', this.formData.professionalType || '');
+
+
+    // ✅ Service Category IDs
+    formData.append('ServiceCategoryId', this.formData.serviceCategoryId?.toString() || '');
+    (this.formData.subCategoryIds || []).forEach((id: number) => {
+      formData.append('SubCategoryIds[]', id.toString());
+    });
+
+
+    // Step 2
+    formData.append('BusinessName', this.formData.businessName || '');
+    formData.append('RegistrationType', this.formData.registrationType || '');
+    formData.append('RegistrationNumber', this.formData.registrationNumber || '');
+
+    formData.append('Password', this.formData.password || '');
+    if (this.formData.registrationDocument) formData.append('RegistrationDocument', this.formData.registrationDocument);
+    if (this.formData.addressProof) formData.append('AddressProof', this.formData.addressProof);
+
+
+    formData.append('Line1', this.formData.line1 || '');
+    formData.append('Line2', this.formData.line2 || '');
+    // formData.append('Locality', this.formData.locality || '');
+    formData.append('AreaId', this.formData.areaId?.toString() || '');
+
+    formData.append('Landmark', this.formData.landmark || '');
+
+    formData.append('StateId', this.formData.stateId?.toString() || '');
+    formData.append('CityId', this.formData.cityId?.toString() || '');
+    formData.append('PinCode', this.formData.pinCode || '');
+
+    // Step 3
+    formData.append('SelfOverview', this.formData.selfOverview || '');
+    formData.append('SkillsBackground', this.formData.skillsBackground || '');
+    formData.append('Achievements', this.formData.achievements || '');
+    if (this.formData.profilePicture)
+      formData.append('ProfilePicture', this.formData.profilePicture);
+    // Convert selected area IDs into serviceAreas array
+    this.formData.serviceAreas = (this.formData.selectedAreaIds || []).map((id: number) => ({
+      areaId: id,
+      cityId: this.formData.cityId
+    }));
+
+    (this.formData.serviceAreas || []).forEach((area: any, index: number) => {
+      formData.append(`ServiceAreas[${index}].AreaId`, area.areaId.toString());
+      formData.append(`ServiceAreas[${index}].CityId`, area.cityId.toString());
+
+      formData.append('HowToKnowId', this.formData.howToKnowId?.toString() || '');
+
+      if (this.formData.howToKnowId === 6) {
+        formData.append('HowToKnowOther', this.formData.howToKnowOther || '');
+      }
+    });
+
+  this.service.submitCompanyRegistration(formData).subscribe({
+    next: (res:any) => this.handleSuccess(res),
+    error: (err) => this.handleError(err)
+  });
+
+}
+handleSuccess(res:any) {
+
+  if (res.userId) {
+
+    this.service.saveAuth(res.token, res.role, res.name, res.userId);
+
+    this.formData.userId = res.userId;
+
+    this.submitSuccess = true;
+
+    this.showVerificationModal = true;
+  }
+
+  this.isSubmitting = false;
+}
+
+handleError(err:any) {
+
+  console.error(err);
+  this.isSubmitting = false;
+}
 
   async openMobileVerification() {
     this.verificationType = 'mobile';

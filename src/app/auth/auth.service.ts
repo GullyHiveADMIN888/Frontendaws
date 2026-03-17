@@ -65,7 +65,9 @@ export class AuthService implements CanActivate {
 submitRegistration(formData: FormData) {
   return this.http.post(`${this.apiUrl}/register`, formData);
 }
-
+submitCompanyRegistration(formData: FormData) {
+  return this.http.post(`${this.apiUrl}/company-register`, formData);
+}
   // auth.service.ts
 saveAuth(token: string, role: string, name?: string, userId?: string) {
   localStorage.setItem('token', token);

@@ -1,24 +1,3 @@
-// import { Component, EventEmitter, Input, Output } from '@angular/core';
-
-// @Component({
-//   selector: 'app-step3-msme-documents',
-//   templateUrl: './step3-msme-documents.component.html',
-//   styleUrls: ['./step3-msme-documents.component.css']
-// })
-// export class Step3MsmeDocumentsComponent {
-//   @Input() formData: any = {};  // make sure formData is initialized
-//   @Output() next = new EventEmitter<void>();
-//   @Output() back = new EventEmitter<void>();
-
-//   // Handle file selection safely
-//   onFileChange(event: Event, key: string) {
-//     const input = event.target as HTMLInputElement;
-//     if (input.files && input.files.length > 0) {
-//       this.formData[key] = input.files[0];
-//     }
-//   }
-// }
-
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 
 import { AuthService } from '../auth.service';
@@ -64,18 +43,7 @@ export class Step3MsmeDocumentsComponent implements OnInit {
     this.inputChange.emit({ field, value });
   }
 
-  // onSelectHowKnow(event: any) {
-  //   const selectedId = Number(event.target.value);
-  //   this.onInput('howToKnowId', selectedId);
 
-  //   // Show "Other" textarea if OTHER_ID selected
-  //   this.showOtherInput = selectedId === this.OTHER_ID;
-
-  //   // Clear "Other" field if not OTHER_ID
-  //   if (!this.showOtherInput) {
-  //     this.onInput('howToKnowOther', '');
-  //   }
-  // }
 onHowToKnowChange(value: number | null) {
 
   this.formData.howToKnowId = value;

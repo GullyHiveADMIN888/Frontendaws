@@ -10,6 +10,7 @@ import { filter } from 'rxjs/operators';
 
 @Component({
     selector: 'app-seller-layout',
+    standalone: true,
     imports: [RouterOutlet, RouterModule],
     templateUrl: './seller-layout.component.html'
 })
