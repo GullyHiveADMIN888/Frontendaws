@@ -8,7 +8,7 @@ export interface Lead {
     timePreference?: string;
     scheduledStart?: string;
     scheduledEnd?: string;
-    isInstant: boolean;
+    // isInstant: boolean; // Removed in new schema
     leadQualityScore?: number;
     source: string;
     flowType: string;
@@ -56,7 +56,7 @@ export interface CreateLeadDto {
     timePreference?: string;
     scheduledStart?: string;
     scheduledEnd?: string;
-    isInstant: boolean;
+    // isInstant: boolean; // Removed in new schema
     source: string;
     flowType: string;
     categoryId?: number;
@@ -76,7 +76,7 @@ export interface UpdateLeadDto {
     timePreference?: string;
     scheduledStart?: string;
     scheduledEnd?: string;
-    isInstant: boolean;
+    // isInstant: boolean; // Removed in new schema
     source: string;
     flowType: string;
     confirmedStatus?: string | null;
