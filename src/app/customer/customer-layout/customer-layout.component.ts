@@ -10,6 +10,7 @@ import { environment } from '../../../environments/environment';
     selector: 'app-customer-layout',
     templateUrl: './customer-layout.component.html',
     styleUrls: ['./customer-layout.component.css'],
+    standalone: true,
     imports: [CommonModule, RouterModule]
 })
 export class CustomerLayoutComponent implements OnInit {

@@ -4,49 +4,37 @@
 
 
 
-    <!-- <a routerLink="/" class="text-2xl font-bold text-orange-600 font-poppins">
-    GULLYHIVE
-  </a> -->
   <a routerLink="/" class="flex items-center">
     <img src="assets/gali_logo.png" alt="GullyHive Logo" class="h-10 w-auto mr-2">
-    <!-- Optional: keep text next to logo -->
-    <!-- <span class="text-2xl font-bold text-orange-600 font-poppins">GULLYHIVE</span> -->
   </a>
 
   <div class="hidden md:flex gap-8">
-    <a routerLink="/seller" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
+    <a routerLink="/business-user" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
       [routerLinkActiveOptions]="{ exact: true }" class="text-gray-600 font-medium pb-1">
       Dashboard
     </a>
 
 
-    <a routerLink="/seller/leads" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
+    <a routerLink="/business-user/leads" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
     class="text-gray-600 font-medium pb-1">Leads</a>
-
-    <!-- <a [routerLink]="['/seller/responses', sellerId]"  routerLinkActive="text-orange-600 border-b-2 border-orange-600"
-  class="text-gray-600 font-medium pb-1">Responses</a> -->
   @if (sellerId) {
-    <a [routerLink]="['/seller/responses', sellerId]"
+    <a [routerLink]="['/business-user/responses', sellerId]"
       routerLinkActive="text-orange-600 border-b-2 border-orange-600" class="text-gray-600 font-medium pb-1">
       Responses
     </a>
   }
 
 
-  <a routerLink="/seller/settings" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
+  <a routerLink="/business-user/settings" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
   class="text-gray-600 font-medium pb-1">Settings</a>
 
-  <a routerLink="/seller/help" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
+  <a routerLink="/business-user/help" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
   class="text-gray-600 font-medium pb-1">Help</a>
 </div>
 
 <!-- User Menu -->
 <div class="relative">
   <button (click)="toggleUserMenu()" class="flex items-center space-x-3 focus:outline-none">
-    <!-- <div
-    class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-semibold">
-    {{ userInitials }}
-  </div> -->
   @if (user?.profilePictureUrl) {
     <img [src]="user?.profilePictureUrl" class="w-10 h-10 rounded-full object-cover" />
   } @else {
@@ -63,24 +51,21 @@
     <div class="fixed inset-0 z-10" (click)="toggleUserMenu()"></div>
     <div class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-20">
       <div class="px-4 py-3 border-b border-gray-200">
-        <p class="text-sm font-semibold text-gray-900">{{ user?.name || 'Seller' }}</p>
-        <p class="text-xs text-gray-500">{{ user?.email || 'seller@gmail.com' }}</p>
+        <p class="text-sm font-semibold text-gray-900">{{ user?.name || 'business-User' }}</p>
+        <p class="text-xs text-gray-500">{{ user?.email || 'businessuser@gmail.com' }}</p>
       </div>
-      <a [routerLink]="['/seller/sharableProfile', sellerId]"
+      <a [routerLink]="['/business-user/sharableProfile', sellerId]"
         class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
         <i class="ri-user-line mr-3 text-gray-400"></i> View Public Profile
       </a>
-      <a routerLink="/seller/settings" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+      <a routerLink="/business-user/settings" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
         <i class="ri-settings-3-line mr-3 text-gray-400"></i> Settings
       </a>
       <a routerLink="/" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
         <i class="ri-arrow-left-right-line mr-3 text-gray-400"></i> Switch to Buyer
       </a>
-      <!-- <a routerLink="/seller/refer" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-      <i class="ri-gift-line mr-3 text-gray-400"></i> Refer & Earn
-    </a> -->
     @if (sellerId) {
-      <a [routerLink]="['/seller/refer', sellerId]"
+      <a [routerLink]="['/business-user/refer', sellerId]"
         class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
         <i class="ri-gift-line mr-3 text-gray-400"></i> Refer & Earn
       </a>

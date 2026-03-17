@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
-// import { environment } from '../../environments/environment'
- import { environment } from '../../environments/environment.prod';
+ // import { environment } from '../../environments/environment'
+  import { environment } from '../../environments/environment.prod';
 
 
 
@@ -76,16 +76,44 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
 
 
 
-  redirectByRole(role: string) {
-    const routes: Record<string, string> = {
-      Admin: '/admin',
-      SuperAdmin: '/admin',
-      Buyer: '/buyer',
-      Seller: '/seller'
-    };
+  // redirectByRole(role: string) {
+  //   const routes: Record<string, string> = {
+  //     Admin: '/admin',
+  //     SuperAdmin: '/admin',
+  //     Buyer: '/buyer',
+  //     Seller: '/seller'
+  //   };
 
-    this.router.navigate([routes[role] ?? '/login']);
+  //   this.router.navigate([routes[role] ?? '/login']);
+  // }
+
+  redirectByRole(role: string, providerType?: string | null,  businessUserId?: boolean) {
+  const routes: Record<string, string> = {
+    Admin: '/admin',
+    SuperAdmin: '/admin',
+    Buyer: '/buyer'
+  };
+  // ⭐ Business staff dashboard
+  if (businessUserId) {
+    this.router.navigate(['/business-user']);
+    return;
   }
+
+  // Special case for Seller
+  if (role === 'Seller') {
+
+    if (providerType === 'business') {
+      this.router.navigate(['/business']);
+      return;
+    }
+
+    // default seller (individual)
+    this.router.navigate(['/seller']);
+    return;
+  }
+
+  this.router.navigate([routes[role] ?? '/login']);
+}
 
   logout() {
     localStorage.clear();

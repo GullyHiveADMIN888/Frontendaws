@@ -11,6 +11,7 @@ import {  HostListener } from '@angular/core';
 
 @Component({
     selector: 'app-step2-legal-identity',
+    standalone: true,
     imports: [FormsModule],
     templateUrl: './step2-legal-identity.component.html'
 })
