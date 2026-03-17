@@ -46,7 +46,7 @@ export class Step2MsmeBusinessDetailsComponent implements OnInit {
   regDocPreview = '';
   addressProofPreview = '';
 
-  registrationTypes = ['GST Registration','Aadhar Card','E-Shram Card','PAN Card','Udyam Registration'];
+  registrationTypes = ['GST Registration','PAN Card','Udyam Registration'];
  // role = ['Admin','Seller','Buyer'];
 
   states: any[] = [];
@@ -361,12 +361,12 @@ validateIdentityNumber() {
   }
 
   switch(type) {
-    case 'Aadhar Card':
-      if (!/^\d{12}$/.test(value)) {
-        this.errors.registrationNumber = 'Aadhaar number must be 12 digits.';
-        return false;
-      }
-      break;
+    // case 'Aadhar Card':
+    //   if (!/^\d{12}$/.test(value)) {
+    //     this.errors.registrationNumber = 'Aadhaar number must be 12 digits.';
+    //     return false;
+    //   }
+    //   break;
 
     case 'PAN Card':
       if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(value)) {
@@ -375,12 +375,12 @@ validateIdentityNumber() {
       }
       break;
 
-    case 'E-Shram Card':
-      if (!/^\d{15}$/.test(value)) {
-        this.errors.registrationNumber = 'E-Shram number must be 15 digits.';
-        return false;
-      }
-      break;
+    // case 'E-Shram Card':
+    //   if (!/^\d{15}$/.test(value)) {
+    //     this.errors.registrationNumber = 'E-Shram number must be 15 digits.';
+    //     return false;
+    //   }
+    //   break;
 
     case 'GST Registration':
       if (!/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/i.test(value)) {
@@ -410,6 +410,12 @@ validateStep3(): boolean {
 
   if (!this.formData.businessName?.length) {
     this.errors.businessName = 'Business name required';
+  }
+ if (!this.formData.companyName?.trim()) {
+    this.errors.companyName = 'Company Name is required';
+  }
+ if (!this.formData.legalCompanyName?.trim()) {
+    this.errors.legalCompanyName = 'Legal Company Name is required';
   }
 
   if (!this.formData.registrationType?.length) {

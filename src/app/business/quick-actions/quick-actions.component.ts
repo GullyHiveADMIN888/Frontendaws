@@ -34,6 +34,12 @@ export class QuickActionsComponent {
       icon: 'ri-user-line',
       link: '/business/users',
       color: 'bg-indigo-50 text-indigo-600'
+    },
+     {
+      title: 'Add Branch',
+      icon: 'ri-building-line',
+      link: '/business/branches',
+      color: 'bg-indigo-50 text-indigo-600'
     }
   ];
 

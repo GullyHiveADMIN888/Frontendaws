@@ -21,21 +21,15 @@
        Business / Professional Overview <span class="text-orange-600">*</span>
       </label>
 
-      <!-- <textarea
-        rows="5"
-        maxlength="2000"
-        [value]="formData.selfOverview"
-        (input)="onInput('selfOverview', $any($event.target).value)"
-        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
-        placeholder="Provide a brief overview of your business or professional background, including your experience, expertise, and the services you offer. This helps customers understand your capabilities and professional journey.(minimum 150 characters)">
-      </textarea> -->
+    
 
       <textarea
   rows="5"
   maxlength="2000"
   [(ngModel)]="formData.selfOverview"
   (ngModelChange)="onInput('selfOverview', $event)"
-  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none">
+  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
+ placeholder="Provide a brief overview of your business or professional background, including your experience, expertise, and the services you offer. This helps customers understand your capabilities and professional journey.(minimum 150 characters)">
 </textarea>
       <div class="flex justify-between items-start mt-1">
         @if (errors?.selfOverview) {
@@ -55,20 +49,14 @@
        Core Skills & Professional Expertise <span class="text-orange-600">*</span>
       </label>
 
-      <!-- <textarea
-        rows="5"
-        maxlength="500"
-        [value]="formData.skillsBackground"
-        (input)="onInput('skillsBackground', $any($event.target).value)"
-        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
-        placeholder="Describe your key skills, technical expertise, industry experience, and the services your business provides. Highlight the areas where your business excels.(minimum 50 characters)">
-      </textarea> -->
+   
 <textarea
   rows="5"
   maxlength="500"
   [(ngModel)]="formData.skillsBackground"
   (ngModelChange)="onInput('skillsBackground', $event)"
-  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none">
+  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
+        placeholder="Describe your key skills, technical expertise, industry experience, and the services your business provides. Highlight the areas where your business excels.(minimum 50 characters)">
 </textarea>
 
 <span class="text-xs text-gray-500">
@@ -92,20 +80,13 @@
        Key Achievements / Certifications <span class="text-gray-500">(Optional)</span>
       </label>
 
-      <!-- <textarea
-        rows="5"
-        maxlength="500"
-        [value]="formData.achievements"
-        (input)="onInput('achievements', $any($event.target).value)"
-        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
-        placeholder="Mention any awards, certifications, recognitions, major projects, or milestones achieved by your business or professional career.">
-      </textarea> -->
 <textarea
   rows="5"
   maxlength="500"
   [(ngModel)]="formData.achievements"
   (ngModelChange)="onInput('achievements', $event)"
-  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none">
+  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
+ placeholder="Mention any awards, certifications, recognitions, major projects, or milestones achieved by your business or professional career.">
 </textarea>
 
 <span class="text-xs text-gray-500">
@@ -133,7 +114,9 @@
 
       <option [ngValue]="null">Select option</option>
 
-      @for (item of howKnowList; track item) {
+      <!-- @for (item of howKnowList; track item)  -->
+      @for (item of howKnowList; track item)
+      {
         <option
           [ngValue]="item.id">
           {{ item.name }}
@@ -144,17 +127,19 @@
 
     @if (errors?.howToKnowId) {
       <p class="text-red-500 text-sm mt-1">
-        {{ errors.howToKnowId }}
+        {{ errors?.howToKnowId }}
       </p>
     }
-
+  <!-- [value]="formData.howToKnowOther"
+        (input)="onInput('howToKnowOther', $any($event.target).value)" -->
     <!-- Show textarea only if OTHER_ID is selected -->
     @if (showOtherInput) {
       <textarea
         rows="3"
         maxlength="1000"
-        [value]="formData.howToKnowOther"
-        (input)="onInput('howToKnowOther', $any($event.target).value)"
+      
+        [(ngModel)]="formData.howToKnowOther"
+(ngModelChange)="onInput('howToKnowOther', $event)"
         class="w-full mt-2 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
         placeholder="Please specify">
       </textarea>
@@ -162,7 +147,7 @@
 
     @if (errors?.howToKnowOther) {
       <p class="text-red-500 text-sm mt-1">
-        {{ errors.howToKnowOther }}
+        {{ errors?.howToKnowOther }}
       </p>
     }
   </div>

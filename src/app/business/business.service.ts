@@ -206,8 +206,23 @@ export interface WalletTransaction {
   total_balance: number;
 }
 
+export interface Branch {
+  id: number;
+  name: string;
+  businessId: number;
+  isActive: boolean;
+  line1: string | null;
+  line2: string | null;
+  pincode: string | null;
+  cityName: string | null;
+  stateName: string | null;
+  areaName: string | null;
 
-
+  // 🔹 Add these optional properties
+  cityId?: number | null;
+  stateId?: number | null;
+  areaId?: number | null;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -562,4 +577,21 @@ getProviderProfileByEmail(email: string) {
       })
     );
 }
+
+ getBranches(): Observable<Branch[]> {
+    return this.http.get<Branch[]>(`${this.apiUrl}/getBranches`);
+  }
+
+  insertBranch(branch: Branch): Observable<any> {
+    return this.http.post(`${this.apiUrl}/insert`, branch);
+  }
+
+  updateBranch(branch: Branch): Observable<any> {
+    return this.http.put(`${this.apiUrl}/update`, branch);
+  }
+
+  deleteBranch(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/delete/${id}`);
+  }
+
 }

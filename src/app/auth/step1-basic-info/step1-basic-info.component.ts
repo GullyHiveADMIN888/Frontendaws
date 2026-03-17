@@ -40,11 +40,11 @@ export class Step1BasicInfoComponent {
 @Input() isMobileVerified = false;
 //..
 
-  professionalTypes = [
-    { label: 'Independent Professional', value: 'individual' },
-    { label: 'msme', value: 'msme' },
-    { label: 'Company / Corporate', value: 'company' }
-  ];
+  // professionalTypes = [
+  //   { label: 'Independent Professional', value: 'individual' },
+  //   { label: 'msme', value: 'msme' },
+  //   { label: 'Company / Corporate', value: 'company' }
+  // ];
 
 
   constructor(private authService: AuthService,  @Inject(PLATFORM_ID) private platformId: Object) {}
@@ -323,9 +323,9 @@ validateStep1(): boolean {
   }
 
 
-  if (!this.formData.professionalType?.trim()) {
-    this.errors.professionalType = 'Select professional type';
-  }
+  // if (!this.formData.professionalType?.trim()) {
+  //   this.errors.professionalType = 'Select professional type';
+  // }
 
   return Object.keys(this.errors).length === 0;
 }
@@ -397,13 +397,13 @@ ngOnChanges(changes: SimpleChanges) {
       });
     }
 
-    // ✅ Restore Professional Type
-    if (this.formData.professionalType) {
-      this.inputChange.emit({
-        field: 'professionalType',
-        value: this.formData.professionalType
-      });
-    }
+    // // ✅ Restore Professional Type
+    // if (this.formData.professionalType) {
+    //   this.inputChange.emit({
+    //     field: 'professionalType',
+    //     value: this.formData.professionalType
+    //   });
+    // }
 
     // ✅ Restore Profile Preview
     if (this.formData.profilePicture && !this.profilePreview) {

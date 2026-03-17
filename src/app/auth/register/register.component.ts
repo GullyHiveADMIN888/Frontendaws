@@ -26,7 +26,7 @@ import { Step3MsmeDocumentsComponent } from '../step3-msme-documents/step3-msme-
     Step2LegalIdentityComponent,
     Step3ProfessionalDetailsComponent,
     OTPVerificationComponent,
-     Step1MsmeBasicInfoComponent,
+    Step1MsmeBasicInfoComponent,
     Step2MsmeBusinessDetailsComponent,
     Step3MsmeDocumentsComponent
 
@@ -82,7 +82,7 @@ export class RegisterComponent {
     howToKnowId: null,
     howToKnowOther: '',
     legalCompanyName: '',
-    CompanyName: '',
+    companyName: '',
   };
 
   errors: any = {};
@@ -158,17 +158,17 @@ export class RegisterComponent {
 
 
 
-submitForm() {
+  submitForm() {
 
-  if (this.formData.providerType === 'INDIVIDUAL') {
-    this.submitIndividualRegistration();
+    if (this.formData.providerType === 'INDIVIDUAL') {
+      this.submitIndividualRegistration();
+    }
+
+    if (this.formData.providerType === 'MSME' || this.formData.providerType === 'COMPANY') {
+      this.submitCompanyRegistration();
+    }
+
   }
-
-  if (this.formData.providerType === 'MSME' || this.formData.providerType === 'COMPANY') {
-    this.submitCompanyRegistration();
-  }
-
-}
 
 
 
@@ -176,15 +176,15 @@ submitForm() {
     this.isSubmitting = true;
 
     const formData = new FormData();
-
+    console.log(formData);
     // Step 1
-  //  formData.append('FullName', this.formData.fullName || '');
+    //  formData.append('FullName', this.formData.fullName || '');
     const fullName = `${this.formData.firstName || ''} ${this.formData.lastName || ''}`.trim();
 
-  formData.append('FullName', fullName);
+    formData.append('FullName', fullName);
     formData.append('Email', this.formData.email || '');
     formData.append('Mobile', this.formData.mobile || '');
-    formData.append('ProfessionalType', this.formData.professionalType || '');
+    formData.append('ProfessionalType', this.formData.providerType || '');
 
 
     // ✅ Service Category IDs
@@ -231,14 +231,21 @@ submitForm() {
       formData.append(`ServiceAreas[${index}].AreaId`, area.areaId.toString());
       formData.append(`ServiceAreas[${index}].CityId`, area.cityId.toString());
 
-      formData.append('HowToKnowId', this.formData.howToKnowId?.toString() || '');
 
-      if (this.formData.howToKnowId === 6) {
-        formData.append('HowToKnowOther', this.formData.howToKnowOther || '');
-      }
     });
+    formData.append('HowToKnowId', this.formData.howToKnowId?.toString() || '');
 
-
+    if (this.formData.howToKnowId === 6) {
+      formData.append('HowToKnowOther', this.formData.howToKnowOther || '');
+    }
+  // ------------------- LOG FormData -------------------
+  const debugData: any = {};
+  formData.forEach((value, key) => {
+    debugData[key] = value;
+  });
+  console.log('FormData (Individual) being sent:', debugData);
+  //.........
+  
     this.service.submitRegistration(formData).subscribe({
       next: (res: any) => {
         console.log('Backend response:', res);
@@ -262,23 +269,23 @@ submitForm() {
   }
 
 
-submitCompanyRegistration() {
+  submitCompanyRegistration() {
 
-  this.isSubmitting = true;
+    this.isSubmitting = true;
 
-  const formData = new FormData();
+    const formData = new FormData();
+    console.log(formData);
+    formData.append('CompanyName', this.formData.companyName || '');
+    formData.append('LegalCompanyName', this.formData.legalCompanyName || '');
 
-  formData.append('CompanyName', this.formData.companyName || '');
-  formData.append('LegalCompanyName', this.formData.legalCompanyName || '');
-
-     // Step 1
-  //  formData.append('FullName', this.formData.fullName || '');
+    // Step 1
+    //  formData.append('FullName', this.formData.fullName || '');
     const fullName = `${this.formData.firstName || ''} ${this.formData.lastName || ''}`.trim();
 
-  formData.append('FullName', fullName);
+    formData.append('FullName', fullName);
     formData.append('Email', this.formData.email || '');
     formData.append('Mobile', this.formData.mobile || '');
-    formData.append('ProfessionalType', this.formData.professionalType || '');
+    formData.append('ProfessionalType', this.formData.providerType || '');
 
 
     // ✅ Service Category IDs
@@ -325,40 +332,48 @@ submitCompanyRegistration() {
       formData.append(`ServiceAreas[${index}].AreaId`, area.areaId.toString());
       formData.append(`ServiceAreas[${index}].CityId`, area.cityId.toString());
 
-      formData.append('HowToKnowId', this.formData.howToKnowId?.toString() || '');
+    });
+    formData.append('HowToKnowId', this.formData.howToKnowId?.toString() || '');
 
-      if (this.formData.howToKnowId === 6) {
-        formData.append('HowToKnowOther', this.formData.howToKnowOther || '');
-      }
+    if (this.formData.howToKnowId === 6) {
+      formData.append('HowToKnowOther', this.formData.howToKnowOther || '');
+    }
+  // ------------------- LOG FormData -------------------
+  const debugData: any = {};
+  formData.forEach((value, key) => {
+    debugData[key] = value;
+  });
+  console.log('FormData (Company/MSME) being sent:', debugData);
+//......
+    this.service.submitCompanyRegistration(formData).subscribe({
+      next: (res: any) => this.handleSuccess(res),
+      error: (err) => this.handleError(err)
     });
 
-  this.service.submitCompanyRegistration(formData).subscribe({
-    next: (res:any) => this.handleSuccess(res),
-    error: (err) => this.handleError(err)
-  });
-
-}
-handleSuccess(res:any) {
+  }
+ // ---------------------- SUCCESS / ERROR HANDLERS ----------------------
+handleSuccess(res: any) {
+  console.log('Backend response:', res);
 
   if (res.userId) {
-
     this.service.saveAuth(res.token, res.role, res.name, res.userId);
-
     this.formData.userId = res.userId;
-
+    this.isSubmitting = false;
     this.submitSuccess = true;
-
     this.showVerificationModal = true;
   }
-
   this.isSubmitting = false;
 }
 
-handleError(err:any) {
+handleError(err: any) {
+  console.error('Backend error:', err);
 
-  console.error(err);
-  this.isSubmitting = false;
-}
+  if (err.error) {
+    console.error('Backend detailed error:', err.error);
+  }
+
+    this.isSubmitting = false;
+  }
 
   async openMobileVerification() {
     this.verificationType = 'mobile';
@@ -460,31 +475,31 @@ handleError(err:any) {
 
 
   selectProviderType(type: string) {
-  this.formData.providerType = type;
+    this.formData.providerType = type;
 
-  if (type === 'INDIVIDUAL') {
-    this.currentStep = 1;
+    if (type === 'INDIVIDUAL') {
+      this.currentStep = 1;
+    }
+
+    if (type === 'MSME' || type === 'COMPANY') {
+      this.currentStep = 10;
+      // or start a different flow later
+    }
   }
 
-  if (type === 'MSME' || type === 'COMPANY') {
-    this.currentStep = 10; 
-    // or start a different flow later
+  goNext() {
+    this.currentStep++;
   }
-}
-
-goNext() {
-  this.currentStep++;
-}
 
 
-individualSteps = [1,2,3,4];
-msmeSteps = [10,11,12];
+  individualSteps = [1, 2, 3, 4];
+  msmeSteps = [10, 11, 12];
 
-get isIndividual() {
-  return this.formData.providerType === 'INDIVIDUAL';
-}
+  get isIndividual() {
+    return this.formData.providerType === 'INDIVIDUAL';
+  }
 
-get isMsme() {
-  return this.formData.providerType === 'MSME' || this.formData.providerType === 'COMPANY';
-}
+  get isMsme() {
+    return this.formData.providerType === 'MSME' || this.formData.providerType === 'COMPANY';
+  }
 }

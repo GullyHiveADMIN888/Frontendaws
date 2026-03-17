@@ -29,19 +29,25 @@
       <label class="block text-sm font-medium mb-2">
         Company Name <span class="text-orange-600">*</span>
       </label>
-      <input type="text" placeholder="Line 1" [value]="formData.line1 || ''"
-        (input)="onInput('Company Name', $any($event.target).value)" class="w-full px-4 py-3 border rounded-lg"
-        maxlength="50" />
-      @if (errors?.line1) {
-      <p class="text-red-500 text-sm mt-1">{{ errors?.line1 }}</p>
+      <input type="text" placeholder="Company Name" [value]="formData.companyName || ''"
+        (input)="onInput('companyName', $any($event.target).value)" class="w-full px-4 py-3 border rounded-lg"
+        maxlength="100" />
+      @if (errors?.companyName) {
+      <p class="text-red-500 text-sm mt-1">{{ errors?.companyName }}</p>
       }
     </div>
 
     <div>
-      <label class="block text-sm font-medium mb-2">Legal Company Name</label>
-      <input type="text" placeholder="Legal Company Name" [value]="formData.line2 || ''"
-        (input)="onInput('line2', $any($event.target).value)" class="w-full px-4 py-3 border rounded-lg"
-        maxlength="50" />
+      <label class="block text-sm font-medium mb-2">
+        Legal Company Name <span class="text-orange-600">*</span>
+      </label>
+      <input type="text" placeholder="Legal Company Name" [value]="formData.legalCompanyName || ''"
+        (input)="onInput('legalCompanyName', $any($event.target).value)" class="w-full px-4 py-3 border rounded-lg"
+        maxlength="100" />
+           maxlength="100" />
+      @if (errors?.legalCompanyName) {
+      <p class="text-red-500 text-sm mt-1">{{ errors?.legalCompanyName }}</p>
+      }
     </div>
   </div>
 
