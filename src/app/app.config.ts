@@ -28,6 +28,7 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 import { routes } from './app.routes';
 import { jwtInterceptor } from './auth/jwt.interceptor';
 import { environment } from '../environments/environment';
+import { debugInterceptor } from './auth/debug.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
