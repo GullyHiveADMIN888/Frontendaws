@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
 //  import { environment } from '../../environments/environment.prod';
   import { environment } from '../../environments/environment';
+  import { Branch } from './models/branch.model';
 // --- Dashboard & Stats ---
 export interface SellerStats {
   totalLeads: number;
@@ -206,23 +207,24 @@ export interface WalletTransaction {
   total_balance: number;
 }
 
-export interface Branch {
-  id: number;
-  name: string;
-  businessId: number;
-  isActive: boolean;
-  line1: string | null;
-  line2: string | null;
-  pincode: string | null;
-  cityName: string | null;
-  stateName: string | null;
-  areaName: string | null;
+// export interface Branch {
+//   id: number;
+//   name: string;
+//   businessId: number;
+//   isActive: boolean;
 
-  // 🔹 Add these optional properties
-  cityId?: number | null;
-  stateId?: number | null;
-  areaId?: number | null;
-}
+//   line1: string | null;
+//   line2: string | null;
+//   pincode: string | null;
+
+//   stateId?: number | null;
+//   cityId?: number | null;
+//   areaId?: number | null;
+
+//   stateName?: string | null;
+//   cityName?: string | null;
+//   areaName?: string | null;
+// }
 
 @Injectable({
   providedIn: 'root'
@@ -411,11 +413,8 @@ buyLead(leadId: number): Observable<any> {
   }
 
   // 🔹 Get cities
-  getCities(): Observable<any[]> {
-    return this.http.get<any[]>(
-      `${environment.apiBaseUrl}/auth/cities`,
-      { headers: this.getHeaders() }
-    );
+ getCities(stateId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/cities/${stateId}`);
   }
 
   getProviderServices(providerId: number): Observable<ProviderServicesResponse> {
