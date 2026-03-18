@@ -719,3 +719,26 @@ input[type="password"] {
     width: 100%;
   }
 }
+
+/* Readonly field styling */
+input.readonly-field {
+  background-color: #f0f0f0;
+  cursor: default;
+  border-color: #ccc;
+  color: #555;
+}
+
+input.readonly-field:focus {
+  outline: none;
+  border-color: #ccc;
+  box-shadow: none;
+}
+
+/* Optional: Add a subtle lock icon or indicator */
+input.readonly-field {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 35px;
+}

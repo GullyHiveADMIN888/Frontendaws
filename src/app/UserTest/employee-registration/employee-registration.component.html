@@ -57,13 +57,14 @@
           </div>
         </div>
 
+
         <!-- Mobile with OTP -->
         <div class="form-group">
           <label for="mobile">Mobile Number *</label>
           <div class="otp-group">
             <input type="tel" id="mobile" class="form-control" formControlName="mobile"
               [class.is-invalid]="isFieldInvalid('mobile')" placeholder="Enter 10-digit mobile number" maxlength="10"
-              [disabled]="mobileVerified">
+              [disabled]="mobileVerified" [readonly]="mobileVerified" [class.readonly-field]="mobileVerified">
             <button type="button" class="btn btn-secondary" (click)="sendMobileOtp()"
               [disabled]="mobileVerificationInProgress || mobileVerified || mobileOtpSent || registrationForm.get('mobile')?.invalid">
               <span *ngIf="mobileVerificationInProgress">Sending...</span>
@@ -75,7 +76,7 @@
           <div class="invalid-feedback" *ngIf="isFieldInvalid('mobile')">
             Valid 10-digit mobile number is required
           </div>
-          <small *ngIf="mobileVerified" class="text-success">✓ Mobile verified</small>
+          <small *ngIf="mobileVerified" class="text-success">✓ Mobile verified (cannot be changed)</small>
         </div>
 
         <!-- Aadhar ID -->

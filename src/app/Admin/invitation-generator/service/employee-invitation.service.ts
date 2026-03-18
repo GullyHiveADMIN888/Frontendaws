@@ -84,6 +84,6 @@ export class EmployeeInvitationService {
     });
   }
   submitEmployeeRegistration(formData: FormData): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register-employee`, formData);
+    return this.http.post(`${this.apiUrl}/register-member`, formData);
   }
 }
