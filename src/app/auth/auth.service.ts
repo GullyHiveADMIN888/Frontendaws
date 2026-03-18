@@ -215,7 +215,7 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
     const result = await this.confirmationResult.confirm(otp);
 
     // 🔥 VERY IMPORTANT
-    // this.clearRecaptcha();
+    this.clearRecaptcha();
 
     return result;
   }
