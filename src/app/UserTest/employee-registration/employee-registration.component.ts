@@ -134,6 +134,7 @@ export class EmployeeRegistrationComponent implements OnInit {
 
   // ==================== MOBILE OTP METHODS ====================
   async sendMobileOtp(): Promise<void> {
+    debugger;
     const mobile = this.registrationForm.get('mobile')?.value;
     
     if (!mobile || !/^\d{10}$/.test(mobile)) {
@@ -144,7 +145,7 @@ export class EmployeeRegistrationComponent implements OnInit {
     this.mobileVerificationInProgress = true;
     
     try {
-      const fullMobile = `+91${mobile}`;
+      const fullMobile = `${mobile}`;
       console.log('Sending OTP to:', fullMobile);
       
       await this.authService.sendOtp(fullMobile);
