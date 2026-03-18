@@ -283,14 +283,14 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
 
   sendOtpEmailWithoutUserId(payload: SendOtpEmailWithoutUserIdRequest): Observable<OtpEmailWithoutUserIdResponse> {
   return this.http.post<OtpEmailWithoutUserIdResponse>(
-    `${this.apiUrl}/auth/otp-without-userid/send-email`, 
+    `${this.apiUrl}/otp-without-userid/send-email`, 
     payload
   );
 }
 
 verifyOtpEmailWithoutUserId(payload: VerifyOtpEmailWithoutUserIdRequest): Observable<any> {
   return this.http.post(
-    `${this.apiUrl}/auth/otp-without-userid/verify-email`, 
+    `${this.apiUrl}/otp-without-userid/verify-email`, 
     payload
   );
 }
