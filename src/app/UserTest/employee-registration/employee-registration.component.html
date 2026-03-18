@@ -28,24 +28,17 @@
       <!-- Show Mobile OTP Verification -->
       <div *ngIf="showMobileOtp" class="otp-section mb-4">
         <h4>Verify Mobile Number</h4>
-        <app-otp-verification
-          #mobileOtpComponent
-          [mobile]="'+91' + registrationForm.get('mobile')?.value"
-          (onVerified)="onMobileVerified()"
-          (onBack)="onMobileBack()">
-        </app-otp-verification>
+        <app-otp-verification-without-id #mobileOtpComponent [mobile]="'+91' + registrationForm.get('mobile')?.value"
+          (onVerified)="onMobileVerified()" (onBack)="onMobileBack()">
+        </app-otp-verification-without-id>
       </div>
 
       <!-- Show Email OTP Verification -->
       <div *ngIf="showEmailOtp" class="otp-section mb-4">
         <h4>Verify Email Address</h4>
-        <app-otp-verification
-          #emailOtpComponent
-          [email]="registrationForm.get('email')?.value"
-          [otpToken]="emailOtpToken || ''"
-          (onVerifiedEmail)="onEmailVerified($event)"
-          (onBack)="onEmailBack()">
-        </app-otp-verification>
+        <app-otp-email-verification-without-id #emailOtpComponent [emailAddress]="registrationForm.get('email')?.value"
+          [otpToken]="emailOtpToken || ''" (onVerifiedEmail)="onEmailVerified($event)" (onBack)="onEmailBack()">
+        </app-otp-email-verification-without-id>
       </div>
 
       <!-- Registration Form (Hidden during OTP) -->
@@ -96,8 +89,7 @@
           <label for="email">Email *</label>
           <div class="otp-group">
             <input type="email" id="email" class="form-control" formControlName="email"
-              [class.is-invalid]="isFieldInvalid('email')" placeholder="Enter email address"
-              [disabled]="emailVerified">
+              [class.is-invalid]="isFieldInvalid('email')" placeholder="Enter email address" [disabled]="emailVerified">
             <button type="button" class="btn btn-secondary" (click)="sendEmailOtp()"
               [disabled]="emailVerificationInProgress || emailVerified || emailOtpSent || registrationForm.get('email')?.invalid">
               <span *ngIf="emailVerificationInProgress">Sending...</span>
@@ -182,7 +174,7 @@
 </div>
 
 <!-- 🔥 FIREBASE RECAPTCHA CONTAINER - REQUIRED FOR OTP VERIFICATION -->
-<div id="recaptcha-container" 
-     style="position: fixed; bottom: 0; right: 0; z-index: 9999; opacity: 0; pointer-events: none; height: 0; width: 0;">
-     <!-- This invisible container is required for Firebase reCAPTCHA verification -->
+<div id="recaptcha-container"
+  style="position: fixed; bottom: 0; right: 0; z-index: 9999; opacity: 0; pointer-events: none; height: 0; width: 0;">
+  <!-- This invisible container is required for Firebase reCAPTCHA verification -->
 </div>

@@ -4,19 +4,26 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, ValidationErro
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EmployeeInvitationService, EmployeeInvitationDetails, ValidateInvitationResponse } from '../../Admin/invitation-generator/service/employee-invitation.service';
 import { AuthService, SendOtpEmailWithoutUserIdRequest, VerifyOtpEmailWithoutUserIdRequest } from '../../auth/auth.service';
-import { OTPVerificationComponent } from '../../auth/otp-verification/otp-verification.component';
+import { OTPVerificationWithoutIdComponent } from '../../auth/otp-verification-without-id/otp-verification-without-id.component'; // NEW IMPORT
 import { firstValueFrom } from 'rxjs';
+import { OtpEmailVerificationWithoutIdComponent } from '../../auth/otp-verification-without-id/otp-email-verification-without-id.component';
 
 @Component({
   selector: 'app-employee-registration',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, OTPVerificationComponent],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    RouterModule, 
+    OTPVerificationWithoutIdComponent,
+    OtpEmailVerificationWithoutIdComponent
+  ],
   templateUrl: './employee-registration.component.html',
   styleUrls: ['./employee-registration.component.css']
 })
 export class EmployeeRegistrationComponent implements OnInit {
-  @ViewChild('mobileOtpComponent') mobileOtpComponent!: OTPVerificationComponent;
-  @ViewChild('emailOtpComponent') emailOtpComponent!: OTPVerificationComponent;
+  @ViewChild('mobileOtpComponent') mobileOtpComponent!: OTPVerificationWithoutIdComponent;
+  @ViewChild('emailOtpComponent') emailOtpComponent!: OtpEmailVerificationWithoutIdComponent;
 
   registrationForm: FormGroup;
   invitationDetails: EmployeeInvitationDetails | null = null;
@@ -126,30 +133,32 @@ export class EmployeeRegistrationComponent implements OnInit {
   }
 
   // ==================== MOBILE OTP METHODS ====================
-async sendMobileOtp(): Promise<void> {
-  const mobile = this.registrationForm.get('mobile')?.value;
-  
-  if (!mobile || mobile.length !== 10) {
-    alert('Please enter a valid 10-digit mobile number');
-    return;
-  }
+  async sendMobileOtp(): Promise<void> {
+    const mobile = this.registrationForm.get('mobile')?.value;
+    
+    if (!mobile || !/^\d{10}$/.test(mobile)) {
+      alert('Please enter a valid 10-digit mobile number');
+      return;
+    }
 
-  this.mobileVerificationInProgress = true;
-  
-  try {
-    // DON'T add +91 here - let the service handle it
-    await this.authService.sendOtp(mobile);  // Send just the 10-digit number
+    this.mobileVerificationInProgress = true;
     
-    this.mobileOtpSent = true;
-    this.showMobileOtp = true;
-    this.mobileVerificationInProgress = false;
-    
-  } catch (error: any) {
-    console.error('Error sending OTP:', error);
-    this.mobileVerificationInProgress = false;
-    alert(error.message || 'Failed to send OTP. Please try again.');
+    try {
+      const fullMobile = `+91${mobile}`;
+      console.log('Sending OTP to:', fullMobile);
+      
+      await this.authService.sendOtp(fullMobile);
+      
+      this.mobileOtpSent = true;
+      this.showMobileOtp = true;
+      this.mobileVerificationInProgress = false;
+      
+    } catch (error: any) {
+      console.error('Error sending OTP:', error);
+      this.mobileVerificationInProgress = false;
+      alert(error.message || 'Failed to send OTP. Please try again.');
+    }
   }
-}
 
   onMobileVerified(): void {
     this.mobileVerified = true;
@@ -180,15 +189,6 @@ async sendMobileOtp(): Promise<void> {
     this.emailVerificationInProgress = true;
     
     try {
-      // First check if email already exists
-      const checkResult = await firstValueFrom(this.authService.checkEmailExists(email));
-      
-      if (checkResult.exists) {
-        this.emailVerificationInProgress = false;
-        alert('This email is already registered. Please use a different email.');
-        return;
-      }
-      
       const payload: SendOtpEmailWithoutUserIdRequest = {
         email: email,
         fullName: employeeName
@@ -200,6 +200,7 @@ async sendMobileOtp(): Promise<void> {
       this.emailOtpSent = true;
       this.showEmailOtp = true;
       this.emailVerificationInProgress = false;
+      
     } catch (error: any) {
       console.error('Error sending email OTP:', error);
       this.emailVerificationInProgress = false;
@@ -254,7 +255,6 @@ async sendMobileOtp(): Promise<void> {
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
       
-      // Validate file type
       const validTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
       if (!validTypes.includes(file.type)) {
         this.isFileInvalid = true;
@@ -262,7 +262,6 @@ async sendMobileOtp(): Promise<void> {
         return;
       }
       
-      // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         this.isFileInvalid = true;
         this.selectedFile = null;
@@ -285,7 +284,6 @@ async sendMobileOtp(): Promise<void> {
   // ==================== FORM SUBMISSION ====================
   async onSubmit(): Promise<void> {
     if (!this.isFormValid()) {
-      // Mark all fields as touched to trigger validation messages
       Object.keys(this.registrationForm.controls).forEach(key => {
         this.registrationForm.get(key)?.markAsTouched();
       });
@@ -307,9 +305,8 @@ async sendMobileOtp(): Promise<void> {
     this.isSubmitting = true;
     
     try {
-      // Prepare form data for submission
       const formData = new FormData();
-      formData.append('employeeName', this.registrationForm.get('employeeName')?.value);
+      formData.append('memberName', this.registrationForm.get('employeeName')?.value);
       formData.append('mobile', this.registrationForm.get('mobile')?.value);
       formData.append('email', this.registrationForm.get('email')?.value);
       formData.append('aadharId', this.registrationForm.get('aadharId')?.value);
@@ -321,7 +318,6 @@ async sendMobileOtp(): Promise<void> {
         formData.append('aadharFile', this.selectedFile);
       }
 
-      // Call registration API
       const response = await firstValueFrom(this.invitationService.submitEmployeeRegistration(formData));
       
       this.isSubmitting = false;

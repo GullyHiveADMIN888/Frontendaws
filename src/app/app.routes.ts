@@ -46,7 +46,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { roles: ['Buyer'] },
     loadChildren: () =>
-      import('./customer/customer.module')
+      import('./customer/customer.module')        
         .then(m => m.CustomerModule)
   },
 
