@@ -35,7 +35,8 @@ interface Step {
 
 @Component({
     selector: 'app-step-indicator',
-    imports: [CommonModule], // 🔴 REQUIRED
+    standalone: true,
+    imports: [CommonModule], // REQUIRED
     templateUrl: './step-indicator.component.html'
 })
 // export class StepIndicatorComponent {

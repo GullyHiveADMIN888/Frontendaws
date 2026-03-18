@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-customer-step3-preferences',
+    standalone: true,
     imports: [FormsModule],
     templateUrl: './customer-step3-preferences.component.html'
 })

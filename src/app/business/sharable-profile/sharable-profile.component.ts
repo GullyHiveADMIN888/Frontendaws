@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { SellerService, PublicProfile } from '../seller.service';
+import { SellerService, PublicProfile } from '../business.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment.prod';
