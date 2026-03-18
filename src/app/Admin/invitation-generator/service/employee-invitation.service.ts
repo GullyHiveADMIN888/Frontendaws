@@ -61,7 +61,7 @@ export interface ValidateInvitationResponse {
   providedIn: 'root'
 })
 export class EmployeeInvitationService {
-  private apiUrl = `${environment.apiBaseUrl}/employee-invitations`;
+  private apiUrl = `${environment.apiBaseUrl}/member-invitations`;
 
   constructor(private http: HttpClient) { }
 
