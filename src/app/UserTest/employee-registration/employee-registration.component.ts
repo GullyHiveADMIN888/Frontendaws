@@ -134,32 +134,33 @@ export class EmployeeRegistrationComponent implements OnInit {
 
   // ==================== MOBILE OTP METHODS ====================
   async sendMobileOtp(): Promise<void> {
-    debugger;
-    const mobile = this.registrationForm.get('mobile')?.value;
-    
-    if (!mobile || !/^\d{10}$/.test(mobile)) {
-      alert('Please enter a valid 10-digit mobile number');
-      return;
-    }
-
-    this.mobileVerificationInProgress = true;
-    
-    try {
-      const fullMobile = `${mobile}`;
-      console.log('Sending OTP to:', fullMobile);
-      
-      await this.authService.sendOtp(fullMobile);
-      
-      this.mobileOtpSent = true;
-      this.showMobileOtp = true;
-      this.mobileVerificationInProgress = false;
-      
-    } catch (error: any) {
-      console.error('Error sending OTP:', error);
-      this.mobileVerificationInProgress = false;
-      alert(error.message || 'Failed to send OTP. Please try again.');
-    }
+  debugger;
+  const mobile = this.registrationForm.get('mobile')?.value;
+  
+  if (!mobile || !/^\d{10}$/.test(mobile)) {
+    alert('Please enter a valid 10-digit mobile number');
+    return;
   }
+
+  this.mobileVerificationInProgress = true;
+  
+  try {
+    
+    console.log('Sending OTP to AuthService (raw):', mobile);
+    
+    // AuthService will add +91 internally
+    await this.authService.sendOtp(mobile); // Send just the 10-digit number
+    
+    this.mobileOtpSent = true;
+    this.showMobileOtp = true;
+    this.mobileVerificationInProgress = false;
+    
+  } catch (error: any) {
+    console.error('Error sending OTP:', error);
+    this.mobileVerificationInProgress = false;
+    alert(error.message || 'Failed to send OTP. Please try again.');
+  }
+}
 
   onMobileVerified(): void {
     this.mobileVerified = true;
