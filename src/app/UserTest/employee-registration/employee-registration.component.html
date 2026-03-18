@@ -33,16 +33,20 @@
         </app-otp-verification-without-id>
       </div>
 
-      <!-- Show Email OTP Verification -->
+      <!-- ========== EMAIL OTP VERIFICATION SECTION - COMMENTED OUT FOR NOW ========== -->
+      <!-- Uncomment this section when email OTP verification is ready -->
+      <!--
       <div *ngIf="showEmailOtp" class="otp-section mb-4">
         <h4>Verify Email Address</h4>
         <app-otp-email-verification-without-id #emailOtpComponent [emailAddress]="registrationForm.get('email')?.value"
           [otpToken]="emailOtpToken || ''" (onVerifiedEmail)="onEmailVerified($event)" (onBack)="onEmailBack()">
         </app-otp-email-verification-without-id>
       </div>
+      -->
 
       <!-- Registration Form (Hidden during OTP) -->
-      <form *ngIf="!showMobileOtp && !showEmailOtp" [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+      <!-- Note: The condition !showEmailOtp is commented out since email OTP is disabled -->
+      <form *ngIf="!showMobileOtp" [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
         <!-- Employee Name -->
         <div class="form-group">
           <label for="employeeName">Employee Name *</label>
@@ -84,7 +88,20 @@
           </div>
         </div>
 
-        <!-- Email with OTP -->
+        <!-- ========== EMAIL FIELD - SIMPLE VERSION (NO OTP) ========== -->
+        <!-- This is the current active email field - just text input without OTP -->
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input type="email" id="email" class="form-control" formControlName="email"
+            [class.is-invalid]="isFieldInvalid('email')" placeholder="Enter email address">
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
+            Valid email is required
+          </div>
+        </div>
+
+        <!-- ========== EMAIL WITH OTP VERSION - COMMENTED OUT ========== -->
+        <!-- Uncomment this block and delete the simple email field above when email OTP is ready -->
+        <!--
         <div class="form-group">
           <label for="email">Email *</label>
           <div class="otp-group">
@@ -103,6 +120,7 @@
           </div>
           <small *ngIf="emailVerified" class="text-success">✓ Email verified</small>
         </div>
+        -->
 
         <!-- Password -->
         <div class="form-group">
@@ -146,10 +164,14 @@
             <span class="status-icon">{{ mobileVerified ? '✓' : '○' }}</span>
             <span class="status-text">Mobile Verification</span>
           </div>
+          <!-- ========== EMAIL VERIFICATION STATUS - COMMENTED OUT ========== -->
+          <!-- Uncomment when email OTP is enabled -->
+          <!--
           <div class="status-item" [class.completed]="emailVerified">
             <span class="status-icon">{{ emailVerified ? '✓' : '○' }}</span>
             <span class="status-text">Email Verification</span>
           </div>
+          -->
         </div>
 
         <!-- Form Actions -->
