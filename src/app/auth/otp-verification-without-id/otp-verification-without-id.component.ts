@@ -5,6 +5,7 @@ import {
   EventEmitter,
   OnInit,
   OnDestroy,
+  AfterViewInit,
   ViewChildren,
   QueryList,
   ElementRef,
@@ -24,12 +25,17 @@ import { AuthService } from '../auth.service';
     <div class="otp-verification-container">
       <div class="otp-header">
         <h3>Verify Your Mobile Number</h3>
-        <p class="text-muted">Enter the 6-digit OTP sent to {{ mobile }}</p>
+        <p class="text-muted">Enter the 6-digit OTP sent to <strong>{{ mobile }}</strong></p>
+      </div>
+
+      <!-- Debug info - remove after fixing -->
+      <div style="background: #f0f0f0; padding: 5px; margin-bottom: 10px; font-size: 12px; text-align: center;">
+        OTP Inputs: {{ otp.length }} boxes | First value: "{{ otp[0] }}" | Verifying: {{ isVerifying }}
       </div>
 
       <div class="otp-inputs">
         <input
-          *ngFor="let digit of otp; let i = index"
+          *ngFor="let digit of otp; let i = index; trackBy: trackByIndex"
           #otpInput
           type="text"
           class="otp-input"
@@ -37,15 +43,18 @@ import { AuthService } from '../auth.service';
           (input)="onInputChange($event, i)"
           (keydown)="onKeyDown($event, i)"
           (paste)="onPaste($event)"
+          (focus)="$event.target.select()"
           maxlength="1"
           inputmode="numeric"
           pattern="[0-9]*"
           [disabled]="isVerifying"
+          placeholder="-"
+          autocomplete="off"
         />
       </div>
 
       <div class="otp-timer">
-        <p *ngIf="!canResend">Resend OTP in {{ timer }} seconds</p>
+        <p *ngIf="!canResend">Resend OTP in <strong>{{ timer }}</strong> seconds</p>
         <button 
           *ngIf="canResend" 
           class="btn-resend" 
@@ -75,12 +84,13 @@ import { AuthService } from '../auth.service';
   `,
   styles: [`
     .otp-verification-container {
-      max-width: 400px;
+      max-width: 450px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 25px;
       background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border: 1px solid #e0e0e0;
     }
 
     .otp-header {
@@ -91,46 +101,70 @@ import { AuthService } from '../auth.service';
     .otp-header h3 {
       margin: 0 0 10px 0;
       color: #333;
+      font-size: 1.4rem;
+      font-weight: 600;
     }
 
     .otp-header p {
       margin: 0;
       color: #666;
-      font-size: 14px;
+      font-size: 15px;
+    }
+
+    .otp-header strong {
+      color: #007bff;
+      font-weight: 600;
     }
 
     .otp-inputs {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       justify-content: center;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
     }
 
     .otp-input {
-      width: 45px;
-      height: 45px;
+      width: 50px;
+      height: 55px;
       text-align: center;
-      font-size: 20px;
+      font-size: 24px;
       font-weight: bold;
       border: 2px solid #ddd;
-      border-radius: 8px;
+      border-radius: 10px;
       outline: none;
-      transition: border-color 0.15s ease-in-out;
+      transition: all 0.2s ease;
+      background-color: #fafafa;
+      color: #333;
     }
 
     .otp-input:focus {
       border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+      background-color: white;
     }
 
     .otp-input:disabled {
-      background-color: #f5f5f5;
+      background-color: #f0f0f0;
       cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .otp-input::placeholder {
+      color: #ccc;
+      font-size: 18px;
     }
 
     .otp-timer {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       color: #666;
+      font-size: 15px;
+    }
+
+    .otp-timer strong {
+      color: #007bff;
+      font-size: 18px;
     }
 
     .btn-resend {
@@ -138,8 +172,15 @@ import { AuthService } from '../auth.service';
       border: none;
       color: #007bff;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 15px;
       text-decoration: underline;
+      padding: 8px 16px;
+      font-weight: 500;
+    }
+
+    .btn-resend:hover:not(:disabled) {
+      color: #0056b3;
+      text-decoration: none;
     }
 
     .btn-resend:disabled {
@@ -150,18 +191,18 @@ import { AuthService } from '../auth.service';
 
     .otp-actions {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       justify-content: center;
     }
 
     .btn-verify, .btn-back {
-      padding: 10px 20px;
+      padding: 12px 24px;
       border: none;
-      border-radius: 4px;
-      font-size: 14px;
-      font-weight: 500;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.15s ease-in-out;
+      transition: all 0.2s ease;
     }
 
     .btn-verify {
@@ -172,11 +213,16 @@ import { AuthService } from '../auth.service';
 
     .btn-verify:hover:not(:disabled) {
       background-color: #0069d9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,123,255,0.3);
     }
 
     .btn-verify:disabled {
       background-color: #6c757d;
       cursor: not-allowed;
+      opacity: 0.65;
+      transform: none;
+      box-shadow: none;
     }
 
     .btn-back {
@@ -187,26 +233,29 @@ import { AuthService } from '../auth.service';
 
     .btn-back:hover:not(:disabled) {
       background-color: #5a6268;
+      transform: translateY(-1px);
     }
 
     .btn-back:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      transform: none;
     }
 
     .error-message {
-      margin-top: 15px;
-      padding: 10px;
+      margin-top: 20px;
+      padding: 12px;
       background-color: #f8d7da;
       border: 1px solid #f5c6cb;
       color: #721c24;
-      border-radius: 4px;
+      border-radius: 8px;
       text-align: center;
       font-size: 14px;
+      font-weight: 500;
     }
   `]
 })
-export class OTPVerificationWithoutIdComponent implements OnInit, OnDestroy {
+export class OTPVerificationWithoutIdComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() mobile: string = '';
   @Output() onVerified = new EventEmitter<void>();
   @Output() onBack = new EventEmitter<void>();
@@ -224,12 +273,30 @@ export class OTPVerificationWithoutIdComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) {
+    console.log('OTP Component constructor - mobile:', this.mobile);
+  }
 
   ngOnInit() {
+    console.log('OTP Component ngOnInit - mobile:', this.mobile);
     if (isPlatformBrowser(this.platformId)) {
       this.startTimer();
-      setTimeout(() => this.focusInput(0), 0);
+      // Focus first input after a short delay
+      setTimeout(() => {
+        console.log('Attempting to focus first input');
+        this.focusInput(0);
+      }, 300);
+    }
+  }
+
+  ngAfterViewInit() {
+    console.log('OTP Component ngAfterViewInit');
+    console.log('OTP Inputs count:', this.otpInputs?.length);
+    
+    if (this.otpInputs && this.otpInputs.length > 0) {
+      console.log('First input exists:', this.otpInputs.first);
+    } else {
+      console.error('No OTP inputs found in DOM!');
     }
   }
 
@@ -239,6 +306,10 @@ export class OTPVerificationWithoutIdComponent implements OnInit, OnDestroy {
 
   startTimer() {
     if (!isPlatformBrowser(this.platformId)) return;
+    
+    this.stopTimer(); // Clear any existing timer
+    this.timer = 60;
+    this.canResend = false;
 
     this.timerSubscription = interval(1000).subscribe(() => {
       if (this.timer > 0) {
@@ -251,27 +322,53 @@ export class OTPVerificationWithoutIdComponent implements OnInit, OnDestroy {
   }
 
   stopTimer() {
-    this.timerSubscription?.unsubscribe();
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+      this.timerSubscription = null;
+    }
   }
 
   focusInput(index: number) {
-    const input = this.otpInputs?.toArray()[index];
-    if (input) input.nativeElement.focus();
+    if (!this.otpInputs) {
+      console.log('otpInputs not available yet');
+      return;
+    }
+    
+    const inputs = this.otpInputs.toArray();
+    if (inputs && inputs[index]) {
+      console.log('Focusing input at index:', index);
+      inputs[index].nativeElement.focus();
+    } else {
+      console.log('Input at index', index, 'not found');
+    }
   }
 
   onInputChange(event: Event, index: number) {
     const input = event.target as HTMLInputElement;
-    const value = input.value.replace(/\D/g, '').slice(-1);
-
+    let value = input.value;
+    
+    // Allow only digits
+    value = value.replace(/\D/g, '');
+    
+    // Take only the last character if multiple are entered
+    if (value.length > 1) {
+      value = value.charAt(value.length - 1);
+    }
+    
     this.otp[index] = value;
     this.error = '';
 
+    console.log(`Input ${index} changed to:`, value);
+    console.log('Current OTP:', this.otp.join(''));
+
+    // Auto-focus next input
     if (value && index < 5) {
-      this.focusInput(index + 1);
+      setTimeout(() => this.focusInput(index + 1), 10);
     }
   }
 
   onKeyDown(event: KeyboardEvent, index: number) {
+    // Left arrow
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
       if (index > 0) {
@@ -280,6 +377,7 @@ export class OTPVerificationWithoutIdComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Right arrow
     if (event.key === 'ArrowRight') {
       event.preventDefault();
       if (index < 5) {
@@ -288,12 +386,17 @@ export class OTPVerificationWithoutIdComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Backspace
     if (event.key === 'Backspace') {
       if (this.otp[index]) {
+        // Clear current box
         this.otp[index] = '';
       } else if (index > 0) {
+        // Move to previous box and clear it
         this.focusInput(index - 1);
-        this.otp[index - 1] = '';
+        setTimeout(() => {
+          this.otp[index - 1] = '';
+        }, 10);
       }
     }
   }
@@ -304,11 +407,16 @@ export class OTPVerificationWithoutIdComponent implements OnInit, OnDestroy {
     if (!clipboardData) return;
 
     const pastedData = clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
-    pastedData.split('').forEach((char, i) => {
-      this.otp[i] = char;
-    });
-
-    setTimeout(() => this.focusInput(Math.min(pastedData.length, 5)), 0);
+    console.log('Pasted data:', pastedData);
+    
+    // Fill OTP inputs
+    for (let i = 0; i < pastedData.length; i++) {
+      this.otp[i] = pastedData.charAt(i);
+    }
+    
+    // Focus the next empty input or last input
+    const nextIndex = Math.min(pastedData.length, 5);
+    setTimeout(() => this.focusInput(nextIndex), 10);
   }
 
   async onVerify() {
@@ -324,18 +432,21 @@ export class OTPVerificationWithoutIdComponent implements OnInit, OnDestroy {
     this.error = '';
 
     try {
-      // Step 1: Firebase OTP verification
+      console.log('Verifying OTP:', otpValue);
       await this.authService.verifyOtp(otpValue);
       
-      // Step 2: For registration flow, just emit verified event
-      // No server call to verify user existence
       console.log('OTP verified successfully for registration');
+      this.stopTimer();
       this.onVerified.emit();
       
     } catch (err: any) {
       console.error('Error during OTP verification:', err);
       this.error = err.message || 'Invalid OTP. Please try again.';
       alert(this.error);
+      
+      // Clear OTP inputs on error
+      this.otp = Array(6).fill('');
+      setTimeout(() => this.focusInput(0), 100);
     } finally {
       this.isVerifying = false;
     }
@@ -346,16 +457,21 @@ export class OTPVerificationWithoutIdComponent implements OnInit, OnDestroy {
     this.canResend = false;
     this.otp = Array(6).fill('');
     this.error = '';
+    this.isVerifying = true;
 
     this.stopTimer();
     this.startTimer();
 
     try {
-      // Extract just the number without +91
-      const mobileNumber = this.mobile.replace('+91', '');
-      await this.authService.resendOtp(mobileNumber);
+      console.log('Resending OTP for mobile:', this.mobile);
+      await this.authService.resendOtp(this.mobile);
+      alert('OTP resent successfully!');
+      setTimeout(() => this.focusInput(0), 100);
     } catch (e: any) {
-      alert(e.message);
+      console.error('Error resending OTP:', e);
+      alert(e.message || 'Failed to resend OTP');
+    } finally {
+      this.isVerifying = false;
     }
   }
 
