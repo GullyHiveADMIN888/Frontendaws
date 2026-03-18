@@ -1,0 +1,103 @@
+<div class="invitation-generator">
+    <div class="card">
+        <div class="card-header">
+            <h3>Generate Employee Invitation</h3>
+        </div>
+        <div class="card-body">
+            <!-- Generation Form -->
+            <div class="form-group mb-3">
+                <label for="role">Role (Optional)</label>
+                <select id="role" class="form-control" [(ngModel)]="selectedRole">
+                    <option value="member">Member</option>
+                </select>
+                <small class="form-text text-muted">
+                    Note: 'Employee' will be saved as 'member' in the system
+                </small>
+            </div>
+
+            <button class="btn btn-primary" (click)="generateInvite()" [disabled]="isLoading">
+                {{ isLoading ? 'Generating...' : 'Generate Invite Link' }}
+            </button>
+
+            <!-- Reset Button (only shown after invitation is generated) -->
+            <button *ngIf="invitation" class="btn btn-secondary ms-2" (click)="resetForm()">
+                Generate New Link
+            </button>
+
+            <!-- Invitation Result -->
+            <div *ngIf="invitation" class="invitation-result mt-4">
+                <h4>Invitation Generated Successfully!</h4>
+                
+                <!-- Invitation Link Display -->
+                <div class="invite-link-container">
+                    <label>Invitation Link (Copy and share):</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" [value]="invitation.inviteLink" readonly
+                            #inviteLinkInput>
+                        <button class="btn btn-outline-secondary" type="button"
+                            (click)="copyToClipboard(inviteLinkInput)">
+                            Copy
+                        </button>
+                    </div>
+                    <small class="form-text text-muted">
+                        This link will expire on {{ invitation.expiresAt | date:'medium' }}
+                    </small>
+                </div>
+
+                <!-- Email Sending Section -->
+                <div *ngIf="showEmailForm" class="email-section mt-4">
+                    <h5>Send Invitation via Email</h5>
+                    
+                    <div class="form-group">
+                        <label for="sendEmail">Email Address</label>
+                        <div class="input-group">
+                            <input 
+                                type="email" 
+                                id="sendEmail" 
+                                class="form-control" 
+                                [(ngModel)]="emailAddress"
+                                placeholder="Enter recipient's email"
+                                [disabled]="emailSent">
+                            <button 
+                                class="btn btn-success" 
+                                type="button" 
+                                (click)="sendEmail()" 
+                                [disabled]="!emailAddress || isSendingEmail || emailSent">
+                                {{ isSendingEmail ? 'Sending...' : (emailSent ? 'Sent' : 'Send Email') }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div *ngIf="emailSent" class="alert alert-success mt-2">
+                        <i class="fas fa-check-circle"></i> 
+                        Invitation email sent successfully to {{ emailAddress }}
+                    </div>
+
+                    <!-- Error Message -->
+                    <div *ngIf="emailSendingError" class="alert alert-danger mt-2">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Failed to send email. Please try again or copy the link manually.
+                    </div>
+                </div>
+
+                <!-- Invitation Details -->
+                <div class="invitation-details mt-3">
+                    <p><strong>Token:</strong> {{ invitation.inviteToken }}</p>
+                    <p><strong>Invited By:</strong> {{ invitation.businessLegalName }}</p>
+                    <p><strong>Valid Until:</strong> {{ invitation.expiresAt | date:'medium' }}</p>
+                    <p><strong>Status:</strong>
+                        <span class="badge" [ngClass]="getStatusClass(invitation.status)">
+                            {{ invitation.status }}
+                        </span>
+                    </p>
+                </div>
+
+                <!-- Copy Success Message -->
+                <div *ngIf="copySuccess" class="alert alert-success mt-2">
+                    Link copied to clipboard!
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

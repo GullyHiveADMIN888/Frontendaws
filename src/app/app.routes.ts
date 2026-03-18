@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/auth.guard';
 import { LandingPageComponent } from './landing/landing.component';
+import { EmployeeRegistrationComponent } from './UserTest/employee-registration/employee-registration.component';
+import { InvitationGeneratorComponent } from './Admin/invitation-generator/invitation-generator.component';
 
 export const routes: Routes = [
  {
@@ -40,6 +42,16 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./customer/customer.module')
         .then(m => m.CustomerModule)
+  },
+
+  { 
+    path: 'register/employee', 
+    component: EmployeeRegistrationComponent
+  },
+  { 
+    path: 'invite/generate', 
+    component: InvitationGeneratorComponent,
+    // canActivate: [AuthGuard] // Uncomment when you have auth guard
   },
 
 

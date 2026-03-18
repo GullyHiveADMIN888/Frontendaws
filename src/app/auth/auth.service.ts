@@ -23,6 +23,32 @@ interface RegistrationResponse {
   [key: string]: any;
 }
 
+export interface SendEmailOtpResponse {
+  message: string;
+  token: string;
+}
+
+export interface VerifyEmailOtpRequest {
+  otp: string;
+  token: string;
+}
+
+export interface SendOtpEmailWithoutUserIdRequest {
+  email: string;
+  fullName: string;
+}
+
+export interface VerifyOtpEmailWithoutUserIdRequest {
+  otp: string;
+  token: string;
+  email: string;
+}
+
+export interface OtpEmailWithoutUserIdResponse {
+  message: string;
+  token: string;
+}
+
 @Injectable({ providedIn: 'root' })
 
 
@@ -225,6 +251,21 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
   verifyEmailOtp(payload: { otp: string; token: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/verify-email-otp`, payload);
   }
+
+
+  sendOtpEmailWithoutUserId(payload: SendOtpEmailWithoutUserIdRequest): Observable<OtpEmailWithoutUserIdResponse> {
+  return this.http.post<OtpEmailWithoutUserIdResponse>(
+    `${this.apiUrl}/auth/otp-without-userid/send-email`, 
+    payload
+  );
+}
+
+verifyOtpEmailWithoutUserId(payload: VerifyOtpEmailWithoutUserIdRequest): Observable<any> {
+  return this.http.post(
+    `${this.apiUrl}/auth/otp-without-userid/verify-email`, 
+    payload
+  );
+}
 
 }
 

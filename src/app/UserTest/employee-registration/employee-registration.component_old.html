@@ -1,0 +1,164 @@
+<div class="registration-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Validating invitation...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage && !isLoading" class="alert alert-danger">
+    <h4>Invalid Invitation</h4>
+    <p>{{ errorMessage }}</p>
+    <button class="btn btn-primary mt-2" routerLink="/">Go to Home</button>
+  </div>
+
+  <!-- Registration Form -->
+  <div class="card" *ngIf="!isLoading && !errorMessage && invitationDetails">
+    <div class="card-header">
+      <h2>Employee/Worker Registration Form</h2>
+      <div class="inviter-info">
+        <p><strong>Business:</strong> {{ invitationDetails.businessLegalName }}</p>
+        <p><strong>Business Address:</strong> {{ invitationDetails.inviterAddress.fullAddress }}</p>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+        <!-- Employee Name -->
+        <div class="form-group">
+          <label for="employeeName">Employee Name *</label>
+          <input type="text" id="employeeName" class="form-control" formControlName="employeeName"
+            [class.is-invalid]="isFieldInvalid('employeeName')" placeholder="Enter full name">
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('employeeName')">
+            Employee name is required
+          </div>
+        </div>
+
+        <!-- Mobile with OTP -->
+        <div class="form-group">
+          <label for="mobile">Mobile Number *</label>
+          <div class="otp-group">
+            <input type="tel" id="mobile" class="form-control" formControlName="mobile"
+              [class.is-invalid]="isFieldInvalid('mobile')" placeholder="Enter 10-digit mobile number" maxlength="10">
+            <button type="button" class="btn btn-secondary" (click)="sendMobileOtp()"
+              [disabled]="mobileOtpSent || registrationForm.get('mobile')?.invalid">
+              {{ mobileOtpSent ? 'OTP Sent' : 'Send OTP' }}
+            </button>
+          </div>
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('mobile')">
+            Valid 10-digit mobile number is required
+          </div>
+        </div>
+
+        <!-- Mobile OTP Verification -->
+        <div class="form-group" *ngIf="mobileOtpSent">
+          <label for="mobileOtp">Enter Mobile OTP</label>
+          <div class="otp-group">
+            <input type="text" id="mobileOtp" class="form-control" formControlName="mobileOtp" maxlength="6"
+              placeholder="Enter 6-digit OTP">
+            <button type="button" class="btn btn-secondary" (click)="verifyMobileOtp()"
+              [disabled]="!registrationForm.get('mobileOtp')?.value || mobileVerified">
+              {{ mobileVerified ? 'Verified' : 'Verify' }}
+            </button>
+          </div>
+          <small *ngIf="mobileVerified" class="text-success">✓ Mobile verified</small>
+        </div>
+
+        <!-- Aadhar ID -->
+        <div class="form-group">
+          <label for="aadharId">Aadhar ID *</label>
+          <input type="text" id="aadharId" class="form-control" formControlName="aadharId" maxlength="12"
+            placeholder="Enter 12-digit Aadhar number" [class.is-invalid]="isFieldInvalid('aadharId')">
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('aadharId')">
+            Valid 12-digit Aadhar ID is required
+          </div>
+        </div>
+
+        <!-- Email with OTP -->
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <div class="otp-group">
+            <input type="email" id="email" class="form-control" formControlName="email"
+              [class.is-invalid]="isFieldInvalid('email')" placeholder="Enter email address">
+            <button type="button" class="btn btn-secondary" (click)="sendEmailOtp()"
+              [disabled]="emailOtpSent || registrationForm.get('email')?.invalid">
+              {{ emailOtpSent ? 'OTP Sent' : 'Send OTP' }}
+            </button>
+          </div>
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
+            Valid email is required
+          </div>
+        </div>
+
+        <!-- Email OTP Verification -->
+        <div class="form-group" *ngIf="emailOtpSent">
+          <label for="emailOtp">Enter Email OTP</label>
+          <div class="otp-group">
+            <input type="text" id="emailOtp" class="form-control" formControlName="emailOtp" maxlength="6"
+              placeholder="Enter 6-digit OTP">
+            <button type="button" class="btn btn-secondary" (click)="verifyEmailOtp()"
+              [disabled]="!registrationForm.get('emailOtp')?.value || emailVerified">
+              {{ emailVerified ? 'Verified' : 'Verify' }}
+            </button>
+          </div>
+          <small *ngIf="emailVerified" class="text-success">✓ Email verified</small>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password">Password *</label>
+          <input type="password" id="password" class="form-control" formControlName="password"
+            [class.is-invalid]="isFieldInvalid('password')" placeholder="Enter password">
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('password')">
+            Password is required and must be at least 6 characters
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password *</label>
+          <input type="password" id="confirmPassword" class="form-control" formControlName="confirmPassword"
+            [class.is-invalid]="isFieldInvalid('confirmPassword')" placeholder="Confirm password">
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('confirmPassword')">
+            Passwords do not match
+          </div>
+        </div>
+
+        <!-- Aadhar Upload -->
+        <div class="form-group">
+          <label for="aadharFile">Upload Aadhar Card *</label>
+          <input type="file" id="aadharFile" class="form-control" (change)="onFileSelected($event)"
+            accept=".pdf,.jpg,.jpeg,.png" [class.is-invalid]="isFileInvalid">
+          <small class="form-text text-muted">
+            Accepted formats: PDF, JPG, JPEG, PNG (Max size: 5MB)
+          </small>
+          <div *ngIf="selectedFile" class="file-info mt-1">
+            <small>Selected: {{ selectedFile.name }} ({{ formatFileSize(selectedFile.size) }})</small>
+          </div>
+          <div class="invalid-feedback" *ngIf="isFileInvalid">
+            Please upload a valid Aadhar document (PDF or image, max 5MB)
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="!isFormValid() || isSubmitting">
+            {{ isSubmitting ? 'Submitting...' : 'Submit Registration' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="resetForm()">
+            Reset
+          </button>
+        </div>
+      </form>
+
+      <!-- Success Message (for now) -->
+      <div *ngIf="showSuccess" class="alert alert-success mt-3">
+        <h4>Form Validation Successful!</h4>
+        <p>Registration data is valid. (Backend submission not implemented yet)</p>
+        <button class="btn btn-success mt-2" routerLink="/">Go to Home</button>
+      </div>
+    </div>
+  </div>
+</div>
