@@ -14,9 +14,9 @@ import { firstValueFrom } from 'rxjs';
   selector: 'app-employee-registration',
   standalone: true,
   imports: [
-    CommonModule, 
-    ReactiveFormsModule, 
-    RouterModule, 
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
     OTPVerificationWithoutIdComponent,
     // ========== EMAIL OTP COMPONENT IMPORT - COMMENTED OUT ==========
     // Uncomment when email OTP is enabled
@@ -27,7 +27,7 @@ import { firstValueFrom } from 'rxjs';
 })
 export class EmployeeRegistrationComponent implements OnInit {
   @ViewChild('mobileOtpComponent') mobileOtpComponent!: OTPVerificationWithoutIdComponent;
-  
+
   // ========== EMAIL OTP VIEWCHILD - COMMENTED OUT ==========
   // Uncomment when email OTP is enabled
   // @ViewChild('emailOtpComponent') emailOtpComponent!: OtpEmailVerificationWithoutIdComponent;
@@ -38,13 +38,13 @@ export class EmployeeRegistrationComponent implements OnInit {
   isSubmitting = false;
   showSuccess = false;
   errorMessage: string | null = null;
-  
+
   // Mobile OTP States
   showMobileOtp = false;
   mobileVerified = false;
   mobileVerificationInProgress = false;
   mobileOtpSent = false;
-  
+
   // ========== EMAIL OTP STATES - COMMENTED OUT ==========
   // Uncomment these when email OTP is enabled
   /*
@@ -54,7 +54,7 @@ export class EmployeeRegistrationComponent implements OnInit {
   emailOtpSent = false;
   emailOtpToken: string | null = null;
   */
-  
+
   // File upload
   selectedFile: File | null = null;
   isFileInvalid = false;
@@ -79,7 +79,7 @@ export class EmployeeRegistrationComponent implements OnInit {
 
   ngOnInit(): void {
     const token = this.route.snapshot.queryParams['token'];
-    
+
     if (!token) {
       this.errorMessage = 'No invitation token provided';
       this.isLoading = false;
@@ -130,43 +130,43 @@ export class EmployeeRegistrationComponent implements OnInit {
   isFieldInvalid(fieldName: string): boolean {
     const field = this.registrationForm.get(fieldName);
     if (fieldName === 'confirmPassword') {
-      return (field?.invalid || this.registrationForm.hasError('passwordMismatch')) && 
-             (field?.dirty || field?.touched || this.registrationForm.touched);
+      return (field?.invalid || this.registrationForm.hasError('passwordMismatch')) &&
+        (field?.dirty || field?.touched || this.registrationForm.touched);
     }
     return field ? field.invalid && (field.dirty || field.touched) : false;
   }
 
   // ========== UPDATED isFormValid - REMOVED emailVerified CHECK ==========
   isFormValid(): boolean {
-    return this.registrationForm.valid && 
-           this.mobileVerified && 
-           // Email verification check is removed for now
-           // Uncomment the line below when email OTP is enabled
-           // this.emailVerified && 
-           this.selectedFile !== null;
+    return this.registrationForm.valid &&
+      this.mobileVerified &&
+      // Email verification check is removed for now
+      // Uncomment the line below when email OTP is enabled
+      // this.emailVerified && 
+      this.selectedFile !== null;
   }
 
   // ==================== MOBILE OTP METHODS ====================
   async sendMobileOtp(): Promise<void> {
     const mobile = this.registrationForm.get('mobile')?.value;
-    
+
     if (!mobile || !/^\d{10}$/.test(mobile)) {
       alert('Please enter a valid 10-digit mobile number');
       return;
     }
 
     this.mobileVerificationInProgress = true;
-    
+
     try {
       console.log('Sending OTP to AuthService (raw):', mobile);
-      
+
       // AuthService will add +91 internally
       await this.authService.sendOtp(mobile);
-      
+
       this.mobileOtpSent = true;
       this.showMobileOtp = true;
       this.mobileVerificationInProgress = false;
-      
+
     } catch (error: any) {
       console.error('Error sending OTP:', error);
       this.mobileVerificationInProgress = false;
@@ -271,20 +271,20 @@ export class EmployeeRegistrationComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      
+
       const validTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
       if (!validTypes.includes(file.type)) {
         this.isFileInvalid = true;
         this.selectedFile = null;
         return;
       }
-      
+
       if (file.size > 5 * 1024 * 1024) {
         this.isFileInvalid = true;
         this.selectedFile = null;
         return;
       }
-      
+
       this.selectedFile = file;
       this.isFileInvalid = false;
     }
@@ -304,29 +304,21 @@ export class EmployeeRegistrationComponent implements OnInit {
       Object.keys(this.registrationForm.controls).forEach(key => {
         this.registrationForm.get(key)?.markAsTouched();
       });
-      
+
       if (!this.selectedFile) {
         this.isFileInvalid = true;
       }
-      
+
       if (!this.mobileVerified) {
         alert('Please verify your mobile number');
-      } 
-      // ========== EMAIL VERIFICATION CHECK - COMMENTED OUT ==========
-      // Uncomment when email OTP is enabled
-      /*
-      else if (!this.emailVerified) {
-        alert('Please verify your email address');
-      }
-      */
-      else {
+      } else {
         alert('Please fill all required fields');
       }
       return;
     }
 
     this.isSubmitting = true;
-    
+
     try {
       const formData = new FormData();
       formData.append('memberName', this.registrationForm.get('employeeName')?.value);
@@ -336,16 +328,23 @@ export class EmployeeRegistrationComponent implements OnInit {
       formData.append('password', this.registrationForm.get('password')?.value);
       formData.append('invitationToken', this.route.snapshot.queryParams['token']);
       formData.append('businessId', this.invitationDetails?.businessId.toString() || '');
-      
+
+      // Add verification status from component state
+      formData.append('phoneVerified', this.mobileVerified ? 'true' : 'false');
+
+      // Email verification status - currently false since email OTP is disabled
+      // When you re-enable email OTP, this will be set based on emailVerified state
+      formData.append('emailVerified', 'false');  // For now, always false
+
       if (this.selectedFile) {
         formData.append('aadharFile', this.selectedFile);
       }
 
       const response = await firstValueFrom(this.invitationService.submitEmployeeRegistration(formData));
-      
+
       this.isSubmitting = false;
       this.showSuccess = true;
-      
+
     } catch (error: any) {
       console.error('Error submitting registration:', error);
       this.isSubmitting = false;
