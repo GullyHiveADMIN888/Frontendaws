@@ -51,7 +51,7 @@ export const routes: Routes = [
   },
 
   { 
-    path: 'register/employee', 
+    path: 'register/member', 
     component: EmployeeRegistrationComponent
   },
   { 
