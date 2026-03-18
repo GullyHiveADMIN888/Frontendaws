@@ -1,5 +1,8 @@
 <div class="bg-gray-50 min-h-screen p-6">
-
+  <div *ngIf="alertMessage" class="mb-4 p-3 rounded text-white"
+    [ngClass]="alertType === 'success' ? 'bg-green-500' : 'bg-red-500'">
+    {{ alertMessage }}
+  </div>
   <!-- Page Header with Add Button -->
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-gray-800">Branches</h1>
@@ -12,42 +15,45 @@
 
   <!-- Branch Table -->
   <div class="overflow-x-auto">
-    <table class="w-full border-collapse shadow-md rounded-lg overflow-hidden">
+    <table class="min-w-full border-collapse shadow-md rounded-lg overflow-hidden">
       <thead class="bg-orange-100 text-orange-800 uppercase text-sm tracking-wider">
         <tr>
           <th class="px-6 py-3 text-left">ID</th>
           <th class="px-6 py-3 text-left">Branch Name</th>
-          <th class="px-6 py-3 text-left">Business ID</th>
-          <th class="px-6 py-3 text-left">Is Active</th>
+          <!-- <th class="px-6 py-3 text-left">Business ID</th> -->
           <th class="px-6 py-3 text-left">Line 1</th>
           <th class="px-6 py-3 text-left">Line 2</th>
-          <th class="px-6 py-3 text-left">Pincode</th>
           <th class="px-6 py-3 text-left">City</th>
           <th class="px-6 py-3 text-left">State</th>
+          <th class="px-6 py-3 text-left">Pincode</th>
           <th class="px-6 py-3 text-left">Area</th>
+          <th class="px-6 py-3 text-left">Is Active</th>
           <th class="px-6 py-3 text-left">Actions</th>
         </tr>
       </thead>
       <!-- Loader -->
-      <tr *ngIf="isLoading">
-        <td colspan="11" class="text-center py-5">Loading...</td>
-      </tr>
-
+      <!-- Full-page loader -->
+      <div *ngIf="isLoading" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/30">
+        <!-- Spinner -->
+        <div class="w-16 h-16 border-4 border-t-4 border-gray-200 border-t-orange-500 rounded-full animate-spin mb-4">
+        </div>
+        <p class="text-white text-lg font-semibold">Loading branches...</p>
+      </div>
 
       <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let branch of branches; let i = index" class="hover:bg-orange-50 transition">
+          <!-- 🔄 Loader -->
 
-        <!-- 🔄 Loader -->
-        <tr *ngFor="let branch of branches" class="hover:bg-orange-50 transition">
-          <td class="px-6 py-3">{{ branch.id }}</td>
+          <td class="px-6 py-3">{{ i + 1 }}</td>
           <td class="px-6 py-3">{{ branch.name }}</td>
-          <td class="px-6 py-3">{{ branch.businessId }}</td>
-          <td class="px-6 py-3">{{ branch.isActive ? 'Yes' : 'No' }}</td>
+          <!-- <td class="px-6 py-3">{{ branch.businessId }}</td> -->
           <td class="px-6 py-3">{{ branch.line1 }}</td>
           <td class="px-6 py-3">{{ branch.line2 }}</td>
-          <td class="px-6 py-3">{{ branch.pincode }}</td>
           <td class="px-6 py-3">{{ branch.cityName }}</td>
           <td class="px-6 py-3">{{ branch.stateName }}</td>
-          <td class="px-6 py-3">{{ branch.areaName }}</td>
+          <td class="px-6 py-3">{{ branch.pincode }}</td>
+          <td class="px-6 py-3">{{ branch.areaNames?.join(', ') }}</td>
+          <td class="px-6 py-3">{{ branch.isActive ? 'Yes' : 'No' }}</td>
 
           <!-- Actions -->
           <td class="px-6 py-4 whitespace-nowrap">
@@ -66,179 +72,57 @@
 
         <!-- ❌ Empty State -->
         <tr *ngIf="!isLoading && branches.length === 0">
-          <td colspan="4" class="text-center py-10 text-gray-500">
-
-            <div class="flex flex-col items-center gap-3">
-              <i class="ri-inbox-line text-4xl text-gray-400"></i>
-              <p class="text-sm font-medium">No branches found</p>
-              <p class="text-xs text-gray-400">Click "Add Branch" to create one</p>
+          <td colspan="11" class="p-0">
+            <div class="flex flex-col items-center justify-center min-h-[70vh]">
+              <i class="ri-inbox-line text-6xl text-gray-400 mb-4"></i>
+              <p class="text-lg font-semibold text-gray-600">No branches found</p>
+              <p class="text-sm text-gray-400">Click "Add Branch" to create one</p>
             </div>
-
           </td>
         </tr>
 
 
-
       </tbody>
     </table>
+
+<!-- Pagination - Right Corner -->
+<div class="flex justify-end items-center mt-4 space-x-2">
+  <!-- Previous button -->
+  <button (click)="prevPage()"
+          [disabled]="currentPage === 1"
+          class="px-3 py-1 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300 transition">
+    Previous
+  </button>
+
+  <!-- Page numbers -->
+  <div class="flex gap-1">
+    <button *ngFor="let page of pages"
+            (click)="goToPage(page)"
+            [class.bg-orange-500]="page === currentPage"
+            [class.text-white]="page === currentPage"
+            class="px-3 py-1 border rounded hover:bg-orange-100 transition">
+      {{ page }}
+    </button>
+  </div>
+
+  <!-- Next button -->
+  <button (click)="nextPage()"
+          [disabled]="currentPage === totalPages"
+          class="px-3 py-1 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300 transition">
+    Next
+  </button>
+</div>
+
+<p class="text-sm text-gray-500 mt-1 text-right">
+  Showing page {{currentPage}} of {{totalPages}} (Total: {{totalCount}} branches)
+</p>
+
   </div>
 
   <!-- Branch Modal -->
-
-  <!-- <div *ngIf="isModalOpen" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4 py-6">
-    <div class="bg-white w-full max-w-lg md:max-w-2xl lg:max-w-3xl rounded-xl shadow-xl p-5 sm:p-6
-              max-h-[90vh] md:max-h-[80vh] lg:max-h-[75vh] overflow-y-auto">
-
-    
-
-      <div
-        class="mb-5 p-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow flex items-center justify-between gap-3">
-
-      
-        <div class="flex items-center gap-3">
-          <div class="h-10 w-10 flex items-center justify-center bg-white/20 rounded-lg text-xl">
-            <i class="ri-map-pin-line"></i>
-          </div>
-          <div>
-            <h3 class="text-lg sm:text-xl font-semibold">
-              {{ editingBranch ? 'Edit Branch' : 'Add Branch' }}
-            </h3>
-            <p class="text-sm opacity-80">
-              {{ editingBranch ? 'Update the branch details' : 'Fill the details to add a new branch' }}
-            </p>
-          </div>
-        </div>
-
-      </div>
-      <form (ngSubmit)="saveBranch()" class="space-y-4">
-
-     
-        <div class="flex flex-col md:flex-row md:space-x-4 gap-4">
-          <div class="flex-1">
-            <label class="text-sm font-medium text-gray-600 mb-1 block">Branch Name *</label>
-            <input type="text" [(ngModel)]="branchForm.name" name="name" required placeholder="Enter branch name"
-              class="w-full border rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500" />
-          </div>
-
-
-        </div>
-
-      
-        <div class="flex flex-col md:flex-row md:space-x-4 gap-4">
-          <div class="flex-1">
-            <label class="text-sm font-medium text-gray-600 mb-1 block">State *</label>
-            <select [(ngModel)]="branchForm.stateId" name="stateId" (change)="onStateChange(branchForm.stateId)"
-              class="w-full border rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
-               <option [ngValue]="null" disabled selected>Select State</option>
-              <option *ngFor="let s of states" [value]="s.id">{{ s.name }}</option>
-            </select>
-          </div>
-
-          <div class="flex-1">
-            <label class="text-sm font-medium text-gray-600 mb-1 block">City *</label>
-            <select [(ngModel)]="branchForm.cityId" name="cityId" (change)="onCityChange(branchForm.cityId)"
-              class="w-full border rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
-               <option [ngValue]="null" disabled selected>Select City</option>
-              <option *ngFor="let c of cities" [value]="c.id">{{ c.name }}</option>
-            </select>
-          </div>
-
-
-          
-        </div>
-
-        <div class="flex flex-col md:flex-row md:space-x-4 gap-4">
-          <div class="flex-1">
-            <label class="text-sm font-medium text-gray-600 mb-1 block">Area *</label>
-            <select [(ngModel)]="branchForm.areaId" name="areaId"
-              class="w-full border rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
-                <option [ngValue]="null" disabled selected>Select Area</option>
-              <option *ngFor="let a of areas" [value]="a.id">{{ a.area_name }}</option>
-            </select>
-          </div>
-        </div>
-
-       
-        <div class="flex flex-col md:flex-row md:space-x-4 gap-4">
-          <div class="flex-1">
-            <label>ID</label>
-            <input type="text" [(ngModel)]="branchForm.id" name="id" readonly class="w-full border p-2 rounded" />
-          </div>
-
-          <div class="flex-1">
-            <label>Business ID</label>
-            <input type="number" [(ngModel)]="branchForm.businessId" name="businessId"
-              class="w-full border p-2 rounded" />
-          </div>
-
-
-        </div>
-        <div class="flex flex-col md:flex-row md:space-x-4 gap-4">
-          <div class="flex-1">
-            <label>Line 1 *</label>
-            <input type="text" [(ngModel)]="branchForm.line1" name="line1" class="w-full border p-2 rounded" />
-          </div>
-        </div>
-
-       
-        <div class="flex flex-col md:flex-row md:space-x-4 gap-4">
-          <div class="flex-1">
-            <label>Line 2</label>
-            <input type="text" [(ngModel)]="branchForm.line2" name="line2" class="w-full border p-2 rounded" />
-          </div>
-        </div>
-        <div class="flex flex-col md:flex-row md:space-x-4 gap-4">
-          <div class="flex-1">
-            <label>Pincode *</label>
-            <input type="text" [(ngModel)]="branchForm.pincode" name="pincode" class="w-full border p-2 rounded" />
-          </div>
-          <div class="flex-1">
-            <label>Is Active</label>
-            <select [(ngModel)]="branchForm.isActive" name="isActive" class="w-full border p-2 rounded">
-              <option [value]="true">Yes</option>
-              <option [value]="false">No</option>
-            </select>
-          </div>
-        </div>
-
-
-
-   
-        <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6">
-          <button type="button" (click)="closeModal()"
-            class="w-full sm:w-auto px-4 py-2 border rounded-lg hover:bg-gray-100 transition">
-            Cancel
-          </button>
-
-          <button type="submit"
-            class="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition">
-            {{ editingBranch ? 'Update' : 'Add' }}
-          </button>
-        </div>
-
-      </form>
-    </div>
-  </div> -->
-
-
   <div *ngIf="isModalOpen" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4 py-6">
     <div class="bg-white w-full max-w-lg md:max-w-2xl lg:max-w-3xl rounded-xl shadow-xl p-5 sm:p-6
               max-h-[90vh] md:max-h-[80vh] lg:max-h-[75vh] overflow-y-auto">
-
-      <!-- <div
-        class="mb-5 p-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow flex items-center gap-3">
-        <div class="h-10 w-10 flex items-center justify-center bg-white/20 rounded-lg text-xl">
-          <i class="ri-map-pin-line"></i>
-        </div>
-        <div>
-          <h3 class="text-lg sm:text-xl font-semibold">
-            {{ editingBranch ? 'Edit Branch' : 'Add Branch' }}
-          </h3>
-          <p class="text-sm opacity-80">
-            {{ editingBranch ? 'Update the branch details' : 'Fill the details to add a new branch' }}
-          </p>
-        </div>
-      </div> -->
 
       <div
         class="mb-5 p-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow flex items-center justify-between gap-3">
@@ -259,11 +143,11 @@
         </div>
 
 
-       
+
       </div>
       <!-- Form -->
-      <!-- <form #branchFormRef="ngForm" (ngSubmit)="saveBranch()" class="space-y-4"> -->
-        <form #branchFormRef="ngForm" (ngSubmit)="onSubmit(branchFormRef)" class="space-y-4">
+
+      <form #branchFormRef="ngForm" (ngSubmit)="onSubmit(branchFormRef)" class="space-y-4">
 
         <!-- Branch Name -->
         <div>
@@ -304,96 +188,72 @@
         </div>
         <div class="flex flex-col md:flex-row md:space-x-4 gap-4">
 
-          <!-- <div class="flex-1">
+
+          <div class="flex-1 relative">
             <label class="text-sm font-medium text-gray-600 mb-1 block">Area *</label>
-            <select [(ngModel)]="branchForm.areaId" name="areaId" required #areaRef="ngModel"
-              class="w-full border rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
-              <option [ngValue]="null" disabled selected>Select Area</option>
-              <option *ngFor="let a of areas" [value]="a.id">{{ a.area_name }}</option>
-            </select>
-            <div *ngIf="areaRef.invalid && (areaRef.dirty || areaRef.touched)" class="text-red-500 text-xs mt-1">
-              Area is required.
+
+
+            <div
+              class="border border-gray-300 rounded-lg p-2 flex flex-wrap items-center min-h-[40px] focus-within:ring-2 focus-within:ring-orange-500 cursor-pointer"
+              (click)="dropdownOpen = !dropdownOpen">
+
+
+              <ng-container *ngIf="isAllSelected(); else normalSelection">
+                <span class="bg-orange-200 text-orange-900 px-2 py-1 rounded text-sm">
+                  Entire City
+                </span>
+              </ng-container>
+
+
+              <ng-template #normalSelection>
+                <ng-container *ngFor="let area of selectedAreas()">
+                  <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded mr-1 mb-1 text-sm flex items-center">
+                    {{ area.name }}
+                    <i class="ri-close-line ml-1 cursor-pointer" (click)="removeArea(area, $event)">
+                    </i>
+                  </span>
+                </ng-container>
+              </ng-template>
+
+
+              <input type="text" [(ngModel)]="areaSearch" name="areaSearch" placeholder="Search areas..."
+                (focus)="dropdownOpen = true" (click)="$event.stopPropagation()"
+                class="flex-1 outline-none min-w-[120px]" />
+
+              <i class="ri-arrow-down-s-line ml-2"></i>
             </div>
-          </div> -->
-    <div class="flex-1 relative">
-  <label class="text-sm font-medium text-gray-600 mb-1 block">Area *</label>
 
-  <!-- Dropdown container -->
-  <div
-    class="border border-gray-300 rounded-lg p-2 flex flex-wrap items-center min-h-[40px] focus-within:ring-2 focus-within:ring-orange-500 cursor-pointer"
-    (click)="dropdownOpen = !dropdownOpen"
-  >
-    <!-- Selected tags -->
-    <!-- <ng-container *ngFor="let area of selectedAreas()">
-      <span
-        class="bg-orange-100 text-orange-800 px-2 py-1 rounded mr-1 mb-1 text-sm flex items-center"
-      >
-        {{ area.area_name }}
-        <i
-          class="ri-close-line ml-1 cursor-pointer"
-          (click)="removeArea(area, $event)"
-        ></i>
-      </span>
-    </ng-container> -->
-<ng-container *ngIf="isAllSelected(); else normalSelection">
-  <span class="bg-orange-200 text-orange-900 px-2 py-1 rounded text-sm">
-    Entire City
-  </span>
-</ng-container>
 
-<ng-template #normalSelection>
-  <ng-container *ngFor="let area of selectedAreas()">
-    <span
-      class="bg-orange-100 text-orange-800 px-2 py-1 rounded mr-1 mb-1 text-sm flex items-center"
-    >
-      {{ area.area_name }}
-      <i
-        class="ri-close-line ml-1 cursor-pointer"
-        (click)="removeArea(area, $event)"
-      ></i>
-    </span>
-  </ng-container>
-</ng-template>
-    <!-- Search input -->
-    <input
-      type="text"
-      [(ngModel)]="areaSearch"
-      name="areaSearch"
-      placeholder="Search areas..."
-      (focus)="dropdownOpen = true"
-      (click)="$event.stopPropagation()"
-      class="flex-1 outline-none min-w-[120px]"
-    />
-    <i class="ri-arrow-down-s-line ml-2"></i>
-  </div>
+            <div *ngIf="dropdownOpen" (click)="$event.stopPropagation()"
+              class="absolute w-full bg-white border border-gray-300 mt-1 rounded shadow max-h-60 overflow-y-auto z-10">
 
-  <!-- Dropdown menu -->
-  <div
-    *ngIf="dropdownOpen"
-    class="absolute w-full bg-white border border-gray-300 mt-1 rounded shadow max-h-48 overflow-y-auto z-10"
-  >
-    <label
-      *ngFor="let area of filteredAreas()"
-      class="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer"
-    >
-     <input type="checkbox" class="mr-2" 
-       [checked]="branchForm.areaIds?.includes(area.id)" 
-       (change)="toggleAreaSelection(area)">
-      <span>{{ area.area_name }}</span>
-    </label>
-    <div *ngIf="filteredAreas().length === 0" class="px-3 py-2 text-gray-400">
-      No areas found.
-    </div>
-  </div>
 
-  <!-- Validation -->
-  <div
-    *ngIf="branchFormRef.submitted && (!branchForm.areaIds || branchForm.areaIds.length === 0)"
-    class="text-red-500 text-xs mt-1"
-  >
-    Please select at least one area.
-  </div>
-</div>
+              <label class="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer border-b">
+                <input type="checkbox" class="mr-2" [checked]="isAllSelected()" (change)="onSelectAll($event)" />
+                <span class="font-medium text-green-700">Entire City</span>
+              </label>
+
+
+              <label *ngFor="let area of filteredAreas()"
+                class="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer">
+                <input type="checkbox" class="mr-2" [checked]="branchForm.areaIds?.includes(area.id)"
+                  (change)="toggleAreaSelection(area)" />
+                <span>{{ area.name }}</span>
+              </label>
+
+
+              <div *ngIf="filteredAreas().length === 0" class="px-3 py-2 text-gray-400">
+                No areas found.
+              </div>
+            </div>
+
+
+            <div *ngIf="branchFormRef?.submitted && (!branchForm.areaIds || branchForm.areaIds.length === 0)"
+              class="text-red-500 text-xs mt-1">
+              Please select at least one area.
+            </div>
+          </div>
+
         </div>
 
         <!-- Line 1 -->
@@ -431,8 +291,8 @@
           <div class="flex-1">
             <label class="text-sm font-medium text-gray-600 mb-1 block">Is Active</label>
             <select [(ngModel)]="branchForm.isActive" name="isActive" class="w-full border p-2 rounded">
-              <option [value]="true">Yes</option>
-              <option [value]="false">No</option>
+              <option [ngValue]="true">Yes</option>
+              <option [ngValue]="false">No</option>
             </select>
           </div>
         </div>
@@ -447,9 +307,9 @@
             {{ editingBranch ? 'Update' : 'Add' }}
           </button> -->
           <button type="submit"
-        class="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition">
-  {{ editingBranch ? 'Update' : 'Add' }}
-</button>
+            class="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition">
+            {{ editingBranch ? 'Update' : 'Add' }}
+          </button>
         </div>
 
       </form>

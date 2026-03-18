@@ -17,4 +17,6 @@ export interface Branch {
   cityName?: string | null;
   areaName?: string | null;
   businessName?: string | null;
+   areaNames?: string[]; 
+     addressId?: number | null;
 }

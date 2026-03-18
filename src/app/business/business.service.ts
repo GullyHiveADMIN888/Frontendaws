@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders ,HttpParams} from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
 //  import { environment } from '../../environments/environment.prod';
   import { environment } from '../../environments/environment';
   import { Branch } from './models/branch.model';
+  import { PagedResult } from './models/paged-result.model';
+
 // --- Dashboard & Stats ---
 export interface SellerStats {
   totalLeads: number;
@@ -207,24 +209,6 @@ export interface WalletTransaction {
   total_balance: number;
 }
 
-// export interface Branch {
-//   id: number;
-//   name: string;
-//   businessId: number;
-//   isActive: boolean;
-
-//   line1: string | null;
-//   line2: string | null;
-//   pincode: string | null;
-
-//   stateId?: number | null;
-//   cityId?: number | null;
-//   areaId?: number | null;
-
-//   stateName?: string | null;
-//   cityName?: string | null;
-//   areaName?: string | null;
-// }
 
 @Injectable({
   providedIn: 'root'
@@ -577,20 +561,27 @@ getProviderProfileByEmail(email: string) {
     );
 }
 
- getBranches(): Observable<Branch[]> {
-    return this.http.get<Branch[]>(`${this.apiUrl}/getBranches`);
-  }
+//  getBranches(): Observable<Branch[]> {
+//     return this.http.get<Branch[]>(`${this.apiUrl}/getBranches`);
+//   }
+getBranches(pageNumber: number = 1, pageSize: number = 10): Observable<PagedResult<Branch>> {
+  const params = new HttpParams()
+    .set('pageNumber', pageNumber)
+    .set('pageSize', pageSize);
+
+  return this.http.get<PagedResult<Branch>>(`${this.apiUrl}/getBranches`, { params });
+}
 
   insertBranch(branch: Branch): Observable<any> {
-    return this.http.post(`${this.apiUrl}/insert`, branch);
+    return this.http.post(`${this.apiUrl}/insertBusinessSites`, branch);
   }
 
   updateBranch(branch: Branch): Observable<any> {
-    return this.http.put(`${this.apiUrl}/update`, branch);
+    return this.http.put(`${this.apiUrl}/updateBusinessSites`, branch);
   }
 
   deleteBranch(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/delete/${id}`);
+    return this.http.delete(`${this.apiUrl}/deleteBusinessSites/${id}`);
   }
 
 }
