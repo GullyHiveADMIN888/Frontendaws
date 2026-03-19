@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders ,HttpParams} from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
-//  import { environment } from '../../environments/environment.prod';
-  import { environment } from '../../environments/environment';
+  import { environment } from '../../environments/environment.prod';
+//  import { environment } from '../../environments/environment';
   import { Branch } from './models/branch.model';
   import { PagedResult } from './models/paged-result.model';
 
@@ -47,7 +47,13 @@ export interface Lead {
   areaName?: string;
   offerStatus?: string;
   areaId?: number;
-   leadId: number;
+  leadId: number;
+  hasQuote?: boolean; 
+    quoteDetails?: {
+    providerName: string;
+    price: number;
+    message: string;
+  }[];
 
 }
 
@@ -533,16 +539,15 @@ updateLegalIdentity(providerId: number, formData: FormData) {
   getBusinessUsers() {
   return this.http.get(`${this.apiUrl}/business-users`);
 }
-
-
-//lead Assignments
-assignLead(data:any){
-return this.http.post(`${this.apiUrl}/assignLeadToBusinessuser`,data);
+deleteBusinessUser(id: number) {
+  return this.http.delete(`${this.apiUrl}/delete-business-users/${id}`);
 }
 
-// getEmployees(){
-// return this.http.get('/api/business/employees');
-// }
+//lead Assignments
+assignJob(data:any){
+return this.http.post(`${this.apiUrl}/assignJobToBusinessuser`,data);
+}
+
 getProviderProfileByEmail(email: string) {
   const url = `${this.apiUrl}/getProviderProfileByEmail?email=${encodeURIComponent(email)}`;
 
@@ -561,9 +566,7 @@ getProviderProfileByEmail(email: string) {
     );
 }
 
-//  getBranches(): Observable<Branch[]> {
-//     return this.http.get<Branch[]>(`${this.apiUrl}/getBranches`);
-//   }
+
 getBranches(pageNumber: number = 1, pageSize: number = 10): Observable<PagedResult<Branch>> {
   const params = new HttpParams()
     .set('pageNumber', pageNumber)
@@ -583,5 +586,15 @@ getBranches(pageNumber: number = 1, pageSize: number = 10): Observable<PagedResu
   deleteBranch(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/deleteBusinessSites/${id}`);
   }
+
+  // leads.service.ts (or seller.service.ts)
+
+getQuotedLeads(page: number = 1, pageSize: number = 10) {
+  return this.http.get<any>(`${this.apiUrl}/quoted?page=${page}&pageSize=${pageSize}`);
+}
+
+getAcceptedLeads(page: number = 1, pageSize: number = 10) {
+  return this.http.get<any>(`${this.apiUrl}/accepted?page=${page}&pageSize=${pageSize}`);
+}
 
 }

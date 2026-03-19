@@ -1,3 +1,9 @@
+<!-- GLOBAL ALERT (TOP RIGHT) -->
+<div *ngIf="alertMessage"
+     class="fixed top-5 right-5 px-4 py-3 rounded text-white shadow-lg z-[9999]"
+     [ngClass]="alertType === 'success' ? 'bg-green-500' : 'bg-red-500'">
+  {{ alertMessage }}
+</div>
 <div class="p-6">
 
   <!-- Header -->
@@ -147,14 +153,14 @@ Fetch
 <!-- <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.providerId" readonly placeholder="Provider Id"/>
   -->
- <input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.sellerId" readonly placeholder="User Id"/> 
+ <!-- <input class="border p-2 bg-gray-100"
+[(ngModel)]="profile.sellerId" readonly placeholder="User Id"/>  -->
 
-<input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.legalName" readonly placeholder="Legal Name"/>
 
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.displayName" readonly placeholder="Display Name"/>
+<input class="border p-2 bg-gray-100"
+[(ngModel)]="profile.legalName" readonly placeholder="Legal Name"/>
 
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.email" readonly placeholder="Email"/>
@@ -162,17 +168,17 @@ Fetch
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.phone" readonly placeholder="Phone"/>
 
-<input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.providerType" readonly placeholder="Provider Type"/>
+<!-- <input class="border p-2 bg-gray-100"
+[(ngModel)]="profile.providerType" readonly placeholder="Provider Type"/> -->
 
+<!-- <input class="border p-2 bg-gray-100"
+[(ngModel)]="profile.status" readonly placeholder="Status"/> -->
 <input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.status" readonly placeholder="Status"/>
+[(ngModel)]="profile.state" readonly placeholder="Base State"/>
 
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.baseCity" readonly placeholder="Base City"/>
 
-<input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.state" readonly placeholder="Base State"/>
 
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.addressLine1" readonly placeholder="Address Line 1"/>
@@ -186,11 +192,11 @@ Fetch
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.landmark" readonly placeholder="Landmark"/>
 
-<input class="border p-2 bg-gray-100"
+<!-- <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.addressCity" readonly placeholder="City"/>
 
 <input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.addressState" readonly placeholder="State"/>
+[(ngModel)]="profile.addressState" readonly placeholder="State"/> -->
 
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.pincode" readonly placeholder="Pincode"/>

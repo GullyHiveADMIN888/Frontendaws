@@ -15,17 +15,23 @@ interface User {
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, FormsModule],   // ✅ ADD HERE
+  imports: [CommonModule, FormsModule],   //  ADD HERE
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css']
   
 })
 export class UsersComponent {
+alertMessage = '';
+alertType: 'success' | 'error' = 'success';
 
-  // users: User[] = [
-  //   { id: 1, name: 'John Doe', email: 'john@gmail.com', phone: '9876543210', role: 'Admin' },
-  //   { id: 2, name: 'Sarah Khan', email: 'sarah@gmail.com', phone: '9123456780', role: 'Manager' }
-  // ];
+showAlert(message: string, type: 'success' | 'error') {
+  this.alertMessage = message;
+  this.alertType = type;
+
+  setTimeout(() => {
+    this.alertMessage = '';
+  }, 3000);
+}
 
 users: any[] = [];
 
@@ -68,64 +74,117 @@ closeModal(){
   this.resetForm();
 }
 
-
-// fetchProvider() {
-
-//   this.sellerService.getPublicProfile(this.searchId)
-//   .subscribe(profile => {
-
-//     this.profile = profile;
-//   });
-
-// }
 searchEmail: string = '';
 
+// fetchProvider() {
+//   if (!this.searchEmail) {
+//     alert('Please enter an email');
+//     return;
+//   }
+
+//   this.sellerService.getProviderProfileByEmail(this.searchEmail)
+//     .subscribe(profile => {
+//       this.profile = profile;
+//     });
+// }
+// saveUser(){
+
+// const payload = {
+//   userId: this.profile.sellerId,
+//   role: "member",
+//   status: "active"
+// };
+
+// this.sellerService.saveBusinessUser(payload)
+// .subscribe({
+
+// next:(res:any)=>{
+
+//   if(res.success){
+//     alert("User Added Successfully");
+//       // RELOAD USERS LIST
+//           this.loadUsers();
+
+//           //  Close modal
+//           this.closeModal();
+//   }
+//   else{
+//     alert("User already exists");
+//   }
+
+// },
+
+// error:(err)=>{
+//   console.error(err);
+//   alert("Something went wrong");
+// }
+
+// });
+
+// }
 fetchProvider() {
   if (!this.searchEmail) {
-    alert('Please enter an email');
+    this.showAlert('Please enter an email', 'error');
     return;
   }
 
   this.sellerService.getProviderProfileByEmail(this.searchEmail)
-    .subscribe(profile => {
-      this.profile = profile;
+    .subscribe({
+      next: (profile) => {
+        this.profile = profile;
+      },
+      error: () => {
+        this.showAlert('Provider not found', 'error');
+      }
     });
 }
-saveUser(){
+saveUser() {
 
-const payload = {
-  userId: this.profile.sellerId,
-  role: "member",
-  status: "active"
-};
+  const payload = {
+    userId: this.profile.sellerId,
+    role: "member",
+    status: "active"
+  };
 
-this.sellerService.saveBusinessUser(payload)
-.subscribe({
+  this.sellerService.saveBusinessUser(payload)
+    .subscribe({
 
-next:(res:any)=>{
+      next: (res: any) => {
 
-  if(res.success){
-    alert("User Added Successfully");
-    this.closeModal();
-  }
-  else{
-    alert("User already exists");
-  }
+        if (res.success) {
 
-},
+          this.showAlert("User added successfully", "success");
 
-error:(err)=>{
-  console.error(err);
-  alert("Something went wrong");
+          this.loadUsers();
+          this.closeModal();
+        }
+        else {
+          this.showAlert(res.message || "User already exists", "error");
+        }
+
+      },
+
+      error: (err) => {
+        console.error(err);
+        this.showAlert("Something went wrong", "error");
+      }
+
+    });
 }
-
-});
-
-}
-
  
 
   deleteUser(id: number) {
-    this.users = this.users.filter(u => u.id !== id);
-  }
+
+  if (!confirm('Are you sure you want to delete this user?')) return;
+
+  this.sellerService.deleteBusinessUser(id).subscribe({
+    next: () => {
+      this.users = this.users.filter(u => u.id !== id);
+      this.showAlert('User deleted successfully', 'success');
+    },
+    error: () => {
+      this.showAlert('Failed to delete user', 'error');
+    }
+  });
+}
 }
