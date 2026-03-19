@@ -1,8 +1,16 @@
+
+<!-- GLOBAL ALERT (TOP LAYER) -->
+<div *ngIf="alertMessage"
+     class="fixed top-5 right-5 px-4 py-3 rounded text-white shadow-lg z-[9999]"
+     [ngClass]="alertType === 'success' ? 'bg-green-500' : 'bg-red-500'">
+  {{ alertMessage }}
+</div>
+
 <div class="bg-gray-50 min-h-screen p-6">
-  <div *ngIf="alertMessage" class="mb-4 p-3 rounded text-white"
+  <!-- <div *ngIf="alertMessage" class="mb-4 p-3 rounded text-white"
     [ngClass]="alertType === 'success' ? 'bg-green-500' : 'bg-red-500'">
     {{ alertMessage }}
-  </div>
+  </div> -->
   <!-- Page Header with Add Button -->
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-gray-800">Branches</h1>

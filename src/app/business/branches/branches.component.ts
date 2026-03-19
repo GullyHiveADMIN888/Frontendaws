@@ -265,85 +265,140 @@ get pages(): number[] {
   //     IsActive: this.branchForm.isActive,
   //     AddressId: this.branchForm.addressId || null,
   //     Line1: this.branchForm.line1 || "",
-  //     Line2: this.branchForm.line2 || "",
+  //     Line2: this.branchForm.line2 || "", 
   //     Pincode: this.branchForm.pincode || "",
   //     CityId: this.branchForm.cityId || null,
   //     StateId: this.branchForm.stateId || null,
   //     AreaIds: this.branchForm.areaIds?.length ? this.branchForm.areaIds : [],
   //   };
 
-  //   console.log('Sending payload:', JSON.stringify(payload));
+  //   this.isLoading = true;
 
-  //   if (this.editingBranch) {
-  //     this.businessService.updateBranch(payload).subscribe(() => this.loadBranches());
-  //   } else {
-  //     this.businessService.insertBranch(payload).subscribe(() => this.loadBranches());
-  //   }
-  //   this.closeModal();
+  //   const request = this.editingBranch
+  //     ? this.businessService.updateBranch(payload)
+  //     : this.businessService.insertBranch(payload);
+
+  //   request.subscribe({
+  //     next: (res: any) => {
+  //       this.isLoading = false;
+
+  //       // ✅ SUCCESS ALERT
+  //       alert(res?.message || 'Branch saved successfully');
+
+  //       this.loadBranches();
+  //       this.closeModal();
+  //     },
+  //     error: (err) => {
+  //       this.isLoading = false;
+
+  //       //  ERROR ALERT
+  //       const errorMessage =
+  //         err?.error?.message || 'Something went wrong';
+
+  //       alert(errorMessage);
+
+  //       console.error('Insert error:', err);
+  //     }
+  //   });
   // }
   saveBranch() {
-    const payload: any = {
-      Id: this.branchForm.id || null,
-      Name: this.branchForm.name?.trim() || "",
-      BusinessId: this.branchForm.businessId || null,
-      IsActive: this.branchForm.isActive,
-      AddressId: this.branchForm.addressId || null,
-      Line1: this.branchForm.line1 || "",
-      Line2: this.branchForm.line2 || "", 
-      Pincode: this.branchForm.pincode || "",
-      CityId: this.branchForm.cityId || null,
-      StateId: this.branchForm.stateId || null,
-      AreaIds: this.branchForm.areaIds?.length ? this.branchForm.areaIds : [],
-    };
+  const payload: any = {
+    Id: this.branchForm.id || null,
+    Name: this.branchForm.name?.trim() || "",
+    BusinessId: this.branchForm.businessId || null,
+    IsActive: this.branchForm.isActive,
+    AddressId: this.branchForm.addressId || null,
+    Line1: this.branchForm.line1 || "",
+    Line2: this.branchForm.line2 || "",
+    Pincode: this.branchForm.pincode || "",
+    CityId: this.branchForm.cityId || null,
+    StateId: this.branchForm.stateId || null,
+    AreaIds: this.branchForm.areaIds?.length ? this.branchForm.areaIds : [],
+  };
 
-    this.isLoading = true;
+  this.isLoading = true;
 
-    const request = this.editingBranch
-      ? this.businessService.updateBranch(payload)
-      : this.businessService.insertBranch(payload);
+  const isEdit = !!this.editingBranch;
 
-    request.subscribe({
-      next: (res: any) => {
-        this.isLoading = false;
+  const request = isEdit
+    ? this.businessService.updateBranch(payload)
+    : this.businessService.insertBranch(payload);
 
-        // ✅ SUCCESS ALERT
-        alert(res?.message || 'Branch saved successfully');
+  request.subscribe({
+    next: (res: any) => {
+      this.isLoading = false;
 
-        this.loadBranches();
-        this.closeModal();
-      },
-      error: (err) => {
-        this.isLoading = false;
+      // ✅ SUCCESS MESSAGE (same style as delete)
+      const successMessage =
+        res?.message ||
+        (isEdit ? 'Branch updated successfully' : 'Branch created successfully');
 
-        //  ERROR ALERT
-        const errorMessage =
-          err?.error?.message || 'Something went wrong';
+      this.showAlert(successMessage, 'success');
 
-        alert(errorMessage);
+      this.loadBranches();
+      this.closeModal();
+    },
+    error: (err) => {
+      this.isLoading = false;
 
-        console.error('Insert error:', err);
-      }
-    });
-  }
-  // addBranch(branch: Branch) {
-  //   this.businessService.insertBranch(branch).subscribe(() => this.loadBranches());
-  // }
+      // ❌ ERROR MESSAGE (same as delete)
+      const errorMessage =
+        err?.error?.message ||
+        err?.message ||
+        (isEdit
+          ? 'Failed to update branch. Please try again.'
+          : 'Failed to create branch. Please try again.');
 
-  // updateBranch(branch: Branch) {
-  //   this.businessService.updateBranch(branch).subscribe(() => this.loadBranches());
-  // }
+      this.showAlert(errorMessage, 'error');
 
-  deleteBranch(branch: Branch) {
-    if (confirm(`Are you sure you want to delete ${branch.name}?`)) {
-      this.businessService.deleteBranch(branch.id).subscribe({
-        next: () => {
-          // remove from local array
-          this.branches = this.branches.filter(b => b.id !== branch.id);
-        },
-        error: err => console.error(err)
-      });
+      console.error('Save error:', err);
     }
+  });
+}
+ 
+  // deleteBranch(branch: Branch) {
+  //   if (confirm(`Are you sure you want to delete ${branch.name}?`)) {
+  //     this.businessService.deleteBranch(branch.id).subscribe({
+  //       next: () => {
+  //         // remove from local array
+  //         this.branches = this.branches.filter(b => b.id !== branch.id);
+  //       },
+  //       error: err => console.error(err)
+  //     });
+  //   }
+  // }
+  deleteBranch(branch: Branch) {
+  if (!confirm(`Are you sure you want to delete ${branch.name}?`)) {
+    return;
   }
+
+  this.isLoading = true;
+
+  this.businessService.deleteBranch(branch.id).subscribe({
+    next: (res: any) => {
+      this.isLoading = false;
+
+      // Remove from UI
+      this.branches = this.branches.filter(b => b.id !== branch.id);
+
+      // ✅ SUCCESS MESSAGE
+      this.showAlert(res?.message || 'Branch deleted successfully', 'success');
+    },
+    error: (err) => {
+      this.isLoading = false;
+
+      //  ERROR MESSAGE (clean + safe)
+      const errorMessage =
+        err?.error?.message ||
+        err?.message ||
+        'Failed to delete branch. Please try again.';
+
+      this.showAlert(errorMessage, 'error');
+
+      console.error('Delete error:', err);
+    }
+  });
+}
   allowNumbersOnly(event: KeyboardEvent) {
     const charCode = event.which ? event.which : event.keyCode;
     if (charCode < 48 || charCode > 57) {
