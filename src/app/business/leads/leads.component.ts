@@ -1,6 +1,5 @@
 
-import { Component, OnInit, Input } from '@angular/core';
-
+import { Component, OnInit, Input , Output, EventEmitter } from '@angular/core';
 import { SellerService, Lead } from '../business.service';
 
 @Component({
@@ -9,6 +8,7 @@ import { SellerService, Lead } from '../business.service';
     styleUrls: ['./leads.component.css'],
     standalone: false
 })
+
 export class LeadsComponent implements OnInit {
 
  filterStatus: 'all' | 'offered' | 'unlocked' | 'responded' | 'viewed' | 'committed' = 'all';
@@ -29,80 +29,120 @@ export class LeadsComponent implements OnInit {
   totalPages = 1;
   selectedLead: Lead | null = null;
   showLeadModal = false;
-
+  totalLeadss: number = 0;
 
 
   // Send Quote form fields
   quoteAmount: string = '';
   quoteMessage: string = '';
 
+@Output() leadPurchased = new EventEmitter<number>();
+
   @Input() totalBalance: number = 0;
   constructor(private sellerService: SellerService) { }
 
-  ngOnInit(): void {
-    this.loadLeads();
-  }
+  // ngOnInit(): void {
+  //   this.loadLeads();
+  // }
+ngOnInit(): void {
+  this.loadLeads(1);
+}
+  // loadLeads() {
+  //   this.loading = true;
 
-  loadLeads() {
-    this.loading = true;
+  //   this.sellerService.getLeads().subscribe({
+  //     next: (data: any[]) => {
+  //       this.leads = data.map((l: any) => {
+  //         const isScheduled = l.timePreference === 'scheduled';
 
-    this.sellerService.getLeads().subscribe({
-      next: (data: any[]) => {
-        this.leads = data.map((l: any) => {
-          const isScheduled = l.timePreference === 'scheduled';
+  //         // Parse price breakdown safely
+  //         let priceBreakdown: { [key: string]: number } | undefined;
+  //         if (l.priceBreakdown) {
+  //           if (typeof l.priceBreakdown === 'string') {
+  //             try {
+  //               priceBreakdown = JSON.parse(l.priceBreakdown);
+  //             } catch (err) {
+  //               console.warn('Invalid priceBreakdown JSON for lead', l.id);
+  //               priceBreakdown = undefined;
+  //             }
+  //           } else {
+  //             priceBreakdown = l.priceBreakdown;
+  //           }
+  //         }
 
-          // Parse price breakdown safely
-          let priceBreakdown: { [key: string]: number } | undefined;
-          if (l.priceBreakdown) {
-            if (typeof l.priceBreakdown === 'string') {
-              try {
-                priceBreakdown = JSON.parse(l.priceBreakdown);
-              } catch (err) {
-                console.warn('Invalid priceBreakdown JSON for lead', l.id);
-                priceBreakdown = undefined;
-              }
-            } else {
-              priceBreakdown = l.priceBreakdown;
-            }
-          }
+  //         return {
+  //           ...l,
+  //           offerStatus: l.offerStatus ?? 'offered',   // ✅ IMPORTANT
+  //           description: l.description || 'No description provided',
+  //           location: l.location || 'N/A',
+  //           budget:
+  //             l.budgetMin && l.budgetMax
+  //               ? `₹${l.budgetMin} - ₹${l.budgetMax}`
+  //               : 'Budget not specified',
+  //           //  time: new Date(l.createdAt).toLocaleString(),
+  //           scheduleLabel:
+  //             isScheduled && l.scheduledStart && l.scheduledEnd
+  //               ? `${new Date(l.scheduledStart).toLocaleString()} - ${new Date(l.scheduledEnd).toLocaleString()}`
+  //               : 'Flexible / Anytime',
+  //           time: this.timeAgo(l.createdAt),
+  //           leadPrice: l.leadPrice ? `${l.leadPrice}` : undefined,
+  //           priceBreakdown: priceBreakdown,
+  //           isPurchased: l.isPurchased ?? false,
+  //           //  isPurchased: l.isPurchased === true || l.isPurchased === 'true',
+  //           unlockedCount: Number(l.unlockedCount ?? 0),
+  //           committedCount:  Number(l.committedCount ?? 0),
+  //           lead_Id: l.leadId,
+  //            areaName: l.areaName ?? '',
+  //            areaId: l.areaId ?? null
 
-          return {
-            ...l,
-            offerStatus: l.offerStatus ?? 'offered',   // ✅ IMPORTANT
-            description: l.description || 'No description provided',
-            location: l.location || 'N/A',
-            budget:
-              l.budgetMin && l.budgetMax
-                ? `₹${l.budgetMin} - ₹${l.budgetMax}`
-                : 'Budget not specified',
-            //  time: new Date(l.createdAt).toLocaleString(),
-            scheduleLabel:
-              isScheduled && l.scheduledStart && l.scheduledEnd
-                ? `${new Date(l.scheduledStart).toLocaleString()} - ${new Date(l.scheduledEnd).toLocaleString()}`
-                : 'Flexible / Anytime',
-            time: this.timeAgo(l.createdAt),
-            leadPrice: l.leadPrice ? `${l.leadPrice}` : undefined,
-            priceBreakdown: priceBreakdown,
-            isPurchased: l.isPurchased ?? false,
-            //  isPurchased: l.isPurchased === true || l.isPurchased === 'true',
-            unlockedCount: Number(l.unlockedCount ?? 0),
-            committedCount:  Number(l.committedCount ?? 0),
-            lead_Id: l.leadId,
-             areaName: l.areaName ?? '',
-             areaId: l.areaId ?? null
+  //         } as Lead;
+  //       });
 
-          } as Lead;
-        });
+  //       this.updatePagination();
+  //       this.loading = false;
+  //     },
+  //     error: (err) => {
+  //       console.error('Failed to load leads', err);
+  //       this.loading = false;
+  //     }
+  //   });
+  // }
+  loadLeads(page: number = 1) {
+  this.loading = true;
 
-        this.updatePagination();
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Failed to load leads', err);
-        this.loading = false;
-      }
-    });
-  }
+  this.sellerService.getLeads(page, this.pageSize).subscribe({
+    next: (res) => {
+
+      const leadsData = res.data;
+      const pagination = res.pagination;
+
+      this.currentPage = pagination.page;
+      this.totalPages = pagination.totalPages;
+      this.totalLeadss = pagination.totalCount;
+
+      this.leads = leadsData.map((l: any) => {
+        const isScheduled = l.timePreference === 'scheduled';
+
+        return {
+          ...l,
+          offerStatus: l.offerStatus ?? 'offered',
+          description: l.description || 'No description provided',
+          location: l.location || 'N/A',
+          time: this.timeAgo(l.createdAt),
+          isPurchased: l.isPurchased ?? false,
+          unlockedCount: Number(l.unlockedCount ?? 0),
+          committedCount: Number(l.committedCount ?? 0)
+        };
+      });
+
+      this.loading = false;
+    },
+    error: (err) => {
+      console.error(err);
+      this.loading = false;
+    }
+  });
+}
   timeAgo(date: string): string {
     const diff = Date.now() - new Date(date).getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -139,17 +179,32 @@ export class LeadsComponent implements OnInit {
     this.totalPages = Math.ceil(this.filteredLeads.length / this.pageSize) || 1;
   }
 
-  nextPage() {
-    if (this.currentPage < this.totalPages) this.currentPage++;
+  // nextPage() {
+  //   if (this.currentPage < this.totalPages) this.currentPage++;
+  // }
+nextPage() {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.loadLeads(this.currentPage);
   }
-
+}
+  // prevPage() {
+  //   if (this.currentPage > 1) this.currentPage--;
+  // }
   prevPage() {
-    if (this.currentPage > 1) this.currentPage--;
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.loadLeads(this.currentPage);
   }
+}
 
+  // goToPage(page: number) {
+  //   this.currentPage = page;
+  // }
   goToPage(page: number) {
-    this.currentPage = page;
-  }
+  this.currentPage = page;
+  this.loadLeads(page);
+}
 
   get pages(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
@@ -227,46 +282,7 @@ export class LeadsComponent implements OnInit {
     this.showConfirmModal = false;
   }
 
-  // confirmBuyLead() {
-  //   const lead = this.selectedLead;
-  //   if (!lead) return;
-
-  //   this.sellerService.buyLead(lead.leadId).subscribe({
-  //     next: (res: any) => {
-  //       // Mark as purchased locally
-  //       lead.isPurchased = true;
-  //       lead.leadPrice = `₹${res.pplPrice}`;
-  //       // // ✅ ADD THIS LINE
-  //      //  lead.unlockedCount = (lead.unlockedCount ?? 0) + 1;
-
-  // // ✅ update values from backend
-  // lead.unlockedCount = res.unlockedCount ?? lead.unlockedCount;
-  // lead.committedCount = res.committedCount ?? lead.committedCount;
-  // lead.offerStatus = res.offerStatus ?? lead.offerStatus;
-
-  // // trigger UI refresh
-  // this.leads = [...this.leads];
-  //       // ✅ Close modal
-  //       this.showPaymentModal = false;
-  //       this.showConfirmModal = false;
-  //       this.showSendQuoteModal = true;
-  //       alert(`Lead purchased successfully for ₹${res.pplPrice}`);
-  //     },
-
-  //     error: (err) => {
-  //       console.error('Failed to buy lead', err);
-
-  //       // ✅ Show backend message if available
-  //       const message =
-  //         err?.error?.message ||
-  //         'Failed to purchase lead. Please try again.';
-
-  //       alert(message);
-  //       this.showConfirmModal = false;
-  //     }
-  //   });
-  // }
-
+  
 confirmBuyLead() {
   const lead = this.selectedLead;
   if (!lead) return;
@@ -284,7 +300,11 @@ confirmBuyLead() {
       lead.unlockedCount = res.unlockedCount ?? lead.unlockedCount;
       lead.committedCount = res.committedCount ?? lead.committedCount;
       lead.offerStatus = res.offerStatus ?? lead.offerStatus;
-
+        // 🔥 update wallet
+  this.totalBalance = res.walletBalance;
+console.log( res.walletBalance);
+  // send to dashboard
+  this.leadPurchased.emit(res.walletBalance);
       // trigger UI refresh
       this.leads = [...this.leads];
 

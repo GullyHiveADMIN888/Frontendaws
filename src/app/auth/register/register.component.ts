@@ -10,6 +10,9 @@ import { RouterModule } from '@angular/router';
 import { forkJoin } from 'rxjs';
 // For identity type validation
 import { ViewChild } from '@angular/core';
+import { Step1MsmeBasicInfoComponent } from '../step1-msme-basic-info/step1-msme-basic-info.component';
+import { Step2MsmeBusinessDetailsComponent } from '../step2-msme-business-details/step2-msme-business-details.component';
+import { Step3MsmeDocumentsComponent } from '../step3-msme-documents/step3-msme-documents.component';
 
 
 @Component({
@@ -23,6 +26,9 @@ import { ViewChild } from '@angular/core';
     Step2LegalIdentityComponent,
     Step3ProfessionalDetailsComponent,
     OTPVerificationComponent,
+    Step1MsmeBasicInfoComponent,
+    Step2MsmeBusinessDetailsComponent,
+    Step3MsmeDocumentsComponent
 
 
   ],
@@ -75,6 +81,8 @@ export class RegisterComponent {
     professionalType: null,
     howToKnowId: null,
     howToKnowOther: '',
+    legalCompanyName: '',
+    companyName: '',
   };
 
   errors: any = {};
@@ -114,19 +122,6 @@ export class RegisterComponent {
 
 
   goNextFromStep1() {
-    // // 🔴 Step validation first
-    // if (!this.validateStep1()) {
-    //   return;
-    // }
-
-    // 🔴 Mobile NOT verified → STOP + ALERT
-    // if (!this.isMobileVerified) {
-    //   alert('Please verify your mobile number before continuing.');
-    //   return;
-    // }
-
-
-    // ✅ All good → go to Legal Identity
     this.currentStep = 3;
   }
 
@@ -134,24 +129,10 @@ export class RegisterComponent {
 
 
   goNextFromStep3() {
-    // // Step 3 fields
-    // if (!this.validateStep3()) return;
-
-    // // Validate identity number
-    // const step2Valid = this.step2Component?.validateIdentityNumber();
-    // if (!step2Valid) {
-    //   // Focus the field if needed
-    //   alert(this.errors.registrationNumber || 'Please correct your identity number.');
-    //   return;
-    // }
-
     this.currentStep = 4; // OTP
   }
 
   goNextFromStep4() {
-    // if (this.validateStep4()) {
-    //   // this.currentStep = 5; // OTP
-    // }
   }
 
   /* 🔹 OTP FLOW */
@@ -174,21 +155,36 @@ export class RegisterComponent {
   constructor(private service: AuthService) { }
 
 
-  submitForm() {
-   // if (!this.validateStep4()) return;
 
+
+
+  submitForm() {
+
+    if (this.formData.providerType === 'INDIVIDUAL') {
+      this.submitIndividualRegistration();
+    }
+
+    if (this.formData.providerType === 'MSME' || this.formData.providerType === 'COMPANY') {
+      this.submitCompanyRegistration();
+    }
+
+  }
+
+
+
+  submitIndividualRegistration() {
     this.isSubmitting = true;
 
     const formData = new FormData();
-
+    console.log(formData);
     // Step 1
-  //  formData.append('FullName', this.formData.fullName || '');
+    //  formData.append('FullName', this.formData.fullName || '');
     const fullName = `${this.formData.firstName || ''} ${this.formData.lastName || ''}`.trim();
 
-  formData.append('FullName', fullName);
+    formData.append('FullName', fullName);
     formData.append('Email', this.formData.email || '');
     formData.append('Mobile', this.formData.mobile || '');
-    formData.append('ProfessionalType', this.formData.professionalType || '');
+    formData.append('ProfessionalType', this.formData.providerType || '');
 
 
     // ✅ Service Category IDs
@@ -235,18 +231,21 @@ export class RegisterComponent {
       formData.append(`ServiceAreas[${index}].AreaId`, area.areaId.toString());
       formData.append(`ServiceAreas[${index}].CityId`, area.cityId.toString());
 
-      formData.append('HowToKnowId', this.formData.howToKnowId?.toString() || '');
 
-      if (this.formData.howToKnowId === 6) {
-        formData.append('HowToKnowOther', this.formData.howToKnowOther || '');
-      }
     });
+    formData.append('HowToKnowId', this.formData.howToKnowId?.toString() || '');
 
-
-
-
- 
-
+    if (this.formData.howToKnowId === 6) {
+      formData.append('HowToKnowOther', this.formData.howToKnowOther || '');
+    }
+  // ------------------- LOG FormData -------------------
+  const debugData: any = {};
+  formData.forEach((value, key) => {
+    debugData[key] = value;
+  });
+  console.log('FormData (Individual) being sent:', debugData);
+  //.........
+  
     this.service.submitRegistration(formData).subscribe({
       next: (res: any) => {
         console.log('Backend response:', res);
@@ -270,129 +269,111 @@ export class RegisterComponent {
   }
 
 
+  submitCompanyRegistration() {
+
+    this.isSubmitting = true;
+
+    const formData = new FormData();
+    console.log(formData);
+    formData.append('CompanyName', this.formData.companyName || '');
+    formData.append('LegalCompanyName', this.formData.legalCompanyName || '');
+
+    // Step 1
+    //  formData.append('FullName', this.formData.fullName || '');
+    const fullName = `${this.formData.firstName || ''} ${this.formData.lastName || ''}`.trim();
+
+    formData.append('FullName', fullName);
+    formData.append('Email', this.formData.email || '');
+    formData.append('Mobile', this.formData.mobile || '');
+    formData.append('ProfessionalType', this.formData.providerType || '');
 
 
+    // ✅ Service Category IDs
+    formData.append('ServiceCategoryId', this.formData.serviceCategoryId?.toString() || '');
+    (this.formData.subCategoryIds || []).forEach((id: number) => {
+      formData.append('SubCategoryIds[]', id.toString());
+    });
 
 
+    // Step 2
+    formData.append('BusinessName', this.formData.businessName || '');
+    formData.append('RegistrationType', this.formData.registrationType || '');
+    formData.append('RegistrationNumber', this.formData.registrationNumber || '');
 
-  // validateStep1(): boolean {
-  //   this.errors = {};
-
-  //   const name = this.formData.fullName?.trim();
-
-  //   if (!name) {
-  //     this.errors.fullName = 'Full Name is required';
-  //   }
-  //   else if (name.length < 3) {
-  //     this.errors.fullName = 'Full Name must be at least 3 characters';
-  //   }
-  //   else if (!/^[A-Za-z\u0900-\u097F\s.-]+$/.test(name)) {
-  //     this.errors.fullName = 'Full Name contains invalid characters';
-  //   }
+    formData.append('Password', this.formData.password || '');
+    if (this.formData.registrationDocument) formData.append('RegistrationDocument', this.formData.registrationDocument);
+    if (this.formData.addressProof) formData.append('AddressProof', this.formData.addressProof);
 
 
-  //   if (!this.formData.email?.trim()) {
-  //     this.errors.email = 'Email is required';
-  //   } else if (!/^\S+@\S+\.\S+$/.test(this.formData.email)) {
-  //     this.errors.email = 'Enter a valid email';
-  //   }
+    formData.append('Line1', this.formData.line1 || '');
+    formData.append('Line2', this.formData.line2 || '');
+    // formData.append('Locality', this.formData.locality || '');
+    formData.append('AreaId', this.formData.areaId?.toString() || '');
 
-  //   if (!this.formData.mobile?.trim()) {
-  //     this.errors.mobile = 'Mobile number is required';
-  //   } else if (!/^\d{10}$/.test(this.formData.mobile)) {
-  //     this.errors.mobile = 'Enter valid 10-digit mobile';
-  //   }
+    formData.append('Landmark', this.formData.landmark || '');
 
-  //   if (!this.formData.serviceCategoryId) {
-  //     this.errors.serviceCategoryId = 'Select a service category';
-  //   }
+    formData.append('StateId', this.formData.stateId?.toString() || '');
+    formData.append('CityId', this.formData.cityId?.toString() || '');
+    formData.append('PinCode', this.formData.pinCode || '');
 
-  //   // 🔹 SUBCATEGORY VALIDATION
-  //   if (this.formData.hasSubCategories) {
-  //     if (!this.formData.subCategoryIds?.length) {
-  //       this.errors.subCategoryIds = 'Select at least one service subcategory';
-  //     }
-  //   }
+    // Step 3
+    formData.append('SelfOverview', this.formData.selfOverview || '');
+    formData.append('SkillsBackground', this.formData.skillsBackground || '');
+    formData.append('Achievements', this.formData.achievements || '');
+    if (this.formData.profilePicture)
+      formData.append('ProfilePicture', this.formData.profilePicture);
+    // Convert selected area IDs into serviceAreas array
+    this.formData.serviceAreas = (this.formData.selectedAreaIds || []).map((id: number) => ({
+      areaId: id,
+      cityId: this.formData.cityId
+    }));
 
+    (this.formData.serviceAreas || []).forEach((area: any, index: number) => {
+      formData.append(`ServiceAreas[${index}].AreaId`, area.areaId.toString());
+      formData.append(`ServiceAreas[${index}].CityId`, area.cityId.toString());
 
-  //   if (!this.formData.password?.trim()) {
-  //     this.errors.password = 'Password is required';
-  //   }
-  //   else if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/.test(this.formData.password)) {
-  //     this.errors.password =
-  //       'Password must be at least 6 characters and include 1 uppercase letter, 1 number, and 1 special character';
-  //   }
+    });
+    formData.append('HowToKnowId', this.formData.howToKnowId?.toString() || '');
 
-  //   if (!this.formData.professionalType?.trim()) {
-  //     this.errors.professionalType = 'Select professional type';
-  //   }
+    if (this.formData.howToKnowId === 6) {
+      formData.append('HowToKnowOther', this.formData.howToKnowOther || '');
+    }
+  // ------------------- LOG FormData -------------------
+  const debugData: any = {};
+  formData.forEach((value, key) => {
+    debugData[key] = value;
+  });
+  console.log('FormData (Company/MSME) being sent:', debugData);
+//......
+    this.service.submitCompanyRegistration(formData).subscribe({
+      next: (res: any) => this.handleSuccess(res),
+      error: (err) => this.handleError(err)
+    });
 
-  //   return Object.keys(this.errors).length === 0;
-  // }
+  }
+ // ---------------------- SUCCESS / ERROR HANDLERS ----------------------
+handleSuccess(res: any) {
+  console.log('Backend response:', res);
 
+  if (res.userId) {
+    this.service.saveAuth(res.token, res.role, res.name, res.userId);
+    this.formData.userId = res.userId;
+    this.isSubmitting = false;
+    this.submitSuccess = true;
+    this.showVerificationModal = true;
+  }
+  this.isSubmitting = false;
+}
 
-  // validateStep3(): boolean {
-  //   this.errors = {};
-  //   if (!this.formData.businessName?.length) {
-  //     this.errors.businessName = 'Business name required';
-  //   }
-  //   if (!this.formData.registrationType?.length) {
-  //     this.errors.registrationType = 'Select registration type';
-  //   }
-  //   if (!this.formData.registrationNumber?.length) {
-  //     this.errors.registrationNumber = 'Registration number required';
-  //   }
-  //   if (!this.formData.registrationDocument) {
-  //     this.errors.registrationDocument = 'Upload registration document';
-  //   }
-  //   if (!this.formData.addressProof) {
-  //     this.errors.addressProof = 'Upload address proof';
-  //   }
-  //   if (!this.formData.line1?.trim()) {
-  //     this.errors.line1 = 'Line 1 is required';
-  //   }
-  //   if (!this.formData.stateId) {
-  //     this.errors.stateId = 'Select state';
-  //   }
+handleError(err: any) {
+  console.error('Backend error:', err);
 
-  //   if (!this.formData.cityId) {
-  //     this.errors.city = 'Select city';
-  //   }
+  if (err.error) {
+    console.error('Backend detailed error:', err.error);
+  }
 
-  //   if (!this.formData.pinCode?.trim()) {
-  //     this.errors.pinCode = 'PIN Code is required';
-  //   } else if (!/^\d{6}$/.test(this.formData.pinCode)) {
-  //     this.errors.pinCode = 'PIN Code must be exactly 6 digits';
-  //   }
-
-
-
-  //   return Object.keys(this.errors).length === 0;
-  // }
-
-  // validateStep4(): boolean {
-  //   this.errors = {};
-
-  //   if (!this.formData.selfOverview || this.formData.selfOverview.trim().length < 150) {
-  //     this.errors.selfOverview = 'Minimum 150 characters required';
-  //   }
-
-  //   if (!this.formData.skillsBackground || this.formData.skillsBackground.trim().length < 50) {
-  //     this.errors.skillsBackground = 'Minimum 50 characters required';
-  //   }
-  //   if (!this.formData.howToKnowId) {
-  //     this.errors.howToKnowId = 'Please select an option';
-  //   }
-
-  //   // ShowOtherInput logic should be checked via the selected ID
-  //   if (this.formData.howToKnowId === 6 && (!this.formData.howToKnowOther || this.formData.howToKnowOther.trim() === '')) {
-  //     this.errors.howToKnowOther = 'Please specify how you heard about us';
-  //   }
-
-  //   return Object.keys(this.errors).length === 0;
-  // }
-
-
+    this.isSubmitting = false;
+  }
 
   async openMobileVerification() {
     this.verificationType = 'mobile';
@@ -490,5 +471,35 @@ export class RegisterComponent {
       this.showOtpModal = false;
       this.showVerificationModal = false;
     }
+  }
+
+
+  selectProviderType(type: string) {
+    this.formData.providerType = type;
+
+    if (type === 'INDIVIDUAL') {
+      this.currentStep = 1;
+    }
+
+    if (type === 'MSME' || type === 'COMPANY') {
+      this.currentStep = 10;
+      // or start a different flow later
+    }
+  }
+
+  goNext() {
+    this.currentStep++;
+  }
+
+
+  individualSteps = [1, 2, 3, 4];
+  msmeSteps = [10, 11, 12];
+
+  get isIndividual() {
+    return this.formData.providerType === 'INDIVIDUAL';
+  }
+
+  get isMsme() {
+    return this.formData.providerType === 'MSME' || this.formData.providerType === 'COMPANY';
   }
 }

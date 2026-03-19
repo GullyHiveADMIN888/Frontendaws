@@ -33,12 +33,13 @@ import { LeadsComponent } from './leads/leads.component';
 import { ResponsesComponent } from './responses/responses.component';
 import { HelpComponent } from './help/help.component';
 import { ReferEarnComponent } from './refer-earn/refer-earn.component';
-import {  SharableProfileComponent} from './sharable-profile/sharable-profile.component';
+import { SharableProfileComponent } from './sharable-profile/sharable-profile.component';
 import { LedgerComponent } from './ledger/ledger.component';
 import { UsersComponent } from './users/users.component';
+import { BranchesComponent } from './branches/branches.component';
 
 // For seller not call by url
-import { AuthService } from '../auth/auth.service'; 
+import { AuthService } from '../auth/auth.service';
 
 const routes: Routes = [
 
@@ -62,7 +63,9 @@ const routes: Routes = [
       // Leads
       { path: 'leads', component: LeadsComponent },
 
-       { path: 'users', component: UsersComponent },
+      { path: 'users', component: UsersComponent },
+
+      { path: 'branches', component: BranchesComponent },
 
       // Responses
       { path: 'responses/:sellerId', component: ResponsesComponent },
@@ -80,7 +83,7 @@ const routes: Routes = [
       // Profile
       { path: 'completeProfile/:id', component: PublicProfileComponent },
 
-      { path: 'refer/:sellerId', component: ReferEarnComponent }, 
+      { path: 'refer/:sellerId', component: ReferEarnComponent },
 
       // Settings (nested)
       {
@@ -98,5 +101,5 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class SellerRoutingModule {}
+export class SellerRoutingModule { }
 

@@ -517,7 +517,14 @@ removeArea(area: {id: number, name: string}, event: Event) {
 // areas: { id: number, name: string }[] = [];
 selectedAreaIds: number[] = [];
 serviceArea: { cityId?: number, areaId?: number, areaName?: string } = {};
+
+// update wallets
+updateWallet(newBalance: number) {
+  this.totalBalance = newBalance;
 }
+}
+
+
 
 
 

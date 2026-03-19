@@ -59,7 +59,7 @@ this.showModal = true;
 }
 
 resetForm(){
-  this.searchId = 0;
+ this.searchEmail =''
   this.profile = {};
 }
 
@@ -69,17 +69,28 @@ closeModal(){
 }
 
 
+// fetchProvider() {
+
+//   this.sellerService.getPublicProfile(this.searchId)
+//   .subscribe(profile => {
+
+//     this.profile = profile;
+//   });
+
+// }
+searchEmail: string = '';
+
 fetchProvider() {
+  if (!this.searchEmail) {
+    alert('Please enter an email');
+    return;
+  }
 
-  this.sellerService.getPublicProfile(this.searchId)
-  .subscribe(profile => {
-
-    this.profile = profile;
-
-  });
-
+  this.sellerService.getProviderProfileByEmail(this.searchEmail)
+    .subscribe(profile => {
+      this.profile = profile;
+    });
 }
-
 saveUser(){
 
 const payload = {

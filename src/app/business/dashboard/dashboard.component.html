@@ -66,7 +66,7 @@
 
 
   <!-- <app-recent-leads [user]="user"></app-recent-leads> -->
-  <app-leads [totalBalance]="totalBalance"></app-leads>
+  <app-leads [totalBalance]="totalBalance"  (leadPurchased)="updateWallet($event)"></app-leads>
   <!-- <app-leads  [totalBalance]="totalBalance" (leadPurchased)="loadDashboardData()"></app-leads> -->
 
 </div>

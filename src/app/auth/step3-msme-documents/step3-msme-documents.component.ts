@@ -4,13 +4,13 @@ import { AuthService } from '../auth.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-    selector: 'app-step3-professional-details',
+    selector: 'app-step3-msme-documents',
     standalone: true,
     imports: [FormsModule],
-    templateUrl: './step3-professional-details.component.html'
+    templateUrl: './step3-msme-documents.component.html'
 })
-export class Step3ProfessionalDetailsComponent implements OnInit {
- @Input() errors: any = {};
+export class Step3MsmeDocumentsComponent implements OnInit {
+@Input() errors: any = {};
   @Input() formData: any;
   @Input() isSubmitting = false;
 
@@ -43,40 +43,63 @@ export class Step3ProfessionalDetailsComponent implements OnInit {
     this.inputChange.emit({ field, value });
   }
 
-  // onSelectHowKnow(event: any) {
-  //   const selectedId = Number(event.target.value);
-  //   this.onInput('howToKnowId', selectedId);
 
-  //   // Show "Other" textarea if OTHER_ID selected
-  //   this.showOtherInput = selectedId === this.OTHER_ID;
 
-  //   // Clear "Other" field if not OTHER_ID
-  //   if (!this.showOtherInput) {
-  //     this.onInput('howToKnowOther', '');
-  //   }
-  // }
 onHowToKnowChange(value: number | null) {
 
   this.formData.howToKnowId = value;
 
-  // Show textarea if Other (ID = 6)
-  this.showOtherInput = value === 6;
+  this.showOtherInput = value === this.OTHER_ID;
 
-  // Clear error when user selects
-  if (this.errors.howToKnowId) {
+  if (this.errors?.howToKnowId) {
     delete this.errors.howToKnowId;
   }
 
-  // If not Other, clear other field
-  if (value !== 6) {
+  if (value !== this.OTHER_ID) {
     this.formData.howToKnowOther = '';
-    delete this.errors.howToKnowOther;
+
+    if (this.errors?.howToKnowOther) {
+      delete this.errors.howToKnowOther;
+    }
   }
 }
 
-  validateStep4(): boolean {
+//   validateStep4(): boolean {
 
-  this.errors = {};
+//    this.errors = this.errors || {};
+
+//   const overview = this.formData.selfOverview?.trim() || '';
+//   const skills = this.formData.skillsBackground?.trim() || '';
+
+//   if (!overview || overview.length < 150) {
+//     this.errors.selfOverview = 'Minimum 150 characters required';
+//   }
+
+//   if (!skills || skills.length < 50) {
+//     this.errors.skillsBackground = 'Minimum 50 characters required';
+//   }
+
+//   if (!this.formData.howToKnowId) {
+//     this.errors.howToKnowId = 'Please select an option';
+//   }
+
+//   // If "Other" selected (ID = 6)
+//   if (
+//     this.formData.howToKnowId === 6 &&
+//     (!this.formData.howToKnowOther || this.formData.howToKnowOther.trim().length < 3)
+//   ) {
+//     this.errors.howToKnowOther = 'Please specify how you heard about us';
+//   }
+
+//   return Object.keys(this.errors).length === 0;
+// }
+validateStep4(): boolean {
+
+  // ✅ keep same reference
+  this.errors = this.errors || {};
+
+  // 🔥 CLEAR OLD ERRORS (VERY IMPORTANT)
+  Object.keys(this.errors).forEach(key => delete this.errors[key]);
 
   const overview = this.formData.selfOverview?.trim() || '';
   const skills = this.formData.skillsBackground?.trim() || '';
@@ -93,9 +116,8 @@ onHowToKnowChange(value: number | null) {
     this.errors.howToKnowId = 'Please select an option';
   }
 
-  // If "Other" selected (ID = 6)
   if (
-    this.formData.howToKnowId === 6 &&
+    this.formData.howToKnowId === this.OTHER_ID &&
     (!this.formData.howToKnowOther || this.formData.howToKnowOther.trim().length < 3)
   ) {
     this.errors.howToKnowOther = 'Please specify how you heard about us';

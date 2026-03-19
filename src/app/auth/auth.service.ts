@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
- // import { environment } from '../../environments/environment'
-  import { environment } from '../../environments/environment.prod';
+  import { environment } from '../../environments/environment'
+ // import { environment } from '../../environments/environment.prod';
 
 
 
@@ -91,7 +91,9 @@ export class AuthService implements CanActivate {
 submitRegistration(formData: FormData) {
   return this.http.post(`${this.apiUrl}/register`, formData);
 }
-
+submitCompanyRegistration(formData: FormData) {
+  return this.http.post(`${this.apiUrl}/company-register`, formData);
+}
   // auth.service.ts
 saveAuth(token: string, role: string, name?: string, userId?: string) {
   localStorage.setItem('token', token);
@@ -113,22 +115,38 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
   //   this.router.navigate([routes[role] ?? '/login']);
   // }
 
-  redirectByRole(role: string, providerType?: string | null,  businessUserId?: boolean) {
+  redirectByRole(role: string, providerType?: string | null,  businessUserId?: boolean, businessUserRole?: string | null) {
   const routes: Record<string, string> = {
     Admin: '/admin',
     SuperAdmin: '/admin',
     Buyer: '/buyer'
   };
-  // ⭐ Business staff dashboard
+
+  //  Business staff dashboard
   if (businessUserId) {
-    this.router.navigate(['/business-user']);
-    return;
+    if (businessUserRole?.toLowerCase() === 'admin') {
+      console.log('Redirecting to Business Admin Dashboard');
+      this.router.navigate(['/business']); // admin dashboard
+      return;
+    }
+
+    if (businessUserRole?.toLowerCase() === 'member') {
+      console.log('Redirecting to Business User Dashboard');
+      this.router.navigate(['/business-user']); // member dashboard
+      return;
+    }
   }
+
+  // // ⭐ Business staff dashboard
+  // if (businessUserId) {
+  //   this.router.navigate(['/business-user']);
+  //   return;
+  // }
 
   // Special case for Seller
   if (role === 'Seller') {
 
-    if (providerType === 'business') {
+    if (providerType === 'msme') {
       this.router.navigate(['/business']);
       return;
     }

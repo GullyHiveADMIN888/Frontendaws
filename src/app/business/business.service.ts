@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders ,HttpParams} from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
-  import { environment } from '../../environments/environment.prod';
- // import { environment } from '../../environments/environment';
+//  import { environment } from '../../environments/environment.prod';
+  import { environment } from '../../environments/environment';
+  import { Branch } from './models/branch.model';
+  import { PagedResult } from './models/paged-result.model';
+
 // --- Dashboard & Stats ---
 export interface SellerStats {
   totalLeads: number;
@@ -207,8 +210,6 @@ export interface WalletTransaction {
 }
 
 
-
-
 @Injectable({
   providedIn: 'root'
 })
@@ -255,14 +256,30 @@ export class SellerService {
   }
 
 
-  getLeads(): Observable<Lead[]> {
-    return this.http
-      .get<{ success: boolean; data: Lead[] }>(
-        `${this.apiUrl}/leads`, // no userId needed
-        { headers: this.getHeaders() } // token carries userId
-      )
-      .pipe(map(res => res.data));
-  }
+  // getLeads(): Observable<Lead[]> {
+  //   return this.http
+  //     .get<{ success: boolean; data: Lead[] }>(
+  //       `${this.apiUrl}/leads`, // no userId needed
+  //       { headers: this.getHeaders() } // token carries userId
+  //     )
+  //     .pipe(map(res => res.data));
+  // }
+getLeads(page: number = 1, pageSize: number = 25): Observable<any> {
+  return this.http
+    .get<{
+      success: boolean;
+      data: Lead[];
+      pagination: {
+        totalCount: number;
+        page: number;
+        pageSize: number;
+        totalPages: number;
+      };
+    }>(
+      `${this.apiUrl}/leads?page=${page}&pageSize=${pageSize}`,
+      { headers: this.getHeaders() }
+    );
+}
 
 // 🔹 Buy Lead
 buyLead(leadId: number): Observable<any> {
@@ -380,11 +397,8 @@ buyLead(leadId: number): Observable<any> {
   }
 
   // 🔹 Get cities
-  getCities(): Observable<any[]> {
-    return this.http.get<any[]>(
-      `${environment.apiBaseUrl}/auth/cities`,
-      { headers: this.getHeaders() }
-    );
+ getCities(stateId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/cities/${stateId}`);
   }
 
   getProviderServices(providerId: number): Observable<ProviderServicesResponse> {
@@ -529,5 +543,45 @@ return this.http.post(`${this.apiUrl}/assignLeadToBusinessuser`,data);
 // getEmployees(){
 // return this.http.get('/api/business/employees');
 // }
+getProviderProfileByEmail(email: string) {
+  const url = `${this.apiUrl}/getProviderProfileByEmail?email=${encodeURIComponent(email)}`;
+
+  return this.http
+    .get<{ success: boolean; data: PublicProfile }>(url, { headers: this.getHeaders() })
+    .pipe(
+      map(res => {
+        const profile = res.data;
+
+        if (profile.profilePictureUrl) {
+          profile.profilePictureUrl = environment.assetUrl + profile.profilePictureUrl;
+        }
+
+        return profile;
+      })
+    );
+}
+
+//  getBranches(): Observable<Branch[]> {
+//     return this.http.get<Branch[]>(`${this.apiUrl}/getBranches`);
+//   }
+getBranches(pageNumber: number = 1, pageSize: number = 10): Observable<PagedResult<Branch>> {
+  const params = new HttpParams()
+    .set('pageNumber', pageNumber)
+    .set('pageSize', pageSize);
+
+  return this.http.get<PagedResult<Branch>>(`${this.apiUrl}/getBranches`, { params });
+}
+
+  insertBranch(branch: Branch): Observable<any> {
+    return this.http.post(`${this.apiUrl}/insertBusinessSites`, branch);
+  }
+
+  updateBranch(branch: Branch): Observable<any> {
+    return this.http.put(`${this.apiUrl}/updateBusinessSites`, branch);
+  }
+
+  deleteBranch(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/deleteBusinessSites/${id}`);
+  }
 
 }
