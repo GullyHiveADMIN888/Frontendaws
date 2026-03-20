@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders ,HttpParams} from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
-  import { environment } from '../../environments/environment.prod';
-//  import { environment } from '../../environments/environment';
-  import { Branch } from './models/branch.model';
-  import { PagedResult } from './models/paged-result.model';
+//  import { environment } from '../../environments/environment.prod';
+import { environment } from '../../environments/environment';
+import { Branch } from './models/branch.model';
+import { PagedResult } from './models/paged-result.model';
 
 // --- Dashboard & Stats ---
 export interface SellerStats {
@@ -48,12 +48,15 @@ export interface Lead {
   offerStatus?: string;
   areaId?: number;
   leadId: number;
-  hasQuote?: boolean; 
-    quoteDetails?: {
-    providerName: string;
-    price: number;
-    message: string;
-  }[];
+  hasQuote?: boolean;
+ quoteDetails?: {
+  providerName: string;
+  priceMin: number;
+  priceMax: number;
+  message: string;
+  status: string;
+  submittedAt: string;
+}[];
 
 }
 
@@ -111,8 +114,8 @@ export interface PublicProfile {
   addressCityId?: number;
   addressStateId?: number;
   areaName?: string,
- // areaId?: string
- areaId?: number
+  // areaId?: string
+  areaId?: number
 
 
 }
@@ -178,11 +181,11 @@ export interface ProviderService {
 export interface ProviderServicesResponse {
   providerServices: ProviderService[];
 
-serviceAreas: {
-  cityId: number;
-  areaId: number;
-  areaName: string;
-}[];
+  serviceAreas: {
+    cityId: number;
+    areaId: number;
+    areaName: string;
+  }[];
 
 
   categories: any[];
@@ -262,46 +265,49 @@ export class SellerService {
   }
 
 
-  // getLeads(): Observable<Lead[]> {
+  
+  // getLeads(page: number = 1, pageSize: number = 25): Observable<any> {
   //   return this.http
-  //     .get<{ success: boolean; data: Lead[] }>(
-  //       `${this.apiUrl}/leads`, // no userId needed
-  //       { headers: this.getHeaders() } // token carries userId
-  //     )
-  //     .pipe(map(res => res.data));
+  //     .get<{
+  //       success: boolean;
+  //       data: Lead[];
+  //       pagination: {
+  //         totalCount: number;
+  //         page: number;
+  //         pageSize: number;
+  //         totalPages: number;
+  //       };
+  //     }>(
+  //       `${this.apiUrl}/leads?page=${page}&pageSize=${pageSize}`,
+  //       { headers: this.getHeaders() }
+  //     );
   // }
-getLeads(page: number = 1, pageSize: number = 25): Observable<any> {
-  return this.http
-    .get<{
-      success: boolean;
-      data: Lead[];
-      pagination: {
-        totalCount: number;
-        page: number;
-        pageSize: number;
-        totalPages: number;
-      };
-    }>(
-      `${this.apiUrl}/leads?page=${page}&pageSize=${pageSize}`,
-      { headers: this.getHeaders() }
+
+  // 🔹 Buy Lead
+  getLeads(page: number = 1, pageSize: number = 25, status?: string): Observable<any> {
+  let url = `${this.apiUrl}/leads?page=${page}&pageSize=${pageSize}`;
+  
+  // ✅ Add status parameter if provided and not 'all'
+  if (status && status !== 'all') {
+    url += `&status=${status}`;
+  }
+  
+  return this.http.get<any>(url, { headers: this.getHeaders() });
+}
+  buyLead(leadId: number): Observable<any> {
+    const providerId = Number(localStorage.getItem('userId'));
+
+    return this.http.post(
+      `${this.apiUrl}/buy`,
+      {
+        leadId: leadId,
+        providerId: providerId
+      },
+      {
+        headers: this.getHeaders()
+      }
     );
-}
-
-// 🔹 Buy Lead
-buyLead(leadId: number): Observable<any> {
-  const providerId = Number(localStorage.getItem('userId'));
-
-  return this.http.post(
-    `${this.apiUrl}/buy`,
-    {
-      leadId: leadId,
-      providerId: providerId
-    },
-    {
-      headers: this.getHeaders()
-    }
-  );
-}
+  }
 
 
   getPublicProfile(sellerId: number) {
@@ -380,11 +386,11 @@ buyLead(leadId: number): Observable<any> {
       `${this.apiUrl}/refer/${sellerId}`,
       { headers: this.getHeaders() }
     ).pipe(
-        map(res => {
-      console.log('Full API Response:', res);      // 🔥 entire response
-      console.log('Referrals Data:', res.data);    // 🔥 only data
-      return res.data;
-    })
+      map(res => {
+        console.log('Full API Response:', res);      // 🔥 entire response
+        console.log('Referrals Data:', res.data);    // 🔥 only data
+        return res.data;
+      })
       // map(res => res.data)
     );
   }
@@ -403,7 +409,7 @@ buyLead(leadId: number): Observable<any> {
   }
 
   // 🔹 Get cities
- getCities(stateId: number): Observable<any[]> {
+  getCities(stateId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/cities/${stateId}`);
   }
 
@@ -415,7 +421,7 @@ buyLead(leadId: number): Observable<any> {
       )
       .pipe(map(res => res.data));
   }
-   getAreasByCity(cityId: number): Observable<any[]> {
+  getAreasByCity(cityId: number): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiBaseUrl}/auth/areas/${cityId}`);
   }
 
@@ -474,9 +480,9 @@ buyLead(leadId: number): Observable<any> {
   buyLeads(leadId: number) {
     const providerId = Number(localStorage.getItem('userId'));
     //  const providerId = 42;
-console.log("BUY DEBUG:");
-  console.log("leadId:", leadId);
-  console.log("providerId:", providerId);
+    console.log("BUY DEBUG:");
+    console.log("leadId:", leadId);
+    console.log("providerId:", providerId);
     return this.http.post(
       `${this.apiUrl}/buy`,
       {
@@ -522,58 +528,58 @@ console.log("BUY DEBUG:");
   }
 
   getLegalIdentity(providerId: number) {
-  return this.http.get(
-    `${this.apiUrl}/legal-identity/${providerId}`
-  );
-}
-updateLegalIdentity(providerId: number, formData: FormData) {
-  return this.http.put(
-    `${this.apiUrl}/legal-identity/${providerId}`,
-    formData
-  );
-}
-
- saveBusinessUser(data:any){
-  return this.http.post(`${this.apiUrl}/business-users`, data);
-}
-  getBusinessUsers() {
-  return this.http.get(`${this.apiUrl}/business-users`);
-}
-deleteBusinessUser(id: number) {
-  return this.http.delete(`${this.apiUrl}/delete-business-users/${id}`);
-}
-
-//lead Assignments
-assignJob(data:any){
-return this.http.post(`${this.apiUrl}/assignJobToBusinessuser`,data);
-}
-
-getProviderProfileByEmail(email: string) {
-  const url = `${this.apiUrl}/getProviderProfileByEmail?email=${encodeURIComponent(email)}`;
-
-  return this.http
-    .get<{ success: boolean; data: PublicProfile }>(url, { headers: this.getHeaders() })
-    .pipe(
-      map(res => {
-        const profile = res.data;
-
-        if (profile.profilePictureUrl) {
-          profile.profilePictureUrl = environment.assetUrl + profile.profilePictureUrl;
-        }
-
-        return profile;
-      })
+    return this.http.get(
+      `${this.apiUrl}/legal-identity/${providerId}`
     );
-}
+  }
+  updateLegalIdentity(providerId: number, formData: FormData) {
+    return this.http.put(
+      `${this.apiUrl}/legal-identity/${providerId}`,
+      formData
+    );
+  }
+
+  saveBusinessUser(data: any) {
+    return this.http.post(`${this.apiUrl}/business-users`, data);
+  }
+  getBusinessUsers() {
+    return this.http.get(`${this.apiUrl}/business-users`);
+  }
+  deleteBusinessUser(id: number) {
+    return this.http.delete(`${this.apiUrl}/delete-business-users/${id}`);
+  }
+
+  //lead Assignments
+  assignJob(data: any) {
+    return this.http.post(`${this.apiUrl}/assignJobToBusinessuser`, data);
+  }
+
+  getProviderProfileByEmail(email: string) {
+    const url = `${this.apiUrl}/getProviderProfileByEmail?email=${encodeURIComponent(email)}`;
+
+    return this.http
+      .get<{ success: boolean; data: PublicProfile }>(url, { headers: this.getHeaders() })
+      .pipe(
+        map(res => {
+          const profile = res.data;
+
+          if (profile.profilePictureUrl) {
+            profile.profilePictureUrl = environment.assetUrl + profile.profilePictureUrl;
+          }
+
+          return profile;
+        })
+      );
+  }
 
 
-getBranches(pageNumber: number = 1, pageSize: number = 10): Observable<PagedResult<Branch>> {
-  const params = new HttpParams()
-    .set('pageNumber', pageNumber)
-    .set('pageSize', pageSize);
+  getBranches(pageNumber: number = 1, pageSize: number = 10): Observable<PagedResult<Branch>> {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
 
-  return this.http.get<PagedResult<Branch>>(`${this.apiUrl}/getBranches`, { params });
-}
+    return this.http.get<PagedResult<Branch>>(`${this.apiUrl}/getBranches`, { params });
+  }
 
   insertBranch(branch: Branch): Observable<any> {
     return this.http.post(`${this.apiUrl}/insertBusinessSites`, branch);
@@ -587,14 +593,24 @@ getBranches(pageNumber: number = 1, pageSize: number = 10): Observable<PagedResu
     return this.http.delete(`${this.apiUrl}/deleteBusinessSites/${id}`);
   }
 
-  // leads.service.ts (or seller.service.ts)
 
-getQuotedLeads(page: number = 1, pageSize: number = 10) {
-  return this.http.get<any>(`${this.apiUrl}/quoted?page=${page}&pageSize=${pageSize}`);
+  getQuoteAssignments(leadId: number) {
+    return this.http.get(`${this.apiUrl}/${leadId}/quotes`);
+  }
+  // getQuotedLeads(page: number = 1, pageSize: number = 10) {
+  //   return this.http.get<any>(`${this.apiUrl}/quoted?page=${page}&pageSize=${pageSize}`);
+  // }
+getQuotedLeads(page: number = 1, pageSize: number = 25, quoteStatus?: string) {
+  let url = `${this.apiUrl}/quoted?page=${page}&pageSize=${pageSize}`;
+  
+  if (quoteStatus) {
+    url += `&quoteStatus=${quoteStatus}`;
+  }
+  
+  return this.http.get<any>(url, { headers: this.getHeaders() });
 }
-
-getAcceptedLeads(page: number = 1, pageSize: number = 10) {
-  return this.http.get<any>(`${this.apiUrl}/accepted?page=${page}&pageSize=${pageSize}`);
-}
+  getJobs(page: number = 1, pageSize: number = 10) {
+    return this.http.get<any>(`${this.apiUrl}/getJobs?page=${page}&pageSize=${pageSize}`);
+  }
 
 }
