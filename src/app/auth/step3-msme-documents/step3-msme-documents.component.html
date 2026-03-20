@@ -1,3 +1,5 @@
+
+
 <div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12 border border-gray-100">
 
   <!-- Header -->
@@ -16,18 +18,19 @@
     <!-- Self Overview -->
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">
-        About Yourself (Short Overview) <span class="text-orange-600">*</span>
+       Business / Professional Overview <span class="text-orange-600">*</span>
       </label>
 
-      <textarea
-        rows="5"
-        maxlength="2000"
-        [value]="formData.selfOverview"
-        (input)="onInput('selfOverview', $any($event.target).value)"
-        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
-        placeholder="Tell us about yourself and your professional background (minimum 50 characters)">
-      </textarea>
+    
 
+      <textarea
+  rows="5"
+  maxlength="2000"
+  [(ngModel)]="formData.selfOverview"
+  (ngModelChange)="onInput('selfOverview', $event)"
+  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
+ placeholder="Provide a brief overview of your business or professional background, including your experience, expertise, and the services you offer. This helps customers understand your capabilities and professional journey.(minimum 150 characters)">
+</textarea>
       <div class="flex justify-between items-start mt-1">
         @if (errors?.selfOverview) {
           <p class="text-red-500 text-sm">
@@ -43,18 +46,22 @@
     <!-- Skills -->
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">
-        Skills and Background <span class="text-orange-600">*</span>
+       Core Skills & Professional Expertise <span class="text-orange-600">*</span>
       </label>
 
-      <textarea
-        rows="5"
-        maxlength="500"
-        [value]="formData.skillsBackground"
-        (input)="onInput('skillsBackground', $any($event.target).value)"
-        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
-        placeholder="Describe your skills, experience, and professional background (minimum 50 characters)">
-      </textarea>
+   
+<textarea
+  rows="5"
+  maxlength="500"
+  [(ngModel)]="formData.skillsBackground"
+  (ngModelChange)="onInput('skillsBackground', $event)"
+  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
+        placeholder="Describe your key skills, technical expertise, industry experience, and the services your business provides. Highlight the areas where your business excels.(minimum 50 characters)">
+</textarea>
 
+<span class="text-xs text-gray-500">
+  {{ formData.skillsBackground?.length || 0 }}/500
+</span>
       <div class="flex justify-between items-start mt-1">
         @if (errors?.skillsBackground) {
           <p class="text-red-500 text-sm">
@@ -70,18 +77,21 @@
     <!-- Achievements -->
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">
-        Achievements <span class="text-gray-500">(Optional)</span>
+       Key Achievements / Certifications <span class="text-gray-500">(Optional)</span>
       </label>
 
-      <textarea
-        rows="5"
-        maxlength="500"
-        [value]="formData.achievements"
-        (input)="onInput('achievements', $any($event.target).value)"
-        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
-        placeholder="List your notable achievements, awards, or certifications">
-      </textarea>
+<textarea
+  rows="5"
+  maxlength="500"
+  [(ngModel)]="formData.achievements"
+  (ngModelChange)="onInput('achievements', $event)"
+  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
+ placeholder="Mention any awards, certifications, recognitions, major projects, or milestones achieved by your business or professional career.">
+</textarea>
 
+<span class="text-xs text-gray-500">
+  {{ formData.achievements?.length || 0 }}/500
+</span>
       <div class="text-right mt-1">
         <span class="text-xs text-gray-500">
           {{ formData.achievements.length }}/500
@@ -95,7 +105,7 @@
       <label class="block text-sm font-medium text-gray-700 mb-2">
         How did you know about us? <span class="text-orange-600">*</span>
       </label>
-    
+      
     <select
       [(ngModel)]="formData.howToKnowId"
       (ngModelChange)="onHowToKnowChange($event)"
@@ -104,7 +114,9 @@
 
       <option [ngValue]="null">Select option</option>
 
-      @for (item of howKnowList; track item) {
+      <!-- @for (item of howKnowList; track item)  -->
+      @for (item of howKnowList; track item)
+      {
         <option
           [ngValue]="item.id">
           {{ item.name }}
@@ -118,14 +130,16 @@
         {{ errors?.howToKnowId }}
       </p>
     }
-
+  <!-- [value]="formData.howToKnowOther"
+        (input)="onInput('howToKnowOther', $any($event.target).value)" -->
     <!-- Show textarea only if OTHER_ID is selected -->
     @if (showOtherInput) {
       <textarea
         rows="3"
         maxlength="1000"
-        [value]="formData.howToKnowOther"
-        (input)="onInput('howToKnowOther', $any($event.target).value)"
+      
+        [(ngModel)]="formData.howToKnowOther"
+(ngModelChange)="onInput('howToKnowOther', $event)"
         class="w-full mt-2 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
         placeholder="Please specify">
       </textarea>
@@ -147,23 +161,6 @@
       <i class="ri-arrow-left-line mr-2"></i>
       Back
     </button>
-
-    <!-- <button
-    (click)="submit.emit()"
-    [disabled]="isSubmitting"
-    class="px-8 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed">
-
-    <ng-container *ngIf="isSubmitting; else submitText">
-      <i class="ri-loader-4-line animate-spin mr-2"></i>
-      Submitting...
-    </ng-container>
-
-    <ng-template #submitText>
-      <i class="ri-check-line mr-2"></i>
-      Submit Registration
-    </ng-template>
-
-  </button> -->
   <button
     (click)="onSubmitClick()"
     [disabled]="isSubmitting"

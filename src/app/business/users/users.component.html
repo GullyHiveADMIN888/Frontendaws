@@ -1,3 +1,9 @@
+<!-- GLOBAL ALERT (TOP RIGHT) -->
+<div *ngIf="alertMessage"
+     class="fixed top-5 right-5 px-4 py-3 rounded text-white shadow-lg z-[9999]"
+     [ngClass]="alertType === 'success' ? 'bg-green-500' : 'bg-red-500'">
+  {{ alertMessage }}
+</div>
 <div class="p-6">
 
   <!-- Header -->
@@ -78,7 +84,7 @@ class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center mt-
 <h3 class="text-xl font-bold mb-4">Fetch Provider</h3>
 
 <!-- SEARCH ID -->
-<div class="flex gap-2 mb-4">
+<!-- <div class="flex gap-2 mb-4">
 
 <input
 type="number"
@@ -94,6 +100,50 @@ class="bg-blue-600 text-white px-4 py-2 rounded"
 Fetch
 </button>
 
+</div> -->
+<!-- SEARCH BY EMAIL -->
+<!-- <div class="flex gap-2 mb-4">
+  <input
+    type="email"
+    [(ngModel)]="searchEmail"
+    placeholder="Enter Provide Email"
+    class="border p-2 rounded w-full"
+  />
+
+  <button
+    (click)="fetchProvider()"
+    class="bg-blue-600 text-white px-4 py-2 rounded"
+  >
+    Fetch
+  </button>
+</div> -->
+<div class="flex gap-2 mb-4 flex-col sm:flex-row">
+
+  <div class="w-full">
+    <input
+      type="email"
+      [(ngModel)]="searchEmail"
+      #emailModel="ngModel"
+      required
+      email
+      placeholder="Enter Provider Email"
+      class="border p-2 rounded w-full"
+    />
+
+    <!-- Error message -->
+    <p *ngIf="emailModel.invalid && emailModel.touched" class="text-red-500 text-sm mt-1">
+      Please enter a valid email address
+    </p>
+  </div>
+
+  <button
+    (click)="fetchProvider()"
+    [disabled]="emailModel.invalid"
+    class="bg-blue-600 text-white px-4 py-2 rounded disabled:bg-gray-400"
+  >
+    Fetch
+  </button>
+
 </div>
 
 <!-- TWO COLUMN GRID -->
@@ -102,15 +152,15 @@ Fetch
 
 <!-- <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.providerId" readonly placeholder="Provider Id"/>
+  -->
+ <!-- <input class="border p-2 bg-gray-100"
+[(ngModel)]="profile.sellerId" readonly placeholder="User Id"/>  -->
 
-<input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.sellerId" readonly placeholder="User Id"/> -->
-
-<input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.legalName" readonly placeholder="Legal Name"/>
 
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.displayName" readonly placeholder="Display Name"/>
+<input class="border p-2 bg-gray-100"
+[(ngModel)]="profile.legalName" readonly placeholder="Legal Name"/>
 
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.email" readonly placeholder="Email"/>
@@ -118,17 +168,17 @@ Fetch
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.phone" readonly placeholder="Phone"/>
 
-<input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.providerType" readonly placeholder="Provider Type"/>
+<!-- <input class="border p-2 bg-gray-100"
+[(ngModel)]="profile.providerType" readonly placeholder="Provider Type"/> -->
 
+<!-- <input class="border p-2 bg-gray-100"
+[(ngModel)]="profile.status" readonly placeholder="Status"/> -->
 <input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.status" readonly placeholder="Status"/>
+[(ngModel)]="profile.state" readonly placeholder="Base State"/>
 
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.baseCity" readonly placeholder="Base City"/>
 
-<input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.state" readonly placeholder="Base State"/>
 
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.addressLine1" readonly placeholder="Address Line 1"/>
@@ -142,11 +192,11 @@ Fetch
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.landmark" readonly placeholder="Landmark"/>
 
-<input class="border p-2 bg-gray-100"
+<!-- <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.addressCity" readonly placeholder="City"/>
 
 <input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.addressState" readonly placeholder="State"/>
+[(ngModel)]="profile.addressState" readonly placeholder="State"/> -->
 
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.pincode" readonly placeholder="Pincode"/>

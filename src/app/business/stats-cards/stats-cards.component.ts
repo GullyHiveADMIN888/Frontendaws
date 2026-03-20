@@ -18,7 +18,6 @@ export class StatsCardsComponent implements OnChanges {
 @Input() totalBalance: number = 0;       // total wallet balance
 @Input() cashableBalance: number = 0;    // optional
 @Input() nonCashableBalance: number = 0; // optional
-
   ngOnChanges() {
     this.stats = [
       {

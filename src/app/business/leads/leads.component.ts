@@ -1,6 +1,5 @@
 
-import { Component, OnInit, Input } from '@angular/core';
-
+import { Component, OnInit, Input , Output, EventEmitter } from '@angular/core';
 import { SellerService, Lead } from '../business.service';
 
 @Component({
@@ -9,16 +8,17 @@ import { SellerService, Lead } from '../business.service';
     styleUrls: ['./leads.component.css'],
     standalone: false
 })
+
 export class LeadsComponent implements OnInit {
 
- filterStatus: 'all' | 'offered' | 'unlocked' | 'responded' | 'viewed' | 'committed' = 'all';
+ filterStatus: 'all' | 'offered' | 'unlocked' | 'quated' | 'accepted' | 'committed' = 'all';
  statuses = [
   { label: 'All', value: 'all' },
   { label: 'New', value: 'offered' },
   { label: 'Unlocked', value: 'unlocked' },
   { label: 'Confirmed', value: 'committed' },
-  { label: 'Responded', value: 'responded' },
-  { label: 'Viewed', value: 'viewed' }
+  { label: 'Quated', value: 'quated' },
+  { label: 'Accepted', value: 'accepted' }
 ];
   leads: Lead[] = [];
   loading = true;
@@ -29,80 +29,184 @@ export class LeadsComponent implements OnInit {
   totalPages = 1;
   selectedLead: Lead | null = null;
   showLeadModal = false;
-
+  totalLeadss: number = 0;
 
 
   // Send Quote form fields
   quoteAmount: string = '';
   quoteMessage: string = '';
 
+@Output() leadPurchased = new EventEmitter<number>();
+
   @Input() totalBalance: number = 0;
   constructor(private sellerService: SellerService) { }
 
-  ngOnInit(): void {
-    this.loadLeads();
+ 
+ngOnInit(): void {
+  this.loadLeads(1);
+}
+ 
+//   loadLeads(page: number = 1) {
+//   this.loading = true;
+
+//   this.sellerService.getLeads(page, this.pageSize).subscribe({
+//     next: (res) => {
+
+//       const leadsData = res.data;
+//       const pagination = res.pagination;
+
+//       this.currentPage = pagination.page;
+//       this.totalPages = pagination.totalPages;
+//       this.totalLeadss = pagination.totalCount;
+
+//       this.leads = leadsData.map((l: any) => {
+//         const isScheduled = l.timePreference === 'scheduled';
+
+//         return {
+//           ...l,
+//           offerStatus: l.offerStatus ?? 'offered',
+//           description: l.description || 'No description provided',
+//           location: l.location || 'N/A',
+//           time: this.timeAgo(l.createdAt),
+//           isPurchased: l.isPurchased ?? false,
+//           unlockedCount: Number(l.unlockedCount ?? 0),
+//           committedCount: Number(l.committedCount ?? 0)
+//         };
+//       });
+
+//       this.loading = false;
+//     },
+//     error: (err) => {
+//       console.error(err);
+//       this.loading = false;
+//     }
+//   });
+// }
+loadLeads(page: number = 1) {
+  this.loading = true;
+
+  let request$;
+
+  // Call different API based on filter
+  if (this.filterStatus === 'quated') {
+    request$ = this.sellerService.getQuotedLeads(page, this.pageSize);
+  } else if (this.filterStatus === 'accepted') {
+    request$ = this.sellerService.getAcceptedLeads(page, this.pageSize);
+  } else {
+    // default/all/offered/unlocked/committed
+    request$ = this.sellerService.getLeads(page, this.pageSize);
   }
 
-  loadLeads() {
-    this.loading = true;
+  request$.subscribe({
+    next: (res) => {
+      console.log(res.data);
+      const leadsData = res.data;
+      const pagination = res.pagination;
 
-    this.sellerService.getLeads().subscribe({
-      next: (data: any[]) => {
-        this.leads = data.map((l: any) => {
-          const isScheduled = l.timePreference === 'scheduled';
+      this.currentPage = pagination.page;
+      this.totalPages = pagination.totalPages;
+      this.totalLeadss = pagination.totalCount;
 
-          // Parse price breakdown safely
-          let priceBreakdown: { [key: string]: number } | undefined;
-          if (l.priceBreakdown) {
-            if (typeof l.priceBreakdown === 'string') {
-              try {
-                priceBreakdown = JSON.parse(l.priceBreakdown);
-              } catch (err) {
-                console.warn('Invalid priceBreakdown JSON for lead', l.id);
-                priceBreakdown = undefined;
-              }
-            } else {
-              priceBreakdown = l.priceBreakdown;
-            }
-          }
+      this.leads = leadsData.map((l: any) => {
+        const isScheduled = l.timePreference === 'scheduled';
+        return {
+          ...l,
+          offerStatus: l.offerStatus ?? 'offered',
+          description: l.description || 'No description provided',
+          location: l.location || 'N/A',
+          time: this.timeAgo(l.createdAt),
+          isPurchased: l.isPurchased ?? false,
+          unlockedCount: Number(l.unlockedCount ?? 0),
+          committedCount: Number(l.committedCount ?? 0),
+           hasQuote: l.hasQuote ?? false,   
+        };
+      });
 
-          return {
-            ...l,
-            offerStatus: l.offerStatus ?? 'offered',   // ✅ IMPORTANT
-            description: l.description || 'No description provided',
-            location: l.location || 'N/A',
-            budget:
-              l.budgetMin && l.budgetMax
-                ? `₹${l.budgetMin} - ₹${l.budgetMax}`
-                : 'Budget not specified',
-            //  time: new Date(l.createdAt).toLocaleString(),
-            scheduleLabel:
-              isScheduled && l.scheduledStart && l.scheduledEnd
-                ? `${new Date(l.scheduledStart).toLocaleString()} - ${new Date(l.scheduledEnd).toLocaleString()}`
-                : 'Flexible / Anytime',
-            time: this.timeAgo(l.createdAt),
-            leadPrice: l.leadPrice ? `${l.leadPrice}` : undefined,
-            priceBreakdown: priceBreakdown,
-            isPurchased: l.isPurchased ?? false,
-            //  isPurchased: l.isPurchased === true || l.isPurchased === 'true',
-            unlockedCount: Number(l.unlockedCount ?? 0),
-            committedCount:  Number(l.committedCount ?? 0),
-            lead_Id: l.leadId,
-             areaName: l.areaName ?? '',
-             areaId: l.areaId ?? null
+      this.loading = false;
+    },
+    error: (err) => {
+      console.error(err);
+      this.loading = false;
+    }
+  });
+}
+// setFilter(offerStatus: any) {
+//   this.filterStatus = offerStatus;
+//   this.currentPage = 1;
 
-          } as Lead;
-        });
+//   // Load leads based on selected filter
+//   this.loadLeads(this.currentPage);
 
-        this.updatePagination();
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Failed to load leads', err);
-        this.loading = false;
-      }
-    });
+//   // Automatically open modal for Quated or Accepted
+//   if (offerStatus === 'quated' || offerStatus === 'accepted') {
+//     // Wait for the leads to be loaded first
+//     const checkLeadsLoaded = setInterval(() => {
+//       if (!this.loading && this.leads.length > 0) {
+//         clearInterval(checkLeadsLoaded);
+
+//         const firstLead = this.leads[0]; // pick the first lead
+//         if (firstLead) {
+//           if (offerStatus === 'quated') {
+//             this.openQuotedModal(firstLead);
+//           } else if (offerStatus === 'accepted') {
+//             this.openAcceptedModal(firstLead);
+//           }
+//         }
+//       }
+//     }, 100); // check every 100ms
+//   }
+// }
+  setFilter(offerStatus: any)
+   {
+  //  this.filterStatus = status;
+    this.filterStatus = offerStatus;
+    this.currentPage = 1;
+    this.updatePagination();
   }
+expandedLeadId?: number
+  openQuoteModal(lead: any) {
+  this.closeLeadModal(); // optional but recommended
+
+  // this.selectedQuoteLead = lead;
+  // this.showQuoteModal = true;
+
+  // this.loadingAssignments = true;
+
+  // this.sellerService.getQuoteAssignments(lead.leadId).subscribe({
+  //   next: (res: any) => {
+  //     this.assignments = res.data || [];
+  //     this.loadingAssignments = false;
+  //   },
+  //   error: () => {
+  //     this.loadingAssignments = false;
+  //   }
+  // });
+}
+// expandedLeadId: number | null = null;
+
+// openQuoteModal(lead: any) {
+//   // Toggle open/close
+//   if (this.expandedLeadId === lead.leadId) {
+//     this.expandedLeadId = null;
+//     return;
+//   }
+
+//   this.expandedLeadId = lead.leadId;
+
+//   // Dummy data
+//   lead.quoteDetails = [
+//     {
+//       providerName: 'ABC Services',
+//       price: 2500,
+//       message: 'We can complete this in 2 days'
+//     },
+//     {
+//       providerName: 'XYZ Solutions',
+//       price: 2200,
+//       message: 'Best quality guaranteed'
+//     }
+//   ];
+// }
   timeAgo(date: string): string {
     const diff = Date.now() - new Date(date).getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -114,21 +218,26 @@ export class LeadsComponent implements OnInit {
     return `${days} days ago`;
   }
 
-  // setFilter(status: any)
-   setFilter(offerStatus: any)
-   {
-  //  this.filterStatus = status;
-    this.filterStatus = offerStatus;
-    this.currentPage = 1;
-    this.updatePagination();
-  }
-
+  
+ 
+  // get filteredLeads(): Lead[] {
+  //   return this.filterStatus === 'all'
+  //     ? this.leads
+  //    // : this.leads.filter(l => l.status === this.filterStatus);
+  //    : this.leads.filter(l => l.offerStatus === this.filterStatus);
+  // }
   get filteredLeads(): Lead[] {
-    return this.filterStatus === 'all'
-      ? this.leads
-     // : this.leads.filter(l => l.status === this.filterStatus);
-     : this.leads.filter(l => l.offerStatus === this.filterStatus);
+  switch (this.filterStatus) {
+    case 'quated':
+      return this.leads.filter(l => l.hasQuote);  // only leads with quote
+    // case 'accepted':
+    //   return this.leads.filter(l => l.isAccepted); // only accepted leads
+    case 'all':
+      return this.leads;
+    default:
+      return this.leads.filter(l => l.offerStatus === this.filterStatus);
   }
+}
 
   get paginatedLeads(): Lead[] {
     const start = (this.currentPage - 1) * this.pageSize;
@@ -139,17 +248,27 @@ export class LeadsComponent implements OnInit {
     this.totalPages = Math.ceil(this.filteredLeads.length / this.pageSize) || 1;
   }
 
-  nextPage() {
-    if (this.currentPage < this.totalPages) this.currentPage++;
+ 
+nextPage() {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.loadLeads(this.currentPage);
   }
-
+}
+  // prevPage() {
+  //   if (this.currentPage > 1) this.currentPage--;
+  // }
   prevPage() {
-    if (this.currentPage > 1) this.currentPage--;
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.loadLeads(this.currentPage);
   }
+}
 
   goToPage(page: number) {
-    this.currentPage = page;
-  }
+  this.currentPage = page;
+  this.loadLeads(page);
+}
 
   get pages(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
@@ -227,46 +346,7 @@ export class LeadsComponent implements OnInit {
     this.showConfirmModal = false;
   }
 
-  // confirmBuyLead() {
-  //   const lead = this.selectedLead;
-  //   if (!lead) return;
-
-  //   this.sellerService.buyLead(lead.leadId).subscribe({
-  //     next: (res: any) => {
-  //       // Mark as purchased locally
-  //       lead.isPurchased = true;
-  //       lead.leadPrice = `₹${res.pplPrice}`;
-  //       // // ✅ ADD THIS LINE
-  //      //  lead.unlockedCount = (lead.unlockedCount ?? 0) + 1;
-
-  // // ✅ update values from backend
-  // lead.unlockedCount = res.unlockedCount ?? lead.unlockedCount;
-  // lead.committedCount = res.committedCount ?? lead.committedCount;
-  // lead.offerStatus = res.offerStatus ?? lead.offerStatus;
-
-  // // trigger UI refresh
-  // this.leads = [...this.leads];
-  //       // ✅ Close modal
-  //       this.showPaymentModal = false;
-  //       this.showConfirmModal = false;
-  //       this.showSendQuoteModal = true;
-  //       alert(`Lead purchased successfully for ₹${res.pplPrice}`);
-  //     },
-
-  //     error: (err) => {
-  //       console.error('Failed to buy lead', err);
-
-  //       // ✅ Show backend message if available
-  //       const message =
-  //         err?.error?.message ||
-  //         'Failed to purchase lead. Please try again.';
-
-  //       alert(message);
-  //       this.showConfirmModal = false;
-  //     }
-  //   });
-  // }
-
+  
 confirmBuyLead() {
   const lead = this.selectedLead;
   if (!lead) return;
@@ -284,7 +364,11 @@ confirmBuyLead() {
       lead.unlockedCount = res.unlockedCount ?? lead.unlockedCount;
       lead.committedCount = res.committedCount ?? lead.committedCount;
       lead.offerStatus = res.offerStatus ?? lead.offerStatus;
-
+        // 🔥 update wallet
+  this.totalBalance = res.walletBalance;
+console.log( res.walletBalance);
+  // send to dashboard
+  this.leadPurchased.emit(res.walletBalance);
       // trigger UI refresh
       this.leads = [...this.leads];
 
@@ -466,10 +550,10 @@ assignLead(){
     employeeId: this.selectedEmployeeId
   }
 
-  this.sellerService.assignLead(payload)
+  this.sellerService.assignJob(payload)
   .subscribe(()=>{
 
-    alert("Lead assigned successfully");
+    alert("Job assigned successfully");
 
     this.closeAssignModal();
 

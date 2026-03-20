@@ -1,3 +1,23 @@
+// import { Component, Input, Output, EventEmitter } from '@angular/core';
+// import { CommonModule } from '@angular/common';
+// import { FormsModule } from '@angular/forms';
+
+// @Component({
+//   selector: 'app-step2-msme-business-details',
+//   standalone: true,
+//   imports: [CommonModule, FormsModule],
+//   templateUrl: './step2-msme-business-details.component.html',
+//   styleUrls: ['./step2-msme-business-details.component.css']
+// })
+// export class Step2MsmeBusinessDetailsComponent {
+
+//   @Input() formData: any;   // receive data from parent
+
+//   @Output() next = new EventEmitter<void>(); // go to next step
+//   @Output() back = new EventEmitter<void>(); // go to previous step
+
+// }
+
 import { Component, Input, Output, EventEmitter, OnInit , Inject} from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
@@ -10,13 +30,13 @@ import {  HostListener } from '@angular/core';
 
 
 @Component({
-    selector: 'app-step2-legal-identity',
+    selector: 'app-step2-msme-business-details',
     standalone: true,
     imports: [FormsModule],
-    templateUrl: './step2-legal-identity.component.html'
+    templateUrl: './step2-msme-business-details.component.html'
 })
-export class Step2LegalIdentityComponent implements OnInit {
-  @Input() errors: any;
+export class Step2MsmeBusinessDetailsComponent implements OnInit {
+ @Input() errors: any = {};
   @Input() formData: any;
 
   @Output() inputChange = new EventEmitter<{ field: string; value: string | File | null }>();
@@ -26,7 +46,7 @@ export class Step2LegalIdentityComponent implements OnInit {
   regDocPreview = '';
   addressProofPreview = '';
 
-  registrationTypes = ['GST Registration','Aadhar Card','E-Shram Card','PAN Card','Udyam Registration'];
+  registrationTypes = ['GST Registration','PAN Card','Udyam Registration'];
  // role = ['Admin','Seller','Buyer'];
 
   states: any[] = [];
@@ -341,12 +361,12 @@ validateIdentityNumber() {
   }
 
   switch(type) {
-    case 'Aadhar Card':
-      if (!/^\d{12}$/.test(value)) {
-        this.errors.registrationNumber = 'Aadhaar number must be 12 digits.';
-        return false;
-      }
-      break;
+    // case 'Aadhar Card':
+    //   if (!/^\d{12}$/.test(value)) {
+    //     this.errors.registrationNumber = 'Aadhaar number must be 12 digits.';
+    //     return false;
+    //   }
+    //   break;
 
     case 'PAN Card':
       if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(value)) {
@@ -355,12 +375,12 @@ validateIdentityNumber() {
       }
       break;
 
-    case 'E-Shram Card':
-      if (!/^\d{15}$/.test(value)) {
-        this.errors.registrationNumber = 'E-Shram number must be 15 digits.';
-        return false;
-      }
-      break;
+    // case 'E-Shram Card':
+    //   if (!/^\d{15}$/.test(value)) {
+    //     this.errors.registrationNumber = 'E-Shram number must be 15 digits.';
+    //     return false;
+    //   }
+    //   break;
 
     case 'GST Registration':
       if (!/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/i.test(value)) {
@@ -390,6 +410,12 @@ validateStep3(): boolean {
 
   if (!this.formData.businessName?.length) {
     this.errors.businessName = 'Business name required';
+  }
+ if (!this.formData.companyName?.trim()) {
+    this.errors.companyName = 'Company Name is required';
+  }
+ if (!this.formData.legalCompanyName?.trim()) {
+    this.errors.legalCompanyName = 'Legal Company Name is required';
   }
 
   if (!this.formData.registrationType?.length) {

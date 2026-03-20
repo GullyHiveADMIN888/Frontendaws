@@ -1,6 +1,8 @@
 <div class="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
 
 
+
+
   <div class="text-center mb-12">
     <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
       Professional <span class="text-orange-600">Registration</span>
@@ -10,295 +12,168 @@
     </p>
   </div>
 
+  <!-- PROVIDER TYPE SELECTION -->
+  @if (!formData.providerType) {
+  <div class="max-w-xl mx-auto px-4 mb-10">
+    <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+
+      <h2 class="text-xl font-semibold text-center mb-6">
+        Select Provider Type
+      </h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+        <button (click)="selectProviderType('INDIVIDUAL')"
+          class="p-4 border rounded-xl hover:bg-orange-50 hover:border-orange-400 transition">
+
+          <div class="text-3xl mb-2">👤</div>
+          <p class="font-medium">Individual</p>
+        </button>
+
+        <button (click)="selectProviderType('MSME')"
+          class="p-4 border rounded-xl hover:bg-orange-50 hover:border-orange-400 transition">
+
+          <div class="text-3xl mb-2">🏪</div>
+          <p class="font-medium">MSME</p>
+        </button>
+
+        <button (click)="selectProviderType('COMPANY')"
+          class="p-4 border rounded-xl hover:bg-orange-50 hover:border-orange-400 transition">
+
+          <div class="text-3xl mb-2">🏢</div>
+          <p class="font-medium">Company</p>
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+  }
+
+
   <!-- MAIN -->
+  <!-- <main class="max-w-5xl mx-auto px-4 py-12"> -->
+  @if (formData.providerType) {
   <main class="max-w-5xl mx-auto px-4 py-12">
     <!-- STEP INDICATOR -->
     @if (!submitSuccess) {
-      <app-step-indicator
-        [currentStep]="currentStep"
-        [totalSteps]="3">
-      </app-step-indicator>
+    <app-step-indicator [currentStep]="currentStep" 
+     [providerType]="formData.providerType">
+    </app-step-indicator>
     }
 
     <!-- STEPS -->
     @if (!submitSuccess) {
-      @switch (currentStep) {
-        <!-- (inputChange)="onInputChange($event)" -->
-        @case (1) {
-          <app-step1-basic-info
-            [formData]="formData"
-            [errors]="errors"
-            [isMobileVerified]="isMobileVerified"
-            (inputChange)="onInputChange($event)"
-            (next)="goNextFromStep1()"
-            (sendOTP)="openOTP()">
-          </app-step1-basic-info>
-        }
-        @case (2) {
-          <app-otp-verification
-            [mobile]="formData.mobile"
-            (onVerified)="onOTPVerified()"
-            (onBack)="goToStep(1)">
-          </app-otp-verification>
-        }
-        @case (3) {
-          <app-step2-legal-identity
-            [formData]="formData"
-            [errors]="errors"
-            (inputChange)="onInputChange($event)"
-            (next)="goNextFromStep3()"
-            (back)="goToStep(1)">
-          </app-step2-legal-identity>
-        }
-        @case (4) {
-          <app-step3-professional-details
-            [formData]="formData"
-            [errors]="errors"
-            [isSubmitting]="isSubmitting"
-            (inputChange)="onInputChange($event)"
-            (submit)="submitForm()"
-            (back)="goToStep(3)">
-          </app-step3-professional-details>
-        }
-      }
+    @switch (currentStep) {
+    <!-- (inputChange)="onInputChange($event)" -->
+    @case (1) {
+    <app-step1-basic-info [formData]="formData" [errors]="errors" [isMobileVerified]="isMobileVerified"
+      (inputChange)="onInputChange($event)" (next)="goNextFromStep1()" (sendOTP)="openOTP()">
+    </app-step1-basic-info>
     }
+    @case (2) {
+    <app-otp-verification [mobile]="formData.mobile" (onVerified)="onOTPVerified()" (onBack)="goToStep(1)">
+    </app-otp-verification>
+    }
+    @case (3) {
+    <app-step2-legal-identity [formData]="formData" [errors]="errors" (inputChange)="onInputChange($event)"
+      (next)="goNextFromStep3()" (back)="goToStep(1)">
+    </app-step2-legal-identity>
+    }
+    @case (4) {
+    <app-step3-professional-details [formData]="formData" [errors]="errors" [isSubmitting]="isSubmitting"
+      (inputChange)="onInputChange($event)" (submit)="submitForm()" (back)="goToStep(3)">
+    </app-step3-professional-details>
+    }
+
+    <!-- MSME / COMPANY FLOW -->
+     
+    @case (10) {
+    <app-step1-msme-basic-info [formData]="formData" (next)="goNext()">
+    </app-step1-msme-basic-info>
+    }
+
+    @case (11) {
+    <app-step2-msme-business-details [formData]="formData" (next)="goNext()" (back)="goToStep(10)">
+    </app-step2-msme-business-details>
+    }
+
+    @case (12) {
+    <app-step3-msme-documents [formData]="formData" (submit)="submitForm()" (back)="goToStep(11)">
+    </app-step3-msme-documents>
+    }
+
+    }
+  }
+
 
     <!-- SUCCESS -->
     @if (submitSuccess) {
-      <div
-        class="bg-white rounded-2xl shadow-xl p-12 border border-gray-100 text-center">
-        <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-          <i class="ri-checkbox-circle-fill text-6xl text-green-600"></i>
-        </div>
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">
-          Registration Successful!
-        </h2>
-        <p class="text-lg text-gray-600 mb-8">
-          Thank you for registering with GULLYHIVE. We’ll contact you soon.
-        </p>
-        <a routerLink="/"
-          class="inline-block px-8 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
-          Back to Login
-        </a>
+    <div class="bg-white rounded-2xl shadow-xl p-12 border border-gray-100 text-center">
+      <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="ri-checkbox-circle-fill text-6xl text-green-600"></i>
       </div>
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">
+        Registration Successful!
+      </h2>
+      <p class="text-lg text-gray-600 mb-8">
+        Thank you for registering with GULLYHIVE. We’ll contact you soon.
+      </p>
+      <a routerLink="/" class="inline-block px-8 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
+        Back to Login
+      </a>
+    </div>
     }
 
   </main>
-
+  }
 
 </div>
-
-
-
-<!-- (click)="openEmailVerification()" -->
-
-<!-- ACCOUNT VERIFICATION MODAL -->
-<!-- <div *ngIf="!showVerificationModal"
-
-class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-
-
-<ng-container *ngIf="!showOtpModal; else otpOnly">
-
-
+@if (showVerificationModal) {
+<div class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
   <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
-
-    <button
-      (click)="showVerificationModal = false"
-      (click)="closeVerificationModal()"
-      class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">
+    <button (click)="closeVerificationModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">
       ✕
     </button>
-
-    <div class="text-center mb-6">
-      <h2 class="text-2xl font-bold text-gray-800">
-        Verify Your Account
-      </h2>
-      <p class="text-sm text-gray-500 mt-1">
-        Please verify your details to continue
-      </p>
-    </div>
-
-
-    <div class="flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-4">
-      <div>
-        <p class="text-xs text-gray-500">Mobile Number</p>
-        <p class="font-semibold text-gray-800">
-          {{ formData.mobile }}
-        </p>
-      </div>
-
-      <button
-        (click)="openMobileVerification()"
-        class="min-w-[90px] bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
-        Verify
-      </button>
-    </div>
-
-
-    <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
-      <div>
-        <p class="text-xs text-gray-500">Email Address</p>
-        <p class="font-semibold text-gray-800">
-          {{ formData.email }}
-        </p>
-      </div>
-
-      <button
-        class="min-w-[90px] bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
-        Verify
-      </button>
-    </div>
-
-  </div>
-
-</ng-container>
-
-
-<ng-template #otpOnly>
-  <app-otp-verification
-    [mobile]="formData.mobile"
-    (onVerified)="onOTPVerified()"
-    (onBack)="showOtpModal = false">
-  </app-otp-verification>
-</ng-template>
-
-</div> -->
-
-<!-- ACCOUNT VERIFICATION MODAL -->
-<!-- <div *ngIf="showVerificationModal"
-
-class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-
-
-<ng-container *ngIf="!showOtpModal; else otpStep">
-  <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
-    <button
-      (click)="closeVerificationModal()"
-      class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">
-      ✕
-    </button>
-
-    <div class="text-center mb-6">
-      <h2 class="text-2xl font-bold text-gray-800">Verify Your Account</h2>
-      <p class="text-sm text-gray-500 mt-1">Please verify your details to continue</p>
-    </div>
-
-
+    <!-- STEP 1 -->
+    @if (!showOtpModal) {
+    <!-- MOBILE -->
     <div class="flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-4">
       <div>
         <p class="text-xs text-gray-500">Mobile Number</p>
         <p class="font-semibold text-gray-800">{{ formData.mobile }}</p>
       </div>
-
-      <button
-        (click)="openMobileVerification()"
-        class="min-w-[90px] bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
+      <button (click)="openMobileVerification()"
+        class="min-w-[90px] bg-orange-600 text-white text-sm px-4 py-2 rounded-lg">
         Verify
       </button>
     </div>
-
-
-
+    <!-- EMAIL -->
     <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
       <div>
         <p class="text-xs text-gray-500">Email Address</p>
         <p class="font-semibold text-gray-800">{{ formData.email }}</p>
       </div>
-
-      <button
-        (click)="openEmailVerification()"
-        class="min-w-[90px] bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
+      <button (click)="openEmailVerification()"
+        class="min-w-[90px] bg-blue-600 text-white text-sm px-4 py-2 rounded-lg">
         Verify
       </button>
     </div>
-
-
-    <app-otp-verification
-      *ngIf="showOtpModal && verificationType === 'email'"
-      [email]="formData.email"
-      [otpToken]="formData.emailOtpToken"
-      (onVerifiedEmail)="onOTPVerifiedEmail($event)"
-      (onBack)="handleOtpBack()">
+    }
+    <!-- STEP 2: SINGLE OTP COMPONENT -->
+    @if (showOtpModal) {
+    <!-- EMAIL OTP -->
+    @if (verificationType === 'email') {
+    <app-otp-verification [email]="formData.email" [otpToken]="formData.emailOtpToken"
+      (onVerifiedEmail)="onOTPVerifiedEmail($event)" (onBack)="handleOtpBack()">
     </app-otp-verification>
-
-
-  </div>
-
-
-</ng-container>
-
-
-<ng-template #otpStep>
-  <div *ngIf="showOtpModal">
-    <app-otp-verification
-      [mobile]="formData.mobile"
-      (onVerified)="onOTPVerified()"
-      (onBack)="handleOtpBack()">
+    }
+    <!-- MOBILE OTP -->
+    @if (verificationType === 'mobile') {
+    <app-otp-verification [mobile]="formData.mobile" (onVerified)="onOTPVerified()" (onBack)="handleOtpBack()">
     </app-otp-verification>
-
+    }
+    }
   </div>
-</ng-template>
-
-</div> -->
-
-
-@if (showVerificationModal) {
-  <div
-    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
-      <button
-        (click)="closeVerificationModal()"
-        class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">
-        ✕
-      </button>
-      <!-- STEP 1 -->
-      @if (!showOtpModal) {
-        <!-- MOBILE -->
-        <div class="flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-4">
-          <div>
-            <p class="text-xs text-gray-500">Mobile Number</p>
-            <p class="font-semibold text-gray-800">{{ formData.mobile }}</p>
-          </div>
-          <button
-            (click)="openMobileVerification()"
-            class="min-w-[90px] bg-orange-600 text-white text-sm px-4 py-2 rounded-lg">
-            Verify
-          </button>
-        </div>
-        <!-- EMAIL -->
-        <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
-          <div>
-            <p class="text-xs text-gray-500">Email Address</p>
-            <p class="font-semibold text-gray-800">{{ formData.email }}</p>
-          </div>
-          <button
-            (click)="openEmailVerification()"
-            class="min-w-[90px] bg-blue-600 text-white text-sm px-4 py-2 rounded-lg">
-            Verify
-          </button>
-        </div>
-      }
-      <!-- STEP 2: SINGLE OTP COMPONENT -->
-      @if (showOtpModal) {
-        <!-- EMAIL OTP -->
-        @if (verificationType === 'email') {
-          <app-otp-verification
-            [email]="formData.email"
-            [otpToken]="formData.emailOtpToken"
-            (onVerifiedEmail)="onOTPVerifiedEmail($event)"
-            (onBack)="handleOtpBack()">
-          </app-otp-verification>
-        }
-        <!-- MOBILE OTP -->
-        @if (verificationType === 'mobile') {
-          <app-otp-verification
-            [mobile]="formData.mobile"
-            (onVerified)="onOTPVerified()"
-            (onBack)="handleOtpBack()">
-          </app-otp-verification>
-        }
-      }
-    </div>
-  </div>
+</div>
 }

@@ -16,7 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { interval,Subscription } from 'rxjs';
- //import { environment } from '../../environments/environment';
+// import { environment } from '../../environments/environment';
  import { environment } from '../../environments/environment.prod';
 
 
@@ -689,7 +689,7 @@ onLoginSubmit(event: Event): void {
 
     if (this.authService) {
      // this.authService.redirectByRole(response.role);
-     this.authService.redirectByRole(response.role, response.providerType , response.businessUserId);
+     this.authService.redirectByRole(response.role, response.providerType , response.businessUserId ,response.businessUserRole);
     } else {
       window.location.href = '/dashboard';
     }
