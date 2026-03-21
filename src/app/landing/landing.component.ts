@@ -875,6 +875,7 @@ async onVerify() {
       // 👉 Open password popup
       this.showPasswordPopup = true;
        this.showLoginModal = false;
+       this.showOtpModal = false;
 
     } 
     else if (this.verificationTypes === 'login') {
