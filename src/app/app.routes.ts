@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/auth.guard';
 import { LandingPageComponent } from './landing/landing.component';
-import { EmployeeRegistrationComponent } from './UserTest/employee-registration/employee-registration.component';
+import { EmployeeRegistrationComponent } from './invitationForm/employee-registration/employee-registration.component';
 import { InvitationGeneratorComponent } from './Admin/invitation-generator/invitation-generator.component';
 
 export const routes: Routes = [

@@ -214,6 +214,7 @@ export interface WalletTransaction {
 })
 export class BusinessUserService {
   private apiUrl = `${environment.apiBaseUrl}/business-user`;
+  private apiUrlSeller = `${environment.apiBaseUrl}/seller`;
 
   // BehaviorSubject will store sellerId and emit it to subscribers
   private sellerIdSubject = new BehaviorSubject<number | null>(null);
@@ -236,7 +237,7 @@ export class BusinessUserService {
   getDashboardData(): Observable<DashboardData> {
     return this.http
       .get<{ success: boolean; data: DashboardData }>(
-        `${this.apiUrl}/dashboard`,
+        `${this.apiUrlSeller}/dashboard`,
         { headers: this.getHeaders() }
       )
       // .pipe(map(res => res.data));

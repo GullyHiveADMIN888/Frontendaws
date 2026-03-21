@@ -3,22 +3,10 @@ import { RouterModule, Routes } from '@angular/router';
 
    import { BusinessUserLayoutComponent } from './business-user-layout/business-user-layout.component';
    import { DashboardComponent } from './dashboard/dashboard.component';
-// import { StatsCardsComponent } from './stats-cards/stats-cards.component';
-// import { ProfileCompletionComponent } from './profile-completion/profile-completion.component';
-// import { QuickActionsComponent } from './quick-actions/quick-actions.component';
-// import { PublicProfileComponent } from './public-profile/public-profile.component';
-// import { SettingsComponent } from './settings/settings.component';
-// import { EditProfileComponent } from './settings/edit-profile/edit-profile.component';
-// import { LeadsComponent } from './leads/leads.component';
-// import { ResponsesComponent } from './responses/responses.component';
-// import { HelpComponent } from './help/help.component';
-// import { ReferEarnComponent } from './refer-earn/refer-earn.component';
-// import {  SharableProfileComponent} from './sharable-profile/sharable-profile.component';
-// import { LedgerComponent } from './ledger/ledger.component';
-// import { UsersComponent } from './users/users.component';
 
 // For seller not call by url
 import { AuthService } from '../auth/auth.service'; 
+import { WorkerManagementComponent } from './worker-management/worker-management.component';
 
 
 
@@ -41,8 +29,8 @@ const routes: Routes =  [
       // /seller
       { path: '', component: DashboardComponent },
 
-      // // Leads
-      // { path: 'leads', component: LeadsComponent },
+      
+      { path: 'worker-management', component: WorkerManagementComponent },
 
       //  { path: 'users', component: UsersComponent },
 
