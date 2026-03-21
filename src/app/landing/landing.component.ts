@@ -868,14 +868,13 @@ async onVerify() {
     await this.authService.verifyOtp(otpValue);
 
     this.showOtpModal = false;
-
+    this.verificationType = null;
     // 🔥 DIFFERENT FLOW BASED ON TYPE
     if (this.verificationTypes === 'forgot') {
 
       // 👉 Open password popup
       this.showPasswordPopup = true;
        this.showLoginModal = false;
-       this.showOtpModal = false;
 
     } 
     else if (this.verificationTypes === 'login') {
