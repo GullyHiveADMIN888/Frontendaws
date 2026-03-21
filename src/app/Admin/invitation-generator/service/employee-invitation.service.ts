@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment.prod';
+import { map } from 'rxjs/operators';
 
 export interface GenerateInvitationDto {
   role?: string;
   email?: string;
+  regionId?: number;
 }
 
 export interface EmployeeInvitationResponse {
@@ -18,8 +20,8 @@ export interface EmployeeInvitationResponse {
   status: string;
   createdAt: string;
   expiresAt: string | null;
-  emailSent?: boolean;  // Make it optional
-  email?: string;       // Add email property
+  emailSent?: boolean;  
+  email?: string;     
 }
 
 export interface SendEmailResponse {
@@ -57,6 +59,18 @@ export interface ValidateInvitationResponse {
   message: string;
 }
 
+export interface RegionDto {
+  id: number;
+  name: string;
+  regionType: string;
+  parentRegionId: number | null;
+  cityId: number | null;
+  cityName: string | null;
+  parentRegionName: string | null;
+  displayName: string;
+  createdAt: string;
+  updatedAt: string;
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -86,4 +100,22 @@ export class EmployeeInvitationService {
   submitEmployeeRegistration(formData: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}/register-member`, formData);
   }
+
+  getRegions(searchTerm: string = '', limit: number = 20): Observable<RegionDto[]> {
+  let params = new HttpParams()
+    .set('search', searchTerm || '')
+    .set('limit', limit.toString())
+    .set('regionType', 'city')
+    .set('page', '1');
+  
+  return this.http.get<any>(`${environment.apiBaseUrl}/admin/regions/search`, { params })
+    .pipe(
+      map(response => {
+        if (response && response.success && Array.isArray(response.data)) {
+          return response.data;
+        }
+        return [];
+      })
+    );
+}
 }
