@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
-//  import { environment } from '../../environments/environment.prod';
-import { environment } from '../../environments/environment';
+  import { environment } from '../../environments/environment.prod';
+//import { environment } from '../../environments/environment';
 import { Branch } from './models/branch.model';
 import { PagedResult } from './models/paged-result.model';
 
@@ -597,20 +597,18 @@ export class SellerService {
   getQuoteAssignments(leadId: number) {
     return this.http.get(`${this.apiUrl}/${leadId}/quotes`);
   }
-  // getQuotedLeads(page: number = 1, pageSize: number = 10) {
-  //   return this.http.get<any>(`${this.apiUrl}/quoted?page=${page}&pageSize=${pageSize}`);
-  // }
-getQuotedLeads(page: number = 1, pageSize: number = 25, quoteStatus?: string) {
-  let url = `${this.apiUrl}/quoted?page=${page}&pageSize=${pageSize}`;
+ 
+// getQuotedLeads(page: number = 1, pageSize: number = 25, quoteStatus?: string) {
+//   let url = `${this.apiUrl}/quoted?page=${page}&pageSize=${pageSize}`;
   
-  if (quoteStatus) {
-    url += `&quoteStatus=${quoteStatus}`;
-  }
+//   if (quoteStatus) {
+//     url += `&quoteStatus=${quoteStatus}`;
+//   }
   
-  return this.http.get<any>(url, { headers: this.getHeaders() });
-}
-  getJobs(page: number = 1, pageSize: number = 10) {
-    return this.http.get<any>(`${this.apiUrl}/getJobs?page=${page}&pageSize=${pageSize}`);
-  }
+//   return this.http.get<any>(url, { headers: this.getHeaders() });
+// }
+//   getJobs(page: number = 1, pageSize: number = 10) {
+//     return this.http.get<any>(`${this.apiUrl}/getJobs?page=${page}&pageSize=${pageSize}`);
+//   }
 
 }

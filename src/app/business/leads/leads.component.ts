@@ -37,99 +37,92 @@ export class LeadsComponent implements OnInit {
 ngOnInit(): void {
   this.loadLeads(1);
 }
- 
-
-// loadLeads(page: number = 1) {
-//   this.loading = true;
-
-//   let request$;
-
-//   // Call different API based on filter
-//   if (this.filterStatus === 'quoted') {
-//     request$ = this.sellerService.getQuotedLeads(page, this.pageSize);
-//   } else if (this.filterStatus === 'jobs') {
-//     request$ = this.sellerService.getJobs(page, this.pageSize);
-//   } else {
-//     // default/all/offered/unlocked/committed
-//     request$ = this.sellerService.getLeads(page, this.pageSize);
-//   }
-
-//   request$.subscribe({
-//     next: (res) => {
-//       console.log(res.data);
-//       const leadsData = res.data;
-//       const pagination = res.pagination;
-
-//       this.currentPage = pagination.page;
-//       this.totalPages = pagination.totalPages;
-//       this.totalLeadss = pagination.totalCount;
-
-//       this.leads = leadsData.map((l: any) => {
-//         const isScheduled = l.timePreference === 'scheduled';
-//         return {
-//           ...l,
-//           offerStatus: l.offerStatus ?? 'offered',
-//           description: l.description || 'No description provided',
-//           location: l.location || 'N/A',
-//           time: this.timeAgo(l.createdAt),
-//           isPurchased: l.isPurchased ?? false,
-//           unlockedCount: Number(l.unlockedCount ?? 0),
-//           committedCount: Number(l.committedCount ?? 0),
-//            hasQuote: l.hasQuote ?? false,   
-//         };
-//       });
-
-//       this.loading = false;
-//     },
-//     error: (err) => {
-//       console.error(err);
-//       this.loading = false;
-//     }
-//   });
-// }
 
 
-  filterStatus: 'all' | 'offered' | 'unlocked' | 'committed' | 'submitted' | 'accepted' | 'rejected' = 'all';
+  filterStatus: 'all' | 'offered' | 'unlocked' | 'committed' | 'quoted' | 'accepted' | 'rejected' = 'all';
 
   statuses = [
     { label: 'All', value: 'all' },
     { label: 'New', value: 'offered' },
     { label: 'Unlocked', value: 'unlocked' },
+    { label: 'Quoted', value: 'quoted' },
     { label: 'Confirmed', value: 'committed' },
-    { label: 'Quoted', value: 'submitted' },
     { label: 'Accepted', value: 'accepted' },
     { label: 'Rejected', value: 'rejected' }
   ];
 
- loadLeads(page: number = 1) {
-  this.loading = true;
+//  loadLeads(page: number = 1) {
+//   this.loading = true;
   
-  let request$;
+//   let request$;
  
- const quoteStatuses = ['submitted', 'accepted', 'rejected'];
+//  const quoteStatuses = ['submitted', 'yg', 'ghg'];
     
-    if (quoteStatuses.includes(this.filterStatus)) {
-      // Use quoted API with status parameter
-      request$ = this.sellerService.getQuotedLeads(page, this.pageSize, this.filterStatus);
-    }
-  else {
-    //  For 'all', 'offered', 'unlocked', 'committed'
-    // Pass status parameter (undefined for 'all', otherwise the status)
-    const statusParam = this.filterStatus === 'all' ? undefined : this.filterStatus;
-    request$ = this.sellerService.getLeads(page, this.pageSize, statusParam);
-  }
+//     if (quoteStatuses.includes(this.filterStatus)) {
+//       // Use quoted API with status parameter
+//       request$ = this.sellerService.getQuotedLeads(page, this.pageSize, this.filterStatus);
+//     }
+//   else {
+//     //  For 'all', 'offered', 'unlocked', 'committed'
+//     // Pass status parameter (undefined for 'all', otherwise the status)
+//     const statusParam = this.filterStatus === 'all' ? undefined : this.filterStatus;
+//     request$ = this.sellerService.getLeads(page, this.pageSize, statusParam);
+//   }
   
+//   request$.subscribe({
+//     next: (res) => {
+//       console.log('API Response:', res);
+//       const leadsData = res.data;
+//       const pagination = res.pagination;
+      
+//       this.currentPage = pagination?.page ?? page;
+//       this.totalPages = pagination?.totalPages ?? 1;
+//       this.totalLeadss = pagination?.totalCount ?? 0;
+//       this.pageSize = pagination?.pageSize ?? this.pageSize;
+      
+//       this.leads = (leadsData || []).map((l: any) => ({
+//         ...l,
+//         offerStatus: l.offerStatus ?? 'offered',
+//         description: l.description || 'No description provided',
+//         location: l.location || 'N/A',
+//         time: this.timeAgo(l.createdAt),
+//         isPurchased: l.isPurchased ?? false,
+//         unlockedCount: Number(l.unlockedCount ?? 0),
+//         committedCount: Number(l.committedCount ?? 0),
+//         hasQuote: l.hasQuote ?? false,
+//       }));
+      
+//       this.loading = false;
+//     },
+//     error: (err) => {
+//       console.error('Error loading leads:', err);
+//       this.loading = false;
+//     }
+//   });
+// }
+loadLeads(page: number = 1) {
+  this.loading = true;
+
+  let request$;
+
+  // For 'all', 'offered', 'unlocked', 'committed', 'accepted', etc.
+  // Pass undefined for 'all', otherwise pass the selected status
+  const statusParam = this.filterStatus === 'all' ? undefined : this.filterStatus;
+
+  request$ = this.sellerService.getLeads(page, this.pageSize, statusParam);
+
   request$.subscribe({
     next: (res) => {
       console.log('API Response:', res);
+
       const leadsData = res.data;
       const pagination = res.pagination;
-      
+
       this.currentPage = pagination?.page ?? page;
       this.totalPages = pagination?.totalPages ?? 1;
       this.totalLeadss = pagination?.totalCount ?? 0;
       this.pageSize = pagination?.pageSize ?? this.pageSize;
-      
+
       this.leads = (leadsData || []).map((l: any) => ({
         ...l,
         offerStatus: l.offerStatus ?? 'offered',
@@ -141,7 +134,7 @@ ngOnInit(): void {
         committedCount: Number(l.committedCount ?? 0),
         hasQuote: l.hasQuote ?? false,
       }));
-      
+
       this.loading = false;
     },
     error: (err) => {
@@ -150,7 +143,6 @@ ngOnInit(): void {
     }
   });
 }
-
   setFilter(offerStatus: any) {
     this.filterStatus = offerStatus;
     this.currentPage = 1;  // Reset to first page
@@ -278,7 +270,7 @@ formatDate(date: string): string {
 
   get filteredLeads(): Lead[] {
   switch (this.filterStatus) {
-    case 'submitted':
+    case 'quoted':
       return this.leads.filter(l => l.hasQuote);  // only leads with quote
     // case 'accepted':
     //   return this.leads.filter(l => l.isAccepted); // only accepted leads
@@ -342,6 +334,15 @@ formatDate(date: string): string {
     }
   }
 
+canShowQuoteButton(lead: any): boolean {
+  // Hide if status is committed/accepted/rejected or already purchased
+  return !['committed', 'not_selected'].includes(lead.offerStatus);
+}
+// Determine if the Assign button should be visible
+canShowAssignButton(lead: any): boolean {
+  // Only show if lead is purchased AND status is not committed/accepted/rejected
+  return lead.isPurchased && !['unlocked' , 'not_selected'].includes(lead.offerStatus);
+}
 
   showConfirmModal = false;
 
