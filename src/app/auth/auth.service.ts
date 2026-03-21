@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
- // import { environment } from '../../environments/environment'
-  import { environment } from '../../environments/environment.prod';
+  import { environment } from '../../environments/environment'
+ // import { environment } from '../../environments/environment.prod';
 
 
 
@@ -78,60 +78,58 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
 
 
 
-  // redirectByRole(role: string) {
-  //   const routes: Record<string, string> = {
-  //     Admin: '/admin',
-  //     SuperAdmin: '/admin',
-  //     Buyer: '/buyer',
-  //     Seller: '/seller'
-  //   };
+  redirectByRole(role: string) {
+    const routes: Record<string, string> = {
+      Admin: '/admin',
+      SuperAdmin: '/admin',
+      Buyer: '/buyer',
+      Seller: '/seller',
+      Provider_User_Admin: '/provider_User_Admin',
+      Provider_Member: '/provider_Member',
+    };
 
-  //   this.router.navigate([routes[role] ?? '/login']);
-  // }
-
-  redirectByRole(role: string, providerType?: string | null,  businessUserId?: boolean, businessUserRole?: string | null) {
-  const routes: Record<string, string> = {
-    Admin: '/admin',
-    SuperAdmin: '/admin',
-    Buyer: '/buyer'
-  };
-
-  //  Business staff dashboard
-  if (businessUserId) {
-    if (businessUserRole?.toLowerCase() === 'admin') {
-      console.log('Redirecting to Business Admin Dashboard');
-      this.router.navigate(['/business']); // admin dashboard
-      return;
-    }
-
-    if (businessUserRole?.toLowerCase() === 'member') {
-      console.log('Redirecting to Business User Dashboard');
-      this.router.navigate(['/business-user']); // member dashboard
-      return;
-    }
+    this.router.navigate([routes[role] ?? '/login']);
   }
 
-  // // ⭐ Business staff dashboard
-  // if (businessUserId) {
-  //   this.router.navigate(['/business-user']);
-  //   return;
-  // }
+//   redirectByRole(role: string, providerType?: string | null,  businessUserId?: boolean, businessUserRole?: string | null) {
+//   const routes: Record<string, string> = {
+//     Admin: '/admin',
+//     SuperAdmin: '/admin',
+//     Buyer: '/buyer',
+//     ProviderUserAdmin: '/Provider_User_Admin',
+//     ProviderMember: '/Provider_Member',
+//   };
 
-  // Special case for Seller
-  if (role === 'Seller') {
+//   //  Business staff dashboard
+//   if (businessUserId) {
+//     if (businessUserRole?.toLowerCase() === 'admin') {
+//       console.log('Redirecting to Business Admin Dashboard');
+//       this.router.navigate(['/business']); // admin dashboard
+//       return;
+//     }
 
-    if (providerType === 'msme') {
-      this.router.navigate(['/business']);
-      return;
-    }
+//     if (businessUserRole?.toLowerCase() === 'member') {
+//       console.log('Redirecting to Business User Dashboard');
+//       this.router.navigate(['/business-user']); // member dashboard
+//       return;
+//     }
+//   }
 
-    // default seller (individual)
-    this.router.navigate(['/seller']);
-    return;
-  }
+//   // Special case for Seller
+//   if (role === 'Seller') {
 
-  this.router.navigate([routes[role] ?? '/login']);
-}
+//     if (providerType === 'msme') {
+//       this.router.navigate(['/business']);
+//       return;
+//     }
+
+//     // default seller (individual)
+//     this.router.navigate(['/seller']);
+//     return;
+//   }
+
+//   this.router.navigate([routes[role] ?? '/login']);
+// }
 
   logout() {
     localStorage.clear();

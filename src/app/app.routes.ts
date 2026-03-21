@@ -16,7 +16,7 @@ export const routes: Routes = [
         .then(m => m.AUTH_ROUTES)
   },
 
-  // 🔒 Admin routes
+  //  Admin routes
   {
     path: 'admin',
     canActivate: [authGuard],
@@ -32,10 +32,19 @@ export const routes: Routes = [
     import('./Seller/seller.module').then(m => m.SellerModule)
 },
   //  Business providers
+  // {
+  //   path: 'business',
+  //  loadChildren: () =>
+  //   import('./business/business.module').then(m => m.BusinessModule)
+  // },
+   
   {
-    path: 'business',
-   loadChildren: () =>
-    import('./business/business.module').then(m => m.BusinessModule)
+    path: 'provider_User_Admin',
+    canActivate: [authGuard],
+    data: { roles: ['Provider_User_Admin'] },
+    loadChildren: () =>
+      import('./business/business.module')
+        .then(m => m.BusinessModule)
   },
 
 // customer routes

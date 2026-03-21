@@ -20,7 +20,7 @@ export class QuickActionsComponent {
     {
       title: 'View New Leads',
       icon: 'ri-mail-open-line',
-      link: '/business/leads',
+      link: '/provider_User_Admin/leads',
       color: 'bg-orange-50 text-orange-600'
     },
     {
@@ -32,13 +32,13 @@ export class QuickActionsComponent {
     {
       title: 'Add User',
       icon: 'ri-user-line',
-      link: '/business/users',
+      link: '/provider_User_Admin/users',
       color: 'bg-indigo-50 text-indigo-600'
     },
      {
       title: 'Add Branch',
       icon: 'ri-building-line',
-      link: '/business/branches',
+      link: '/provider_User_Admin/branches',
       color: 'bg-indigo-50 text-indigo-600'
     }
   ];

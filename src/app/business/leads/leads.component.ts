@@ -46,7 +46,7 @@ ngOnInit(): void {
     { label: 'New', value: 'offered' },
     { label: 'Unlocked', value: 'unlocked' },
     { label: 'Quoted', value: 'quoted' },
-    { label: 'Confirmed', value: 'committed' },
+    { label: 'PrePaid', value: 'committed' },
     { label: 'Accepted', value: 'accepted' },
     { label: 'Rejected', value: 'rejected' }
   ];

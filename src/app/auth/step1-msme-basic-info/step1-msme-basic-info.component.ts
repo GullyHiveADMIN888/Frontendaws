@@ -1,24 +1,3 @@
-// import { Component, Input, Output, EventEmitter } from '@angular/core';
-// import { CommonModule } from '@angular/common';
-// import { FormsModule } from '@angular/forms';
-
-// @Component({
-//   selector: 'app-step1-msme-basic-info',
-//   standalone: true,
-//   imports: [CommonModule, FormsModule],
-//   templateUrl: './step1-msme-basic-info.component.html',
-//   styleUrls: ['./step1-msme-basic-info.component.css']
-// })
-// export class Step1MsmeBasicInfoComponent {
-
-//   @Input() formData: any;   // receive data from parent
-
-//   @Output() next = new EventEmitter<void>(); // send event to parent
-  
-
-// }
-
-
 import { Component, Input, Output, EventEmitter, Inject } from '@angular/core';
 import { CommonModule,isPlatformBrowser} from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -41,6 +20,7 @@ export class Step1MsmeBasicInfoComponent {
   @Input() errors: any;
   @Output() inputChange = new EventEmitter<{ field: string, value: any }>();
   @Output() next = new EventEmitter<void>();
+  @Output() back = new EventEmitter<void>();
  // @Output() sendOTP = new EventEmitter<void>();
 
    togglePasswordVisibility() {
@@ -52,18 +32,6 @@ export class Step1MsmeBasicInfoComponent {
 
   parentCategories: any[] = [];
   subCategories: any[] = [];
-
- 
-  //..otp
-
-// @Input() isMobileVerified = false;
-//..
-
-  // professionalTypes = [
-  //   { label: 'Independent Professional', value: 'individual' },
-  //   { label: 'msme', value: 'msme' },
-  //   { label: 'Company / Corporate', value: 'company' }
-  // ];
 
 
   constructor(private authService: AuthService,  @Inject(PLATFORM_ID) private platformId: Object) {}
