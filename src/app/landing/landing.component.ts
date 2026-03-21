@@ -868,7 +868,7 @@ async onVerify() {
     await this.authService.verifyOtp(otpValue);
 
     this.showOtpModal = false;
-    this.verificationType = null;
+    this.showOtpModals = false;
     // 🔥 DIFFERENT FLOW BASED ON TYPE
     if (this.verificationTypes === 'forgot') {
 
@@ -901,33 +901,7 @@ async onVerify() {
   }
 }
 
-// async submitNewPassword() {
-//   this.passwordError = '';
 
-//   if (!this.newPassword || this.newPassword.length < 6) {
-//     this.passwordError = 'Password must be at least 6 characters';
-//     return;
-//   }
-
-//   if (this.newPassword !== this.confirmPassword) {
-//     this.passwordError = 'Passwords do not match';
-//     return;
-//   }
-
-//   try {
-//     await this.authService.updatePasswordByMobile({
-//       mobile: this.otpMobile.replace('+91', ''),
-//       newPassword: this.newPassword
-//     });
-
-//     alert('Password updated successfully');
-
-//     this.closePasswordPopup();
-
-//   } catch (e: any) {
-//     this.passwordError = e.message || 'Failed to update password';
-//   }
-// }
 async submitNewPassword() {
   this.passwordError = '';
 
