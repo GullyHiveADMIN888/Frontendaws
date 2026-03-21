@@ -1,5 +1,5 @@
 <!-- PAGE CONTENT -->
-<!-- <div class="max-w-7xl mx-auto px-4 py-8"> -->
+
 <div class="max-w-7xl mx-auto px-4 py-8">
 
     <!-- TITLE -->
@@ -17,6 +17,8 @@
     }
   </div>
 
+
+  
   <!-- TOP BAR -->
   <div class="flex justify-between items-center mb-6">
 
@@ -37,7 +39,9 @@
 
 
   <div class="space-y-4">
-    @for (lead of paginatedLeads; track lead) {
+    <!-- @for (lead of paginatedLeads; track lead) -->
+      @for (lead of leads; track lead.leadId) 
+     {
       <div
         class="bg-white border rounded-2xl p-4 sm:p-6 transition hover:shadow-2xl hover:-translate-y-1 duration-300">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
@@ -108,45 +112,72 @@
               ₹{{ lead.providerPrice || 'Undefined'}}
             </span>
           </div>
-             @if (filterStatus === 'quated' && lead.hasQuote) {
-    <div class="mt-2 bg-blue-50 border border-blue-200 rounded-xl p-2 flex justify-between items-center">
-    
-    <div class="text-blue-700 text-xs font-medium flex items-center gap-2">
-      <i class="ri-information-line"></i>
-      Quote available
-    </div>
+          
 
-    <button
-      (click)="openQuoteModal(lead)"
-      class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 text-xs rounded-lg">
-      View Quote
-    </button>
-  </div>
-}
-@if (expandedLeadId === lead.leadId) {
-  <div class="mt-3 border rounded-xl bg-gray-50 p-3 space-y-2 animate-fade-in">
+          @if (filterStatus === 'submitted' && lead.hasQuote) {
+          <div class="mt-2 bg-blue-50 border border-blue-200 rounded-xl p-2 flex justify-between items-center">
 
-    @for (q of lead.quoteDetails; track q) {
-      <div class="bg-white border rounded-lg p-3 shadow-sm">
-        
-        <div class="flex justify-between items-center">
-          <h4 class="font-semibold text-gray-800 text-sm">
-            {{ q.providerName }}
-          </h4>
-          <span class="text-orange-600 font-bold">
-            ₹{{ q.price }}
-          </span>
-        </div>
+            <div class="text-blue-700 text-xs font-medium flex items-center gap-2">
+              <i class="ri-information-line"></i>
+              Quote available
+            </div>
 
-        <p class="text-xs text-gray-600 mt-1">
-          {{ q.message }}
-        </p>
+            <button (click)="openQuoteModal(lead)"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 text-xs rounded-lg">
+              View Quote
+            </button>
+          </div>
+          }
+          @if (expandedLeadId === lead.leadId && loadingAssignments) {
+          <div class="text-xs text-gray-500 mt-2">Loading quotes...</div>
+          }
+          @if (expandedLeadId === lead.leadId) {
+          <div class="mt-3 border rounded-xl bg-gray-50 p-3 space-y-3 animate-fade-in">
 
-      </div>
-    }
+            <!-- ✅ NO DATA STATE -->
+            @if (!loadingAssignments && (!lead.quoteDetails || lead.quoteDetails.length === 0)) {
+            <div class="text-center text-gray-500 text-sm py-4">
+              <i class="ri-file-list-3-line text-lg"></i>
+              <div>No quotes available</div>
+            </div>
+            }
 
-  </div>
-}
+            <!-- ✅ DATA EXISTS -->
+            @if (lead.quoteDetails && lead.quoteDetails.length > 0) {
+            @for (q of lead.quoteDetails; track q) {
+            <div class="bg-white border rounded-lg p-3 shadow-sm">
+
+              <div class="flex justify-between items-center">
+                <h4 class="font-semibold text-gray-800 text-sm">
+                  {{ q.providerName }}
+                </h4>
+
+                <span class="text-orange-600 font-bold text-sm">
+                  ₹{{ q.priceMin }} - ₹{{ q.priceMax }}
+                </span>
+              </div>
+
+              <p class="text-xs text-gray-600 mt-1">
+                {{ q.message }}
+              </p>
+
+              <div class="flex justify-between text-[11px] text-gray-500 mt-2">
+                <span class="px-2 py-0.5 rounded text-[10px]" [ngClass]="{
+    'bg-yellow-100 text-yellow-700': q.status === 'submitted',
+    'bg-green-100 text-green-700': q.status === 'accepted',
+    'bg-red-100 text-red-700': q.status === 'rejected'
+  }">
+                  {{ q.status }}
+                </span>
+                <span>{{ q.submittedAt }}</span>
+              </div>
+
+            </div>
+            }
+            }
+
+          </div>
+          }
         </div>
         <!-- RIGHT -->
         <div class="flex sm:flex-col items-center sm:items-end justify-between gap-3">
@@ -182,37 +213,60 @@
       </div>
     </div>
   }
-</div>
-
-<!-- PAGINATION (BOTTOM RIGHT) -->
-<div class="flex justify-end mt-8">
-  <div class="flex items-center gap-1">
-
-    <button (click)="prevPage()" [disabled]="currentPage === 1"
-      class="px-3 py-1 border rounded-lg text-sm disabled:opacity-50">
-      Prev
-    </button>
-
-    @for (page of pages; track page) {
-<button (click)="goToPage(page)" class="px-3 py-1 text-sm rounded-lg" [ngClass]="page === currentPage
-        ? 'bg-orange-600 text-white'
-        : 'border hover:bg-gray-100'">
-        {{ page }}
-      </button>
-    }
-
-    <button (click)="nextPage()" [disabled]="currentPage === totalPages"
-      class="px-3 py-1 border rounded-lg text-sm disabled:opacity-50">
-      Next
-    </button>
-
+  @if (loading) {
+  <div class="text-center py-8">
+    <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-orange-600 border-r-transparent"></div>
+    <p class="mt-2 text-gray-500">Loading leads...</p>
   </div>
+}
 </div>
 
 
+  <!-- PAGINATION - Only show if there are results -->
+
+@if (!loading && leads.length > 0 && totalPages > 1) {
+  <div class="flex justify-end mt-8">
+    <div class="flex items-center gap-1">
+      <button 
+        (click)="prevPage()" 
+        [disabled]="currentPage === 1"
+        class="px-3 py-1 border rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50">
+        Prev
+      </button>
+
+      @for (page of pages; track $index) {
+        @if (typeof page === 'number') {
+          <button 
+            (click)="goToPage(page)" 
+            class="px-3 py-1 text-sm rounded-lg transition"
+            [ngClass]="page === currentPage
+              ? 'bg-orange-600 text-white'
+              : 'border hover:bg-gray-100'">
+            {{ page }}
+          </button>
+        } @else {
+          <span class="px-2 py-1 text-sm text-gray-500">{{ page }}</span>
+        }
+      }
+
+      <button 
+        (click)="nextPage()" 
+        [disabled]="currentPage === totalPages"
+        class="px-3 py-1 border rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50">
+        Next
+      </button>
+    </div>
+  </div>
+}
+  
+ @if (!loading && leads.length === 0) {
+    <div class="text-center py-8 text-gray-500">
+      No leads found
+    </div>
+  }
+
 </div>
 
-<!-- </div> -->
 
 <!-- LEAD DETAILS MODAL -->
 @if (showLeadModal && selectedLead) {

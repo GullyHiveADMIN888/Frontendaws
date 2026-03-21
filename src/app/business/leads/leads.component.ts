@@ -11,21 +11,13 @@ import { SellerService, Lead } from '../business.service';
 
 export class LeadsComponent implements OnInit {
 
- filterStatus: 'all' | 'offered' | 'unlocked' | 'quated' | 'accepted' | 'committed' = 'all';
- statuses = [
-  { label: 'All', value: 'all' },
-  { label: 'New', value: 'offered' },
-  { label: 'Unlocked', value: 'unlocked' },
-  { label: 'Confirmed', value: 'committed' },
-  { label: 'Quated', value: 'quated' },
-  { label: 'Accepted', value: 'accepted' }
-];
+
   leads: Lead[] = [];
   loading = true;
 
   // Pagination
   currentPage = 1;
-  pageSize = 10;
+  pageSize = 25;
   totalPages = 1;
   selectedLead: Lead | null = null;
   showLeadModal = false;
@@ -46,12 +38,25 @@ ngOnInit(): void {
   this.loadLeads(1);
 }
  
-//   loadLeads(page: number = 1) {
+
+// loadLeads(page: number = 1) {
 //   this.loading = true;
 
-//   this.sellerService.getLeads(page, this.pageSize).subscribe({
-//     next: (res) => {
+//   let request$;
 
+//   // Call different API based on filter
+//   if (this.filterStatus === 'quoted') {
+//     request$ = this.sellerService.getQuotedLeads(page, this.pageSize);
+//   } else if (this.filterStatus === 'jobs') {
+//     request$ = this.sellerService.getJobs(page, this.pageSize);
+//   } else {
+//     // default/all/offered/unlocked/committed
+//     request$ = this.sellerService.getLeads(page, this.pageSize);
+//   }
+
+//   request$.subscribe({
+//     next: (res) => {
+//       console.log(res.data);
 //       const leadsData = res.data;
 //       const pagination = res.pagination;
 
@@ -61,7 +66,6 @@ ngOnInit(): void {
 
 //       this.leads = leadsData.map((l: any) => {
 //         const isScheduled = l.timePreference === 'scheduled';
-
 //         return {
 //           ...l,
 //           offerStatus: l.offerStatus ?? 'offered',
@@ -70,7 +74,8 @@ ngOnInit(): void {
 //           time: this.timeAgo(l.createdAt),
 //           isPurchased: l.isPurchased ?? false,
 //           unlockedCount: Number(l.unlockedCount ?? 0),
-//           committedCount: Number(l.committedCount ?? 0)
+//           committedCount: Number(l.committedCount ?? 0),
+//            hasQuote: l.hasQuote ?? false,   
 //         };
 //       });
 
@@ -82,131 +87,184 @@ ngOnInit(): void {
 //     }
 //   });
 // }
-loadLeads(page: number = 1) {
+
+
+  filterStatus: 'all' | 'offered' | 'unlocked' | 'committed' | 'submitted' | 'accepted' | 'rejected' = 'all';
+
+  statuses = [
+    { label: 'All', value: 'all' },
+    { label: 'New', value: 'offered' },
+    { label: 'Unlocked', value: 'unlocked' },
+    { label: 'Confirmed', value: 'committed' },
+    { label: 'Quoted', value: 'submitted' },
+    { label: 'Accepted', value: 'accepted' },
+    { label: 'Rejected', value: 'rejected' }
+  ];
+
+ loadLeads(page: number = 1) {
   this.loading = true;
-
+  
   let request$;
-
-  // Call different API based on filter
-  if (this.filterStatus === 'quated') {
-    request$ = this.sellerService.getQuotedLeads(page, this.pageSize);
-  } else if (this.filterStatus === 'accepted') {
-    request$ = this.sellerService.getAcceptedLeads(page, this.pageSize);
-  } else {
-    // default/all/offered/unlocked/committed
-    request$ = this.sellerService.getLeads(page, this.pageSize);
+ 
+ const quoteStatuses = ['submitted', 'accepted', 'rejected'];
+    
+    if (quoteStatuses.includes(this.filterStatus)) {
+      // Use quoted API with status parameter
+      request$ = this.sellerService.getQuotedLeads(page, this.pageSize, this.filterStatus);
+    }
+  else {
+    //  For 'all', 'offered', 'unlocked', 'committed'
+    // Pass status parameter (undefined for 'all', otherwise the status)
+    const statusParam = this.filterStatus === 'all' ? undefined : this.filterStatus;
+    request$ = this.sellerService.getLeads(page, this.pageSize, statusParam);
   }
-
+  
   request$.subscribe({
     next: (res) => {
-      console.log(res.data);
+      console.log('API Response:', res);
       const leadsData = res.data;
       const pagination = res.pagination;
-
-      this.currentPage = pagination.page;
-      this.totalPages = pagination.totalPages;
-      this.totalLeadss = pagination.totalCount;
-
-      this.leads = leadsData.map((l: any) => {
-        const isScheduled = l.timePreference === 'scheduled';
-        return {
-          ...l,
-          offerStatus: l.offerStatus ?? 'offered',
-          description: l.description || 'No description provided',
-          location: l.location || 'N/A',
-          time: this.timeAgo(l.createdAt),
-          isPurchased: l.isPurchased ?? false,
-          unlockedCount: Number(l.unlockedCount ?? 0),
-          committedCount: Number(l.committedCount ?? 0),
-           hasQuote: l.hasQuote ?? false,   
-        };
-      });
-
+      
+      this.currentPage = pagination?.page ?? page;
+      this.totalPages = pagination?.totalPages ?? 1;
+      this.totalLeadss = pagination?.totalCount ?? 0;
+      this.pageSize = pagination?.pageSize ?? this.pageSize;
+      
+      this.leads = (leadsData || []).map((l: any) => ({
+        ...l,
+        offerStatus: l.offerStatus ?? 'offered',
+        description: l.description || 'No description provided',
+        location: l.location || 'N/A',
+        time: this.timeAgo(l.createdAt),
+        isPurchased: l.isPurchased ?? false,
+        unlockedCount: Number(l.unlockedCount ?? 0),
+        committedCount: Number(l.committedCount ?? 0),
+        hasQuote: l.hasQuote ?? false,
+      }));
+      
       this.loading = false;
     },
     error: (err) => {
-      console.error(err);
+      console.error('Error loading leads:', err);
       this.loading = false;
     }
   });
 }
-// setFilter(offerStatus: any) {
-//   this.filterStatus = offerStatus;
-//   this.currentPage = 1;
 
-//   // Load leads based on selected filter
-//   this.loadLeads(this.currentPage);
-
-//   // Automatically open modal for Quated or Accepted
-//   if (offerStatus === 'quated' || offerStatus === 'accepted') {
-//     // Wait for the leads to be loaded first
-//     const checkLeadsLoaded = setInterval(() => {
-//       if (!this.loading && this.leads.length > 0) {
-//         clearInterval(checkLeadsLoaded);
-
-//         const firstLead = this.leads[0]; // pick the first lead
-//         if (firstLead) {
-//           if (offerStatus === 'quated') {
-//             this.openQuotedModal(firstLead);
-//           } else if (offerStatus === 'accepted') {
-//             this.openAcceptedModal(firstLead);
-//           }
-//         }
-//       }
-//     }, 100); // check every 100ms
-//   }
-// }
-  setFilter(offerStatus: any)
-   {
-  //  this.filterStatus = status;
+  setFilter(offerStatus: any) {
     this.filterStatus = offerStatus;
-    this.currentPage = 1;
-    this.updatePagination();
+    this.currentPage = 1;  // Reset to first page
+    this.loadLeads(1);      // Fetch new data from backend
   }
-expandedLeadId?: number
-  openQuoteModal(lead: any) {
-  this.closeLeadModal(); // optional but recommended
 
-  // this.selectedQuoteLead = lead;
-  // this.showQuoteModal = true;
+  // Pagination methods that call API
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.loadLeads(this.currentPage + 1);
+    }
+  }
 
-  // this.loadingAssignments = true;
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.loadLeads(this.currentPage - 1);
+    }
+  }
 
-  // this.sellerService.getQuoteAssignments(lead.leadId).subscribe({
-  //   next: (res: any) => {
-  //     this.assignments = res.data || [];
-  //     this.loadingAssignments = false;
-  //   },
-  //   error: () => {
-  //     this.loadingAssignments = false;
-  //   }
-  // });
+// Component
+goToPage(page: number) {
+  if (page !== this.currentPage) {
+    this.loadLeads(page);
+  }
 }
-// expandedLeadId: number | null = null;
 
-// openQuoteModal(lead: any) {
-//   // Toggle open/close
-//   if (this.expandedLeadId === lead.leadId) {
-//     this.expandedLeadId = null;
-//     return;
-//   }
+get pages(): (number | string)[] {
+  const pages: (number | string)[] = [];
+  const maxVisible = 5;
+  
+  if (this.totalPages <= maxVisible) {
+    for (let i = 1; i <= this.totalPages; i++) {
+      pages.push(i);
+    }
+  } else {
+    if (this.currentPage <= 3) {
+      for (let i = 1; i <= 4; i++) pages.push(i);
+      pages.push('...');
+      pages.push(this.totalPages);
+    } else if (this.currentPage >= this.totalPages - 2) {
+      pages.push(1);
+      pages.push('...');
+      for (let i = this.totalPages - 3; i <= this.totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      pages.push('...');
+      for (let i = this.currentPage - 1; i <= this.currentPage + 1; i++) pages.push(i);
+      pages.push('...');
+      pages.push(this.totalPages);
+    }
+  }
+  
+  return pages;
+}
 
-//   this.expandedLeadId = lead.leadId;
+  // ✅ Count helpers using API data
+  get totalLeads(): number {
+    return this.totalLeadss;
+  }
 
-//   // Dummy data
-//   lead.quoteDetails = [
-//     {
-//       providerName: 'ABC Services',
-//       price: 2500,
-//       message: 'We can complete this in 2 days'
-//     },
-//     {
-//       providerName: 'XYZ Solutions',
-//       price: 2200,
-//       message: 'Best quality guaranteed'
-//     }
-//   ];
-// }
+  get startIndex(): number {
+    if (this.totalLeadss === 0) return 0;
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get endIndex(): number {
+    return Math.min(this.currentPage * this.pageSize, this.totalLeadss);
+  }
+
+  openQuoteModal(lead: any) {
+    if (this.expandedLeadId === lead.leadId) {
+      this.expandedLeadId = undefined;
+      return;
+    }
+
+    this.expandedLeadId = lead.leadId;
+    this.loadingAssignments = true;
+
+    this.sellerService.getQuoteAssignments(lead.leadId).subscribe({
+      next: (res: any) => {
+        lead.quoteDetails = (res.data || []).map((q: any) => ({
+          providerName: q.providerName,
+          priceMin: q.priceMin,
+          priceMax: q.priceMax,
+          message: q.notes || 'No message available',
+          status: q.status,
+          submittedAt: this.formatDate(q.submittedAt)
+        }));
+        this.loadingAssignments = false;
+      },
+      error: () => {
+        this.loadingAssignments = false;
+      }
+    });
+  }
+
+ 
+ expandedLeadId?: number
+ loadingAssignments: boolean = false;
+
+formatDate(date: string): string {
+  const d = new Date(date);
+
+  const day = d.getDate().toString().padStart(2, '0');
+
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  const month = monthNames[d.getMonth()];
+  const year = d.getFullYear();
+
+  return `${day}-${month}-${year}`;
+}
+
   timeAgo(date: string): string {
     const diff = Date.now() - new Date(date).getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -218,17 +276,9 @@ expandedLeadId?: number
     return `${days} days ago`;
   }
 
-  
- 
-  // get filteredLeads(): Lead[] {
-  //   return this.filterStatus === 'all'
-  //     ? this.leads
-  //    // : this.leads.filter(l => l.status === this.filterStatus);
-  //    : this.leads.filter(l => l.offerStatus === this.filterStatus);
-  // }
   get filteredLeads(): Lead[] {
   switch (this.filterStatus) {
-    case 'quated':
+    case 'submitted':
       return this.leads.filter(l => l.hasQuote);  // only leads with quote
     // case 'accepted':
     //   return this.leads.filter(l => l.isAccepted); // only accepted leads
@@ -249,46 +299,6 @@ expandedLeadId?: number
   }
 
  
-nextPage() {
-  if (this.currentPage < this.totalPages) {
-    this.currentPage++;
-    this.loadLeads(this.currentPage);
-  }
-}
-  // prevPage() {
-  //   if (this.currentPage > 1) this.currentPage--;
-  // }
-  prevPage() {
-  if (this.currentPage > 1) {
-    this.currentPage--;
-    this.loadLeads(this.currentPage);
-  }
-}
-
-  goToPage(page: number) {
-  this.currentPage = page;
-  this.loadLeads(page);
-}
-
-  get pages(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
-  }
-
-  // Count helpers
-  get totalLeads() {
-    return this.filteredLeads.length;
-  }
-
-  get startIndex() {
-    return this.totalLeads === 0
-      ? 0
-      : (this.currentPage - 1) * this.pageSize + 1;
-  }
-
-  get endIndex() {
-    return Math.min(this.currentPage * this.pageSize, this.totalLeads);
-  }
-
   openLeadDetails(lead: Lead) {
     this.selectedLead = lead;
     this.showLeadModal = true;
