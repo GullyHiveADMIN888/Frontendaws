@@ -8,15 +8,6 @@ import { CustomerRegisterComponent } from './costumer-registration/customer-regi
 
 export const AUTH_ROUTES: Routes = [
 
- //  { path: '', component: LandingPageComponent },
-
-  // LOGIN PAGE
-  // {
-  //   path: 'login',
-  //   component: LoginComponent
-  // },
-
-  // REGISTER PAGE WITH LAYOUT
   {
     path: 'register',
     component: RegisterLayoutComponent,

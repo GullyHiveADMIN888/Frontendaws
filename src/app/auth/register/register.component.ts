@@ -296,7 +296,7 @@ export class RegisterComponent {
 
 
     // Step 2
-    formData.append('BusinessName', this.formData.businessName || '');
+   // formData.append('BusinessName', this.formData.businessName || '');
     formData.append('RegistrationType', this.formData.registrationType || '');
     formData.append('RegistrationNumber', this.formData.registrationNumber || '');
 
@@ -493,7 +493,7 @@ handleError(err: any) {
 
 
   individualSteps = [1, 2, 3, 4];
-  msmeSteps = [10, 11, 12];
+  msmeSteps = [11, 10, 12];
 
   get isIndividual() {
     return this.formData.providerType === 'INDIVIDUAL';

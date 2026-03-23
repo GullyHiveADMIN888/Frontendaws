@@ -352,7 +352,7 @@ loadProfile(sellerId: number) {
   }
 
   cancel() {
-    this.router.navigate(['/business/settings']);
+    this.router.navigate(['/provider_User_Admin/settings']);
   }
 
   validateForm(): boolean {
@@ -431,7 +431,7 @@ loadProfile(sellerId: number) {
     this.sellerService.updateProfile(this.sellerId, formData).subscribe({
       next: () => {
         alert('Profile updated successfully!');
-        this.router.navigate(['/business/settings']);
+        this.router.navigate(['/provider_User_Admin/settings']);
       },
       error: (err) => {
         console.error('Update failed', err);

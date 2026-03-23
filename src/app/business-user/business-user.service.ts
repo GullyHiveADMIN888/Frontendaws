@@ -213,8 +213,7 @@ export interface WalletTransaction {
   providedIn: 'root'
 })
 export class BusinessUserService {
-  private apiUrl = `${environment.apiBaseUrl}/business-user`;
-  private apiUrlSeller = `${environment.apiBaseUrl}/seller`;
+  private apiUrl = `${environment.apiBaseUrl}/provider_Ops_Manager`;
 
   // BehaviorSubject will store sellerId and emit it to subscribers
   private sellerIdSubject = new BehaviorSubject<number | null>(null);

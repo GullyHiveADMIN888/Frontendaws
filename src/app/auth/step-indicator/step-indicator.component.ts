@@ -61,9 +61,10 @@ export class StepIndicatorComponent implements OnChanges {
 
     if (this.providerType === 'MSME' || this.providerType === 'COMPANY') {
       this.steps = [
-        { key: 10, title: 'Business Basic Info', icon: 'ri-building-line' },
-        { key: 11, title: 'Business Details', icon: 'ri-briefcase-line' },
-        { key: 12, title: 'Documents Upload', icon: 'ri-file-upload-line' }
+       
+        { key: 10, title: 'Business Details', icon: 'ri-briefcase-line' },
+        { key: 11, title: 'Authorization Info', icon: 'ri-building-line' },
+        { key: 12, title: 'Professional Details', icon: 'ri-file-upload-line' }
       ];
     }
   }

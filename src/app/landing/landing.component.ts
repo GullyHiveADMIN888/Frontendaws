@@ -652,7 +652,7 @@ onLoginSubmit(event: Event): void {
 
   console.log('Login response:', response); 
 
-  // 🚨 1️⃣ First check mobile verification
+  //  First check mobile verification
   if (!response.mobileVerified && !response.emailVerified) {
 
     // Store temporary data (DO NOT store token yet)
@@ -668,7 +668,7 @@ onLoginSubmit(event: Event): void {
     return; 
   }
 
-  // ✅ 2️⃣ If verified → normal login
+  //  If verified → normal login
   if (response.token) {
 
     if (this.authService) {
@@ -688,8 +688,8 @@ onLoginSubmit(event: Event): void {
     this.closeLoginModal();
 
     if (this.authService) {
-     // this.authService.redirectByRole(response.role);
-     this.authService.redirectByRole(response.role, response.providerType , response.businessUserId ,response.businessUserRole);
+      this.authService.redirectByRole(response.role);
+   //  this.authService.redirectByRole(response.role, response.providerType , response.businessUserId ,response.businessUserRole);
     } else {
       window.location.href = '/dashboard';
     }
