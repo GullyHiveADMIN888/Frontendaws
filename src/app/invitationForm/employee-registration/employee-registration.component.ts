@@ -6,9 +6,11 @@ import { EmployeeInvitationService, EmployeeInvitationDetails, ValidateInvitatio
 import { AuthService, SendOtpEmailWithoutUserIdRequest, VerifyOtpEmailWithoutUserIdRequest } from '../../auth/auth.service';
 import { OTPVerificationWithoutIdComponent } from '../../auth/otp-verification-without-id/otp-verification-without-id.component';
 import { firstValueFrom } from 'rxjs';
+
 // ========== IMPORT FOR EMAIL OTP COMPONENT - COMMENTED OUT ==========
-// Uncomment when email OTP is enabled
+// ========== UNCOMMENT WHEN EMAIL OTP IS READY ==========
 // import { OtpEmailVerificationWithoutIdComponent } from '../../auth/otp-verification-without-id/otp-email-verification-without-id.component';
+// ========== END OF EMAIL OTP IMPORT ==========
 
 @Component({
   selector: 'app-employee-registration',
@@ -19,8 +21,9 @@ import { firstValueFrom } from 'rxjs';
     RouterModule,
     OTPVerificationWithoutIdComponent,
     // ========== EMAIL OTP COMPONENT IMPORT - COMMENTED OUT ==========
-    // Uncomment when email OTP is enabled
+    // ========== UNCOMMENT WHEN EMAIL OTP IS READY ==========
     // OtpEmailVerificationWithoutIdComponent
+    // ========== END OF EMAIL OTP IMPORT ==========
   ],
   templateUrl: './employee-registration.component.html',
   styleUrls: ['./employee-registration.component.css']
@@ -29,8 +32,9 @@ export class EmployeeRegistrationComponent implements OnInit {
   @ViewChild('mobileOtpComponent') mobileOtpComponent!: OTPVerificationWithoutIdComponent;
 
   // ========== EMAIL OTP VIEWCHILD - COMMENTED OUT ==========
-  // Uncomment when email OTP is enabled
+  // ========== UNCOMMENT WHEN EMAIL OTP IS READY ==========
   // @ViewChild('emailOtpComponent') emailOtpComponent!: OtpEmailVerificationWithoutIdComponent;
+  // ========== END OF EMAIL OTP VIEWCHILD ==========
 
   registrationForm: FormGroup;
   invitationDetails: EmployeeInvitationDetails | null = null;
@@ -46,7 +50,7 @@ export class EmployeeRegistrationComponent implements OnInit {
   mobileOtpSent = false;
 
   // ========== EMAIL OTP STATES - COMMENTED OUT ==========
-  // Uncomment these when email OTP is enabled
+  // ========== UNCOMMENT WHEN EMAIL OTP IS READY ==========
   /*
   showEmailOtp = false;
   emailVerified = false;
@@ -54,6 +58,7 @@ export class EmployeeRegistrationComponent implements OnInit {
   emailOtpSent = false;
   emailOtpToken: string | null = null;
   */
+  // ========== END OF EMAIL OTP STATES ==========
 
   // File upload
   selectedFile: File | null = null;
@@ -67,9 +72,8 @@ export class EmployeeRegistrationComponent implements OnInit {
     private authService: AuthService
   ) {
     this.registrationForm = this.fb.group({
-      employeeName: ['', [Validators.required, Validators.minLength(2)]],
+      memberName: ['', [Validators.required, Validators.minLength(2)]],
       mobile: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
-      // Email is still required but without OTP verification for now
       email: ['', [Validators.required, Validators.email]],
       aadharId: ['', [Validators.required, Validators.pattern('^[0-9]{12}$')]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -137,12 +141,12 @@ export class EmployeeRegistrationComponent implements OnInit {
   }
 
   // ========== UPDATED isFormValid - REMOVED emailVerified CHECK ==========
+  // ========== WHEN EMAIL OTP IS ENABLED, ADD THIS.EMAILVERIFIED BACK ==========
   isFormValid(): boolean {
     return this.registrationForm.valid &&
       this.mobileVerified &&
-      // Email verification check is removed for now
-      // Uncomment the line below when email OTP is enabled
-      // this.emailVerified && 
+      // ========== UNCOMMENT THE LINE BELOW WHEN EMAIL OTP IS READY ==========
+      // this.emailVerified &&
       this.selectedFile !== null;
   }
 
@@ -186,19 +190,19 @@ export class EmployeeRegistrationComponent implements OnInit {
   }
 
   // ========== EMAIL OTP METHODS - COMMENTED OUT ==========
-  // Uncomment all email-related methods when email OTP is enabled
+  // ========== UNCOMMENT ALL EMAIL-RELATED METHODS WHEN EMAIL OTP IS ENABLED ==========
   /*
   async sendEmailOtp(): Promise<void> {
     const email = this.registrationForm.get('email')?.value;
-    const employeeName = this.registrationForm.get('employeeName')?.value;
+    const memberName = this.registrationForm.get('memberName')?.value;
     
     if (!email || !this.isValidEmail(email)) {
       alert('Please enter a valid email address');
       return;
     }
 
-    if (!employeeName) {
-      alert('Please enter employee name first');
+    if (!memberName) {
+      alert('Please enter member name first');
       return;
     }
 
@@ -207,7 +211,7 @@ export class EmployeeRegistrationComponent implements OnInit {
     try {
       const payload: SendOtpEmailWithoutUserIdRequest = {
         email: email,
-        fullName: employeeName
+        fullName: memberName
       };
       
       const response = await firstValueFrom(this.authService.sendOtpEmailWithoutUserId(payload));
@@ -265,6 +269,7 @@ export class EmployeeRegistrationComponent implements OnInit {
     this.emailVerificationInProgress = false;
   }
   */
+  // ========== END OF EMAIL OTP METHODS ==========
 
   // ==================== FILE UPLOAD ====================
   onFileSelected(event: Event): void {
@@ -321,20 +326,19 @@ export class EmployeeRegistrationComponent implements OnInit {
 
     try {
       const formData = new FormData();
-      formData.append('memberName', this.registrationForm.get('employeeName')?.value);
+      formData.append('memberName', this.registrationForm.get('memberName')?.value);
       formData.append('mobile', this.registrationForm.get('mobile')?.value);
       formData.append('email', this.registrationForm.get('email')?.value);
       formData.append('aadharId', this.registrationForm.get('aadharId')?.value);
       formData.append('password', this.registrationForm.get('password')?.value);
       formData.append('invitationToken', this.route.snapshot.queryParams['token']);
-      formData.append('businessId', this.invitationDetails?.businessId.toString() || '');
-
+      formData.append('providerId', this.invitationDetails?.businessId.toString() || '');
+      
       // Add verification status from component state
       formData.append('phoneVerified', this.mobileVerified ? 'true' : 'false');
-
-      // Email verification status - currently false since email OTP is disabled
-      // When you re-enable email OTP, this will be set based on emailVerified state
-      formData.append('emailVerified', 'false');  // For now, always false
+      
+      // ========== WHEN EMAIL OTP IS ENABLED, CHANGE TO: this.emailVerified ? 'true' : 'false' ==========
+      formData.append('emailVerified', 'false');
 
       if (this.selectedFile) {
         formData.append('aadharFile', this.selectedFile);
@@ -353,19 +357,20 @@ export class EmployeeRegistrationComponent implements OnInit {
   }
 
   // ========== UPDATED resetForm - REMOVED EMAIL STATE RESETS ==========
+  // ========== WHEN EMAIL OTP IS ENABLED, UNCOMMENT EMAIL STATE RESETS ==========
   resetForm(): void {
     this.registrationForm.reset();
     this.mobileVerified = false;
     this.mobileOtpSent = false;
     this.showMobileOtp = false;
-    // ========== EMAIL STATE RESETS - COMMENTED OUT ==========
-    // Uncomment when email OTP is enabled
+    // ========== UNCOMMENT WHEN EMAIL OTP IS READY ==========
     /*
     this.emailVerified = false;
     this.emailOtpSent = false;
     this.showEmailOtp = false;
     this.emailOtpToken = null;
     */
+    // ========== END OF EMAIL STATE RESETS ==========
     this.selectedFile = null;
     this.isFileInvalid = false;
   }
