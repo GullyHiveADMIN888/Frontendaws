@@ -1,0 +1,217 @@
+<!-- worker-management.component.html -->
+
+<!-- Global Alert -->
+<div *ngIf="alertMessage"
+     class="fixed top-5 right-5 px-4 py-3 rounded text-white shadow-lg z-[9999]"
+     [ngClass]="alertType === 'success' ? 'bg-green-500' : 'bg-red-500'">
+  {{ alertMessage }}
+</div>
+
+<div class="p-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Worker Management</h2>
+    
+    <button
+      (click)="openModal()"
+      class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center"
+    >
+      <i class="ri-user-add-line mr-2"></i>
+      Add Worker
+    </button>
+  </div>
+
+  <!-- Workers Table (Placeholder - To be implemented later) -->
+  <div class="bg-white rounded-lg shadow border overflow-hidden">
+    <div class="p-8 text-center text-gray-500">
+      <i class="ri-team-line text-4xl mb-2 block"></i>
+      <p>Worker list will be displayed here</p>
+      <p class="text-sm mt-1">Click "Add Worker" to add new workers</p>
+    </div>
+  </div>
+</div>
+
+<!-- Add Worker Modal -->
+<div *ngIf="showModal"
+     class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center mt-16 z-[10000]">
+  
+  <div class="bg-white rounded-xl w-[700px] p-6 shadow-xl overflow-y-auto max-h-[90vh]">
+    
+    <h3 class="text-xl font-bold mb-4">Add Worker</h3>
+    
+    <!-- Search by Email -->
+    <div class="flex gap-2 mb-4 flex-col sm:flex-row">
+      <div class="w-full">
+        <input
+          type="email"
+          [(ngModel)]="searchEmail"
+          #emailModel="ngModel"
+          required
+          email
+          placeholder="Enter Provider Email"
+          class="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+        />
+        
+        <!-- Error message -->
+        <p *ngIf="emailModel.invalid && emailModel.touched" class="text-red-500 text-sm mt-1">
+          Please enter a valid email address
+        </p>
+      </div>
+      
+      <button
+        (click)="fetchProvider()"
+        [disabled]="emailModel.invalid"
+        class="bg-blue-600 text-white px-4 py-2 rounded disabled:bg-gray-400 hover:bg-blue-700 transition"
+      >
+        Fetch
+      </button>
+    </div>
+    
+    <!-- Profile Information Display -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      
+      <!-- Display Name -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
+        <input class="border p-2 bg-gray-50 rounded w-full"
+               [(ngModel)]="profile.displayName" 
+               readonly 
+               placeholder="Display Name"/>
+      </div>
+      
+      <!-- Legal Name -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Legal Name</label>
+        <input class="border p-2 bg-gray-50 rounded w-full"
+               [(ngModel)]="profile.legalName" 
+               readonly 
+               placeholder="Legal Name"/>
+      </div>
+      
+      <!-- Email -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input class="border p-2 bg-gray-50 rounded w-full"
+               [(ngModel)]="profile.email" 
+               readonly 
+               placeholder="Email"/>
+      </div>
+      
+      <!-- Phone -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+        <input class="border p-2 bg-gray-50 rounded w-full"
+               [(ngModel)]="profile.phone" 
+               readonly 
+               placeholder="Phone"/>
+      </div>
+      
+      <!-- Base State -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Base State</label>
+        <input class="border p-2 bg-gray-50 rounded w-full"
+               [(ngModel)]="profile.state" 
+               readonly 
+               placeholder="Base State"/>
+      </div>
+      
+      <!-- Base City -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Base City</label>
+        <input class="border p-2 bg-gray-50 rounded w-full"
+               [(ngModel)]="profile.baseCity" 
+               readonly 
+               placeholder="Base City"/>
+      </div>
+      
+      <!-- Address Line 1 -->
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Address Line 1</label>
+        <input class="border p-2 bg-gray-50 rounded w-full"
+               [(ngModel)]="profile.addressLine1" 
+               readonly 
+               placeholder="Address Line 1"/>
+      </div>
+      
+      <!-- Address Line 2 -->
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Address Line 2</label>
+        <input class="border p-2 bg-gray-50 rounded w-full"
+               [(ngModel)]="profile.addressLine2" 
+               readonly 
+               placeholder="Address Line 2"/>
+      </div>
+      
+      <!-- Landmark -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Landmark</label>
+        <input class="border p-2 bg-gray-50 rounded w-full"
+               [(ngModel)]="profile.landmark" 
+               readonly 
+               placeholder="Landmark"/>
+      </div>
+      
+      <!-- Pincode -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
+        <input class="border p-2 bg-gray-50 rounded w-full"
+               [(ngModel)]="profile.pincode" 
+               readonly 
+               placeholder="Pincode"/>
+      </div>
+      
+      <!-- Area Name -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Area</label>
+        <input class="border p-2 bg-gray-50 rounded w-full"
+               [(ngModel)]="profile.areaName" 
+               readonly 
+               placeholder="Area"/>
+      </div>
+      
+      <!-- Provider Type -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Provider Type</label>
+        <input class="border p-2 bg-gray-50 rounded w-full"
+               [(ngModel)]="profile.providerType" 
+               readonly 
+               placeholder="Provider Type"/>
+      </div>
+      
+      <!-- Status -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+        <input class="border p-2 bg-gray-50 rounded w-full"
+               [(ngModel)]="profile.status" 
+               readonly 
+               placeholder="Status"/>
+      </div>
+      
+    </div>
+    
+    <!-- Profile Picture -->
+    <div class="mt-4 flex justify-center">
+      <div *ngIf="profile.profilePictureUrl" class="text-center">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Profile Picture</label>
+        <img [src]="profile.profilePictureUrl" 
+             class="w-24 h-24 rounded-full object-cover border-2 border-gray-300"/>
+      </div>
+    </div>
+    
+    <!-- Modal Actions -->
+    <div class="flex justify-end gap-3 mt-6">
+      <button
+        (click)="closeModal()"
+        class="px-4 py-2 border rounded hover:bg-gray-100 transition">
+        Close
+      </button>
+      
+      <button
+        (click)="saveUser()"
+        class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 transition">
+        Save
+      </button>
+    </div>
+    
+  </div>
+</div>

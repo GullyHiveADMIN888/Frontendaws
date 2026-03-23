@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/auth.guard';
 import { LandingPageComponent } from './landing/landing.component';
+import { EmployeeRegistrationComponent } from './invitationForm/employee-registration/employee-registration.component';
+import { InvitationGeneratorComponent } from './Admin/invitation-generator/invitation-generator.component';
 
 export const routes: Routes = [
  {
@@ -60,7 +62,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { roles: ['Buyer'] },
     loadChildren: () =>
-      import('./customer/customer.module')
+      import('./customer/customer.module')        
         .then(m => m.CustomerModule)
   },
 
@@ -71,6 +73,23 @@ export const routes: Routes = [
 //     import('./business-user/business-user.module')
 //       .then(m => m.BusinessUserModule)
 // },
+  { 
+    path: 'register/member', 
+    component: EmployeeRegistrationComponent
+  },
+  { 
+    path: 'invite/generate', 
+    component: InvitationGeneratorComponent,
+    // canActivate: [AuthGuard] // Uncomment when you have auth guard
+  },
+
+  // {
+ // path: 'business-user',
+ // canActivate: [authGuard],
+ // loadChildren: () =>
+ //   import('./business-user/business-user.module')
+  //    .then(m => m.BusinessUserModule)
+//},
 
   { path: '**', redirectTo: '' }
 // this path redirect to home page if the url is not get 

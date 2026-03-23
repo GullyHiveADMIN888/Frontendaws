@@ -236,7 +236,7 @@ export class BusinessUserService {
   getDashboardData(): Observable<DashboardData> {
     return this.http
       .get<{ success: boolean; data: DashboardData }>(
-        `${this.apiUrl}/dashboard`,
+        `${this.apiUrlSeller}/dashboard`,
         { headers: this.getHeaders() }
       )
       // .pipe(map(res => res.data));

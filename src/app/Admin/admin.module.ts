@@ -122,7 +122,7 @@ import { WalletListComponent } from './wallet/wallet.component';
     CommonModule,
     AdminRoutingModule,
     FormsModule,
-    HttpClientModule,
+    // HttpClientModule,
     ReactiveFormsModule,
     // Import standalone components here instead of declaring them
     HeaderComponent,

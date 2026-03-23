@@ -52,7 +52,7 @@ export interface CustomerCreateLeadDto {
   timePreference: string; // 'today', 'this_week', 'this_month', 'flexible', 'scheduled'
   scheduledStart?: string;
   scheduledEnd?: string;
-  isInstant: boolean;
+  // isInstant: boolean; // REMOVED in new schema
   source: string; // 'link', 'qr', 'code', 'manual'
   categoryId: number;
   subcategoryId?: number;
