@@ -29,9 +29,15 @@ export class QuickActionsComponent {
       action: 'editServices',
       color: 'bg-indigo-50 text-indigo-600'
     },
+     {
+      title: 'Invite Employee',
+     icon: 'ri-user-shared-line',
+      link: '/provider_User_Admin/users',
+      color: 'bg-indigo-50 text-indigo-600'
+    },
     {
-      title: 'Add User',
-      icon: 'ri-user-line',
+      title: 'Add Worker',
+      icon: 'ri-user-add-line',
       link: '/provider_User_Admin/users',
       color: 'bg-indigo-50 text-indigo-600'
     },

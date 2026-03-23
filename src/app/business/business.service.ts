@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
-//  import { environment } from '../../environments/environment.prod';
-import { environment } from '../../environments/environment';
+  import { environment } from '../../environments/environment.prod';
+// import { environment } from '../../environments/environment';
 import { Branch } from './models/branch.model';
 import { PagedResult } from './models/paged-result.model';
 
@@ -540,13 +540,13 @@ export class SellerService {
   }
 
   saveBusinessUser(data: any) {
-    return this.http.post(`${this.apiUrl}/business-users`, data);
+    return this.http.post(`${this.apiUrl}/business-members`, data);
   }
   getBusinessUsers() {
-    return this.http.get(`${this.apiUrl}/business-users`);
+    return this.http.get(`${this.apiUrl}/business-members`);
   }
   deleteBusinessUser(id: number) {
-    return this.http.delete(`${this.apiUrl}/delete-business-users/${id}`);
+    return this.http.delete(`${this.apiUrl}/delete-business-members/${id}`);
   }
 
   //lead Assignments

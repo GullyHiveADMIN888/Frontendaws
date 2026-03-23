@@ -8,7 +8,6 @@ interface User {
   name: string;
   email: string;
   phone: string;
-  role: string;
   aadhaar_number:string;
 }
 
@@ -53,7 +52,6 @@ loadUsers() {
     name: '',
     email: '',
     phone: '',
-    role: '',
     aadhaar_number: ''
   };
 
@@ -76,52 +74,7 @@ closeModal(){
 
 searchEmail: string = '';
 
-// fetchProvider() {
-//   if (!this.searchEmail) {
-//     alert('Please enter an email');
-//     return;
-//   }
 
-//   this.sellerService.getProviderProfileByEmail(this.searchEmail)
-//     .subscribe(profile => {
-//       this.profile = profile;
-//     });
-// }
-// saveUser(){
-
-// const payload = {
-//   userId: this.profile.sellerId,
-//   role: "member",
-//   status: "active"
-// };
-
-// this.sellerService.saveBusinessUser(payload)
-// .subscribe({
-
-// next:(res:any)=>{
-
-//   if(res.success){
-//     alert("User Added Successfully");
-//       // RELOAD USERS LIST
-//           this.loadUsers();
-
-//           //  Close modal
-//           this.closeModal();
-//   }
-//   else{
-//     alert("User already exists");
-//   }
-
-// },
-
-// error:(err)=>{
-//   console.error(err);
-//   alert("Something went wrong");
-// }
-
-// });
-
-// }
 fetchProvider() {
   if (!this.searchEmail) {
     this.showAlert('Please enter an email', 'error');
@@ -138,40 +91,57 @@ fetchProvider() {
       }
     });
 }
-saveUser() {
+// saveUser() {
 
+//   const payload = {
+//     userId: this.profile.sellerId,
+//     status: "pending_verification"
+//   };
+
+//   this.sellerService.saveBusinessUser(payload)
+//     .subscribe({
+
+//       next: (res: any) => {
+
+//         if (res.success) {
+
+//           this.showAlert("User added successfully", "success");
+
+//           this.loadUsers();
+//           this.closeModal();
+//         }
+//         else {
+//           this.showAlert(res.message || "User already exists", "error");
+//         }
+
+//       },
+
+//       error: (err) => {
+//         console.error(err);
+//         this.showAlert("Something went wrong", "error");
+//       }
+
+//     });
+// }
+ saveUser() {
   const payload = {
-    userId: this.profile.sellerId,
-    role: "member",
-    status: "active"
+    workerProviderId: this.profile.providerId,
+    workerUserId: this.profile.sellerId,
   };
 
-  this.sellerService.saveBusinessUser(payload)
-    .subscribe({
-
-      next: (res: any) => {
-
-        if (res.success) {
-
-          this.showAlert("User added successfully", "success");
-
-          this.loadUsers();
-          this.closeModal();
-        }
-        else {
-          this.showAlert(res.message || "User already exists", "error");
-        }
-
-      },
-
-      error: (err) => {
-        console.error(err);
-        this.showAlert("Something went wrong", "error");
-      }
-
-    });
+  this.sellerService.saveBusinessUser(payload).subscribe({
+    next: () => {
+      this.alertMessage = 'User added successfully';
+      this.alertType = 'success';
+      this.closeModal();
+      this.loadUsers();
+    },
+    error: () => {
+      this.alertMessage = 'User already exists or failed';
+      this.alertType = 'error';
+    }
+  });
 }
- 
 
   deleteUser(id: number) {
 

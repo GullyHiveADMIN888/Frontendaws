@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
-  import { environment } from '../../environments/environment'
- // import { environment } from '../../environments/environment.prod';
+ // import { environment } from '../../environments/environment'
+  import { environment } from '../../environments/environment.prod';
 
 
 
@@ -86,6 +86,7 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
       Seller: '/seller',
       Provider_User_Admin: '/provider_User_Admin',
       Provider_Member: '/provider_Member',
+      Provider_User_Ops_Manager: '/provider_User_Ops_Manager',
     };
 
     this.router.navigate([routes[role] ?? '/login']);

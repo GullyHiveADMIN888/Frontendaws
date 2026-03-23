@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
-//  import { environment } from '../../environments/environment.prod';
-  import { environment } from '../../environments/environment';
+  import { environment } from '../../environments/environment.prod';
+//  import { environment } from '../../environments/environment';
 // --- Dashboard & Stats ---
 export interface SellerStats {
   totalLeads: number;
@@ -213,7 +213,7 @@ export interface WalletTransaction {
   providedIn: 'root'
 })
 export class BusinessUserService {
-  private apiUrl = `${environment.apiBaseUrl}/business-user`;
+  private apiUrl = `${environment.apiBaseUrl}/provider_Ops_Manager`;
 
   // BehaviorSubject will store sellerId and emit it to subscribers
   private sellerIdSubject = new BehaviorSubject<number | null>(null);
