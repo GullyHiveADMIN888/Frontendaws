@@ -17,10 +17,10 @@
   <!-- Registration Form -->
   <div class="card" *ngIf="!isLoading && !errorMessage && invitationDetails">
     <div class="card-header">
-      <h2>Employee/Worker Registration Form</h2>
+      <h2>Member Registration Form</h2>
       <div class="inviter-info">
-        <p><strong>Business:</strong> {{ invitationDetails.businessLegalName }}</p>
-        <p><strong>Business Address:</strong> {{ invitationDetails.inviterAddress.fullAddress }}</p>
+        <p><strong>Provider/Business:</strong> {{ invitationDetails.businessLegalName }}</p>
+        <p><strong>Address:</strong> {{ invitationDetails.inviterAddress.fullAddress }}</p>
       </div>
     </div>
 
@@ -34,7 +34,7 @@
       </div>
 
       <!-- ========== EMAIL OTP VERIFICATION SECTION - COMMENTED OUT FOR NOW ========== -->
-      <!-- Uncomment this section when email OTP verification is ready -->
+      <!-- ========== UNCOMMENT THIS SECTION WHEN EMAIL OTP VERIFICATION IS READY ========== -->
       <!--
       <div *ngIf="showEmailOtp" class="otp-section mb-4">
         <h4>Verify Email Address</h4>
@@ -43,20 +43,20 @@
         </app-otp-email-verification-without-id>
       </div>
       -->
+      <!-- ========== END OF EMAIL OTP SECTION ========== -->
 
       <!-- Registration Form (Hidden during OTP) -->
-      <!-- Note: The condition !showEmailOtp is commented out since email OTP is disabled -->
+      <!-- Note: When email OTP is enabled, change condition to: *ngIf="!showMobileOtp && !showEmailOtp" -->
       <form *ngIf="!showMobileOtp" [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
-        <!-- Employee Name -->
+        <!-- Member Name -->
         <div class="form-group">
-          <label for="employeeName">Employee Name *</label>
-          <input type="text" id="employeeName" class="form-control" formControlName="employeeName"
-            [class.is-invalid]="isFieldInvalid('employeeName')" placeholder="Enter full name">
-          <div class="invalid-feedback" *ngIf="isFieldInvalid('employeeName')">
-            Employee name is required
+          <label for="memberName">Member Name *</label>
+          <input type="text" id="memberName" class="form-control" formControlName="memberName"
+            [class.is-invalid]="isFieldInvalid('memberName')" placeholder="Enter full name">
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('memberName')">
+            Member name is required
           </div>
         </div>
-
 
         <!-- Mobile with OTP -->
         <div class="form-group">
@@ -101,7 +101,7 @@
         </div>
 
         <!-- ========== EMAIL WITH OTP VERSION - COMMENTED OUT ========== -->
-        <!-- Uncomment this block and delete the simple email field above when email OTP is ready -->
+        <!-- ========== UNCOMMENT THIS BLOCK AND DELETE THE SIMPLE EMAIL FIELD ABOVE WHEN EMAIL OTP IS READY ========== -->
         <!--
         <div class="form-group">
           <label for="email">Email *</label>
@@ -122,6 +122,7 @@
           <small *ngIf="emailVerified" class="text-success">✓ Email verified</small>
         </div>
         -->
+        <!-- ========== END OF EMAIL OTP VERSION ========== -->
 
         <!-- Password -->
         <div class="form-group">
@@ -166,13 +167,14 @@
             <span class="status-text">Mobile Verification</span>
           </div>
           <!-- ========== EMAIL VERIFICATION STATUS - COMMENTED OUT ========== -->
-          <!-- Uncomment when email OTP is enabled -->
+          <!-- ========== UNCOMMENT WHEN EMAIL OTP IS ENABLED ========== -->
           <!--
           <div class="status-item" [class.completed]="emailVerified">
             <span class="status-icon">{{ emailVerified ? '✓' : '○' }}</span>
             <span class="status-text">Email Verification</span>
           </div>
           -->
+          <!-- ========== END OF EMAIL VERIFICATION STATUS ========== -->
         </div>
 
         <!-- Form Actions -->
@@ -189,7 +191,7 @@
       <!-- Success Message -->
       <div *ngIf="showSuccess" class="alert alert-success mt-3">
         <h4>Registration Successful!</h4>
-        <p>Your employee registration has been submitted successfully.</p>
+        <p>Your member registration has been submitted successfully.</p>
         <button class="btn btn-success mt-2" routerLink="/">Go to Home</button>
       </div>
     </div>
