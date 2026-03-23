@@ -123,22 +123,28 @@ fetchProvider() {
 
 //     });
 // }
- saveUser() {
+saveUser() {
   const payload = {
     workerProviderId: this.profile.providerId,
     workerUserId: this.profile.sellerId,
   };
 
   this.sellerService.saveBusinessUser(payload).subscribe({
-    next: () => {
-      this.alertMessage = 'User added successfully';
-      this.alertType = 'success';
-      this.closeModal();
-      this.loadUsers();
+    next: (res: any) => {
+
+      if (res.success) {
+        this.showAlert('User added successfully', 'success');
+        this.closeModal();
+        this.loadUsers();
+      } else {
+        // 👈 THIS IS IMPORTANT
+        this.showAlert(res.message || 'User already exists', 'error');
+      }
+
     },
-    error: () => {
-      this.alertMessage = 'User already exists or failed';
-      this.alertType = 'error';
+    error: (err) => {
+      console.error(err);
+      this.showAlert('Something went wrong', 'error');
     }
   });
 }

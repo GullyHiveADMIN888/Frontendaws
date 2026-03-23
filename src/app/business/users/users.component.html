@@ -30,8 +30,8 @@
           <th class="p-4">Name</th>
           <th class="p-4">Email</th>
           <th class="p-4">Phone</th>
-           <th class="p-4">Adhar Number</th>
           <th class="p-4">Role</th>
+           <th class="p-4">Status</th>
           <th class="p-4 text-center">Action</th>
         </tr>
       </thead>
@@ -45,7 +45,6 @@
           <td class="p-4 text-gray-600">{{user.email}}</td>
 
           <td class="p-4 text-gray-600">{{user.phone}}</td>
-          <td class="p-4 text-gray-600">{{user.aadhaar_number}}</td>
 
           <td class="p-4">
             <span class="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full text-sm">
@@ -53,6 +52,7 @@
             </span>
           </td>
 
+          <td class="p-4 text-gray-600">{{user.status}}</td>
           <td class="p-4 text-center">
 
             <button
