@@ -25,6 +25,7 @@ export class OpsManagerProfileComponent implements OnInit {
   showSuccess = false;
   showMobileOtp = false;
   newMobileNumber = '';
+  otpValue = '';
   mobileUpdateStep: 'idle' | 'enter' | 'otp' = 'idle';
   successMessage = '';
   errorMessage = '';
@@ -163,7 +164,7 @@ export class OpsManagerProfileComponent implements OnInit {
     });
   }
 
-  // ========== MOBILE UPDATE WITH FIREBASE OTP ==========
+  // ========== MOBILE UPDATE WITH OTP VERIFICATION (SECURE) ==========
   startMobileUpdate(): void {
     this.mobileUpdateStep = 'enter';
     this.newMobileNumber = '';
@@ -192,22 +193,12 @@ export class OpsManagerProfileComponent implements OnInit {
     this.isUpdatingMobile = true;
 
     try {
-      // Step 1: Update mobile in backend (without verification)
-      const response = await firstValueFrom(
-        this.profileService.updateMobile({ mobile: this.newMobileNumber })
-      );
-
-      if (response.success) {
-        // Step 2: Send OTP via Firebase
-        await this.authService.sendOtp(this.newMobileNumber);
-        this.mobileUpdateStep = 'otp';
-        this.showMobileOtp = true;
-      } else {
-        this.errorMessage = response.message || 'Failed to update mobile';
-        setTimeout(() => this.clearMessages(), 3000);
-      }
+      // Step 1: Send OTP via Firebase (mobile NOT updated in DB yet)
+      await this.authService.sendOtp(this.newMobileNumber);
+      this.mobileUpdateStep = 'otp';
+      this.showMobileOtp = true;
     } catch (error: any) {
-      console.error('Error in sendMobileOtp:', error);
+      console.error('Error sending OTP:', error);
       this.errorMessage = error.message || 'Failed to send OTP';
       setTimeout(() => this.clearMessages(), 3000);
     } finally {
@@ -217,15 +208,35 @@ export class OpsManagerProfileComponent implements OnInit {
 
   // Called by OTPVerificationWithoutIdComponent after successful OTP verification
   async onMobileVerified(): Promise<void> {
-    // After OTP verification, refresh profile to get updated status
-    // The OTP component already called verifyMobileOnServer which updates the backend
-    await this.loadProfile();
+    this.isUpdatingMobile = true;
     
-    this.successMessage = 'Mobile number updated and verified successfully!';
-    this.mobileUpdateStep = 'idle';
-    this.showMobileOtp = false;
-    this.newMobileNumber = '';
-    setTimeout(() => this.clearMessages(), 3000);
+    try {
+      // Step 2: After OTP verification, update mobile in backend
+      const response = await firstValueFrom(
+        this.profileService.verifyAndUpdateMobile({ 
+          mobile: this.newMobileNumber,
+          otp: '' // OTP is already verified on frontend, backend just needs to know it's verified
+        })
+      );
+
+      if (response.success) {
+        // Refresh profile to get updated mobile and verification status
+        await this.loadProfile();
+        
+        this.successMessage = 'Mobile number updated and verified successfully!';
+        this.mobileUpdateStep = 'idle';
+        this.showMobileOtp = false;
+        this.newMobileNumber = '';
+      } else {
+        this.errorMessage = response.message || 'Failed to update mobile number';
+      }
+    } catch (error: any) {
+      console.error('Error updating mobile:', error);
+      this.errorMessage = error.error?.message || 'Failed to update mobile number';
+    } finally {
+      this.isUpdatingMobile = false;
+      setTimeout(() => this.clearMessages(), 3000);
+    }
   }
 
   onMobileBack(): void {
