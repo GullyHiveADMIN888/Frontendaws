@@ -1,0 +1,163 @@
+<div class="max-w-2xl mx-auto my-8 px-4">
+  <!-- Page Loader -->
+  <div *ngIf="isLoading" class="text-center py-12">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-orange-500 mx-auto"></div>
+    <p class="mt-4 text-gray-600">Loading profile...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading" class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4">
+      <h2 class="text-2xl font-bold text-white">Profile Settings</h2>
+      <p class="text-orange-100 text-sm mt-1">Manage your account information</p>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div *ngIf="successMessage" class="mx-6 mt-4 p-3 bg-green-100 border border-green-200 rounded-lg text-green-700 text-sm">
+      <i class="fas fa-check-circle mr-2"></i> {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="mx-6 mt-4 p-3 bg-red-100 border border-red-200 rounded-lg text-red-700 text-sm">
+      <i class="fas fa-exclamation-circle mr-2"></i> {{ errorMessage }}
+    </div>
+
+    <!-- Profile Form -->
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="p-6">
+      <!-- Name Field -->
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Full Name <span class="text-red-500">*</span>
+        </label>
+        <input type="text" 
+               formControlName="name"
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+               placeholder="Enter your full name">
+        <div *ngIf="profileForm.get('name')?.invalid && profileForm.get('name')?.touched" class="text-red-500 text-sm mt-1">
+          Name is required and must be at least 2 characters
+        </div>
+      </div>
+
+      <!-- Mobile Field (Read-only with Update Button) -->
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Mobile Number <span class="text-red-500">*</span>
+        </label>
+        <div class="flex gap-2">
+          <input type="tel" 
+                 [value]="profile?.mobile" 
+                 disabled
+                 class="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600">
+          <button type="button" 
+                  (click)="startMobileUpdate()"
+                  class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            Update
+          </button>
+        </div>
+        <div class="mt-1">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                [ngClass]="getVerificationBadgeClass(profile?.mobileVerified || false)">
+            {{ getVerificationText(profile?.mobileVerified || false) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Mobile Update Section -->
+      <div *ngIf="mobileUpdateStep === 'enter'" class="mb-5 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <label class="block text-sm font-medium text-blue-800 mb-2">New Mobile Number</label>
+        <div class="flex gap-2">
+          <input type="tel" 
+                 [value]="newMobileNumber"
+                 (input)="newMobileNumber = $any($event.target).value"
+                 placeholder="Enter 10-digit mobile number"
+                 maxlength="10"
+                 class="flex-1 px-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <button type="button" 
+                  (click)="sendMobileOtp()"
+                  [disabled]="isUpdatingMobile"
+                  class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50">
+            {{ isUpdatingMobile ? 'Sending...' : 'Send OTP' }}
+          </button>
+          <button type="button" 
+                  (click)="cancelMobileUpdate()"
+                  class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+            Cancel
+          </button>
+        </div>
+        <p class="text-xs text-blue-600 mt-2">You'll receive a 6-digit OTP on this new number for verification</p>
+      </div>
+
+      <!-- Mobile OTP Verification - Using existing OTPVerificationComponent -->
+      <div *ngIf="showMobileOtp" class="mb-5">
+        <app-otp-verification
+          #mobileOtpComponent
+          [mobile]="'+91' + newMobileNumber"
+          [userId]="profile?.userId?.toString() || ''"
+          (onVerified)="onMobileVerified()"
+          (onBack)="onMobileBack()">
+        </app-otp-verification>
+      </div>
+
+      <!-- Email Field -->
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Email Address <span class="text-red-500">*</span>
+        </label>
+        <div class="flex gap-2">
+          <input type="email" 
+                 formControlName="email"
+                 class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                 placeholder="Enter your email address">
+          <button type="button" 
+                  (click)="onEmailUpdate()"
+                  [disabled]="profileForm.get('email')?.value === profile?.email || profileForm.get('email')?.invalid"
+                  class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50">
+            Update
+          </button>
+        </div>
+        <div *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched" class="text-red-500 text-sm mt-1">
+          Please enter a valid email address
+        </div>
+        <div class="mt-1">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                [ngClass]="getVerificationBadgeClass(profile?.emailVerified || false)">
+            {{ getVerificationText(profile?.emailVerified || false) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Password Fields -->
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-gray-700 mb-2">New Password (Optional)</label>
+        <input type="password" 
+               formControlName="password"
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+               placeholder="Enter new password (min 6 characters)">
+        <div *ngIf="profileForm.get('password')?.invalid && profileForm.get('password')?.touched" class="text-red-500 text-sm mt-1">
+          Password must be at least 6 characters
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+        <input type="password" 
+               formControlName="confirmPassword"
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+               placeholder="Confirm your new password">
+      </div>
+
+      <!-- Submit Button -->
+      <div class="flex gap-3">
+        <button type="submit" 
+                [disabled]="profileForm.invalid || isSaving"
+                class="flex-1 bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition disabled:opacity-50">
+          {{ isSaving ? 'Saving...' : 'Save Changes' }}
+        </button>
+        <button type="button" 
+                (click)="loadProfile()"
+                class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

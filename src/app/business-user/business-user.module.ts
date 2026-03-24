@@ -20,6 +20,7 @@ import { RouterModule } from '@angular/router';
 // import { ReferEarnComponent } from './refer-earn/refer-earn.component';
 import { ReactiveFormsModule } from '@angular/forms'; //
 import { FormsModule } from '@angular/forms';
+import { OpsManagerProfileComponent } from './ops-manager-profile/ops-manager-profile.component';
 // import { LedgerComponent } from './ledger/ledger.component';
 
 
@@ -28,6 +29,7 @@ import { FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [
      DashboardComponent,
+     
     // StatsCardsComponent,
     // ProfileCompletionComponent,
     // QuickActionsComponent,
@@ -47,6 +49,7 @@ import { FormsModule } from '@angular/forms';
      RouterModule, // needed for routerLink
     ReactiveFormsModule,
     FormsModule,
+    OpsManagerProfileComponent
   ]
 })
 export class BusinessUserModule { }

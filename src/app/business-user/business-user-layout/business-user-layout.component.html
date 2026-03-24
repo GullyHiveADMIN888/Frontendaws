@@ -9,26 +9,26 @@
   </a>
 
   <div class="hidden md:flex gap-8">
-    <a routerLink="/business-user" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
+    <a routerLink="/provider_User_Ops_Manager" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
       [routerLinkActiveOptions]="{ exact: true }" class="text-gray-600 font-medium pb-1">
       Dashboard
     </a>
 
 
-    <a routerLink="/business-user/leads" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
+    <a routerLink="/provider_User_Ops_Manager/leads" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
     class="text-gray-600 font-medium pb-1">Leads</a>
   @if (sellerId) {
-    <a [routerLink]="['/business-user/responses', sellerId]"
+    <a [routerLink]="['/provider_User_Ops_Manager/responses', sellerId]"
       routerLinkActive="text-orange-600 border-b-2 border-orange-600" class="text-gray-600 font-medium pb-1">
       Responses
     </a>
   }
 
 
-  <a routerLink="/business-user/settings" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
+  <a routerLink="/provider_User_Ops_Manager/settings" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
   class="text-gray-600 font-medium pb-1">Settings</a>
 
-  <a routerLink="/business-user/help" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
+  <a routerLink="/provider_User_Ops_Manager/help" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
   class="text-gray-600 font-medium pb-1">Help</a>
 </div>
 
