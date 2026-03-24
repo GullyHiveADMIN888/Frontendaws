@@ -88,7 +88,7 @@
 
     <!-- MSME / COMPANY FLOW -->
      
-    @case (10) {
+    <!-- @case (10) {
     <app-step1-msme-basic-info [formData]="formData" (next)="goNext()">
     </app-step1-msme-basic-info>
     }
@@ -101,8 +101,21 @@
     @case (12) {
     <app-step3-msme-documents [formData]="formData" (submit)="submitForm()" (back)="goToStep(11)">
     </app-step3-msme-documents>
+    } -->
+  @case (10) {
+    <app-step2-msme-business-details [formData]="formData" (next)="goNext()">
+    </app-step2-msme-business-details>
     }
 
+    @case (11) {
+    <app-step1-msme-basic-info [formData]="formData" (next)="goNext()" (back)="goToStep(10)">
+    </app-step1-msme-basic-info>
+    }
+
+    @case (12) {
+    <app-step3-msme-documents [formData]="formData" (submit)="submitForm()" (back)="goToStep(11)">
+    </app-step3-msme-documents>
+    }
     }
   }
 

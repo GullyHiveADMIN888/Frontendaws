@@ -16,7 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { interval,Subscription } from 'rxjs';
-// import { environment } from '../../environments/environment';
+ //import { environment } from '../../environments/environment';
  import { environment } from '../../environments/environment.prod';
 
 
@@ -652,7 +652,7 @@ onLoginSubmit(event: Event): void {
 
   console.log('Login response:', response); 
 
-  // 🚨 1️⃣ First check mobile verification
+  //  First check mobile verification
   if (!response.mobileVerified && !response.emailVerified) {
 
     // Store temporary data (DO NOT store token yet)
@@ -668,7 +668,7 @@ onLoginSubmit(event: Event): void {
     return; 
   }
 
-  // ✅ 2️⃣ If verified → normal login
+  //  If verified → normal login
   if (response.token) {
 
     if (this.authService) {
@@ -688,8 +688,8 @@ onLoginSubmit(event: Event): void {
     this.closeLoginModal();
 
     if (this.authService) {
-     // this.authService.redirectByRole(response.role);
-     this.authService.redirectByRole(response.role, response.providerType , response.businessUserId ,response.businessUserRole);
+      this.authService.redirectByRole(response.role);
+   //  this.authService.redirectByRole(response.role, response.providerType , response.businessUserId ,response.businessUserRole);
     } else {
       window.location.href = '/dashboard';
     }
@@ -868,12 +868,13 @@ async onVerify() {
     await this.authService.verifyOtp(otpValue);
 
     this.showOtpModal = false;
-
+    this.showOtpModals = false;
     // 🔥 DIFFERENT FLOW BASED ON TYPE
     if (this.verificationTypes === 'forgot') {
 
       // 👉 Open password popup
       this.showPasswordPopup = true;
+       this.showLoginModal = false;
 
     } 
     else if (this.verificationTypes === 'login') {
@@ -900,33 +901,7 @@ async onVerify() {
   }
 }
 
-// async submitNewPassword() {
-//   this.passwordError = '';
 
-//   if (!this.newPassword || this.newPassword.length < 6) {
-//     this.passwordError = 'Password must be at least 6 characters';
-//     return;
-//   }
-
-//   if (this.newPassword !== this.confirmPassword) {
-//     this.passwordError = 'Passwords do not match';
-//     return;
-//   }
-
-//   try {
-//     await this.authService.updatePasswordByMobile({
-//       mobile: this.otpMobile.replace('+91', ''),
-//       newPassword: this.newPassword
-//     });
-
-//     alert('Password updated successfully');
-
-//     this.closePasswordPopup();
-
-//   } catch (e: any) {
-//     this.passwordError = e.message || 'Failed to update password';
-//   }
-// }
 async submitNewPassword() {
   this.passwordError = '';
 

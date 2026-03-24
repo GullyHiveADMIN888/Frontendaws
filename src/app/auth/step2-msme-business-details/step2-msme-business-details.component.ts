@@ -1,23 +1,3 @@
-// import { Component, Input, Output, EventEmitter } from '@angular/core';
-// import { CommonModule } from '@angular/common';
-// import { FormsModule } from '@angular/forms';
-
-// @Component({
-//   selector: 'app-step2-msme-business-details',
-//   standalone: true,
-//   imports: [CommonModule, FormsModule],
-//   templateUrl: './step2-msme-business-details.component.html',
-//   styleUrls: ['./step2-msme-business-details.component.css']
-// })
-// export class Step2MsmeBusinessDetailsComponent {
-
-//   @Input() formData: any;   // receive data from parent
-
-//   @Output() next = new EventEmitter<void>(); // go to next step
-//   @Output() back = new EventEmitter<void>(); // go to previous step
-
-// }
-
 import { Component, Input, Output, EventEmitter, OnInit , Inject} from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
@@ -41,13 +21,12 @@ export class Step2MsmeBusinessDetailsComponent implements OnInit {
 
   @Output() inputChange = new EventEmitter<{ field: string; value: string | File | null }>();
   @Output() next = new EventEmitter<void>();
-  @Output() back = new EventEmitter<void>();
+  // @Output() back = new EventEmitter<void>();
 
   regDocPreview = '';
   addressProofPreview = '';
 
   registrationTypes = ['GST Registration','PAN Card','Udyam Registration'];
- // role = ['Admin','Seller','Buyer'];
 
   states: any[] = [];
   cities: any[] = [];
@@ -96,7 +75,7 @@ onStateChange(stateId: any) {
     this.areas = [];
     this.dropdownOpen = false;
  this.formData.selectedAreaIds = [];
-  this.loadCities(+stateId);          // 🔥 THIS loads cities
+  this.loadCities(+stateId);          //  THIS loads cities
 }
 
 loadCities(stateId: number) {
@@ -104,7 +83,7 @@ loadCities(stateId: number) {
 
     this.cities = cities;
 
-    // 🔥 Ensure cityId matches type of city.id
+    //  Ensure cityId matches type of city.id
     if (this.formData.cityId) {
       this.formData.cityId = Number(this.formData.cityId);
     }
@@ -118,19 +97,19 @@ loadCities(stateId: number) {
 ngOnChanges(changes: SimpleChanges) {
   if (changes['formData']) {
 
-    // 🔹 Reload cities if stateId exists
+    //  Reload cities if stateId exists
     if (this.formData.stateId) {
       this.formData.stateId = Number(this.formData.stateId);
       this.formData.cityId = this.formData.cityId ? Number(this.formData.cityId) : null;
       this.loadCities(this.formData.stateId);
     }
-     // 🔹 Reload areas if cityId exists
+     //  Reload areas if cityId exists
     if (this.formData.cityId) {
       this.formData.cityId = Number(this.formData.cityId);
       this.loadAreas(this.formData.cityId); // new method
     }
 
-    // 🔹 Initialize registration document preview
+    //  Initialize registration document preview
     this.regDocPreview = '';
     if (this.formData.registrationDocument) {
       const file = this.formData.registrationDocument;
@@ -148,7 +127,7 @@ ngOnChanges(changes: SimpleChanges) {
       }
     }
 
-    // 🔹 Initialize address proof preview
+    //  Initialize address proof preview
     this.addressProofPreview = '';
     if (this.formData.addressProof) {
       const file = this.formData.addressProof;
@@ -213,7 +192,7 @@ handleFileChange(field: 'registrationDocument' | 'addressProof', event: Event) {
 
   const maxSize = 5 * 1024 * 1024; // 5MB
 
-  // ❌ File type validation
+  //  File type validation
   if (!allowedTypes.includes(file.type)) {
     this.errors[field] = 'Only PDF, DOC/DOCX, JPG, and PNG files are allowed.';
     input.value = '';
@@ -223,7 +202,7 @@ handleFileChange(field: 'registrationDocument' | 'addressProof', event: Event) {
     return;
   }
 
-  // ❌ File size validation
+  //  File size validation
   if (file.size > maxSize) {
     this.errors[field] = 'File size must be less than 5MB.';
     input.value = '';
@@ -361,26 +340,13 @@ validateIdentityNumber() {
   }
 
   switch(type) {
-    // case 'Aadhar Card':
-    //   if (!/^\d{12}$/.test(value)) {
-    //     this.errors.registrationNumber = 'Aadhaar number must be 12 digits.';
-    //     return false;
-    //   }
-    //   break;
-
     case 'PAN Card':
       if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(value)) {
         this.errors.registrationNumber = 'PAN must be 10 characters (e.g., ABCDE1234F).';
         return false;
       }
       break;
-
-    // case 'E-Shram Card':
-    //   if (!/^\d{15}$/.test(value)) {
-    //     this.errors.registrationNumber = 'E-Shram number must be 15 digits.';
-    //     return false;
-    //   }
-    //   break;
+  break;
 
     case 'GST Registration':
       if (!/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/i.test(value)) {
@@ -408,9 +374,9 @@ validateStep3(): boolean {
 
   this.errors = {};
 
-  if (!this.formData.businessName?.length) {
-    this.errors.businessName = 'Business name required';
-  }
+  // if (!this.formData.businessName?.length) {
+  //   this.errors.businessName = 'Business name required';
+  // }
  if (!this.formData.companyName?.trim()) {
     this.errors.companyName = 'Company Name is required';
   }

@@ -37,6 +37,7 @@ import { SharableProfileComponent } from './sharable-profile/sharable-profile.co
 import { LedgerComponent } from './ledger/ledger.component';
 import { UsersComponent } from './users/users.component';
 import { BranchesComponent } from './branches/branches.component';
+import { InvitationGeneratorComponent } from './invitation-generator/invitation-generator.component';
 
 // For seller not call by url
 import { AuthService } from '../auth/auth.service';
@@ -84,6 +85,8 @@ const routes: Routes = [
       { path: 'completeProfile/:id', component: PublicProfileComponent },
 
       { path: 'refer/:sellerId', component: ReferEarnComponent },
+
+      {path: 'invitation-generator' ,component: InvitationGeneratorComponent },
 
       // Settings (nested)
       {

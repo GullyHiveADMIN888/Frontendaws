@@ -78,7 +78,7 @@ ngOnInit(): void {
             icon: 'ri-user-line', 
             title: 'My Profile', 
             description: 'Update your personal information and profile picture',  
-            link: ['/business/completeProfile', this.sellerId] // ✅ array for routerLink
+            link: ['/provider_User_Admin/completeProfile', this.sellerId] // ✅ array for routerLink
           },
           // { 
           //   icon: 'ri-briefcase-line', 
@@ -90,7 +90,7 @@ ngOnInit(): void {
             icon: 'ri-lock-line', 
             title: 'Legal Identity Address Proof', 
             description: 'Manage your business information and credentials', 
-            link: ['/business/leagelIdentity/business', this.sellerId] 
+            link: ['/provider_User_Admin/leagelIdentity/provider_User_Admin', this.sellerId] 
           }
           // { 
           //   icon: 'ri-tools-line', 
@@ -116,12 +116,12 @@ ngOnInit(): void {
       {
         title: 'Account & Security',
         items: [
-          { icon: 'ri-lock-line', title: 'Password & Security', description: 'Change password and security settings', link: ['/business/settings/security'] },
+          { icon: 'ri-lock-line', title: 'Password & Security', description: 'Change password and security settings', link: ['/provider_User_Admin/settings/security'] },
            { 
             icon: 'ri-tools-line', 
             title: 'Bank Account Management', 
             description: 'Edit services you offer and pricing', 
-            link: ['/business/settings/services'] 
+            link: ['/provider_User_Admin/settings/services'] 
           }
           // { icon: 'ri-bank-card-line', title: 'Payment Methods', description: 'Manage your payment and billing information', link: ['/seller/settings/payment'] },
           // { icon: 'ri-shield-check-line', title: 'Privacy Settings', description: 'Control your privacy and data preferences', link: ['/seller/settings/privacy'] }
