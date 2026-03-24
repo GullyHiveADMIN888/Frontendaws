@@ -29,8 +29,9 @@ export interface UpdateEmailRequest {
   email: string;
 }
 
-export interface UpdateMobileRequest {
+export interface VerifyAndUpdateMobileRequest {
   mobile: string;
+  otp: string;
 }
 
 export interface ApiResponse {
@@ -59,8 +60,8 @@ export class OpsManagerProfileService {
     return this.http.put<ApiResponse>(`${this.apiUrl}/update-email`, request);
   }
 
-  // Update mobile (backend only - without OTP verification)
-  updateMobile(request: UpdateMobileRequest): Observable<ApiResponse> {
-    return this.http.put<ApiResponse>(`${this.apiUrl}/update-mobile`, request);
+  // Verify OTP and then update mobile (SECURE)
+  verifyAndUpdateMobile(request: VerifyAndUpdateMobileRequest): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.apiUrl}/verify-and-update-mobile`, request);
   }
 }
