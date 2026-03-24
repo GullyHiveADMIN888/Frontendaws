@@ -38,7 +38,7 @@ export class BusinessUserLayoutComponent implements OnInit {
       next: dashboard => {
         console.log('Navbar Dashboard data:', dashboard);
         this.user = dashboard;
-         this.sellerId = dashboard.sellerId; // ✅ CORRECT FIELD
+         this.sellerId = dashboard.sellerId;
       },
       error: err => console.error('Failed to load dashboard data', err)
     });

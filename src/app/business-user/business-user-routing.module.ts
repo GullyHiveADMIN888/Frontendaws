@@ -7,6 +7,7 @@ import { RouterModule, Routes } from '@angular/router';
 // For seller not call by url
 import { AuthService } from '../auth/auth.service'; 
 import { WorkerManagementComponent } from './worker-management/worker-management.component';
+import { OpsManagerProfileComponent } from './ops-manager-profile/ops-manager-profile.component';
 
 
 
@@ -23,14 +24,15 @@ const routes: Routes =  [
   {
     path: '',
     component: BusinessUserLayoutComponent,
-    canActivate: [AuthService],    // For seller not call by url
+    canActivate: [AuthService],
     children: [
 
-      // /seller
+      // /provider_User_Ops_Manager
       { path: '', component: DashboardComponent },
 
       
       { path: 'worker-management', component: WorkerManagementComponent },
+      { path: 'profile', component: OpsManagerProfileComponent },
 
       //  { path: 'users', component: UsersComponent },
 
