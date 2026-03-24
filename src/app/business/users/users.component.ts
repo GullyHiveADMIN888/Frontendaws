@@ -64,6 +64,7 @@ this.showModal = true;
 
 resetForm(){
  this.searchEmail =''
+ this.searchPhone = '';
   this.profile = {};
 }
 
@@ -73,24 +74,27 @@ closeModal(){
 }
 
 searchEmail: string = '';
+searchPhone: string = '';
+isFetched = false;
 
 
-fetchProvider() {
-  if (!this.searchEmail) {
-    this.showAlert('Please enter an email', 'error');
-    return;
-  }
+// fetchProvider() {
+//   if (!this.searchEmail && !this.searchPhone) {
+//     this.showAlert('Please enter email or phone', 'error');
+//     return;
+//   }
 
-  this.sellerService.getProviderProfileByEmail(this.searchEmail)
-    .subscribe({
-      next: (profile) => {
-        this.profile = profile;
-      },
-      error: () => {
-        this.showAlert('Provider not found', 'error');
-      }
-    });
-}
+//   this.sellerService
+//     .getProviderProfileByEmail(this.searchEmail, this.searchPhone)
+//     .subscribe({
+//       next: (profile) => {
+//         this.profile = profile;
+//       },
+//       error: () => {
+//         this.showAlert('Provider not found', 'error');
+//       }
+//     });
+// }
 // saveUser() {
 
 //   const payload = {
@@ -123,6 +127,27 @@ fetchProvider() {
 
 //     });
 // }
+fetchProvider() {
+  if (!this.searchEmail && !this.searchPhone) {
+    this.showAlert('Please enter email or phone', 'error');
+    return;
+  }
+
+  this.profile = {};
+  this.isFetched = false;
+
+  this.sellerService
+    .getProviderProfileByEmail(this.searchEmail, this.searchPhone)
+    .subscribe({
+      next: (profile) => {
+        this.profile = profile;
+        this.isFetched = true;
+      },
+      error: () => {
+        this.showAlert('Provider not found', 'error');
+      }
+    });
+}
 saveUser() {
   const payload = {
     workerProviderId: this.profile.providerId,

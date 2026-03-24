@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
-//  import { environment } from '../../environments/environment.prod';
-import { environment } from '../../environments/environment';
+  import { environment } from '../../environments/environment.prod';
+// import { environment } from '../../environments/environment';
 import { Branch } from './models/branch.model';
 import { PagedResult } from './models/paged-result.model';
 
@@ -556,25 +556,54 @@ export class SellerService {
     return this.http.post(`${environment.apiBaseUrl}/providerUser/assignJobToBusinessuser`, data);
   }
 
-  getProviderProfileByEmail(email: string) {
-    const url = `${this.apiUrl}/getProviderProfileByEmail?email=${encodeURIComponent(email)}`;
+  // getProviderProfileByEmail(email: string) {
+  //   const url = `${this.apiUrl}/getProviderProfileByEmail?email=${encodeURIComponent(email)}`;
 
-    return this.http
-      .get<{ success: boolean; data: PublicProfile }>(url, { headers: this.getHeaders() })
-      .pipe(
-        map(res => {
-          const profile = res.data;
+  //   return this.http
+  //     .get<{ success: boolean; data: PublicProfile }>(url, { headers: this.getHeaders() })
+  //     .pipe(
+  //       map(res => {
+  //         const profile = res.data;
 
-          if (profile.profilePictureUrl) {
-            profile.profilePictureUrl = environment.assetUrl + profile.profilePictureUrl;
-          }
+  //         if (profile.profilePictureUrl) {
+  //           profile.profilePictureUrl = environment.assetUrl + profile.profilePictureUrl;
+  //         }
 
-          return profile;
-        })
-      );
+  //         return profile;
+  //       })
+  //     );
+  // }
+
+getProviderProfileByEmail(email?: string, phone?: string) {
+  let params: string[] = [];
+
+  if (email) {
+    params.push(`email=${encodeURIComponent(email)}`);
   }
 
+  if (phone) {
+    params.push(`phone=${encodeURIComponent(phone)}`);
+  }
 
+  const url = `${this.apiUrl}/getProviderProfileByEmail?${params.join('&')}`;
+
+  return this.http
+    .get<{ success: boolean; data: PublicProfile }>(url, {
+      headers: this.getHeaders()
+    })
+    .pipe(
+      map(res => {
+        const profile = res.data;
+
+        if (profile.profilePictureUrl) {
+          profile.profilePictureUrl =
+            environment.assetUrl + profile.profilePictureUrl;
+        }
+
+        return profile;
+      })
+    );
+}
   getBranches(pageNumber: number = 1, pageSize: number = 10): Observable<PagedResult<Branch>> {
     const params = new HttpParams()
       .set('pageNumber', pageNumber)
