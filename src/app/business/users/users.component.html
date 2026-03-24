@@ -30,8 +30,8 @@
           <th class="p-4">Name</th>
           <th class="p-4">Email</th>
           <th class="p-4">Phone</th>
-           <th class="p-4">Adhar Number</th>
           <th class="p-4">Role</th>
+           <th class="p-4">Status</th>
           <th class="p-4 text-center">Action</th>
         </tr>
       </thead>
@@ -45,7 +45,6 @@
           <td class="p-4 text-gray-600">{{user.email}}</td>
 
           <td class="p-4 text-gray-600">{{user.phone}}</td>
-          <td class="p-4 text-gray-600">{{user.aadhaar_number}}</td>
 
           <td class="p-4">
             <span class="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full text-sm">
@@ -53,6 +52,7 @@
             </span>
           </td>
 
+          <td class="p-4 text-gray-600">{{user.status}}</td>
           <td class="p-4 text-center">
 
             <button
@@ -84,40 +84,7 @@ class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center mt-
 <h3 class="text-xl font-bold mb-4">Fetch Provider</h3>
 
 <!-- SEARCH ID -->
-<!-- <div class="flex gap-2 mb-4">
-
-<input
-type="number"
-[(ngModel)]="searchId"
-placeholder="Enter Seller/User ID"
-class="border p-2 rounded w-full"
-/>
-
-<button
-(click)="fetchProvider()"
-class="bg-blue-600 text-white px-4 py-2 rounded"
->
-Fetch
-</button>
-
-</div> -->
-<!-- SEARCH BY EMAIL -->
-<!-- <div class="flex gap-2 mb-4">
-  <input
-    type="email"
-    [(ngModel)]="searchEmail"
-    placeholder="Enter Provide Email"
-    class="border p-2 rounded w-full"
-  />
-
-  <button
-    (click)="fetchProvider()"
-    class="bg-blue-600 text-white px-4 py-2 rounded"
-  >
-    Fetch
-  </button>
-</div> -->
-<div class="flex gap-2 mb-4 flex-col sm:flex-row">
+<!-- <div class="flex gap-2 mb-4 flex-col sm:flex-row">
 
   <div class="w-full">
     <input
@@ -130,7 +97,7 @@ Fetch
       class="border p-2 rounded w-full"
     />
 
-    <!-- Error message -->
+   
     <p *ngIf="emailModel.invalid && emailModel.touched" class="text-red-500 text-sm mt-1">
       Please enter a valid email address
     </p>
@@ -144,8 +111,33 @@ Fetch
     Fetch
   </button>
 
-</div>
+</div> -->
+<div class="flex gap-2 mb-4 flex-col sm:flex-row">
 
+  <!-- EMAIL -->
+  <input
+    type="email"
+    [(ngModel)]="searchEmail"
+    placeholder="Enter Provider Email"
+    class="border p-2 rounded w-full"
+  />
+
+  <!-- PHONE -->
+  <input
+    type="text"
+    [(ngModel)]="searchPhone"
+    placeholder="Enter Phone Number"
+    class="border p-2 rounded w-full"
+  />
+
+  <button
+    (click)="fetchProvider()"
+    class="bg-blue-600 text-white px-4 py-2 rounded"
+  >
+    Fetch
+  </button>
+
+</div>
 <!-- TWO COLUMN GRID -->
 <!-- <div class="grid grid-cols-2 gap-4"> -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -162,11 +154,11 @@ Fetch
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.legalName" readonly placeholder="Legal Name"/>
 
-<input class="border p-2 bg-gray-100"
+<!-- <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.email" readonly placeholder="Email"/>
 
 <input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.phone" readonly placeholder="Phone"/>
+[(ngModel)]="profile.phone" readonly placeholder="Phone"/> -->
 
 <!-- <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.providerType" readonly placeholder="Provider Type"/> -->
@@ -230,12 +222,17 @@ class="px-4 py-2 border rounded hover:bg-gray-100">
 Close
 </button>
 
-<button
+<!-- <button
 (click)="saveUser()"
 class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
 Save
+</button> -->
+<button
+  (click)="saveUser()"
+  [disabled]="!isFetched"
+  class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 disabled:bg-gray-400">
+  Save
 </button>
-
 </div>
 
 </div>

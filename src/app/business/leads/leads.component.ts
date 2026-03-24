@@ -517,7 +517,7 @@ openAssignModal(lead:any){
 this.selectedLead = lead;
 this.showAssignModal = true;
 
-this.loadEmployees();
+this.loadProviderUsers();
 
 }
 closeAssignModal(){
@@ -537,8 +537,8 @@ closeAssignModal(){
 
 
 }
-loadEmployees(){
-  this.sellerService.getBusinessUsers().subscribe((res:any)=>{
+loadProviderUsers(){
+  this.sellerService.getProviderUsers().subscribe((res:any)=>{
     console.log("EMPLOYEES:", res);
     this.employees = res;
   })
@@ -552,7 +552,7 @@ onEmployeeChange(){
   console.log("Selected Employee:", this.selectedEmployee);
 
 }
-assignLead(){
+assignJob(){
 
   if(!this.selectedEmployeeId) return;
 

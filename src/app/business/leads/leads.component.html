@@ -824,7 +824,7 @@
         <p><strong>Email:</strong> {{selectedEmployee.email}}</p>
 
         <p><strong>Phone:</strong> {{selectedEmployee.phone}}</p>
-
+<!-- 
         <p>
           <strong>Status:</strong>
 
@@ -836,9 +836,7 @@
 
           </span>
 
-        </p>
-
-        <p><strong>Aadhaar:</strong> {{selectedEmployee.aadhaar_number}}</p>
+        </p> -->
 
       </div>
 
@@ -853,7 +851,7 @@
         Cancel
       </button>
 
-      <button (click)="assignLead()" [disabled]="!selectedEmployeeId"
+      <button (click)="assignJob()" [disabled]="!selectedEmployeeId"
         class="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white rounded-lg disabled:opacity-50 hover:bg-orange-700">
         Assign Job
       </button>
