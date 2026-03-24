@@ -86,15 +86,14 @@
         <p class="text-xs text-blue-600 mt-2">You'll receive a 6-digit OTP on this new number for verification</p>
       </div>
 
-      <!-- Mobile OTP Verification - Using existing OTPVerificationComponent -->
+      <!-- Mobile OTP Verification - Using OTPVerificationWithoutIdComponent -->
       <div *ngIf="showMobileOtp" class="mb-5">
-        <app-otp-verification
+        <app-otp-verification-without-id
           #mobileOtpComponent
           [mobile]="'+91' + newMobileNumber"
-          [userId]="profile?.userId?.toString() || ''"
           (onVerified)="onMobileVerified()"
           (onBack)="onMobileBack()">
-        </app-otp-verification>
+        </app-otp-verification-without-id>
       </div>
 
       <!-- Email Field -->
