@@ -3,19 +3,19 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
-import { OTPVerificationComponent } from '../../auth/otp-verification/otp-verification.component';
+import { OTPVerificationWithoutIdComponent } from '../../auth/otp-verification-without-id/otp-verification-without-id.component';
 import { OpsManagerProfileService, OpsManagerProfile } from './services/ops-manager-profile.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-ops-manager-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, OTPVerificationComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, OTPVerificationWithoutIdComponent],
   templateUrl: './ops-manager-profile.component.html',
   styleUrls: ['./ops-manager-profile.component.css']
 })
 export class OpsManagerProfileComponent implements OnInit {
-  @ViewChild('mobileOtpComponent') mobileOtpComponent!: OTPVerificationComponent;
+  @ViewChild('mobileOtpComponent') mobileOtpComponent!: OTPVerificationWithoutIdComponent;
 
   profileForm: FormGroup;
   profile: OpsManagerProfile | null = null;
@@ -207,17 +207,18 @@ export class OpsManagerProfileComponent implements OnInit {
         setTimeout(() => this.clearMessages(), 3000);
       }
     } catch (error: any) {
-      this.errorMessage = error.error?.message || 'Failed to send OTP';
+      console.error('Error in sendMobileOtp:', error);
+      this.errorMessage = error.message || 'Failed to send OTP';
       setTimeout(() => this.clearMessages(), 3000);
     } finally {
       this.isUpdatingMobile = false;
     }
   }
 
-  // This is called by OTPVerificationComponent after successful OTP verification
-  // The OTP component already calls verifyMobileOnServer which updates the backend
+  // Called by OTPVerificationWithoutIdComponent after successful OTP verification
   async onMobileVerified(): Promise<void> {
     // After OTP verification, refresh profile to get updated status
+    // The OTP component already called verifyMobileOnServer which updates the backend
     await this.loadProfile();
     
     this.successMessage = 'Mobile number updated and verified successfully!';
