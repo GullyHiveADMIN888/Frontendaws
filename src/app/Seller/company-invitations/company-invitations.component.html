@@ -1,0 +1,116 @@
+<!-- Invitations List -->
+<div class="sm:px-0 md:px-2 lg:px-4 bg-white rounded-xl">
+
+<h2 class="text-xl font-bold mt-2 mb-4 text-gray-800 text-center md:text-left">
+  Company Invitations
+</h2>
+
+<div *ngIf="!isLoading && invitations.length > 0" class="max-w-7xl mx-auto px-4 sm:px-2 lg:px-8">
+  <div class="grid grid-cols-1 gap-6">
+    <div *ngFor="let invite of invitations" class="bg-white rounded-2xl shadow-md p-5 border border-gray-100">
+      
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-3">
+        <!-- Left: Company & requester info -->
+        <div class="flex flex-col">
+          <h2 class="text-lg font-semibold text-gray-800 truncate">{{ invite.companyName }}</h2>
+          <p class="text-xs text-gray-500 mt-1 truncate">
+           {{ invite.requestedByName }}
+          </p>
+        </div>
+
+        <!-- Right: Status, Date, Show/Hide -->
+        <div class="flex flex-col sm:items-end gap-2">
+          <span 
+            class="text-xs px-3 py-1 rounded-full uppercase tracking-wide"
+            [ngClass]="{
+              'bg-yellow-50 text-yellow-700': invite.requestStatus === 'pending',
+              'bg-green-50 text-green-700': invite.requestStatus === 'approved',
+              'bg-red-50 text-red-700': invite.requestStatus === 'rejected'
+            }">
+            {{ invite.requestStatus }}
+          </span>
+
+          <p class="text-xs text-gray-500 mt-1">{{ invite.createdAt | date:'medium' }}</p>
+
+          <!-- Show/Hide Button -->
+          <button
+            class="mt-1 text-xs px-3 py-1 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium 
+                   transition-colors duration-200 transform hover:scale-105 hover:shadow-md flex items-center gap-1"
+            (click)="invite.showDetails = !invite.showDetails">
+            <span>{{ invite.showDetails ? 'Hide Details' : 'Show Details' }}</span>
+            <span class="text-gray-500 font-bold">{{ invite.showDetails ? '−' : '+' }}</span>
+          </button>
+        </div>
+      </div>
+      <!-- Details -->
+      <div *ngIf="invite.showDetails" class="mt-3 border-t border-gray-100 pt-3 text-sm text-gray-600 space-y-2">
+        <p><b>Phone:</b> {{ invite.requestedByPhone }}</p>
+        <p><b>Email:</b> {{ invite.requestedByEmail }}</p>
+        <p><b>Categories:</b> {{ invite.categories }}</p>
+        <p><b>SubCategories:</b> {{ invite.subCategories }}</p>
+
+        <!-- Action Buttons -->
+        <div *ngIf="invite.requestStatus === 'pending'" class="mt-3 flex flex-col sm:flex-row gap-3">
+          <button (click)="openModal(invite, 'approve')" 
+                  class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 w-full sm:w-auto">
+            Accept
+          </button>
+          <button (click)="openModal(invite, 'reject')" 
+                  class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 w-full sm:w-auto">
+            Reject
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="flex flex-col sm:flex-row justify-end items-center gap-3 mt-6">
+    <button class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50"
+            [disabled]="pageNumber === 1" (click)="onPageChange(pageNumber - 1)">
+      Prev
+    </button>
+
+    <span class="text-sm text-gray-600">Page {{ pageNumber }} of {{ totalPages }}</span>
+
+    <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+            [disabled]="pageNumber * pageSize >= totalCount" (click)="onPageChange(pageNumber + 1)">
+      Next
+    </button>
+  </div>
+</div>
+
+<!-- No Invitations -->
+<div *ngIf="!isLoading && invitations.length === 0" class="flex flex-col items-center justify-center py-20 px-4 text-center">
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-gray-300 mb-4 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6m4 0v-6a6 6 0 00-12 0v6m0 0h12" />
+  </svg>
+  <h2 class="text-xl font-semibold text-gray-600 mb-2">No invitations found</h2>
+  <p class="text-gray-400 text-sm md:text-base">There are currently no invitations for you.</p>
+  <button (click)="loadInvitations()" class="mt-6 px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 shadow-md hover:shadow-lg transition">
+    Refresh
+  </button>
+</div>
+
+<!-- Confirmation Modal -->
+<div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+  <div class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full mx-4">
+    <h3 class="text-lg font-semibold mb-4">Confirm {{ modalAction | titlecase }}</h3>
+    <p>
+      Are you sure you want to {{ modalAction }} the invitation for 
+      <b>{{ selectedInvite?.companyName }}</b>?
+    </p>
+    
+    <div class="flex justify-end gap-3 mt-6 flex-wrap">
+      <button (click)="confirmAction()" 
+              class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 w-full sm:w-auto">
+        Yes
+      </button>
+      <button (click)="closeModal()" 
+              class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 w-full sm:w-auto">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>

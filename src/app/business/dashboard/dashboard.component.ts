@@ -173,6 +173,51 @@ closeServicesModal() {
 }
 
 
+// saveServicesAndArea() {
+//   if (!this.sellerId) return;
+
+//   // Add currently editing category if not already in updatedServices
+//   if (this.editCategoryId && this.editSubCategoryIds.length > 0) {
+//     const exists = this.updatedServices.find(s => s.categoryId === this.editCategoryId);
+//     if (exists) {
+//       exists.subCategoryIds = [...this.editSubCategoryIds];
+//     } else {
+//       this.updatedServices.push({
+//         categoryId: this.editCategoryId,
+//         subCategoryIds: [...this.editSubCategoryIds]
+//       });
+//     }
+//   }
+
+//   // 🔹 Only send unchecked questions
+//   const uncheckedQuestions = this.subCategoryQuestions
+//     .filter(q => !this.selectedQuestions.includes(q.id))
+//     .map(q => ({
+//       categoryId: this.editCategoryId!,
+//       subCategoryId: q.subCategoryId,
+//       questionId: q.id,
+//       isChecked: false
+//     }));
+
+//   const payload = {
+//     services: this.updatedServices, 
+  
+//   serviceArea: this.coverageArea,
+//     questions: uncheckedQuestions  
+//   };
+
+//   this.sellerService.updateServicesAndArea(this.sellerId, payload).subscribe({
+//     next: () => {
+//       console.log('Saved successfully');
+//       this.showServicesModal = false;
+
+//       // Reset updatedServices after successful save
+//       this.updatedServices = [];
+//     },
+//     error: err => console.error(err)
+//   });
+// }
+
 saveServicesAndArea() {
   if (!this.sellerId) return;
 
@@ -200,9 +245,7 @@ saveServicesAndArea() {
     }));
 
   const payload = {
-    services: this.updatedServices, 
-  
-  serviceArea: this.coverageArea,
+    services: this.updatedServices,
     questions: uncheckedQuestions  
   };
 
@@ -217,8 +260,6 @@ saveServicesAndArea() {
     error: err => console.error(err)
   });
 }
-
-
 
 
 addService() {
@@ -361,62 +402,24 @@ toggleQuestion(questionId: number): void {
 areas: { id: number, name: string }[] = [];
 
 
-onCityChange(cityId: number) {
-  if (!cityId) {
-    this.areas = [];
-    this.selectedAreaIds = [];
-    return;
-  }
+// onCityChange(cityId: number) {
+//   if (!cityId) {
+//     this.areas = [];
+//     this.selectedAreaIds = [];
+//     return;
+//   }
 
-  this.selectedAreaIds = []; // reset previous selections
+//   this.selectedAreaIds = []; // reset previous selections
 
-  this.sellerService.getAreasByCity(cityId).subscribe(res => {
-    this.areas = res.map(a => ({
-      id: Number(a.id),
-      name: a.area_name
-    }));
-  });
-}
-
-// openEditServices() {
-//   if (!this.sellerId) return;
-
-//   this.sellerService.getProviderServices(this.sellerId).subscribe({
-//     next: (data) => {
-//        console.log("Full provider services data:", data);
-//       // 1️⃣ Load services, categories, cities
-//       this.services = data.providerServices ?? [];
-//       this.parentCategories = data.categories ?? [];
-//       this.cities = data.cities ?? [];
-
-      
-//       if (data.serviceAreas && data.serviceAreas.length > 0) {
-
-//   const firstCity = data.serviceAreas[0].cityId;
-
-//   this.coverageArea.cityId = firstCity;
-
-//   this.coverageArea.areaIds = data.serviceAreas.map(a => a.areaId);
-
-//   this.onCityChange(firstCity);
-// }
-
-//       // 4️⃣ Preselect first service category/subcategories
-//       if (this.services.length > 0) {
-//         const firstService = this.services[0];
-//         this.editCategoryId = firstService.categoryId;
-//         this.editSubCategoryIds = [...firstService.subCategoryIds];
-
-//         this.sellerService.getSubCategories(this.editCategoryId)
-//           .subscribe(res => this.subCategories = res);
-//       }
-
-//       // Show modal
-//       this.showServicesModal = true;
-//     },
-//     error: err => console.error(err)
+//   this.sellerService.getAreasByCity(cityId).subscribe(res => {
+//     this.areas = res.map(a => ({
+//       id: Number(a.id),
+//       name: a.area_name
+//     }));
 //   });
 // }
+
+
 openEditServices() {
   if (!this.sellerId) return;
 
@@ -437,7 +440,7 @@ openEditServices() {
         const firstCity = data.serviceAreas[0].cityId;
         this.coverageArea.cityId = firstCity;
         this.coverageArea.areaIds = data.serviceAreas.map(a => a.areaId);
-        this.onCityChange(firstCity);
+      //  this.onCityChange(firstCity);
       }
 
       // Preselect first service
@@ -472,48 +475,48 @@ get selectedAreas() {
   );
 }
 
-// Toggle dropdown visibility
-toggleDropdown() {
-  this.dropdownOpen = !this.dropdownOpen;
-}
+// // Toggle dropdown visibility
+// toggleDropdown() {
+//   this.dropdownOpen = !this.dropdownOpen;
+// }
 
 
 
 
-// Remove tag when clicking X
-filteredAreas(): { id: number; name: string }[] {
-  const search = this.areaSearch?.toLowerCase() || '';
-  return this.areas.filter(a =>
-    !this.coverageArea.areaIds.includes(a.id) && // ❌ exclude already selected
-    a.name.toLowerCase().includes(search)
-  );
-}
+// // Remove tag when clicking X
+// filteredAreas(): { id: number; name: string }[] {
+//   const search = this.areaSearch?.toLowerCase() || '';
+//   return this.areas.filter(a =>
+//     !this.coverageArea.areaIds.includes(a.id) && // ❌ exclude already selected
+//     a.name.toLowerCase().includes(search)
+//   );
+// }
 
-toggleAreaSelection(area: {id: number, name: string}) {
-  const idx = this.coverageArea.areaIds.indexOf(area.id);
+// toggleAreaSelection(area: {id: number, name: string}) {
+//   const idx = this.coverageArea.areaIds.indexOf(area.id);
 
-  if (idx > -1) {
-    // Already selected → remove it
-    this.coverageArea.areaIds.splice(idx, 1);
-  } else {
-    // Not selected → add it
-    this.coverageArea.areaIds.push(area.id);
-  }
+//   if (idx > -1) {
+//     // Already selected → remove it
+//     this.coverageArea.areaIds.splice(idx, 1);
+//   } else {
+//     // Not selected → add it
+//     this.coverageArea.areaIds.push(area.id);
+//   }
 
-  // Keep dropdown open for multi-select
-  this.dropdownOpen = true;
+//   // Keep dropdown open for multi-select
+//   this.dropdownOpen = true;
 
-  // Clear search text
-  this.areaSearch = '';
-}
+//   // Clear search text
+//   this.areaSearch = '';
+// }
 
-removeArea(area: {id: number, name: string}, event: Event) {
-  event.stopPropagation();
-  const idx = this.coverageArea.areaIds.indexOf(area.id);
-  if (idx > -1) {
-    this.coverageArea.areaIds.splice(idx, 1);
-  }
-}
+// removeArea(area: {id: number, name: string}, event: Event) {
+//   event.stopPropagation();
+//   const idx = this.coverageArea.areaIds.indexOf(area.id);
+//   if (idx > -1) {
+//     this.coverageArea.areaIds.splice(idx, 1);
+//   }
+// }
 // areas: { id: number, name: string }[] = [];
 selectedAreaIds: number[] = [];
 serviceArea: { cityId?: number, areaId?: number, areaName?: string } = {};

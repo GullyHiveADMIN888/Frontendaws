@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders ,HttpParams } from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
   import { environment } from '../../environments/environment.prod';
  // import { environment } from '../../environments/environment';
+  import { CompanyJob } from './company-job/models/company.model';
 // --- Dashboard & Stats ---
 export interface SellerStats {
   totalLeads: number;
@@ -60,6 +61,7 @@ export interface DashboardData {
   totalBalance?: number;
   cashableBalance?: number;
   nonCashableBalance?: number;
+  requestCount?:number;
 }
 
 
@@ -207,7 +209,13 @@ export interface WalletTransaction {
 }
 
 
-
+interface PaginatedResponse<T> {
+  success: boolean;
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  data: T[];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -513,6 +521,16 @@ updateLegalIdentity(providerId: number, formData: FormData) {
   );
 }
 
- 
+ getCompanyJobs(pageNumber: number = 1, pageSize: number = 25): Observable<PaginatedResponse<CompanyJob>> {
+    let params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
 
+    return this.http.get<PaginatedResponse<CompanyJob>>(`${environment.apiBaseUrl}/companyDetails/getCompanyJobs`, { params });
+  }
+getInvitations(page: number = 1, pageSize: number = 25) {
+  return this.http.get<any>(
+    `${environment.apiBaseUrl}/companyDetails/companyInvitations?pageNumber=${page}&pageSize=${pageSize}`
+  );
+}
 }

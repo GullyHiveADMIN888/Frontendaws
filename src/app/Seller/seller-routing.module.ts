@@ -17,6 +17,8 @@ import { HelpComponent } from './help/help.component';
 import { ReferEarnComponent } from './refer-earn/refer-earn.component';
 import {  SharableProfileComponent} from './sharable-profile/sharable-profile.component';
 import { LedgerComponent } from './ledger/ledger.component';
+import { CompanyJobComponent } from './company-job/company-job.component';
+import { CompanyInvitationsComponent } from './company-invitations/company-invitations.component';
 
 // For seller not call by url
 import { AuthService } from '../auth/auth.service'; 
@@ -50,6 +52,8 @@ const routes: Routes = [
 
       // Help
       { path: 'help', component: HelpComponent },
+       { path: 'companyJob', component: CompanyJobComponent },
+        { path: 'companyInvitations', component: CompanyInvitationsComponent },
 
       // Stats / cards
       { path: 'cards', component: StatsCardsComponent },
@@ -60,7 +64,7 @@ const routes: Routes = [
 
       // Profile
       { path: 'completeProfile/:id', component: PublicProfileComponent },
-     //  { path: 'sharableProfile/:id', component: SharableProfileComponent },
+    
 
       { path: 'refer/:sellerId', component: ReferEarnComponent }, // 👈 ADD THIS
 

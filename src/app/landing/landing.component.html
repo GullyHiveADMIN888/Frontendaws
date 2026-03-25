@@ -101,42 +101,7 @@
                   </div>
                 }
               </div>
-        <!--      <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Captcha
-                </label>
-                <div class="flex items-center gap-3">
-                  <img
-                    [src]="captchaUrl"
-                    alt="captcha"
-                    class="w-2/5 h-11 border rounded"
-                    crossorigin="use-credentials"
-                    />
-                    <button
-                      type="button"
-                      (click)="refreshCaptcha()"
-                      class="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300"
-                      >
-                      ↻
-                    </button>
-                    <input
-                      type="text"
-                      formControlName="captcha"
-                      placeholder="Enter captcha"
-                      class="w-3/5 px-4 py-2 border rounded" maxlength="6"
-                      />
-                    </div>
-                    @if (loginForm.get('captcha')?.invalid && loginForm.get('captcha')?.touched) {
-                      <div
-                        class="mt-1 text-sm text-red-600 font-inter">
-                        @if (loginForm.get('captcha')?.errors?.['required']) {
-                          <span>
-                            Captcha is required
-                          </span>
-                        }
-                      </div>
-                    }
-                  </div>-->
+      
                   <div class="flex items-center justify-between">
                     <label class="flex items-center cursor-pointer">
                       <input type="checkbox" formControlName="rememberMe"
