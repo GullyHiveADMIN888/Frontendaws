@@ -1,5 +1,3 @@
-
-
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { link } from 'fs';
@@ -27,6 +25,12 @@ export class QuickActionsComponent {
       title: 'Edit Services',
       icon: 'ri-tools-line',
       action: 'editServices',
+      color: 'bg-indigo-50 text-indigo-600'
+    },
+     {
+      title: 'Employee Details',
+      icon: 'ri-team-line',
+      link: '/provider_User_Admin/employeeDetails',
       color: 'bg-indigo-50 text-indigo-600'
     },
      {

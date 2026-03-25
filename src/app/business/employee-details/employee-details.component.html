@@ -1,0 +1,151 @@
+<div class="p-4 sm:p-6">
+
+  <!-- Loader -->
+  <div *ngIf="isLoading" class="flex justify-center items-center py-20">
+    <div class="w-12 h-12 border-4 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
+  </div>
+<!-- Employee Cards -->
+<div *ngIf="!isLoading && employees.length > 0" class="space-y-4">
+
+  <div *ngFor="let emp of employees" class="relative bg-white shadow rounded-xl p-4 border">
+
+    <!-- Status Badge Row -->
+    <div class="flex justify-end mb-2">
+      <span 
+        class="px-3 py-1 text-xs rounded-full whitespace-nowrap"
+        [ngClass]="{
+          'bg-green-100 text-green-700': emp.status === 'active',
+          'bg-yellow-100 text-yellow-700': emp.status === 'invited',
+          'bg-red-100 text-red-700': emp.status === 'suspended'
+        }">
+        {{ emp.status }}
+      </span>
+    </div>
+
+    <!-- Employee Info -->
+    <div class="flex flex-col gap-2">
+      <p class="font-semibold text-gray-800">
+        {{ emp.userName }} (ID: {{ emp.userId }})
+      </p>
+      <p class="text-sm text-gray-500">
+        Email: {{ emp.userEmail }} | Phone: {{ emp.userPhone }}
+      </p>
+      <p class="text-sm text-gray-500">
+        Provider Role: {{ emp.providerRole }}
+      </p>
+
+      <div class="mt-2 text-sm text-gray-600">
+        <p><b>Region:</b> {{ emp.regionName || 'N/A' }}</p>
+        <p><b>Type:</b> {{ emp.regionType }}</p>
+        <p><b>Ops Role:</b> {{ emp.opsRole }}</p>
+      </div>
+    </div>
+
+    <!-- Action Buttons Row -->
+   <!-- Action Buttons Row -->
+<div class="flex flex-col sm:flex-row gap-2 mt-4">
+  <button 
+    class="px-3 py-1 text-xs rounded-full bg-green-500 text-white hover:bg-green-600 whitespace-nowrap"
+    (click)="openStatusModal(emp)">
+    {{ emp.status === 'active' ? 'Deactivate' : 'Activate' }}
+  </button>
+
+  <button 
+    class="px-3 py-1 text-xs rounded-full bg-blue-500 text-white hover:bg-blue-600 whitespace-nowrap"
+    (click)="openTransferModal(emp)">
+    Transfer
+  </button>
+</div>
+
+  </div>
+</div>
+
+  <!-- Pagination -->
+
+<div *ngIf="totalPages" class="flex justify-end items-center gap-4 mt-8">
+    <button class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50"
+            [disabled]="pageNumber === 1" (click)="onPageChange(pageNumber - 1)">
+      Prev
+    </button>
+
+    <span class="text-sm text-gray-600">Page {{ pageNumber }} of {{ totalPages }}</span>
+
+    <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+            [disabled]="pageNumber * pageSize >= totalCount" (click)="onPageChange(pageNumber + 1)">
+      Next
+    </button>
+  </div>
+  <!-- Empty State -->
+ <!-- Empty State -->
+<div *ngIf="!isLoading && employees.length === 0" 
+     class="flex flex-col items-center justify-center py-20 px-4">
+
+  <!-- Icon -->
+  <svg xmlns="http://www.w3.org/2000/svg" 
+       class="w-16 h-16 text-gray-300 mb-4 animate-bounce" 
+       fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+          d="M12 14l9-5-9-5-9 5 9 5z" />
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+          d="M12 14l6.16-3.422a12.083 12.083 0 01-.16 6.422 12.083 12.083 0 01-6 0 12.083 12.083 0 01-.16-6.422L12 14z" />
+  </svg>
+
+  <!-- Title -->
+  <h2 class="text-xl font-semibold text-gray-600 mb-2">No Employees found</h2>
+
+  <!-- Description -->
+  <p class="text-gray-400 text-sm md:text-base text-center">
+    There are currently no employees in this list. Please check back later or refresh to reload.
+  </p>
+
+  <!-- Refresh Button -->
+  <button (click)="loadEmployees()" 
+          class="mt-6 px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 shadow-md hover:shadow-lg transition">
+    Refresh
+  </button>
+</div>
+</div>
+
+<!-- Status Modal -->
+<div *ngIf="showStatusModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md">
+    <h2 class="text-lg font-semibold mb-4">{{ selectedEmployee?.status === 'active' ? 'Deactivate' : 'Activate' }} Employee</h2>
+    
+    <textarea [(ngModel)]="statusDescription"
+              placeholder="Enter reason or note..."
+              class="w-full border rounded p-2 mb-4 resize-none"
+              rows="4"></textarea>
+
+    <div class="flex justify-end gap-2">
+      <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" (click)="closeStatusModal()">Cancel</button>
+      <button class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              (click)="submitStatusChange()">
+        Confirm
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Transfer Modal -->
+<div *ngIf="showTransferModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md">
+    <h2 class="text-lg font-semibold mb-4">Transfer Employee</h2>
+    
+    <input [(ngModel)]="transferCity"
+           placeholder="Enter new city"
+           class="w-full border rounded p-2 mb-2" />
+
+    <textarea [(ngModel)]="transferDescription"
+              placeholder="Enter reason or note..."
+              class="w-full border rounded p-2 mb-4 resize-none"
+              rows="3"></textarea>
+
+    <div class="flex justify-end gap-2">
+      <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" (click)="closeTransferModal()">Cancel</button>
+      <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              (click)="submitTransfer()">
+        Transfer
+      </button>
+    </div>
+  </div>
+</div>
