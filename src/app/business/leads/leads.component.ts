@@ -538,7 +538,7 @@ closeAssignModal(){
 
 }
 loadProviderUsers(){
-  this.sellerService.getProviderUsers().subscribe((res:any)=>{
+  this.sellerService.getProviderUsers(this.currentPage, this.pageSize).subscribe((res:any)=>{
     console.log("EMPLOYEES:", res);
     this.employees = res;
   })
