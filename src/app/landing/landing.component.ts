@@ -1081,6 +1081,13 @@ onOTPVerifiedEmail(event: { otp: string }) {
 
 isMobileVerified = false;
 
+
+isMenuOpen = false;
+
+toggleMenu() {
+  this.isMenuOpen = !this.isMenuOpen;
+}
+
 }
 
 // Helper function for RxJS

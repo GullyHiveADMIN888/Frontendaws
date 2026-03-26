@@ -131,13 +131,6 @@ ngOnInit(): void {
     ];
   }
 
-  // navigateTo(link: string | any[]) {
-  //   if (Array.isArray(link)) {
-  //     this.router.navigate(link);
-  //   } else {
-  //     this.router.navigateByUrl(link);
-  //   }
-  // }
 navigateTo(link: string | any[]) {
 
   const urlTree = Array.isArray(link)
@@ -159,7 +152,7 @@ navigateTo(link: string | any[]) {
 
 
 
-  showChangePasswordModal = false;
+showChangePasswordModal = false;
 
 passwordData = {
   currentPassword: '',
@@ -243,19 +236,19 @@ validatePasswords() {
   this.passwordErrorMessage = '';
   this.currentPasswordRequired = false;
 
-  // 🔴 Current Password Required
+  //  Current Password Required
   if (!currentPassword?.trim()) {
     this.currentPasswordRequired = true;
   }
 
-  // 🔴 New Password Required
+  //  New Password Required
   if (!newPassword?.trim()) {
     this.weakPassword = true;
     this.passwordErrorMessage = 'New password is required';
     return;
   }
 
-  // 🔐 Strong Password Regex
+  //  Strong Password Regex
   const strongPasswordRegex =
     /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/;
 
@@ -265,12 +258,12 @@ validatePasswords() {
       'Password must be at least 6 characters and include 1 uppercase letter, 1 number, and 1 special character';
   }
 
-  // ❌ New must not equal current
+  //  New must not equal current
   if (currentPassword && newPassword === currentPassword) {
     this.sameAsCurrent = true;
   }
 
-  // ❌ Confirm must match
+  //  Confirm must match
   if (confirmPassword && newPassword !== confirmPassword) {
     this.passwordMismatch = true;
   }
@@ -470,6 +463,7 @@ closeBankDetailsModal() {
   // Close the modal
   this.showBankDetailsModal = false;
 }
+
 resetBankForm() {
   this.bankDetails = {
     id: null,
@@ -497,17 +491,13 @@ showLegalIdentityModal = false;
 
 registrationTypes = [
   'GST Registration',
-  'Aadhar Card',
-  'E-Shram Card',
   'PAN Card',
   'Udyam Registration'
 ];
 registrationFieldMap: any = {
   'PAN Card': 'pan',
-  'GST Registration': 'gstin',
   'Udyam Registration': 'udyam_number',
-  'Aadhar Card': 'aadhaar_number',
-  'E-Shram Card': 'eshram_number'
+   'GST Registration': 'gstin',
 };
 
 openLegalIdentityModal() {
@@ -517,7 +507,7 @@ openLegalIdentityModal() {
       const provider = res.provider;
       const documents = res.documents;
 
-      // 🔹 Dynamic detection using mapping
+      //  Dynamic detection using mapping
       Object.entries(this.registrationFieldMap).forEach(([type, field]) => {
         const key = field as keyof typeof provider; // ✅ cast to keyof provider
         if (provider[key]) {
@@ -526,7 +516,7 @@ openLegalIdentityModal() {
         }
       });
 
-      // 🔹 Set document URLs
+      //  Set document URLs
       documents.forEach((doc: any) => {
         if (doc.doc_type === 'registration')
           this.legalIdentityData.registrationDocumentUrl = doc.file_url;
@@ -538,28 +528,7 @@ openLegalIdentityModal() {
       this.showLegalIdentityModal = true;
     });
 }
-// updateLegalIdentity() {
-//   const formData = new FormData();
 
-//   formData.append('RegistrationType', this.legalIdentityData.registrationType);
-//   formData.append('RegistrationNumber', this.legalIdentityData.registrationNumber);
-
-//   // If you have file uploads
-//   if (this.legalIdentityData.registrationDocument) {
-//     formData.append('RegistrationDocument', this.legalIdentityData.registrationDocument);
-//   }
-//   if (this.legalIdentityData.addressProof) {
-//     formData.append('AddressProofDocument', this.legalIdentityData.addressProof);
-//   }
-
-//   this.sellerService.updateLegalIdentity(
-//       this.sellerId,
-//       formData
-//   ).subscribe(() => {
-//     alert('Updated successfully');
-//     this.showLegalIdentityModal = false;
-//   });
-// }
 handleFileChange(field: 'registrationDocumentFile' | 'addressProofFile', event: Event) {
   const input = event.target as HTMLInputElement;
   const file = input.files?.[0] ?? null;
@@ -580,7 +549,7 @@ handleFileChange(field: 'registrationDocumentFile' | 'addressProofFile', event: 
     reader.readAsDataURL(file);
   }
 }
-
+ 
 updateLegalIdentity() {
   const formData = new FormData();
   formData.append('RegistrationType', this.legalIdentityData.registrationType);
