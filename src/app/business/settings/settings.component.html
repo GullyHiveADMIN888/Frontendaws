@@ -290,13 +290,12 @@
                     <label class="block text-sm font-medium mb-2">Identity Type</label>
                     <select [(ngModel)]="legalIdentityData.registrationType"
                       class="w-full border px-4 py-2 rounded-lg">
-                      <option [ngValue]="null">Select</option>
+                      <option [ngValue]=''>Select</option>
                       @for (t of registrationTypes; track t) {
                         <option [ngValue]="t">{{ t }}</option>
                       }
                     </select>
                   </div>
-                  <!-- Identity Number -->
                   <!-- Identity Number -->
                   <div class="mb-4">
                     <label class="block text-sm font-medium mb-2">Identity Number</label>
@@ -305,27 +304,7 @@
                       class="w-full border px-4 py-2 rounded-lg"
                       placeholder="Enter identity number"/>
                     </div>
-                    <!-- Existing Documents -->
-                    <!-- <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <p class="text-sm font-medium">Registration Document</p>
-                      <a *ngIf="legalIdentityData.registrationDocumentUrl"
-                        [href]="legalIdentityData.registrationDocumentUrl"
-                        target="_blank"
-                        class="text-orange-600 text-sm">
-                        View
-                      </a>
-                    </div>
-                    <div>
-                      <p class="text-sm font-medium">Address Proof</p>
-                      <a *ngIf="legalIdentityData.addressProofUrl"
-                        [href]="legalIdentityData.addressProofUrl"
-                        target="_blank"
-                        class="text-orange-600 text-sm">
-                        View
-                      </a>
-                    </div>
-                  </div> -->
+                 
                   <!-- Registration Document -->
                   <div class="mb-4">
                     <label class="block text-sm font-medium mb-2">Registration Document</label>
