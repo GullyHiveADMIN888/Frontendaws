@@ -32,10 +32,8 @@ export class InvitationGeneratorComponent implements OnInit {
 
   // Role options
   roleOptions = [
-    { value: 'admin', label: 'Admin' },
     { value: 'dispatcher', label: 'Dispatcher' },
-    { value: 'ops_manager', label: 'Operations Manager' },
-    { value: 'viewer', label: 'Viewer' }
+    { value: 'ops_manager', label: 'Operations Manager' }
   ];
 
   // Region dropdown properties

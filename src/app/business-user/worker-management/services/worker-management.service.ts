@@ -123,6 +123,8 @@ export class WorkerManagementService {
     return this.http.post<InviteWorkerResponse>(`${this.apiUrl}/worker-invites`, { email, requestSource });
   }
 
+  
+
   /**
    * Get pending invites with pagination and filters
    */
