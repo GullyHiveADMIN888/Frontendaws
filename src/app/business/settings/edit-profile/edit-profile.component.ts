@@ -1,14 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,Output,  EventEmitter, } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { SellerService, PublicProfile } from '../../business.service';
+import { OTPVerificationWithoutIdComponent } from '../../../auth/otp-verification-without-id/otp-verification-without-id.component';
+import { AuthService, SendOtpEmailWithoutUserIdRequest, VerifyOtpEmailWithoutUserIdRequest } from '../../../auth/auth.service';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-edit-profile',
     templateUrl: './edit-profile.component.html',
     styleUrls: ['./edit-profile.component.css'],
-    standalone: false
+     standalone: true,
+      imports: [CommonModule,
+    ReactiveFormsModule,OTPVerificationWithoutIdComponent   
+  ]
 })
+
 export class EditProfileComponent implements OnInit {
   editForm: FormGroup;
   sellerId!: number;
@@ -18,8 +26,9 @@ export class EditProfileComponent implements OnInit {
   states: any[] = [];
   cities: any[] = [];
   errors: any = {};
-
+@Output() onVerified = new EventEmitter<string>();
   constructor(
+    private authService: AuthService,
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
@@ -40,6 +49,7 @@ export class EditProfileComponent implements OnInit {
       pincode: [''],
       website: [''],
       linkedin: [''],
+        otp: ['']
     //  areaName: [''],
      // areaId: ['']
     });
@@ -56,34 +66,42 @@ export class EditProfileComponent implements OnInit {
         }
       });
     });
+      this.editForm.get('phone')?.valueChanges.subscribe(value => {
+    if (value !== this.originalPhone) {
+      this.otpVerified = false;
+    }
+  });
   }
 
-  // loadProfile(sellerId: number) {
-  //   this.sellerService.getPublicProfile(sellerId).subscribe(data => {
-  //     this.profile = data;
-  //     const names = data.displayName?.split(' ') || [];
-  //     this.editForm.patchValue({
-  //       firstName: names[0] || '',
-  //       lastName: names.slice(1).join(' '),
-  //       email: data.email,
-  //       phone: data.phone,
-  //       description: data.description,
-  //       line1: data.addressLine1,
-  //       line2: data.addressLine2,
-  //       locality: data.areaName,
-  //       areaId: data.areaId,
-  //       landmark: data.landmark,
-  //       pincode: data.pincode,
-  //       state: data.addressStateId
-  //     });
-  //     if (data.addressStateId) {
-  //       this.loadCities(data.addressStateId, data.addressCityId);
-  //     }
-  //   });
-  // }
+// loadProfile(sellerId: number) {
+//   this.sellerService.getPublicProfile(sellerId).subscribe(data => {
+//     this.profile = data;
+//    console.log('sdsf', data)
+//     const names = data.displayName?.split(' ') || [];
+
+//     this.editForm.patchValue({
+//       firstName: names[0] || '',
+//       lastName: names.slice(1).join(' '),
+//       email: data.email,
+//       phone: data.phone,
+//       description: data.description,
+//       line1: data.addressLine1,
+//       line2: data.addressLine2,
+//       landmark: data.landmark,
+//       pincode: data.pincode,
+//       state: data.addressStateId
+//     });
+
+//     if (data.addressStateId) {
+//       this.loadCities(data.addressStateId, data.addressCityId, data.areaId);
+//     }
+//   });
+// }
 loadProfile(sellerId: number) {
   this.sellerService.getPublicProfile(sellerId).subscribe(data => {
     this.profile = data;
+
+    this.originalPhone = data.phone; // ✅ IMPORTANT
 
     const names = data.displayName?.split(' ') || [];
 
@@ -105,13 +123,6 @@ loadProfile(sellerId: number) {
     }
   });
 }
-
-  // loadCities(stateId: number, cityId?: number) {
-  //   this.sellerService.getCitiess(stateId).subscribe(cities => {
-  //     this.cities = cities;
-  //     if (cityId) this.editForm.patchValue({ city: cityId });
-  //   });
-  // }
   loadCities(stateId: number, cityId?: number, areaId?: number) {
   this.sellerService.getCitiess(stateId).subscribe(cities => {
     this.cities = cities;
@@ -218,6 +229,14 @@ loadProfile(sellerId: number) {
   }
 
   onSubmit() {
+
+      const phoneChanged = this.editForm.get('phone')?.value !== this.originalPhone;
+
+  if (phoneChanged) {
+    alert('Please verify your mobile number first');
+    return;
+  }
+
      if (!this.validateForm()) {
     //   alert('Please correct the errors in the form');
        return;
@@ -272,7 +291,67 @@ onCityChange(event: any) {
     });
   }
 }
+//otp verification
 
+originalPhone: string = '';
+otpSent: boolean = false;
+otpVerified: boolean = false;
+otp: string = '';
+showOtpModal: boolean = false;
+otpPhone: string = '';
+// showOtpModal: boolean = false;
+// otpPhone: string = '';
+async sendOtp() {
+  const phone = this.editForm.get('phone')?.value;
+
+  if (!/^\d{10}$/.test(phone)) {
+    alert('Enter valid phone number');
+    return;
+  }
+
+  try {
+        this.otpPhone = phone;      // ✅ SET FIRST
+    this.showOtpModal = true;   // ✅ THEN OPEN MODAL
+    await this.authService.sendOtp(phone);
+
+    this.otpPhone = phone;      // ✅ SET FIRST
+    this.showOtpModal = true;   // ✅ THEN OPEN MODAL
+
+  } catch (err) {
+    alert('Failed to send OTP');
+  }
+}
+// verifyOtp(otp: string) {
+//   this.authService.verifyOtp(otp)
+//     .then(() => {
+//       this.otpVerified = true;
+//       this.originalPhone = this.editForm.get('phone')?.value;
+//       this.closeOtpModal(); // ✅ close modal
+//       alert('Verified');
+//     })
+//     .catch(() => alert('Invalid OTP'));
+// }
+verifyOtp() {
+  this.otpVerified = true;
+  this.originalPhone = this.editForm.get('phone')?.value;
+
+  this.showOtpModal = false;
+
+  alert('Mobile number verified successfully');
+}
+onSubmits() {
+  const phoneChanged = this.editForm.get('phone')?.value !== this.originalPhone;
+
+  if (phoneChanged && !this.otpVerified) {
+    alert('Please verify your mobile number first');
+    return;
+  }
+
+  // proceed API call
+}
+closeOtpModal() {
+  this.showOtpModal = false;
+}
 
 }
 
