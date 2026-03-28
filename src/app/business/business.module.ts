@@ -8,7 +8,7 @@ import { ProfileCompletionComponent } from './profile-completion/profile-complet
 import { QuickActionsComponent } from './quick-actions/quick-actions.component';
 import { PublicProfileComponent } from './public-profile/public-profile.component';
 import { SettingsComponent } from './settings/settings.component';
-import { EditProfileComponent } from './settings/edit-profile/edit-profile.component';
+// import { EditProfileComponent } from './settings/edit-profile/edit-profile.component';
 import { RouterModule } from '@angular/router';
 import { LeadsComponent } from './leads/leads.component';
 import { ResponsesComponent } from './responses/responses.component';
@@ -27,7 +27,7 @@ import { LedgerComponent } from './ledger/ledger.component';
     QuickActionsComponent,
     PublicProfileComponent,
     SettingsComponent,
-    EditProfileComponent,
+  //  EditProfileComponent,
     LeadsComponent,
     ResponsesComponent,
     HelpComponent,

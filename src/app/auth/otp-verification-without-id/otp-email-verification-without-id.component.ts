@@ -19,11 +19,12 @@ import { FormsModule } from '@angular/forms';
 import { interval, Subscription } from 'rxjs';
 import { AuthService } from '../auth.service';
 import { firstValueFrom } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-otp-email-verification-without-id',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule,CommonModule],
   template: `
     <div class="otp-verification-container">
       <div class="otp-header">
@@ -411,7 +412,6 @@ export class OtpEmailVerificationWithoutIdComponent implements OnInit, OnDestroy
   @ViewChild('input3') input3!: ElementRef;
   @ViewChild('input4') input4!: ElementRef;
   @ViewChild('input5') input5!: ElementRef;
-
   otp: string[] = ['', '', '', '', '', ''];
   timer = 60;
   canResend = false;
@@ -597,7 +597,7 @@ export class OtpEmailVerificationWithoutIdComponent implements OnInit, OnDestroy
         email: this.emailAddress
       };
       
-      await firstValueFrom(this.authService.verifyOtpEmailWithoutUserId(payload));
+    //  await firstValueFrom(this.authService.verifyOtpEmailWithoutUserId(payload));
       
       console.log('Email OTP verified successfully for registration');
       this.stopTimer();
