@@ -1,217 +1,405 @@
-<!-- worker-management.component.html -->
-
-<!-- Global Alert -->
-<div *ngIf="alertMessage"
-     class="fixed top-5 right-5 px-4 py-3 rounded text-white shadow-lg z-[9999]"
-     [ngClass]="alertType === 'success' ? 'bg-green-500' : 'bg-red-500'">
-  {{ alertMessage }}
-</div>
-
-<div class="p-6">
-  <!-- Header -->
-  <div class="flex justify-between items-center mb-6">
-    <h2 class="text-2xl font-bold text-gray-800">Worker Management</h2>
-    
-    <button
-      (click)="openModal()"
-      class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center"
-    >
-      <i class="ri-user-add-line mr-2"></i>
-      Add Worker
-    </button>
-  </div>
-
-  <!-- Workers Table (Placeholder - To be implemented later) -->
-  <div class="bg-white rounded-lg shadow border overflow-hidden">
-    <div class="p-8 text-center text-gray-500">
-      <i class="ri-team-line text-4xl mb-2 block"></i>
-      <p>Worker list will be displayed here</p>
-      <p class="text-sm mt-1">Click "Add Worker" to add new workers</p>
+<!-- Page Loader -->
+<div *ngIf="isPageLoading" class="fixed inset-0 bg-white bg-opacity-90 z-[100000] flex items-center justify-center">
+  <div class="text-center">
+    <div class="relative">
+      <!-- Spinner -->
+      <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500 mx-auto"></div>
+      <p class="mt-4 text-gray-600 font-medium">Loading worker management...</p>
     </div>
   </div>
 </div>
 
-<!-- Add Worker Modal -->
-<div *ngIf="showModal"
-     class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center mt-16 z-[10000]">
-  
-  <div class="bg-white rounded-xl w-[700px] p-6 shadow-xl overflow-y-auto max-h-[90vh]">
+<!-- Main Content - Hidden while loading -->
+<div [class.opacity-0]="isPageLoading" [class.pointer-events-none]="isPageLoading">
+
+  <!-- Global Alert -->
+  <div *ngIf="alertMessage" class="fixed top-5 right-5 px-4 py-3 rounded text-white shadow-lg z-[9999]"
+    [ngClass]="alertType === 'success' ? 'bg-green-500' : 'bg-red-500'">
+    {{ alertMessage }}
+  </div>
+
+  <div class="p-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-800">Worker Management</h2>
+
+      <button (click)="openModal()"
+        class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center">
+        <i class="ri-user-add-line mr-2"></i>
+        Add Worker
+      </button>
+    </div>
+
+    <!-- ========== FILTERS SECTION ========== -->
+    <div class="bg-white rounded-lg shadow p-4 mb-6">
+      <div class="flex flex-wrap gap-4 items-end">
+        <!-- Search Input -->
+        <div class="flex-1 min-w-[200px]">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+          <div class="flex gap-2">
+            <input
+              type="text"
+              [(ngModel)]="searchTerm"
+              (keyup.enter)="onSearch()"
+              placeholder="Search by name, email, or phone..."
+              class="flex-1 border p-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+            <button
+              (click)="onSearch()"
+              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+              Search
+            </button>
+          </div>
+        </div>
+        
+        <!-- Status Filter -->
+        <div class="w-48">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <select
+            [(ngModel)]="statusFilter"
+            (change)="onStatusFilterChange()"
+            class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-500">
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        
+        <!-- Page Size -->
+        <div class="w-32">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Show</label>
+          <select
+            [(ngModel)]="pageSize"
+            (change)="onPageSizeChange()"
+            class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-500">
+            <option [value]="5">5 per page</option>
+            <option [value]="10">10 per page</option>
+            <option [value]="20">20 per page</option>
+            <option [value]="50">50 per page</option>
+          </select>
+        </div>
+        
+        <!-- Clear Filters Button -->
+        <button
+          (click)="clearFilters()"
+          class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+          Clear Filters
+        </button>
+      </div>
+    </div>
+
+    <!-- ========== PENDING INVITES SECTION ========== -->
+    <div class="mb-6">
+      <h3 class="text-lg font-semibold text-gray-700 mb-3">
+        Workers List
+        <span class="text-sm text-gray-500">({{ totalCount }} total)</span>
+      </h3>
+      
+      <div class="bg-white rounded-lg shadow border overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+               <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    (click)="onSortChange('workername')">
+                  Worker
+                  <span *ngIf="sortBy === 'workername'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    (click)="onSortChange('workeremail')">
+                  Email
+                  <span *ngIf="sortBy === 'workeremail'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    (click)="onSortChange('workerphone')">
+                  Phone
+                  <span *ngIf="sortBy === 'workerphone'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    (click)="onSortChange('created_at')">
+                  Invited On
+                  <span *ngIf="sortBy === 'created_at'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    (click)="onSortChange('request_status')">
+                  Status
+                  <span *ngIf="sortBy === 'request_status'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+                </th>
+               </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr *ngFor="let invite of pendingInvites">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {{ invite.workerName }}
+                  <span *ngIf="invite.workerProviderType" class="ml-2 text-xs text-gray-500">
+                    ({{ invite.workerProviderType }})
+                  </span>
+                 </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ invite.workerEmail }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ invite.workerPhone }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ invite.createdAt | date:'medium' }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
+                        [ngClass]="{
+                          'bg-yellow-100 text-yellow-800': invite.requestStatus === 'pending',
+                          'bg-green-100 text-green-800': invite.requestStatus === 'approved',
+                          'bg-red-100 text-red-800': invite.requestStatus === 'rejected',
+                          'bg-gray-100 text-gray-800': invite.requestStatus === 'cancelled'
+                        }">
+                    {{ invite.requestStatus | titlecase }}
+                  </span>
+                 </td>
+               </tr>
+              <tr *ngIf="pendingInvites.length === 0">
+                <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                  <i class="ri-mail-line text-2xl mb-2 block"></i>
+                  <p>No pending invitations found</p>
+                 </td>
+               </tr>
+            </tbody>
+           </table>
+        </div>
+        
+        <!-- ========== PAGINATION ========== -->
+        <div *ngIf="totalPages > 0" class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+          <div class="flex items-center justify-between">
+            <div class="flex-1 flex justify-between sm:hidden">
+              <button (click)="onPageChange(currentPage - 1)" 
+                      [disabled]="currentPage === 1"
+                      class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                Previous
+              </button>
+              <button (click)="onPageChange(currentPage + 1)" 
+                      [disabled]="currentPage === totalPages"
+                      class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                Next
+              </button>
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+              <div>
+                <p class="text-sm text-gray-700">
+                  Showing
+                  <span class="font-medium">{{ ((currentPage - 1) * pageSize) + 1 }}</span>
+                  to
+                  <span class="font-medium">{{ Math.min(currentPage * pageSize, totalCount) }}</span>
+                  of
+                  <span class="font-medium">{{ totalCount }}</span>
+                  results
+                </p>
+              </div>
+              <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                  <button (click)="onPageChange(currentPage - 1)" 
+                          [disabled]="currentPage === 1"
+                          class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span class="sr-only">Previous</span>
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <button *ngFor="let page of getPageNumbers()" 
+                          (click)="onPageChange(page)"
+                          [class.bg-orange-50]="page === currentPage"
+                          [class.border-orange-500]="page === currentPage"
+                          [class.text-orange-600]="page === currentPage"
+                          class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50">
+                    {{ page }}
+                  </button>
+                  <button (click)="onPageChange(currentPage + 1)" 
+                          [disabled]="currentPage === totalPages"
+                          class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span class="sr-only">Next</span>
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     
+
+<!-- Add Worker Modal -->
+<div *ngIf="showModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center mt-16 z-[10000]">
+  <div class="bg-white rounded-xl w-[700px] p-6 shadow-xl overflow-y-auto max-h-[90vh]">
     <h3 class="text-xl font-bold mb-4">Add Worker</h3>
     
-    <!-- Search by Email -->
-    <div class="flex gap-2 mb-4 flex-col sm:flex-row">
-      <div class="w-full">
-        <input
-          type="email"
-          [(ngModel)]="searchEmail"
-          #emailModel="ngModel"
-          required
-          email
-          placeholder="Enter Provider Email"
-          class="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
-        />
-        
-        <!-- Error message -->
-        <p *ngIf="emailModel.invalid && emailModel.touched" class="text-red-500 text-sm mt-1">
-          Please enter a valid email address
+    <!-- Search by Email and Phone (BOTH REQUIRED) -->
+    <div class="flex flex-col gap-4 mb-4">
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-2">
+        <p class="text-sm text-blue-800 flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Both Email and Mobile Number are required to fetch worker details
         </p>
       </div>
       
-      <button
-        (click)="fetchProvider()"
-        [disabled]="emailModel.invalid"
-        class="bg-blue-600 text-white px-4 py-2 rounded disabled:bg-gray-400 hover:bg-blue-700 transition"
-      >
-        Fetch
+      <div class="flex gap-2 flex-col sm:flex-row">
+        <div class="flex-1">
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Email Address <span class="text-red-500">*</span>
+          </label>
+          <input type="email" 
+            [(ngModel)]="searchEmail" 
+            #emailModel="ngModel"
+            required
+            email
+            placeholder="Enter worker email"
+            class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+            [class.border-red-500]="emailModel.invalid && emailModel.touched" />
+          <p *ngIf="emailModel.invalid && emailModel.touched" class="text-red-500 text-sm mt-1">
+            Please enter a valid email address
+          </p>
+        </div>
+        <div class="flex-1">
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Mobile Number <span class="text-red-500">*</span>
+          </label>
+          <input type="tel" 
+            [(ngModel)]="searchPhone" 
+            #phoneModel="ngModel"
+            required
+            pattern="^[0-9]{10}$"
+            placeholder="Enter 10-digit mobile number"
+            maxlength="10"
+            class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+            [class.border-red-500]="phoneModel.invalid && phoneModel.touched" />
+          <p *ngIf="phoneModel.invalid && phoneModel.touched" class="text-red-500 text-sm mt-1">
+            Please enter a valid 10-digit mobile number
+          </p>
+        </div>
+      </div>
+      
+      <button (click)="fetchProvider()" 
+        [disabled]="isLoading || !searchEmail || !searchPhone || emailModel.invalid || phoneModel.invalid"
+        class="bg-blue-600 text-white px-4 py-2 rounded disabled:bg-gray-400 hover:bg-blue-700 transition w-full sm:w-auto">
+        <span *ngIf="!isLoading">Fetch Worker</span>
+        <span *ngIf="isLoading" class="flex items-center justify-center gap-2">
+          <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Fetching...
+        </span>
       </button>
     </div>
     
-    <!-- Profile Information Display -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-      
-      <!-- Display Name -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
-        <input class="border p-2 bg-gray-50 rounded w-full"
-               [(ngModel)]="profile.displayName" 
-               readonly 
-               placeholder="Display Name"/>
-      </div>
-      
-      <!-- Legal Name -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Legal Name</label>
-        <input class="border p-2 bg-gray-50 rounded w-full"
-               [(ngModel)]="profile.legalName" 
-               readonly 
-               placeholder="Legal Name"/>
-      </div>
-      
-      <!-- Email -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-        <input class="border p-2 bg-gray-50 rounded w-full"
-               [(ngModel)]="profile.email" 
-               readonly 
-               placeholder="Email"/>
-      </div>
-      
-      <!-- Phone -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-        <input class="border p-2 bg-gray-50 rounded w-full"
-               [(ngModel)]="profile.phone" 
-               readonly 
-               placeholder="Phone"/>
-      </div>
-      
-      <!-- Base State -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Base State</label>
-        <input class="border p-2 bg-gray-50 rounded w-full"
-               [(ngModel)]="profile.state" 
-               readonly 
-               placeholder="Base State"/>
-      </div>
-      
-      <!-- Base City -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Base City</label>
-        <input class="border p-2 bg-gray-50 rounded w-full"
-               [(ngModel)]="profile.baseCity" 
-               readonly 
-               placeholder="Base City"/>
-      </div>
-      
-      <!-- Address Line 1 -->
-      <div class="md:col-span-2">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Address Line 1</label>
-        <input class="border p-2 bg-gray-50 rounded w-full"
-               [(ngModel)]="profile.addressLine1" 
-               readonly 
-               placeholder="Address Line 1"/>
-      </div>
-      
-      <!-- Address Line 2 -->
-      <div class="md:col-span-2">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Address Line 2</label>
-        <input class="border p-2 bg-gray-50 rounded w-full"
-               [(ngModel)]="profile.addressLine2" 
-               readonly 
-               placeholder="Address Line 2"/>
-      </div>
-      
-      <!-- Landmark -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Landmark</label>
-        <input class="border p-2 bg-gray-50 rounded w-full"
-               [(ngModel)]="profile.landmark" 
-               readonly 
-               placeholder="Landmark"/>
-      </div>
-      
-      <!-- Pincode -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
-        <input class="border p-2 bg-gray-50 rounded w-full"
-               [(ngModel)]="profile.pincode" 
-               readonly 
-               placeholder="Pincode"/>
-      </div>
-      
-      <!-- Area Name -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Area</label>
-        <input class="border p-2 bg-gray-50 rounded w-full"
-               [(ngModel)]="profile.areaName" 
-               readonly 
-               placeholder="Area"/>
-      </div>
-      
-      <!-- Provider Type -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Provider Type</label>
-        <input class="border p-2 bg-gray-50 rounded w-full"
-               [(ngModel)]="profile.providerType" 
-               readonly 
-               placeholder="Provider Type"/>
-      </div>
-      
-      <!-- Status -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-        <input class="border p-2 bg-gray-50 rounded w-full"
-               [(ngModel)]="profile.status" 
-               readonly 
-               placeholder="Status"/>
-      </div>
-      
+    <!-- No worker found message -->
+    <div *ngIf="!profile.email && !isLoading && (searchEmail || searchPhone)" class="text-center py-8 text-gray-500">
+      <i class="ri-user-search-line text-4xl mb-2 block"></i>
+      <p>No worker found with the provided email and mobile number</p>
+      <p class="text-sm mt-1">Please check the information and try again</p>
     </div>
     
-    <!-- Profile Picture -->
-    <div class="mt-4 flex justify-center">
-      <div *ngIf="profile.profilePictureUrl" class="text-center">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Profile Picture</label>
-        <img [src]="profile.profilePictureUrl" 
-             class="w-24 h-24 rounded-full object-cover border-2 border-gray-300"/>
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="text-center py-8">
+      <svg class="animate-spin h-8 w-8 mx-auto text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <p class="mt-2 text-gray-500">Fetching worker data...</p>
+    </div>
+    
+    <!-- Profile Information Display -->
+    <div *ngIf="profile.email" class="mt-4">
+      <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Worker Details</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+          <input class="border p-2 bg-gray-50 rounded w-full"
+                 [(ngModel)]="profile.displayName" 
+                 readonly 
+                 placeholder="Name"/>
+        </div>
+        
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input class="border p-2 bg-gray-50 rounded w-full"
+                 [(ngModel)]="profile.email" 
+                 readonly 
+                 placeholder="Email"/>
+        </div>
+        
+        <!-- Mobile/Phone -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+          <input class="border p-2 bg-gray-50 rounded w-full"
+                 [(ngModel)]="profile.phone" 
+                 readonly 
+                 placeholder="Mobile Number"/>
+        </div>
+        
+        <!-- City -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+          <input class="border p-2 bg-gray-50 rounded w-full"
+                 [(ngModel)]="profile.baseCity" 
+                 readonly 
+                 placeholder="Base City"/>
+        </div>
+        
+        <!-- State -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">State</label>
+          <input class="border p-2 bg-gray-50 rounded w-full"
+                 [(ngModel)]="profile.state" 
+                 readonly 
+                 placeholder="Base State"/>
+        </div>
+        
+        <!-- Pincode -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
+          <input class="border p-2 bg-gray-50 rounded w-full"
+                 [(ngModel)]="profile.pincode" 
+                 readonly 
+                 placeholder="Pincode"/>
+        </div>
+        
+        <!-- Area Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Area</label>
+          <input class="border p-2 bg-gray-50 rounded w-full"
+                 [(ngModel)]="profile.areaName" 
+                 readonly 
+                 placeholder="Area"/>
+        </div>
+      </div>
+      
+      <!-- Profile Picture -->
+      <div *ngIf="profile.profilePictureUrl" class="mt-4 flex justify-center">
+        <div class="text-center">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Profile Picture</label>
+          <img [src]="profile.profilePictureUrl" class="w-24 h-24 rounded-full object-cover border-2 border-gray-300" />
+        </div>
       </div>
     </div>
     
     <!-- Modal Actions -->
     <div class="flex justify-end gap-3 mt-6">
-      <button
-        (click)="closeModal()"
-        class="px-4 py-2 border rounded hover:bg-gray-100 transition">
-        Close
+      <button (click)="closeModal()" class="px-4 py-2 border rounded hover:bg-gray-100 transition">
+        Cancel
       </button>
-      
-      <button
-        (click)="saveUser()"
-        class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 transition">
-        Save
+      <button (click)="saveUser()" [disabled]="!profile.email || isSaving"
+        class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+        <span *ngIf="!isSaving">Send Invitation</span>
+        <span *ngIf="isSaving" class="flex items-center gap-2">
+          <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Sending...
+        </span>
       </button>
     </div>
-    
   </div>
 </div>
