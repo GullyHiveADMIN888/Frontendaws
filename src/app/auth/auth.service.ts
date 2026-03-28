@@ -253,6 +253,7 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
     await this.recaptchaVerifier.render();
   }
   async sendOtp(mobile: string): Promise<void> {
+    debugger;
     await this.initRecaptcha();
 
     const phoneNumber = `+91${mobile}`;

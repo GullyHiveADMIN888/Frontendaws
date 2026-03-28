@@ -650,7 +650,7 @@ onLoginSubmit(event: Event): void {
   private handleLoginSuccess(response: any): void {
   this.isLoggingIn = false;
 
-  console.log('Login response:', response); 
+ // console.log('Login response:', response); 
 
   //  First check mobile verification
   if (!response.mobileVerified && !response.emailVerified) {
@@ -660,7 +660,7 @@ onLoginSubmit(event: Event): void {
   phone: response.phone,
   email: response.email
 };
-  console.log('verificationData set:', this.verificationData); //
+ // console.log('verificationData set:', this.verificationData); //
     this.pendingLoginResponse = response; 
     this.showLoginModal=false;
     this.showVerificationModal = true;
