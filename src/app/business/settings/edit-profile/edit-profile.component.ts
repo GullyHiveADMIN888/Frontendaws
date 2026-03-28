@@ -66,6 +66,11 @@ export class EditProfileComponent implements OnInit {
         }
       });
     });
+      this.editForm.get('phone')?.valueChanges.subscribe(value => {
+    if (value !== this.originalPhone) {
+      this.otpVerified = false;
+    }
+  });
   }
 
 // loadProfile(sellerId: number) {
@@ -286,7 +291,61 @@ onCityChange(event: any) {
     });
   }
 }
+//otp verification
 
+originalPhone: string = '';
+otpSent: boolean = false;
+otpVerified: boolean = false;
+otp: string = '';
+showOtpModal: boolean = false;
+otpPhone: string = '';
+// showOtpModal: boolean = false;
+// otpPhone: string = '';
+otpSending: boolean = false;
+otpVerifying: boolean = false;
+async sendOtp() {
+  const phone = this.editForm.get('phone')?.value;
+
+  if (!/^\d{10}$/.test(phone)) {
+    alert('Enter valid phone number');
+    return;
+  }
+
+  try {
+    debugger;
+        this.otpPhone = phone;      // ✅ SET FIRST
+    this.showOtpModal = true;   // ✅ THEN OPEN MODAL
+    await this.authService.sendOtp(phone);
+
+    this.otpPhone = phone;      // ✅ SET FIRST
+    this.showOtpModal = true;   // ✅ THEN OPEN MODAL
+
+  } catch (err) {
+    alert('Failed to send OTP');
+  }
+}
+
+verifyOtp() {
+  this.otpVerified = true;
+  this.originalPhone = this.editForm.get('phone')?.value;
+
+  this.showOtpModal = false;
+
+  alert('Mobile number verified successfully');
+}
+onSubmits() {
+  const phoneChanged = this.editForm.get('phone')?.value !== this.originalPhone;
+
+  if (phoneChanged && !this.otpVerified) {
+    alert('Please verify your mobile number first');
+    return;
+  }
+
+  // proceed API call
+}
+closeOtpModal() {
+  this.showOtpModal = false;
+}
 
 }
 
