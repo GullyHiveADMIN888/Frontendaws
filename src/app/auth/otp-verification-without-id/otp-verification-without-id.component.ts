@@ -28,7 +28,7 @@ import { CommonModule } from '@angular/common';
     <div class="otp-verification-container">
       <div class="otp-header">
         <h3>Verify Your Mobile Number</h3>
-        <p class="text-muted">Enter the 6-digit OTP sent to <strong>{{ mobile }}</strong></p>
+        <p class="text-muted">Enter the 6-digit OTP sent to <strong>+91 {{ mobile }}</strong></p>
       </div>
 
       <!-- Manual OTP Inputs - No *ngFor -->
