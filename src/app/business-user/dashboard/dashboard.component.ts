@@ -486,7 +486,7 @@ export class DashboardComponent implements OnInit {
 
 
   goToWorkerManagement() {
-    this.router.navigate(['business-user/worker-management']);
+    this.router.navigate(['provider_User_Ops_Manager/worker-management']);
   }
 }
 
