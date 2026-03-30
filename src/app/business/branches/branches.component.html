@@ -127,6 +127,10 @@
 
   </div>
 
+
+
+</div>
+
   <!-- Branch Modal -->
   <!-- <div *ngIf="isModalOpen" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4 py-6">
     <div class="bg-white w-full max-w-lg md:max-w-2xl lg:max-w-3xl rounded-xl shadow-xl p-5 sm:p-6
@@ -149,39 +153,15 @@
             </p>
           </div>
         </div>
-      </div> -->
-  <div *ngIf="isModalOpen"
-     class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
 
-  <div class="
-      bg-white w-full h-[100dvh] 
-      sm:h-auto sm:max-h-[90vh] 
-      sm:max-w-2xl lg:max-w-3xl
-      rounded-none sm:rounded-xl
-      flex flex-col
-      ">
 
-    <!-- ✅ HEADER (Sticky) -->
-    <div class="p-4 sm:p-6 border-b sticky top-0 bg-white z-10">
-      <div class="flex items-center gap-3">
-        <div class="h-10 w-10 flex items-center justify-center bg-orange-100 rounded-lg">
-          <i class="ri-map-pin-line text-orange-600"></i>
-        </div>
-        <div>
-          <h3 class="text-lg sm:text-xl font-semibold">
-            {{ editingBranch ? 'Edit Branch' : 'Add Branch' }}
-          </h3>
-          <p class="text-sm text-gray-500">
-            {{ editingBranch ? 'Update details' : 'Add new branch' }}
-          </p>
-        </div>
+
       </div>
-    </div>
+    
 
-   <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
       <form #branchFormRef="ngForm" (ngSubmit)="onSubmit(branchFormRef)" class="space-y-4">
 
-      
+        
         <div>
           <label class="text-sm font-medium text-gray-600 mb-1 block">Branch Name *</label>
           <input type="text" [(ngModel)]="branchForm.name" name="name" required #nameRef="ngModel"
@@ -192,7 +172,7 @@
           </div>
         </div>
 
-       
+     
         <div class="flex flex-col md:flex-row md:space-x-4 gap-4">
 
           <div class="flex-1">
@@ -288,7 +268,7 @@
 
         </div>
 
-     
+       
         <div>
           <label class="text-sm font-medium text-gray-600 mb-1 block">Line 1 *</label>
           <input type="text" [(ngModel)]="branchForm.line1" name="line1" required #line1Ref="ngModel"
@@ -298,13 +278,13 @@
           </div>
         </div>
 
-    
+      
         <div>
           <label class="text-sm font-medium text-gray-600 mb-1 block">Line 2</label>
           <input type="text" [(ngModel)]="branchForm.line2" name="line2" class="w-full border p-2 rounded" />
         </div>
 
-    
+       
         <div class="flex flex-col md:flex-row md:space-x-4 gap-4">
 
           <div class="flex-1">
@@ -319,7 +299,7 @@
             </div>
           </div>
 
-      
+         
           <div class="flex-1">
             <label class="text-sm font-medium text-gray-600 mb-1 block">Is Active</label>
             <select [(ngModel)]="branchForm.isActive" name="isActive" class="w-full border p-2 rounded">
@@ -328,34 +308,38 @@
             </select>
           </div>
         </div>
-  
-        <!-- <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6"> -->
-             <div class="p-4 sm:p-6 border-t bg-white sticky bottom-0">
-
-      <!-- <div class="flex flex-col sm:flex-row justify-end gap-3">
+     
+        <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6">
           <button type="button" (click)="closeModal()"
             class="w-full sm:w-auto px-4 py-2 border rounded-lg hover:bg-gray-100 transition">
             Cancel
           </button>
-        
+       
           <button type="submit"
             class="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition">
             {{ editingBranch ? 'Update' : 'Add' }}
           </button>
-        </div> -->
-      <div *ngIf="isModalOpen"
-     class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+        </div>
+
+      </form>
+    </div>
+  </div> -->
+
+  <!-- Branch Modal -->
+<div *ngIf="isModalOpen"
+     class="fixed inset-0 z-50 bg-black/50">
 
   <div class="
       bg-white w-full h-[100dvh] 
       sm:h-auto sm:max-h-[90vh] 
       sm:max-w-2xl lg:max-w-3xl
+      sm:mx-auto sm:mt-10
       rounded-none sm:rounded-xl
       flex flex-col
-      ">
+  ">
 
-    <!-- ✅ HEADER (Sticky) -->
-    <div class="p-4 sm:p-6 border-b sticky top-0 bg-white z-10">
+    <!-- ✅ HEADER -->
+    <div class="p-4 sm:p-6 border-b bg-white sticky top-0 z-10">
       <div class="flex items-center gap-3">
         <div class="h-10 w-10 flex items-center justify-center bg-orange-100 rounded-lg">
           <i class="ri-map-pin-line text-orange-600"></i>
@@ -365,14 +349,14 @@
             {{ editingBranch ? 'Edit Branch' : 'Add Branch' }}
           </h3>
           <p class="text-sm text-gray-500">
-            {{ editingBranch ? 'Update details' : 'Add new branch' }}
+            {{ editingBranch ? 'Update branch details' : 'Add new branch' }}
           </p>
         </div>
       </div>
     </div>
 
-    <!-- ✅ BODY (Scrollable) -->
-    <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+    <!-- ✅ BODY (Scrollable only here) -->
+    <div class="flex-1 overflow-y-auto p-4 sm:p-6">
 
       <form #branchFormRef="ngForm"
             (ngSubmit)="onSubmit(branchFormRef)"
@@ -387,7 +371,7 @@
                  [(ngModel)]="branchForm.name"
                  name="name"
                  required
-                 class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-orange-500"/>
+                 class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-orange-500"/>
         </div>
 
         <!-- State / City -->
@@ -411,6 +395,41 @@
             </option>
           </select>
 
+        </div>
+
+        <!-- Area -->
+        <div class="relative">
+          <label class="text-sm font-medium text-gray-600 mb-1 block">
+            Area *
+          </label>
+
+          <div class="border rounded-lg p-2 flex flex-wrap items-center cursor-pointer"
+               (click)="dropdownOpen = !dropdownOpen">
+
+            <span *ngFor="let area of selectedAreas()"
+                  class="bg-orange-100 px-2 py-1 rounded text-sm mr-1 mb-1">
+              {{ area.name }}
+            </span>
+
+            <input type="text"
+                   [(ngModel)]="areaSearch"
+                   name="areaSearch"
+                   placeholder="Search areas..."
+                   class="flex-1 outline-none min-w-[100px]"/>
+          </div>
+
+          <div *ngIf="dropdownOpen"
+               class="absolute w-full bg-white border mt-1 rounded shadow max-h-60 overflow-y-auto z-20">
+
+            <label *ngFor="let area of filteredAreas()"
+                   class="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer">
+              <input type="checkbox"
+                     class="mr-2"
+                     (change)="toggleAreaSelection(area)"/>
+              {{ area.name }}
+            </label>
+
+          </div>
         </div>
 
         <!-- Address -->
@@ -437,20 +456,20 @@
 
     </div>
 
-    <!-- ✅ FOOTER (Sticky Buttons) -->
-    <div class="p-4 sm:p-6 border-t bg-white sticky bottom-0">
+    <!-- ✅ FOOTER (Always visible) -->
+    <div class="p-4 sm:p-6 border-t bg-white">
 
-      <div class="flex flex-col sm:flex-row justify-end gap-3">
+      <div class="flex flex-col sm:flex-row gap-3 justify-end">
 
-        <button type="button"
-                (click)="closeModal()"
-                class="w-full sm:w-auto px-4 py-2 border rounded-lg hover:bg-gray-100">
+        <button
+          (click)="closeModal()"
+          class="w-full sm:w-auto px-4 py-2 border rounded-lg hover:bg-gray-100">
           Cancel
         </button>
 
-        <button type="submit"
-                (click)="onSubmit(branchFormRef)"
-                class="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
+        <button
+          (click)="onSubmit(branchFormRef)"
+          class="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
           {{ editingBranch ? 'Update' : 'Add' }}
         </button>
 
@@ -459,11 +478,4 @@
     </div>
 
   </div>
-</div>
-      </div>
-      </form>
-      </div>
-    </div>
-  </div>
-
 </div>
