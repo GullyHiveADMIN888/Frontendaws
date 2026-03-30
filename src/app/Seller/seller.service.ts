@@ -46,6 +46,15 @@ export interface Lead {
   offerStatus?: string;
   areaId?: number;
    leadId: number;
+   hasQuote?: boolean;
+    quoteDetails?: {
+  providerName: string;
+  priceMin: number;
+  priceMax: number;
+  message: string;
+  status: string;
+  submittedAt: string;
+}[];
 
 }
 
@@ -263,16 +272,27 @@ export class SellerService {
   }
 
 
-  getLeads(): Observable<Lead[]> {
-    return this.http
-      .get<{ success: boolean; data: Lead[] }>(
-        `${this.apiUrl}/leads`, // no userId needed
-        { headers: this.getHeaders() } // token carries userId
-      )
-      .pipe(map(res => res.data));
-  }
+  // getLeads(): Observable<Lead[]> {
+  //   return this.http
+  //     .get<{ success: boolean; data: Lead[] }>(
+  //       `${this.apiUrl}/leads`, // no userId needed
+  //       { headers: this.getHeaders() } // token carries userId
+  //     )
+  //     .pipe(map(res => res.data));
+  // }
 
 // 🔹 Buy Lead
+  // 🔹 Buy Lead
+  getLeads(page: number = 1, pageSize: number = 25, status?: string): Observable<any> {
+  let url = `${this.apiUrl}/leads?page=${page}&pageSize=${pageSize}`;
+  
+  // ✅ Add status parameter if provided and not 'all'
+  if (status && status !== 'all') {
+    url += `&status=${status}`;
+  }
+  
+  return this.http.get<any>(url, { headers: this.getHeaders() });
+}
 buyLead(leadId: number): Observable<any> {
   const providerId = Number(localStorage.getItem('userId'));
 
@@ -533,4 +553,8 @@ getInvitations(page: number = 1, pageSize: number = 25) {
     `${environment.apiBaseUrl}/companyDetails/companyInvitations?pageNumber=${page}&pageSize=${pageSize}`
   );
 }
+  getQuoteAssignments(leadId: number) {
+    return this.http.get(`${this.apiUrl}/${leadId}/quotes`);
+  }
+ 
 }
