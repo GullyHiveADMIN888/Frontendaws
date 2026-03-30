@@ -52,8 +52,6 @@ export interface OtpEmailWithoutUserIdResponse {
 
 @Injectable({ providedIn: 'root' })
 
-
-
 export class AuthService implements CanActivate {
   private apiUrl = `${environment.apiBaseUrl}/auth`;
 
@@ -164,20 +162,40 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
     this.router.navigate(['/login']);
   }
 
-  getRole() {
-    return localStorage.getItem('role');
+  // getRole() {
+  //   return localStorage.getItem('role');
+  // }
+    getRole(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.role;
+    } catch {
+      return null;
+    }
   }
   // getter for userId
   getUserId(): string | null {
     return localStorage.getItem('userId');
   }
 
-  getToken(): string | null {
+  // getToken(): string | null {
+  //   return localStorage.getItem('token');
+  // }
+ getToken(): string | null {
     return localStorage.getItem('token');
   }
+  // isLoggedIn() {
+  //   return !!localStorage.getItem('token');
+  // }
+    isLoggedIn(): boolean {
+    const token = this.getToken();
+    if (!token) return false;
 
-  isLoggedIn() {
-    return !!localStorage.getItem('token');
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.exp * 1000 > Date.now();
   }
   // Service Categories APIs
   getParentCategories(): Observable<any[]> {
