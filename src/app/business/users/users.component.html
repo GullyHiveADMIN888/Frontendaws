@@ -85,45 +85,17 @@
 
 
 <!-- Popup Modal -->
-<div *ngIf="showModal"
+<!-- <div *ngIf="showModal"
 class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center mt-16">
 
 <div class="bg-white rounded-xl w-[700px] p-6 shadow-xl overflow-y-auto max-h-[90vh]">
 
 <h3 class="text-xl font-bold mb-4">Fetch Provider</h3>
 
-<!-- SEARCH ID -->
-<!-- <div class="flex gap-2 mb-4 flex-col sm:flex-row">
 
-  <div class="w-full">
-    <input
-      type="email"
-      [(ngModel)]="searchEmail"
-      #emailModel="ngModel"
-      required
-      email
-      placeholder="Enter Provider Email"
-      class="border p-2 rounded w-full"
-    />
 
-   
-    <p *ngIf="emailModel.invalid && emailModel.touched" class="text-red-500 text-sm mt-1">
-      Please enter a valid email address
-    </p>
-  </div>
-
-  <button
-    (click)="fetchProvider()"
-    [disabled]="emailModel.invalid"
-    class="bg-blue-600 text-white px-4 py-2 rounded disabled:bg-gray-400"
-  >
-    Fetch
-  </button>
-
-</div> -->
 <div class="flex gap-2 mb-4 flex-col sm:flex-row">
 
-  <!-- EMAIL -->
   <input
     type="email"
     [(ngModel)]="searchEmail"
@@ -131,7 +103,7 @@ class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center mt-
     class="border p-2 rounded w-full"
   />
 
-  <!-- PHONE -->
+
   <input
     type="text"
     [(ngModel)]="searchPhone"
@@ -147,15 +119,8 @@ class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center mt-
   </button>
 
 </div>
-<!-- TWO COLUMN GRID -->
-<!-- <div class="grid grid-cols-2 gap-4"> -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-<!-- <input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.providerId" readonly placeholder="Provider Id"/>
-  -->
- <!-- <input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.sellerId" readonly placeholder="User Id"/>  -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
 
 <input class="border p-2 bg-gray-100"
@@ -163,17 +128,7 @@ class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center mt-
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.legalName" readonly placeholder="Legal Name"/>
 
-<!-- <input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.email" readonly placeholder="Email"/>
 
-<input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.phone" readonly placeholder="Phone"/> -->
-
-<!-- <input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.providerType" readonly placeholder="Provider Type"/> -->
-
-<!-- <input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.status" readonly placeholder="Status"/> -->
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.state" readonly placeholder="Base State"/>
 
@@ -187,17 +142,12 @@ class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center mt-
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.addressLine2" readonly placeholder="Address Line 2"/>
 
-<!-- <input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.locality" readonly placeholder="Locality"/> -->
+
 
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.landmark" readonly placeholder="Landmark"/>
 
-<!-- <input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.addressCity" readonly placeholder="City"/>
 
-<input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.addressState" readonly placeholder="State"/> -->
 
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.pincode" readonly placeholder="Pincode"/>
@@ -205,18 +155,10 @@ class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center mt-
 <input class="border p-2 bg-gray-100"
 [(ngModel)]="profile.areaName" readonly placeholder="Area"/>
 
-<!-- <input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.totalJobsCompleted" readonly placeholder="Jobs Completed"/>
-
-<input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.totalDisputes" readonly placeholder="Total Disputes"/>
-
-<input class="border p-2 bg-gray-100"
-[(ngModel)]="profile.disputeRate" readonly placeholder="Dispute Rate"/> -->
 
 </div>
 
-<!-- IMAGE -->
+
 <div class="mt-4">
 <img *ngIf="profile.profilePictureUrl"
 [src]="profile.profilePictureUrl"
@@ -231,11 +173,7 @@ class="px-4 py-2 border rounded hover:bg-gray-100">
 Close
 </button>
 
-<!-- <button
-(click)="saveUser()"
-class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
-Save
-</button> -->
+
 <button
   (click)="saveUser()"
   [disabled]="!isFetched"
@@ -245,4 +183,84 @@ Save
 </div>
 
 </div>
+</div> -->
+
+<!-- Popup Modal -->
+<div *ngIf="showModal"
+     class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+
+  <div class="bg-white rounded-xl w-full max-w-2xl 
+              max-h-[90vh] overflow-y-auto 
+              p-4 sm:p-6 shadow-xl">
+
+    <h3 class="text-lg sm:text-xl font-bold mb-4">Fetch Provider</h3>
+
+    <!-- SEARCH -->
+    <div class="flex flex-col sm:flex-row gap-2 mb-4">
+      <input
+        type="email"
+        [(ngModel)]="searchEmail"
+        placeholder="Enter Provider Email"
+        class="border p-2 rounded w-full"
+      />
+
+      <input
+        type="text"
+        [(ngModel)]="searchPhone"
+        placeholder="Enter Phone Number"
+        class="border p-2 rounded w-full"
+      />
+
+      <button
+        (click)="fetchProvider()"
+        class="bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto">
+        Fetch
+      </button>
+    </div>
+
+    <!-- GRID -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+
+      <input class="border p-2 bg-gray-100" [(ngModel)]="profile.displayName" readonly placeholder="Display Name"/>
+      <input class="border p-2 bg-gray-100" [(ngModel)]="profile.legalName" readonly placeholder="Legal Name"/>
+
+      <input class="border p-2 bg-gray-100" [(ngModel)]="profile.state" readonly placeholder="Base State"/>
+      <input class="border p-2 bg-gray-100" [(ngModel)]="profile.baseCity" readonly placeholder="Base City"/>
+
+      <input class="border p-2 bg-gray-100" [(ngModel)]="profile.addressLine1" readonly placeholder="Address Line 1"/>
+      <input class="border p-2 bg-gray-100" [(ngModel)]="profile.addressLine2" readonly placeholder="Address Line 2"/>
+
+      <input class="border p-2 bg-gray-100" [(ngModel)]="profile.landmark" readonly placeholder="Landmark"/>
+      <input class="border p-2 bg-gray-100" [(ngModel)]="profile.pincode" readonly placeholder="Pincode"/>
+
+      <input class="border p-2 bg-gray-100 col-span-1 sm:col-span-2"
+             [(ngModel)]="profile.areaName" readonly placeholder="Area"/>
+    </div>
+
+    <!-- IMAGE -->
+    <div class="mt-4 flex justify-center sm:justify-start">
+      <img *ngIf="profile.profilePictureUrl"
+           [src]="profile.profilePictureUrl"
+           class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover"/>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6">
+
+      <button
+        (click)="closeModal()"
+        class="w-full sm:w-auto px-4 py-2 border rounded hover:bg-gray-100">
+        Close
+      </button>
+
+      <button
+        (click)="saveUser()"
+        [disabled]="!isFetched"
+        class="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 disabled:bg-gray-400">
+        Save
+      </button>
+
+    </div>
+
+  </div>
 </div>
