@@ -20,57 +20,66 @@
   </div>
 
 
-  <!-- Users Table -->
-  <div class="bg-white rounded-lg shadow border overflow-hidden">
+<div class="bg-white rounded-lg shadow border overflow-hidden">
 
-    <table class="w-full text-left">
+  <div class="overflow-x-auto">
+    <table class="min-w-[700px] w-full text-left text-sm sm:text-base">
 
       <thead class="bg-gray-100 text-gray-700">
         <tr>
-          <th class="p-4">Name</th>
-          <th class="p-4">Email</th>
-          <th class="p-4">Phone</th>
-          <th class="p-4">Role</th>
-           <th class="p-4">Status</th>
-          <th class="p-4 text-center">Action</th>
+          <th class="p-3 sm:p-4">Name</th>
+          <th class="p-3 sm:p-4">Email</th>
+          <th class="p-3 sm:p-4 hidden sm:table-cell">Phone</th>
+          <th class="p-3 sm:p-4">Role</th>
+          <th class="p-3 sm:p-4 hidden md:table-cell">Status</th>
+          <th class="p-3 sm:p-4 text-center">Action</th>
         </tr>
       </thead>
 
       <tbody>
+        <tr *ngFor="let user of users"
+            class="border-t hover:bg-gray-50">
 
-        <tr *ngFor="let user of users" class="border-t hover:bg-gray-50">
+          <td class="p-3 sm:p-4 font-medium">
+            {{user.name}}
+          </td>
 
-          <td class="p-4 font-medium">{{user.name}}</td>
+          <td class="p-3 sm:p-4 text-gray-600">
+            {{user.email}}
+          </td>
 
-          <td class="p-4 text-gray-600">{{user.email}}</td>
+          <!-- Hidden on small screens -->
+          <td class="p-3 sm:p-4 text-gray-600 hidden sm:table-cell">
+            {{user.phone}}
+          </td>
 
-          <td class="p-4 text-gray-600">{{user.phone}}</td>
-
-          <td class="p-4">
-            <span class="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full text-sm">
+          <td class="p-3 sm:p-4">
+            <span class="bg-indigo-100 text-indigo-600 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm">
               {{user.role}}
             </span>
           </td>
 
-          <td class="p-4 text-gray-600">{{user.status}}</td>
-          <td class="p-4 text-center">
+          <!-- Hidden on small screens -->
+          <td class="p-3 sm:p-4 text-gray-600 hidden md:table-cell">
+            {{user.status}}
+          </td>
 
+          <td class="p-3 sm:p-4 text-center">
             <button
               (click)="deleteUser(user.id)"
               class="text-red-500 hover:text-red-700"
             >
               <i class="ri-delete-bin-line text-lg"></i>
             </button>
-
           </td>
 
         </tr>
-
       </tbody>
 
     </table>
-
   </div>
+
+</div>
 
 </div>
 

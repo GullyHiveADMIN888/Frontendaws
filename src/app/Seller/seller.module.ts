@@ -28,7 +28,6 @@ import { LedgerComponent } from './ledger/ledger.component';
     RecentLeadsComponent,
     PublicProfileComponent,
     SettingsComponent,
-    EditProfileComponent,
     LeadsComponent,
     ResponsesComponent,
     HelpComponent,

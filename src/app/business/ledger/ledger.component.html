@@ -1,52 +1,62 @@
 
-<div class="flex flex-wrap justify-end items-center mb-6 mt-3 mr-3 gap-3">
+<div class="flex flex-col sm:flex-row sm:flex-wrap sm:justify-end items-stretch sm:items-center mb-6 mt-3 mx-3 gap-3">
+
   <!-- Non-Cashable Balance -->
-  <div class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-xl shadow-md w-40">
+  <div class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-3 rounded-xl shadow-md w-full sm:w-40">
     <div class="text-[10px] uppercase opacity-80">Non-Cashable Balance</div>
-    <div class="text-xl font-bold mt-1 text-right">{{ nonCashableBalance | currency:currency }}</div>
+    <div class="text-lg sm:text-xl font-bold mt-1 text-right">
+      {{ nonCashableBalance | currency:currency }}
+    </div>
   </div>
 
   <!-- Cashable Balance -->
-  <div class="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 py-2 rounded-xl shadow-md w-40">
+  <div class="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 py-3 rounded-xl shadow-md w-full sm:w-40">
     <div class="text-[10px] uppercase opacity-80">Cashable Balance</div>
-    <div class="text-xl font-bold mt-1 text-right">{{ cashableBalance | currency:currency }}</div>
+    <div class="text-lg sm:text-xl font-bold mt-1 text-right">
+      {{ cashableBalance | currency:currency }}
+    </div>
   </div>
 
   <!-- Total Balance -->
-  <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-xl shadow-md w-40">
+  <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-3 rounded-xl shadow-md w-full sm:w-40">
     <div class="text-[10px] uppercase opacity-80">Total Balance</div>
-    <div class="text-xl font-bold mt-1 text-right">{{ totalBalance | currency:currency }}</div>
+    <div class="text-lg sm:text-xl font-bold mt-1 text-right">
+      {{ totalBalance | currency:currency }}
+    </div>
   </div>
+
 </div>
 
 
 <!-- Transaction Table -->
-<table class="w-full text-left border-t">
-  <thead>
-    <tr>
-      <th class="py-2 px-3 border-b">Txn ID</th>
-      <th class="py-2 px-3 border-b">Wallet Type</th>
-      <th class="py-2 px-3 border-b">Direction</th>
-      <th class="py-2 px-3 border-b">Amount</th>
-      <th class="py-2 px-3 border-b">Balance</th>
-      <th class="py-2 px-3 border-b">Date</th>
-      <th class="py-2 px-3 border-b">Reference</th>
-    </tr>
-  </thead>
-  <tbody>
-    @for (txn of transactions; track txn) {
+<div class="overflow-x-auto">
+  <table class="min-w-[700px] w-full text-left border-t text-sm sm:text-base">
+    <thead>
       <tr>
-        <td class="py-2 px-3 border-b">{{ txn.txn_id }}</td>
-        <td class="py-2 px-3 border-b">{{ txn.wallet_amount_type }}</td>
-        <td class="py-2 px-3 border-b">{{ txn.direction }}</td>
-        <td class="py-2 px-3 border-b">{{ txn.amount | currency:txn.txn_currency }}</td>
-        <td class="py-2 px-3 border-b">{{ txn.balance_after | currency:txn.txn_currency }}</td>
-        <td class="py-2 px-3 border-b">{{ txn.created_at | date:'short' }}</td>
-        <td class="py-2 px-3 border-b">{{ txn.reference_type }}</td>
+        <th class="py-2 px-3 border-b">Txn ID</th>
+        <th class="py-2 px-3 border-b">Wallet Type</th>
+        <th class="py-2 px-3 border-b">Direction</th>
+        <th class="py-2 px-3 border-b">Amount</th>
+        <th class="py-2 px-3 border-b">Balance</th>
+        <th class="py-2 px-3 border-b">Date</th>
+        <th class="py-2 px-3 border-b">Reference</th>
       </tr>
-    }
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      @for (txn of transactions; track txn) {
+        <tr class="hover:bg-gray-50">
+          <td class="py-2 px-3 border-b">{{ txn.txn_id }}</td>
+          <td class="py-2 px-3 border-b">{{ txn.wallet_amount_type }}</td>
+          <td class="py-2 px-3 border-b">{{ txn.direction }}</td>
+          <td class="py-2 px-3 border-b">{{ txn.amount | currency:txn.txn_currency }}</td>
+          <td class="py-2 px-3 border-b">{{ txn.balance_after | currency:txn.txn_currency }}</td>
+          <td class="py-2 px-3 border-b">{{ txn.created_at | date:'short' }}</td>
+          <td class="py-2 px-3 border-b">{{ txn.reference_type }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
 
 
 
