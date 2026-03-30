@@ -181,18 +181,29 @@
 
 
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit , Output, EventEmitter} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { SellerService, PublicProfile } from '../../seller.service';
-
+import { AuthService} from '../../../auth/auth.service';
+import { OTPVerificationWithoutIdComponent } from '../../../auth/otp-verification-without-id/otp-verification-without-id.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 @Component({
     selector: 'app-edit-profile',
     templateUrl: './edit-profile.component.html',
+    standalone: true,
     styleUrls: ['./edit-profile.component.css'],
-    standalone: false
+
+  imports: [CommonModule, ReactiveFormsModule, OTPVerificationWithoutIdComponent]
+
+
+   
 })
 export class EditProfileComponent implements OnInit {
+  @Output() onVerified = new EventEmitter<void>();
+  @Output() onBack = new EventEmitter<void>();
+  //@Output() onVerified = new EventEmitter<void>();
   editForm: FormGroup;
   sellerId!: number;
   profile!: PublicProfile;
@@ -203,11 +214,14 @@ export class EditProfileComponent implements OnInit {
   errors: any = {};
 
   constructor(
+     private authService: AuthService,
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
     private sellerService: SellerService
-  ) {
+  ) 
+  
+  {
     this.editForm = this.fb.group({
       firstName: [''],
       lastName: [''],
@@ -223,6 +237,7 @@ export class EditProfileComponent implements OnInit {
       pincode: [''],
       website: [''],
       linkedin: [''],
+        otp: ['']
     //  areaName: [''],
      // areaId: ['']
     });
@@ -238,6 +253,12 @@ export class EditProfileComponent implements OnInit {
           this.loadProfile(this.sellerId);
         }
       });
+
+       this.editForm.get('phone')?.valueChanges.subscribe(value => {
+    if (value !== this.originalPhone) {
+      this.otpVerified = false;
+    }
+  });
     });
   }
 
@@ -267,7 +288,7 @@ export class EditProfileComponent implements OnInit {
 loadProfile(sellerId: number) {
   this.sellerService.getPublicProfile(sellerId).subscribe(data => {
     this.profile = data;
-
+    this.originalPhone = data.phone;
     const names = data.displayName?.split(' ') || [];
 
     this.editForm.patchValue({
@@ -456,6 +477,61 @@ onCityChange(event: any) {
   }
 }
 
+//otp verification
+
+originalPhone: string = '';
+otpSent: boolean = false;
+otpVerified: boolean = false;
+otp: string = '';
+showOtpModal: boolean = false;
+otpPhone: string = '';
+// showOtpModal: boolean = false;
+// otpPhone: string = '';
+otpSending: boolean = false;
+otpVerifying: boolean = false;
+async sendOtp() {
+  const phone = this.editForm.get('phone')?.value;
+
+  if (!/^\d{10}$/.test(phone)) {
+    alert('Enter valid phone number');
+    return;
+  }
+
+  try {
+    debugger;
+        this.otpPhone = phone;      // ✅ SET FIRST
+    this.showOtpModal = true;   // ✅ THEN OPEN MODAL
+    await this.authService.sendOtp(phone);
+
+    this.otpPhone = phone;      // ✅ SET FIRST
+    this.showOtpModal = true;   // ✅ THEN OPEN MODAL
+
+  } catch (err) {
+    alert('Failed to send OTP');
+  }
+}
+
+verifyOtp() {
+  this.otpVerified = true;
+  this.originalPhone = this.editForm.get('phone')?.value;
+
+  this.showOtpModal = false;
+
+  alert('Mobile number verified successfully');
+}
+onSubmits() {
+  const phoneChanged = this.editForm.get('phone')?.value !== this.originalPhone;
+
+  if (phoneChanged && !this.otpVerified) {
+    alert('Please verify your mobile number first');
+    return;
+  }
+
+  // proceed API call
+}
+closeOtpModal() {
+  this.showOtpModal = false;
+}
 
 }
 

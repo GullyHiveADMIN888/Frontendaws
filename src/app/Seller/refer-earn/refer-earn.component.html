@@ -1,12 +1,12 @@
-<div class="max-w-7xl mx-auto px-4 py-8">
+<!-- <div class="max-w-7xl mx-auto px-4 py-8">
 
-  <!-- Header -->
+
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900 mb-2">Refer & Earn</h1>
     <p class="text-gray-600">Invite other providers and earn rewards</p>
   </div>
 
-  <!-- Earnings Summary -->
+ 
   <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-8 mb-8 text-white">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div>
@@ -24,7 +24,7 @@
     </div>
   </div>
 
-  <!-- Referral Link -->
+  
   <div class="bg-white border rounded-lg p-8 mb-8">
     <h2 class="text-2xl font-bold mb-4">Your Referral Link</h2>
 
@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <!-- Referral History -->
+  
     <div class="bg-white border rounded-lg">
       <div class="p-6 border-b">
         <h2 class="text-2xl font-bold">Your Referrals</h2>
@@ -80,4 +80,113 @@
       }
     </div>
 
+  </div> -->
+<div class="max-w-7xl mx-auto px-4 py-6 sm:py-8">
+
+  <!-- Header -->
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Refer & Earn</h1>
+    <p class="text-gray-600 text-sm sm:text-base">
+      Invite other providers and earn rewards
+    </p>
   </div>
+
+  <!-- Stats -->
+  <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-5 sm:p-8 mb-6 sm:mb-8 text-white">
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 text-center sm:text-left">
+
+      <div>
+        <p class="text-orange-100 text-sm">Total Earnings</p>
+        <p class="text-2xl sm:text-4xl font-bold">${{ totalEarnings }}</p>
+      </div>
+
+      <div>
+        <p class="text-orange-100 text-sm">Active Referrals</p>
+        <p class="text-2xl sm:text-4xl font-bold">{{ activeReferrals }}</p>
+      </div>
+
+      <div>
+        <p class="text-orange-100 text-sm">Pending Referrals</p>
+        <p class="text-2xl sm:text-4xl font-bold">{{ pendingReferrals }}</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Referral Link -->
+  <div class="bg-white border rounded-lg p-5 sm:p-8 mb-6 sm:mb-8">
+
+    <h2 class="text-xl sm:text-2xl font-bold mb-4">Your Referral Link</h2>
+
+    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+
+      <input
+        [value]="referralLink"
+        readonly
+        class="w-full flex-1 px-4 py-3 border rounded-lg bg-gray-50 text-sm sm:text-base"
+      />
+
+      <button
+        (click)="copyLink()"
+        class="w-full sm:w-auto px-5 sm:px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition">
+        @if (copied) {
+          <i class="ri-check-line mr-2"></i>
+        }
+        {{ copied ? 'Copied!' : 'Copy Link' }}
+      </button>
+
+    </div>
+  </div>
+
+  <!-- Referrals List -->
+  <div class="bg-white border rounded-lg">
+
+    <div class="p-4 sm:p-6 border-b">
+      <h2 class="text-xl sm:text-2xl font-bold">Your Referrals</h2>
+    </div>
+
+    @for (r of referrals; track r) {
+
+      <div class="p-4 sm:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 hover:bg-gray-50">
+
+        <!-- Left -->
+        <div class="flex items-center gap-4">
+
+          <div class="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 text-white rounded-full flex items-center justify-center font-semibold">
+            {{ r.avatar }}
+          </div>
+
+          <div>
+            <p class="font-semibold text-sm sm:text-base">{{ r.name }}</p>
+            <p class="text-xs sm:text-sm text-gray-500">
+              Joined {{ r.joinedDate | date:'dd MMM yyyy, hh:mm a' }}
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Right -->
+        <div class="flex items-center justify-between sm:justify-end gap-4 sm:gap-6 w-full sm:w-auto">
+
+          <div class="text-left sm:text-right">
+            <p class="text-xs sm:text-sm text-gray-500">Earnings</p>
+            <p class="font-bold text-sm sm:text-base">{{ r.earnings }}</p>
+          </div>
+
+          <span
+            class="px-2 sm:px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap"
+            [ngClass]="r.status === 'approved'
+              ? 'bg-green-100 text-green-700'
+              : 'bg-yellow-100 text-yellow-700'">
+            {{ r.status | titlecase }}
+          </span>
+
+        </div>
+
+      </div>
+    }
+
+  </div>
+
+</div>
