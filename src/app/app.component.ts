@@ -66,22 +66,18 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
 
-    const isWebView = this.authService.isWebView();
+    const isMobile = this.authService.isWebView();
     const token = localStorage.getItem('token');
 
     const isLoggedIn = !!token && this.authService.isLoggedIn();
 
-    // ✅ FIX: Route based on login state
-    if (isLoggedIn) {
-      this.router.navigate(['/dashboard'], { replaceUrl: true });
-    } else {
-      this.router.navigate(['/auth/login'], { replaceUrl: true });
-    }
+    // ❌ DO NOT FORCE NAVIGATION HERE ANYMORE
+    // Let ROUTES + GUARDS handle everything
 
-    this.setupBackButtonHandler(isWebView);
+    this.setupBackButton(isMobile);
   }
 
-  private setupBackButtonHandler(isWebView: boolean) {
+  private setupBackButton(isMobile: boolean) {
 
     history.pushState(null, '', location.href);
 
@@ -89,20 +85,11 @@ export class AppComponent implements OnInit {
 
       history.pushState(null, '', location.href);
 
-      const currentUrl = this.router.url;
+      const token = localStorage.getItem('token');
 
-      if (!isWebView) return;
+      if (!isMobile) return;
 
-      // 🔥 LOGIN PAGE → EXIT APP
-      if (currentUrl === '/auth/login') {
-        console.log('Exit app');
-        return;
-      }
-
-      // 🔥 DASHBOARD or other pages → go to login OR exit logic
-      if (currentUrl === '/dashboard') {
-        this.router.navigate(['/dashboard'], { replaceUrl: true });
-      } else {
+      if (!token) {
         this.router.navigate(['/auth/login'], { replaceUrl: true });
       }
     });
