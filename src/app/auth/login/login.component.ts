@@ -185,42 +185,79 @@ passwordError = '';
 //   this.loadCaptcha();
 // }
 
+
+
+
+  private backHandler = this.handleBackButton.bind(this);
+
+
+
+
+  private handleBackButton(): void {
+
+    // re-lock history so it doesn't go back anywhere
+    history.pushState(null, '', location.href);
+
+    const isWebView = this.authService.isWebView();
+
+    if (isWebView) {
+      this.exitApp(); // 🔥 exit immediately
+    } else {
+      window.history.back();
+    }
+  }
+
+  private exitApp(): void {
+    console.log('Exiting APK...');
+
+    // Capacitor (if used)
+    // import { App } from '@capacitor/app';
+    // App.exitApp();
+
+    // fallback
+    (window as any).close();
+  }
+
+
+
+
 //...
     ngOnInit(): void {
        // Captcha login
    //  this.loadCaptcha();
-history.pushState(null, '', location.href);
-
-  window.onpopstate = () => {
-    history.pushState(null, '', location.href);
-
-    // 🔥 EXIT APP behavior (WebView/APK)
-    this.exitApp();
-  };
-   
        //...
     this.setupScrollListener();
     this.loadRememberedEmail();
    
-  }
-exitApp() {
-  const isWebView = this.authService.isWebView();
+       // ✅ Clear navigation history (VERY IMPORTANT)
+    history.pushState(null, '', location.href);
 
-  if (isWebView) {
-    // For Capacitor (best)
-    // App.exitApp();
-
-    // fallback (WebView)
-    console.log('Exit app triggered');
-  } else {
-    window.history.back();
+    // ✅ Attach ONE back handler only
+    window.addEventListener('popstate', this.backHandler);
   }
-}
+// exitApp() {
+//   const isWebView = this.authService.isWebView();
+
+//   if (isWebView) {
+//     // For Capacitor (best)
+//     // App.exitApp();
+
+//     // fallback (WebView)
+//     console.log('Exit app triggered');
+//   } else {
+//     window.history.back();
+//   }
+// }
   
+
+
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
       this.stopTimer();
+
+
+        window.removeEventListener('popstate', this.backHandler);
   }
   private loadRememberedEmail(): void {
     if (isPlatformBrowser(this.platformId)) {
