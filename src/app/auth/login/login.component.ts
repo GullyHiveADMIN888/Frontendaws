@@ -27,7 +27,7 @@ import {
 import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule , Router} from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { interval,Subscription } from 'rxjs';
 // import { environment } from '../../environments/environment';
@@ -148,11 +148,11 @@ passwordError = '';
   private subscription?: Subscription;
 
 
-  constructor(private fb: FormBuilder, private http: HttpClient, private authService: AuthService, private auth: Auth, @Inject(PLATFORM_ID) private platformId: any) {
+  constructor(private fb: FormBuilder, private http: HttpClient, private authService: AuthService, private auth: Auth, @Inject(PLATFORM_ID) private platformId: any,private router: Router) {
   this.loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
-    rememberMe: [false]
+    rememberMe: [false],
      // Captcha login
     // captcha: ['', Validators.required] 
      //...
@@ -193,19 +193,45 @@ passwordError = '';
 
 
 
-  private handleBackButton(): void {
+  // private handleBackButton(): void {
 
-    // re-lock history so it doesn't go back anywhere
-    history.pushState(null, '', location.href);
+  //   // re-lock history so it doesn't go back anywhere
+  //   history.pushState(null, '', location.href);
 
-    const isWebView = this.authService.isWebView();
+  //   const isWebView = this.authService.isWebView();
 
-    if (isWebView) {
-      this.exitApp(); // 🔥 exit immediately
+  //   if (isWebView) {
+  //     this.exitApp(); // 🔥 exit immediately
+  //   } else {
+  //     window.history.back();
+  //   }
+  // }
+
+private handleBackButton() {
+
+  // Push initial state
+  history.pushState(null, '', location.href);
+
+  window.addEventListener('popstate', () => {
+
+    const isLoggedIn = this.authService.isLoggedIn();
+
+    if (isLoggedIn) {
+      // 🔥 EXIT APP (APK)
+      (navigator as any).app?.exitApp?.();
+
+      // Fallback (if exitApp not available)
+      window.close();
     } else {
-      window.history.back();
+      // Not logged in → stay on login
+      this.router.navigate(['/auth/login'], { replaceUrl: true });
     }
-  }
+
+    // Prevent further back navigation
+    history.pushState(null, '', location.href);
+  });
+}
+
 
   private exitApp(): void {
     console.log('Exiting APK...');
