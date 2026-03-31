@@ -97,12 +97,16 @@ import { InvitationGeneratorComponent } from './Admin/invitation-generator/invit
 // ];
 export const routes: Routes = [
 
-  {
-    path: '',
-    component: LandingPageComponent,
-    title: 'GullyHive - Find Trusted Professional Services'
-  },
-
+  // {
+  //   path: '',
+  //   component: LandingPageComponent,
+  //   title: 'GullyHive - Find Trusted Professional Services'
+  // },
+{
+  path: '',
+  pathMatch: 'full',
+  canActivate: [authGuard]
+},
   // AUTH
   {
     path: 'auth',
