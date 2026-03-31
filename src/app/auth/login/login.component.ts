@@ -189,14 +189,33 @@ passwordError = '';
     ngOnInit(): void {
        // Captcha login
    //  this.loadCaptcha();
+history.pushState(null, '', location.href);
 
+  window.onpopstate = () => {
+    history.pushState(null, '', location.href);
+
+    // 🔥 EXIT APP behavior (WebView/APK)
+    this.exitApp();
+  };
    
        //...
     this.setupScrollListener();
     this.loadRememberedEmail();
    
   }
+exitApp() {
+  const isWebView = this.authService.isWebView();
 
+  if (isWebView) {
+    // For Capacitor (best)
+    // App.exitApp();
+
+    // fallback (WebView)
+    console.log('Exit app triggered');
+  } else {
+    window.history.back();
+  }
+}
   
 
   ngOnDestroy(): void {
