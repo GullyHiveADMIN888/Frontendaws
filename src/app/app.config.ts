@@ -55,7 +55,8 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 
 import { routes } from './app.routes';
 import { jwtInterceptor } from './auth/jwt.interceptor';
-import { environment } from '../environments/environment';
+// import { environment } from '../environments/environment';
+  import { environment } from '../environments/environment.prod';
 import { AuthService } from './auth/auth.service';
 
 
