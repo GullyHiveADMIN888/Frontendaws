@@ -47,21 +47,17 @@
 // }
 
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterOutlet  } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from './auth/auth.service';
-import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet], // ✅ THIS IS REQUIRED
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
-
-  appReady = false;
-  isLoggedIn = false;
 
   constructor(
     private authService: AuthService,
@@ -69,40 +65,45 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+
     const isWebView = this.authService.isWebView();
     const token = localStorage.getItem('token');
 
-    this.isLoggedIn = !!token && this.authService.isLoggedIn();
+    const isLoggedIn = !!token && this.authService.isLoggedIn();
 
-    // ✅ Prevent landing page history issue in APK
-    if (isWebView) {
-      this.router.navigate(['/auth/login'], { replaceUrl: true });
+    // ✅ FIX: Route based on login state
+    if (isLoggedIn) {
+      this.router.navigate(['/dashboard'], { replaceUrl: true });
     } else {
-      this.router.navigate(['/'], { replaceUrl: true });
+      this.router.navigate(['/auth/login'], { replaceUrl: true });
     }
 
-    // ✅ Handle Android back button behavior
     this.setupBackButtonHandler(isWebView);
-
-    this.appReady = true;
   }
 
   private setupBackButtonHandler(isWebView: boolean) {
+
     history.pushState(null, '', location.href);
 
     window.addEventListener('popstate', () => {
+
       history.pushState(null, '', location.href);
 
-      if (isWebView) {
-        // 🔥 In APK: stay on login or exit app behavior
-        const currentUrl = this.router.url;
+      const currentUrl = this.router.url;
 
-        if (currentUrl === '/auth/login') {
-          // optional: close app in real APK (Capacitor/Cordova needed)
-          console.log('Exit app trigger point');
-        } else {
-          this.router.navigate(['/auth/login'], { replaceUrl: true });
-        }
+      if (!isWebView) return;
+
+      // 🔥 LOGIN PAGE → EXIT APP
+      if (currentUrl === '/auth/login') {
+        console.log('Exit app');
+        return;
+      }
+
+      // 🔥 DASHBOARD or other pages → go to login OR exit logic
+      if (currentUrl === '/dashboard') {
+        this.router.navigate(['/dashboard'], { replaceUrl: true });
+      } else {
+        this.router.navigate(['/auth/login'], { replaceUrl: true });
       }
     });
   }
