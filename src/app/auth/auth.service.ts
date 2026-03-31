@@ -317,8 +317,13 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
     return this.http.post(`${this.apiUrl}/verify-email-otp`, payload);
   }
 isWebView(): boolean {
-  const ua = navigator.userAgent || '';
-  return ua.includes('wv') || ua.includes('WebView');
+  const userAgent = navigator.userAgent || '';
+
+  return (
+    userAgent.includes('wv') || 
+    userAgent.includes('WebView') ||
+    userAgent.includes('Android') && userAgent.includes('Version')
+  );
 }
 }
 

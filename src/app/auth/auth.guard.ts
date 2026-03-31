@@ -23,6 +23,16 @@
 
 //   return true;
 // };
+
+
+
+
+// import { inject } from '@angular/core';
+// import { CanActivateFn, Router, ActivatedRouteSnapshot } from '@angular/router';
+// import { AuthService } from './auth.service';
+
+
+
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, ActivatedRouteSnapshot } from '@angular/router';
 import { AuthService } from './auth.service';
@@ -50,4 +60,42 @@ export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   }
 
   return true;
+};
+
+export const rootRedirectGuard: CanActivateFn = () => {
+
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  const isMobile = auth.isWebView();
+  const isLoggedIn = auth.isLoggedIn();
+const role = auth.getRole() ?? '';
+
+  const dashboardMap: any = {
+    Admin: '/admin',
+    SuperAdmin: '/admin',
+    Seller: '/seller',
+    Buyer: '/buyer',
+    Provider_User_Admin: '/provider_User_Admin',
+    Provider_User_Ops_Manager: '/provider_User_Ops_Manager'
+  };
+
+  const dashboard = dashboardMap[role] || '/auth/login';
+
+  // 📱 APK / MOBILE FLOW
+  if (isMobile) {
+
+    if (isLoggedIn) {
+      return router.createUrlTree([dashboard]);
+    }
+
+    return router.createUrlTree(['/auth/login']);
+  }
+
+  // 🖥 DESKTOP FLOW
+  if (isLoggedIn) {
+    return router.createUrlTree([dashboard]);
+  }
+
+  return router.createUrlTree(['/']); // 👈 LANDING PAGE
 };
