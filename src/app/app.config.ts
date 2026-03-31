@@ -122,7 +122,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
 
     // Router (WebView safe)
-    provideRouter(routes, withHashLocation()),
+    provideRouter(routes),
 
     // Animations
     provideAnimations(),

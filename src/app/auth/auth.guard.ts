@@ -56,22 +56,37 @@ const role = auth.getRole() ?? '';
 
   const dashboard = dashboardMap[role] || '/auth/login';
 
-  // 📱 APK / MOBILE FLOW
+//   // 📱 APK / MOBILE FLOW
+//   if (isMobile) {
+
+//     if (isLoggedIn) {
+//       return router.createUrlTree([dashboard]);
+//     }
+
+//     return router.createUrlTree(['/auth/login']);
+//   }
+
+//   // 🖥 DESKTOP FLOW
+//   if (isLoggedIn) {
+//     return router.createUrlTree([dashboard]);
+//   }
+
+//   return router.createUrlTree(['/']); // 👈 LANDING PAGE
+// };
+  // ✅ USER LOGGED IN → GO DASHBOARD
+  if (isLoggedIn) {
+    return router.createUrlTree([
+      dashboardMap[role] || '/auth/login'
+    ]);
+  }
+
+  // 📱 APK FLOW → LOGIN
   if (isMobile) {
-
-    if (isLoggedIn) {
-      return router.createUrlTree([dashboard]);
-    }
-
     return router.createUrlTree(['/auth/login']);
   }
 
-  // 🖥 DESKTOP FLOW
-  if (isLoggedIn) {
-    return router.createUrlTree([dashboard]);
-  }
-
-  return router.createUrlTree(['/']); // 👈 LANDING PAGE
+  // 🖥 DESKTOP FLOW → LANDING PAGE
+  return router.createUrlTree(['/home']);
 };
 
 export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
