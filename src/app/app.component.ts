@@ -14,7 +14,7 @@
 
 
 import { Component, OnInit,Input  } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet,Router  } from '@angular/router';
 import { AuthService } from './auth/auth.service';
 import { LandingPageComponent } from './landing/landing.component';
 
@@ -30,10 +30,10 @@ export class AppComponent implements OnInit {
   appReady = false;
   isLoggedIn = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
-
+   const isWebView = this.authService.isWebView();
     const token = localStorage.getItem('token');
 
     if (token && this.authService.isLoggedIn()) {
@@ -43,5 +43,14 @@ export class AppComponent implements OnInit {
     }
 
     this.appReady = true;
+        //  APK (WebView)
+    if (isWebView) {
+      this.router.navigate(['/auth/login']);
+    } 
+    //  Website
+    else {
+      this.router.navigate(['/']);
+    }
   }
+
 }

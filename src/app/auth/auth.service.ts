@@ -307,15 +307,18 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
       phone
     });
   }
-  // 🔹 Send Email OTP
+  //  Send Email OTP
   sendEmailOtp(payload: { userId: number; email: string; fullName: string }): Observable<{ token: string }> {
     return this.http.post<{ token: string }>(`${this.apiUrl}/send-email-otp`, payload);
   }
 
-  // 🔹 Verify Email OTP
+  //  Verify Email OTP
   verifyEmailOtp(payload: { otp: string; token: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/verify-email-otp`, payload);
   }
-
+isWebView(): boolean {
+  const ua = navigator.userAgent || '';
+  return ua.includes('wv') || ua.includes('WebView');
+}
 }
 

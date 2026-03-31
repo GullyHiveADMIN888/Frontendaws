@@ -5,8 +5,14 @@ import { RegisterLayoutComponent } from './register/register-layout/register-lay
 import { RegisterComponent } from './register/register.component';
 import { CustomerRegisterComponent } from './costumer-registration/customer-register/customer-register.component';
 // import { LandingPageComponent } from '../landing/landing.component';
-
+import { LoginComponent } from './login/login.component';
 export const AUTH_ROUTES: Routes = [
+
+ {
+    path: 'login',
+    component: LoginComponent
+  },
+
 
   {
     path: 'register',
