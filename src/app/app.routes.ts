@@ -85,11 +85,12 @@ import { InvitationGeneratorComponent } from './Admin/invitation-generator/invit
 export const routes: Routes = [
 
   // 🔥 ROOT DECISION POINT
- {
-  path: '',
-  pathMatch: 'full',
-  component: LandingPageComponent
-},
+  {
+    path: '',
+    pathMatch: 'full',
+    canActivate: [rootRedirectGuard]
+  },
+
   // AUTH
   {
     path: 'auth',
