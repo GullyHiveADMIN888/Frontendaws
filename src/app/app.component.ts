@@ -89,9 +89,9 @@ export class AppComponent implements OnInit {
 
       if (!isMobile) return;
 
-      if (!token) {
-        this.router.navigate(['/auth/login'], { replaceUrl: true });
-      }
+      // if (!token) {
+      //   this.router.navigate(['/auth/login'], { replaceUrl: true });
+      // }
     });
   }
 }
