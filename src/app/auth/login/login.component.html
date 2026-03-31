@@ -10,7 +10,7 @@
       <p class="text-gray-600 mt-2">Login to your account</p>
     </div>
 
-     <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
+     <!-- <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
       <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
         <button (click)="closeLoginModal()"
           class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
@@ -22,8 +22,8 @@
           </div>
           <h2 class="text-3xl font-bold text-gray-900 font-poppins">Welcome Back</h2>
           <p class="text-gray-600 font-inter mt-2">Login to your account</p>
-        </div>
-        @if (loginError) {
+        </div> -->
+        @if (loginError) { 
           <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
             <p class="text-red-800 font-inter text-sm">{{ loginError }}</p>
           </div>
@@ -95,13 +95,13 @@
                       </a>
                     </p>
                   </div>
-                </div>
-              </div>
+                <!-- </div>
+              </div> -->
   </div>
 
 </div>
 
-  <!-- Forgot Password Modal -->
+                    <!-- Forgot Password Modal -->
                           @if (showForgotPasswordModal) {
                             <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
                               <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
