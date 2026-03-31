@@ -60,56 +60,69 @@ import { jwtInterceptor } from './auth/jwt.interceptor';
 import { AuthService } from './auth/auth.service';
 
 
-// 🔥 AUTO LOGIN + ROLE REDIRECT
+// // 🔥 AUTO LOGIN + ROLE REDIRECT
+// export function appInitializer() {
+//   return () => {
+
+//     const auth = inject(AuthService);
+//     const router = inject(Router);
+
+//     const token = auth.getToken();
+
+//     if (token && auth.isLoggedIn()) {
+
+//       const role = auth.getRole();
+
+//       switch (role) {
+
+//         case 'Admin':
+//         case 'SuperAdmin':
+//           router.navigate(['/admin']);
+//           break;
+
+//         case 'Seller':
+//           router.navigate(['/seller']);
+//           break;
+
+//         case 'Buyer':
+//           router.navigate(['/buyer']);
+//           break;
+
+//         case 'Provider_User_Admin':
+//           router.navigate(['/provider_User_Admin']);
+//           break;
+
+//         case 'Provider_User_Ops_Manager':
+//           router.navigate(['/provider_User_Ops_Manager']);
+//           break;
+
+//         default:
+//           router.navigate(['/']);
+//       }
+//     }
+//   };
+// }
+
 export function appInitializer() {
   return () => {
-
     const auth = inject(AuthService);
-    const router = inject(Router);
 
     const token = auth.getToken();
 
-    if (token && auth.isLoggedIn()) {
-
-      const role = auth.getRole();
-
-      switch (role) {
-
-        case 'Admin':
-        case 'SuperAdmin':
-          router.navigate(['/admin']);
-          break;
-
-        case 'Seller':
-          router.navigate(['/seller']);
-          break;
-
-        case 'Buyer':
-          router.navigate(['/buyer']);
-          break;
-
-        case 'Provider_User_Admin':
-          router.navigate(['/provider_User_Admin']);
-          break;
-
-        case 'Provider_User_Ops_Manager':
-          router.navigate(['/provider_User_Ops_Manager']);
-          break;
-
-        default:
-          router.navigate(['/']);
-      }
+    // Only validate / restore session
+    if (token) {
+      auth.isLoggedIn(); // optional: triggers validation
     }
+
+    // ❌ NO router.navigate here
   };
 }
-
-
 // 🔥 APP CONFIG
 export const appConfig: ApplicationConfig = {
   providers: [
 
     // Router (WebView safe)
-    provideRouter(routes, withHashLocation()),
+  provideRouter(routes),
 
     // Animations
     provideAnimations(),
