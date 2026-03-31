@@ -70,7 +70,8 @@ export class AuthService implements CanActivate {
 
     if (!token) {
       // No token → redirect to login
-      this.router.navigate(['/login']);
+     // this.router.navigate(['/login']);
+     this.router.navigate(['/login'], { replaceUrl: true });
       return false;
     }
 
@@ -114,7 +115,8 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
       Provider_User_Ops_Manager: '/provider_User_Ops_Manager',
     };
 
-    this.router.navigate([routes[role] ?? '/login']);
+   // this.router.navigate([routes[role] ?? '/login']);
+   this.router.navigate([routes[role] ?? '/login'], { replaceUrl: true });
   }
 
 //   redirectByRole(role: string, providerType?: string | null,  businessUserId?: boolean, businessUserRole?: string | null) {
@@ -159,7 +161,8 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
 
   logout() {
     localStorage.clear();
-    this.router.navigate(['/login']);
+  //  this.router.navigate(['/login']);
+  this.router.navigate(['/login'], { replaceUrl: true });
   }
 
   // getRole() {
