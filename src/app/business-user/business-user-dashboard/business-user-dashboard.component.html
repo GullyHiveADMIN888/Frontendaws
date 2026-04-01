@@ -1,0 +1,115 @@
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
+  
+  <!-- Dashboard Header -->
+  <div>
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Dashboard Overview</h1>
+    <p class="mt-2 text-sm text-gray-600">Manage your operations, track jobs, and access quick actions from one place.</p>
+  </div>
+
+  <!-- Quick Navigation Cards Container -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8">
+    <div class="flex items-center mb-6">
+      <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+        <i class="ri-flashlight-line text-xl text-orange-600"></i>
+      </div>
+      <h2 class="text-xl font-semibold text-gray-800">Quick Actions</h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      @for (action of actions; track action) {
+        <button
+          type="button"
+          class="relative overflow-hidden group bg-gray-50 rounded-xl p-6 border border-gray-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-orange-200 text-left cursor-pointer"
+          (click)="onAction(action)"
+          >
+          <!-- Decorative Background Hover Effect -->
+          <div class="absolute -right-6 -top-6 w-32 h-32 rounded-full opacity-0 group-hover:opacity-10 transition-all duration-500 pointer-events-none" [ngClass]="action.color"></div>
+          
+          <div [ngClass]="action.color"
+            class="w-14 h-14 flex items-center justify-center rounded-xl mb-4 shadow-sm z-10 relative">
+            <i [class]="action.icon + ' text-2xl'"></i>
+          </div>
+          <h3 class="font-bold text-gray-900 text-lg mb-1 relative z-10">{{ action.title }}</h3>
+          <p class="text-sm text-gray-500 relative z-10 flex items-center transition-colors group-hover:text-amber-700">
+            Open <i class="ri-arrow-right-line ml-1 transition-transform group-hover:translate-x-1"></i>
+          </p>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <div class="border-t border-gray-200/60 my-6"></div>
+
+  <!-- Recent Jobs Widget -->
+  <div class="mt-4">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-semibold text-gray-800 flex items-center">
+        <i class="ri-briefcase-4-line mr-2 text-blue-600"></i> Recent Jobs
+      </h2>
+      <a routerLink="/provider_User_Ops_Manager/jobs" class="text-sm text-blue-600 hover:underline font-medium">View all jobs</a>
+    </div>
+
+    @if (isLoadingJobs) {
+      <div class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+        <span class="ml-3 text-gray-600">Loading recent jobs...</span>
+      </div>
+    } @else if (recentJobs.length === 0) {
+      <div class="bg-gray-50 rounded-xl p-8 text-center border border-gray-100">
+        <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="ri-briefcase-line text-2xl text-gray-500"></i>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-1">No recent jobs</h3>
+        <p class="text-gray-500">There are no jobs assigned or available yet.</p>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        @for (job of recentJobs; track job.id) {
+          <div 
+            class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-orange-200 transition-all cursor-pointer overflow-hidden flex flex-col"
+            (click)="goToJobAssign(job.id)">
+            
+            <div class="p-5 border-b border-gray-100">
+              <div class="flex justify-between items-start mb-3">
+                <span class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded">ID: #{{ job.id }}</span>
+                <span class="px-2 py-1 text-xs font-semibold rounded-full" [ngClass]="getStatusBadgeClass(job.jobStatus)">
+                  {{ getStatusDisplayText(job.jobStatus) }}
+                </span>
+              </div>
+              
+              <h3 class="text-lg font-bold text-gray-900 truncate" [title]="job.customerName">{{ job.customerName || 'No Name Provided' }}</h3>
+              <p class="text-sm text-gray-500 flex items-center mt-1 truncate">
+                <i class="ri-map-pin-line mr-1"></i> {{ job.cityName || 'Unknown Location' }}
+              </p>
+            </div>
+
+            <div class="p-5 flex-1 bg-gray-50/50">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center text-sm text-gray-600">
+                  <i class="ri-calendar-event-line mr-2 text-orange-500"></i>
+                  {{ job.scheduledStart ? (job.scheduledStart | date:'MMM d, y, h:mm a') : 'Unscheduled' }}
+                </div>
+              </div>
+              
+              <div class="flex items-center justify-between">
+                 <div class="text-sm">
+                   <span class="text-gray-500">Assignment:</span>
+                   <span class="ml-1 font-medium" [ngClass]="job.assignmentStatus === 'assigned' ? 'text-green-600' : 'text-yellow-600'">
+                     {{ job.assignmentStatus === 'assigned' ? 'Assigned' : 'Unassigned' }}
+                   </span>
+                 </div>
+                 
+                 <button class="text-orange-600 text-sm font-medium hover:text-orange-800 flex items-center group">
+                   Manage <i class="ri-arrow-right-line ml-1 transition-transform group-hover:translate-x-1"></i>
+                 </button>
+              </div>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+  </div>
+  
+</div>

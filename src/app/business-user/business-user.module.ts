@@ -5,8 +5,7 @@ import { CommonModule } from '@angular/common';
 
 import { BusinessUserRoutingModule } from './business-user-routing.module';
 
-import { DashboardComponent } from './dashboard/dashboard.component';
- // import { LayoutComponent } from './Business-user-layout/Business-user-layout.component';
+// import { LayoutComponent } from './Business-user-layout/Business-user-layout.component';
 // import { StatsCardsComponent } from './stats-cards/stats-cards.component';
 // import { ProfileCompletionComponent } from './profile-completion/profile-completion.component';
 // import { QuickActionsComponent } from './quick-actions/quick-actions.component';
@@ -28,8 +27,7 @@ import { OpsManagerProfileComponent } from './ops-manager-profile/ops-manager-pr
 
 @NgModule({
   declarations: [
-     DashboardComponent,
-     
+
     // StatsCardsComponent,
     // ProfileCompletionComponent,
     // QuickActionsComponent,
@@ -41,12 +39,12 @@ import { OpsManagerProfileComponent } from './ops-manager-profile/ops-manager-pr
     // HelpComponent,
     // ReferEarnComponent,
     // LedgerComponent
-   
+
   ],
   imports: [
     CommonModule,
     BusinessUserRoutingModule,
-     RouterModule, // needed for routerLink
+    RouterModule, // needed for routerLink
     ReactiveFormsModule,
     FormsModule,
     OpsManagerProfileComponent

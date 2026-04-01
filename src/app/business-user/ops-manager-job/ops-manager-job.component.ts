@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { OpsManagerJobService, Job, JobListRequest } from './services/ops-manager-job.service';
+import { OpsManagerJobService, Job, JobListRequest, AssignedWorker } from './services/ops-manager-job.service';
 
 @Component({
   selector: 'app-ops-manager-job',
@@ -13,7 +13,7 @@ import { OpsManagerJobService, Job, JobListRequest } from './services/ops-manage
 })
 export class OpsManagerJobComponent implements OnInit {
   Math = Math;
-  
+
   // Modal state
   showJobModal = false;
   selectedJob: Job | null = null;
@@ -30,6 +30,7 @@ export class OpsManagerJobComponent implements OnInit {
   // Filters
   searchTerm: string = '';
   statusFilter: string = '';
+  assignmentStatusFilter: string = ''; // Default to show all jobs
   cityFilter: number | null = null;
   providerFilter: number | null = null;
   dateFrom: string = '';
@@ -41,6 +42,13 @@ export class OpsManagerJobComponent implements OnInit {
 
   // Available statuses for filter dropdown
   jobStatuses: Array<{ value: string; label: string }> = [];
+
+  // Assignment filter options
+  assignmentStatusOptions = [
+    { value: '', label: 'All' },
+    { value: 'unassigned', label: 'Unassigned' },
+    { value: 'assigned', label: 'Assigned' }
+  ];
 
   // Alert system
   alertMessage: string = '';
@@ -82,7 +90,8 @@ export class OpsManagerJobComponent implements OnInit {
       page: this.currentPage,
       pageSize: this.pageSize,
       sortBy: this.sortBy,
-      sortOrder: this.sortOrder
+      sortOrder: this.sortOrder,
+      assignmentStatus: this.assignmentStatusFilter // Add assignment status filter
     };
 
     if (this.statusFilter) {
@@ -104,7 +113,6 @@ export class OpsManagerJobComponent implements OnInit {
       request.searchTerm = this.searchTerm;
     }
 
-    console.log('Fetching jobs with request:', request);
 
     this.jobService.getJobs(request).subscribe({
       next: (response) => {
@@ -115,7 +123,6 @@ export class OpsManagerJobComponent implements OnInit {
           this.jobs = response.data;
           this.totalCount = response.pagination.totalCount;
           this.totalPages = response.pagination.totalPages;
-          console.log('Jobs loaded:', this.jobs.length);
         } else {
           this.showAlert(response.message || 'Failed to load jobs', 'error');
         }
@@ -136,6 +143,11 @@ export class OpsManagerJobComponent implements OnInit {
   }
 
   onStatusFilterChange(): void {
+    this.currentPage = 1;
+    this.loadJobs();
+  }
+
+  onAssignmentStatusFilterChange(): void {
     this.currentPage = 1;
     this.loadJobs();
   }
@@ -178,6 +190,7 @@ export class OpsManagerJobComponent implements OnInit {
   clearFilters(): void {
     this.searchTerm = '';
     this.statusFilter = '';
+    this.assignmentStatusFilter = '';
     this.cityFilter = null;
     this.providerFilter = null;
     this.dateFrom = '';
@@ -243,6 +256,35 @@ export class OpsManagerJobComponent implements OnInit {
       'customer_not_present': 'Customer Not Present'
     };
     return statusMap[status] || status;
+  }
+
+  // Get assignment badge class
+  getAssignmentBadgeClass(assignmentStatus: string): string {
+    return assignmentStatus === 'assigned'
+      ? 'bg-green-100 text-green-800'
+      : 'bg-yellow-100 text-yellow-800';
+  }
+
+  // Get role display text
+  getRoleDisplayText(role: string): string {
+    const roleMap: { [key: string]: string } = {
+      'member': 'Member',
+      'team_lead': 'Team Lead',
+      'primary': 'Primary'
+    };
+    return roleMap[role] || role;
+  }
+
+  // Get status badge class for assignment
+  getAssignmentStatusBadgeClass(status: string): string {
+    const statusMap: { [key: string]: string } = {
+      'assigned': 'bg-blue-100 text-blue-800',
+      'accepted': 'bg-green-100 text-green-800',
+      'checked_in': 'bg-purple-100 text-purple-800',
+      'completed': 'bg-gray-100 text-gray-800',
+      'dropped': 'bg-red-100 text-red-800'
+    };
+    return statusMap[status] || 'bg-gray-100 text-gray-800';
   }
 
   // Format currency

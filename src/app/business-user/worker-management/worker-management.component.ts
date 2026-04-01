@@ -57,7 +57,7 @@ export class WorkerManagementComponent implements OnInit {
 
   // Filters
   searchTerm: string = '';
-  statusFilter: string = '';
+  statusFilter: string = 'pending';
 
   // Sorting
   sortBy: string = 'created_at';
@@ -71,6 +71,7 @@ export class WorkerManagementComponent implements OnInit {
   isLoading: boolean = false;
   isSaving: boolean = false;
   isPageLoading: boolean = true;
+  isTableLoading: boolean = false;
 
   constructor(private workerService: WorkerManagementService) { }
 
@@ -95,6 +96,7 @@ export class WorkerManagementComponent implements OnInit {
 
   // Load pending invites with pagination and filters
   loadPendingInvites(): Promise<void> {
+    this.isTableLoading = true;
     return new Promise((resolve, reject) => {
       const filter: PendingInviteFilter = {
         page: this.currentPage,
@@ -128,11 +130,13 @@ export class WorkerManagementComponent implements OnInit {
           } else {
             console.error('API returned success false:', response);
           }
+          this.isTableLoading = false;
           resolve();
         },
         error: (err) => {
           console.error('Error loading pending invites:', err);
           console.error('Error details:', err.error);
+          this.isTableLoading = false;
           reject(err);
         }
       });
@@ -172,7 +176,7 @@ export class WorkerManagementComponent implements OnInit {
 
   clearFilters(): void {
     this.searchTerm = '';
-    this.statusFilter = '';
+    this.statusFilter = 'pending';
     this.currentPage = 1;
     this.loadPendingInvites();
   }
