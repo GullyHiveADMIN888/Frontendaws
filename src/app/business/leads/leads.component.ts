@@ -107,6 +107,7 @@ ngOnInit(): void {
 
 
 isMobile = false;
+isAppending = false;
 checkScreen() {
   this.isMobile = window.innerWidth < 640;
 }
@@ -117,60 +118,111 @@ loadMore() {
   }
 }
 
+// loadLeads(page: number = 1) {
+//   this.loading = true;
+
+//   let request$;
+
+//   // For 'all', 'offered', 'unlocked', 'committed', 'accepted', etc.
+//   // Pass undefined for 'all', otherwise pass the selected status
+//   const statusParam = this.filterStatus === 'all' ? undefined : this.filterStatus;
+
+//   request$ = this.sellerService.getLeads(page, this.pageSize, statusParam);
+
+//   request$.subscribe({
+//     next: (res) => {
+//       console.log('API Response:', res);
+
+//       const leadsData = res.data;
+//       const pagination = res.pagination;
+
+//       this.currentPage = pagination?.page ?? page;
+//       this.totalPages = pagination?.totalPages ?? 1;
+//       this.totalLeadss = pagination?.totalCount ?? 0;
+//       this.pageSize = pagination?.pageSize ?? this.pageSize;
+
+//     const newLeads = (leadsData || []).map((l: any) => ({
+//         ...l,
+//         offerStatus: l.offerStatus ?? 'offered',
+//         description: l.description || 'No description provided',
+//         location: l.location || 'N/A',
+//         time: this.timeAgo(l.createdAt),
+//         isPurchased: l.isPurchased ?? false,
+//         unlockedCount: Number(l.unlockedCount ?? 0),
+//         committedCount: Number(l.committedCount ?? 0),
+//         hasQuote: l.hasQuote ?? false,
+//       }));
+// if (this.isMobile && page > 1) {
+//   // 📱 APPEND for mobile "Show More"
+//   this.leads = [...this.leads, ...newLeads];
+// } else {
+//   // 💻 REPLACE for desktop pagination OR first load
+//   this.leads = newLeads;
+// }
+//       this.loading = false;
+//     },
+//     error: (err) => {
+//       console.error('Error loading leads:', err);
+//       this.loading = false;
+//     }
+//   });
+// }
 loadLeads(page: number = 1) {
   this.loading = true;
 
-  let request$;
-
-  // For 'all', 'offered', 'unlocked', 'committed', 'accepted', etc.
-  // Pass undefined for 'all', otherwise pass the selected status
   const statusParam = this.filterStatus === 'all' ? undefined : this.filterStatus;
 
-  request$ = this.sellerService.getLeads(page, this.pageSize, statusParam);
+  this.sellerService.getLeads(page, this.pageSize, statusParam)
+    .subscribe({
+      next: (res) => {
 
-  request$.subscribe({
-    next: (res) => {
-      console.log('API Response:', res);
+        const leadsData = res.data;
+        const pagination = res.pagination;
 
-      const leadsData = res.data;
-      const pagination = res.pagination;
+        this.currentPage = pagination?.page ?? page;
+        this.totalPages = pagination?.totalPages ?? 1;
+        this.totalLeadss = pagination?.totalCount ?? 0;
+        this.pageSize = pagination?.pageSize ?? this.pageSize;
 
-      this.currentPage = pagination?.page ?? page;
-      this.totalPages = pagination?.totalPages ?? 1;
-      this.totalLeadss = pagination?.totalCount ?? 0;
-      this.pageSize = pagination?.pageSize ?? this.pageSize;
+        const newLeads = (leadsData || []).map((l: any) => ({
+          ...l,
+          offerStatus: l.offerStatus ?? 'offered',
+          description: l.description || 'No description provided',
+          location: l.location || 'N/A',
+          time: this.timeAgo(l.createdAt),
+          isPurchased: l.isPurchased ?? false,
+          unlockedCount: Number(l.unlockedCount ?? 0),
+          committedCount: Number(l.committedCount ?? 0),
+          hasQuote: l.hasQuote ?? false,
+        }));
 
-    const newLeads = (leadsData || []).map((l: any) => ({
-        ...l,
-        offerStatus: l.offerStatus ?? 'offered',
-        description: l.description || 'No description provided',
-        location: l.location || 'N/A',
-        time: this.timeAgo(l.createdAt),
-        isPurchased: l.isPurchased ?? false,
-        unlockedCount: Number(l.unlockedCount ?? 0),
-        committedCount: Number(l.committedCount ?? 0),
-        hasQuote: l.hasQuote ?? false,
-      }));
-if (this.isMobile && page > 1) {
-  // 📱 APPEND for mobile "Show More"
-  this.leads = [...this.leads, ...newLeads];
-} else {
-  // 💻 REPLACE for desktop pagination OR first load
-  this.leads = newLeads;
-}
-      this.loading = false;
-    },
-    error: (err) => {
-      console.error('Error loading leads:', err);
-      this.loading = false;
-    }
-  });
+        // ✅ FINAL FIX LOGIC
+        if (page === 1) {
+          // always reset
+          this.leads = newLeads;
+
+        } else if (this.isMobile) {
+          // mobile show more
+          this.leads = [...this.leads, ...newLeads];
+
+        } else {
+          // desktop pagination
+          this.leads = newLeads;
+        }
+
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.loading = false;
+      }
+    });
 }
   setFilter(offerStatus: any) {
     this.filterStatus = offerStatus;
     this.currentPage = 1;  // Reset to first page
 
-      this.leads = [];
+     
 
     this.loadLeads(1);      // Fetch new data from backend
   }
