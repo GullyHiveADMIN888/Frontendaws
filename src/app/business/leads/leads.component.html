@@ -254,8 +254,8 @@
 
   <!-- PAGINATION - Only show if there are results -->
 
-  <!-- @if (!loading && leads.length > 0 && totalPages > 1) { -->
-   @if (!loading && leads.length > 0 && totalPages > 1 && !isWebView) {
+  @if (!loading && leads.length > 0 && totalPages > 1) { 
+
   <div class="flex justify-end mt-8">
     <div class="flex items-center gap-1">
       <button (click)="prevPage()" [disabled]="currentPage === 1"
@@ -283,32 +283,7 @@
   </div>
   }
 
-<!-- 📱 WEBVIEW CONTROLS -->
-<div *ngIf="isWebView && !loading && leads.length > 0"
-     class="flex justify-between items-center mt-8 gap-3">
 
-  <!-- BACK BUTTON -->
-  <button
-    (click)="goBackPage()"
-    [disabled]="currentPage === 1"
-    class="px-4 py-2 border rounded-lg text-sm disabled:opacity-50">
-    ← Back
-  </button>
-
-  <!-- PAGE INFO -->
-  <span class="text-sm text-gray-500">
-    Page {{ currentPage }} / {{ totalPages }}
-  </span>
-
-  <!-- SHOW MORE -->
-  <button
-    (click)="loadMore()"
-    [disabled]="currentPage === totalPages"
-    class="px-4 py-2 bg-orange-600 text-white rounded-lg disabled:opacity-50">
-    Show More →
-  </button>
-
-</div>
 
   @if (!loading && leads.length === 0) {
   <div class="text-center py-8 text-gray-500">
