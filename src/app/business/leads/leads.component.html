@@ -250,7 +250,15 @@
     </div>
     } -->
   </div>
+<div class="sm:hidden flex justify-center mt-4">
+  <button
+    (click)="loadMore()"
+    class="px-5 py-2 bg-orange-600 text-white rounded-xl shadow"
+    [disabled]="loading || currentPage >= totalPages">
 
+    {{ loading ? 'Loading...' : 'Show More' }}
+  </button>
+</div>
 
   <!-- PAGINATION - Only show if there are results -->
 
