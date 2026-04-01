@@ -16,7 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { interval,Subscription } from 'rxjs';
- //import { environment } from '../../environments/environment';
+// import { environment } from '../../environments/environment';
  import { environment } from '../../environments/environment.prod';
 
 
@@ -650,7 +650,7 @@ onLoginSubmit(event: Event): void {
   private handleLoginSuccess(response: any): void {
   this.isLoggingIn = false;
 
-  console.log('Login response:', response); 
+ // console.log('Login response:', response); 
 
   //  First check mobile verification
   if (!response.mobileVerified && !response.emailVerified) {
@@ -660,7 +660,7 @@ onLoginSubmit(event: Event): void {
   phone: response.phone,
   email: response.email
 };
-  console.log('verificationData set:', this.verificationData); //
+ // console.log('verificationData set:', this.verificationData); //
     this.pendingLoginResponse = response; 
     this.showLoginModal=false;
     this.showVerificationModal = true;
@@ -1080,6 +1080,13 @@ onOTPVerifiedEmail(event: { otp: string }) {
 }
 
 isMobileVerified = false;
+
+
+isMenuOpen = false;
+
+toggleMenu() {
+  this.isMenuOpen = !this.isMenuOpen;
+}
 
 }
 

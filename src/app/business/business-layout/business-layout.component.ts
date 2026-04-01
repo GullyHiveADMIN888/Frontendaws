@@ -17,6 +17,7 @@ export class SellerLayoutComponent implements OnInit {
   showUserMenu = false;
   user: any;
    sellerId!: number;
+   
 
   constructor(private sellerService: SellerService,
   private router: Router) {
@@ -47,7 +48,20 @@ export class SellerLayoutComponent implements OnInit {
   toggleUserMenu() {
     this.showUserMenu = !this.showUserMenu;
   }
+showMobileMenu = false;
 
+closeMobileMenu() {
+    this.showMobileMenu = false;
+  }
+   //  MOBILE MENU
+  toggleMobileMenu() {
+    this.showMobileMenu = !this.showMobileMenu;
+
+    // Close user menu if open
+    if (this.showMobileMenu) {
+      this.showUserMenu = false;
+    }
+  }
 
 logout() {
   localStorage.removeItem('token');

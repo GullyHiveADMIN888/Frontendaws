@@ -1,13 +1,13 @@
-@if (!loading && profile) {
+<!-- @if (!loading && profile) {
   <div class="min-h-screen bg-gray-50">
-    <!-- Profile Header -->
+
     <div class="max-w-7xl mx-auto px-4 py-8">
       <div class="bg-white rounded-lg border p-8 mb-8">
         <div class="flex items-start justify-between">
           <div class="flex space-x-6">
-            <!-- Avatar -->
+         
             <div class="w-24 h-24 rounded-full bg-orange-500 text-white text-4xl flex items-center justify-center">
-              <!-- {{ getInitials(profile.displayName || profile.legalName) }} -->
+      
               @if (profile.profilePictureUrl) {
                 <img
                   [src]="profile.profilePictureUrl"
@@ -27,7 +27,7 @@
                 {{ profile.providerType }}
               </p>
               <div class="flex items-center space-x-4 mt-3">
-                <!-- Rating -->
+             
                 <div class="flex items-center">
                   @for (filled of getStars(profile.avgRating); track filled) {
                     <i
@@ -43,16 +43,16 @@
                     ({{ profile.ratingCount || 0 }} reviews)
                   </span>
                 </div>
-                <!-- Location -->
+              
                 <div class="flex items-center text-gray-600">
                   <i class="ri-map-pin-line mr-1"></i>
-                  <!-- {{ profile.addressLabel }}, --> {{ profile.addressLine1 }} ,
-                  <!-- {{ profile.addressLine2 }}, {{ profile.landmark }} -->
+              {{ profile.addressLine1 }} ,
+               
                   {{ profile.locality }}, {{ profile.landmark }} ,
                   {{ profile.addressCity }}, {{ profile.addressState }} , {{ profile.pincode }}
                 </div>
               </div>
-              <!-- Badges -->
+         
               <div class="flex items-center space-x-4 mt-2 text-sm text-gray-600">
                 <span class="flex items-center">
                   <i class="ri-checkbox-circle-fill text-green-600 mr-1"></i>
@@ -65,10 +65,6 @@
               </div>
             </div>
           </div>
-          <!-- <a *ngIf="profile" [routerLink]="['/seller/settings/profile', profile.sellerId]"
-          class="px-4 py-2 border rounded-lg hover:bg-gray-50">
-          <i class="ri-edit-line mr-2"></i> Share Profile
-        </a> -->
         <button
           (click)="copyLink()"
           class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
@@ -78,18 +74,18 @@
         </button>
       </div>
     </div>
-    <!-- Grid -->
+   
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <!-- Left -->
+   
       <div class="lg:col-span-2 space-y-8">
-        <!-- About -->
+   
         <div class="bg-white border rounded-lg p-6">
           <h2 class="text-xl font-bold mb-4">About</h2>
           <p class="text-gray-700 leading-relaxed">
             {{ profile.description || 'No description provided.' }}
           </p>
         </div>
-        <!-- Portfolio -->
+      
         @if (profile.portfolioImages?.length) {
           <div class="bg-white border rounded-lg p-6">
             <h2 class="text-xl font-bold mb-4">Portfolio</h2>
@@ -102,7 +98,7 @@
             </div>
           </div>
         }
-        <!-- Reviews -->
+     
         @if (profile.reviews?.length) {
           <div class="bg-white border rounded-lg p-6">
             <h2 class="text-xl font-bold mb-4">Reviews</h2>
@@ -134,9 +130,9 @@
           </div>
         }
       </div>
-      <!-- Right -->
+     
       <div class="space-y-8">
-        <!-- Services -->
+
         @if (profile.services?.length) {
           <div class="bg-white border rounded-lg p-6">
             <h2 class="text-xl font-bold mb-4">Services Offered</h2>
@@ -148,7 +144,7 @@
             }
           </div>
         }
-        <!-- Contact -->
+    
         <div class="bg-white border rounded-lg p-6">
           <h2 class="text-xl font-bold mb-4">Contact</h2>
           <div class="space-y-2 text-gray-700">
@@ -168,4 +164,242 @@
     </div>
   </div>
 </div>
-}
+} -->
+
+
+<div class="min-h-screen bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+
+    <!-- HEADER CARD -->
+    <div class="bg-white rounded-lg border p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
+
+      <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+
+        <!-- PROFILE INFO -->
+        <div class="flex flex-col sm:flex-row gap-4 sm:gap-6">
+
+          <!-- AVATAR -->
+          <div class="flex-shrink-0 mx-auto sm:mx-0">
+
+            @if (profile.profilePictureUrl) {
+              <img
+                [src]="profile.profilePictureUrl"
+                class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover" />
+            } @else {
+              <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-orange-500 text-white text-2xl sm:text-4xl flex items-center justify-center">
+                {{ getInitials(profile.displayName || profile.legalName) }}
+              </div>
+            }
+
+          </div>
+
+          <!-- INFO -->
+          <div class="text-center sm:text-left">
+
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+              {{ profile.displayName || profile.legalName }}
+            </h1>
+
+            <p class="text-gray-600 mt-1">
+              {{ profile.providerType }}
+            </p>
+
+            <!-- RATING + ADDRESS -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-3">
+
+              <!-- rating -->
+              <div class="flex items-center justify-center sm:justify-start">
+                @for (filled of getStars(profile.avgRating); track filled) {
+                  <i class="ri-star-fill"
+                     [class.text-yellow-400]="filled"
+                     [class.text-gray-300]="!filled"></i>
+                }
+
+                <span class="ml-2 font-semibold">
+                  {{ profile.avgRating || '0.0' }}
+                </span>
+
+                <span class="text-gray-500 ml-1">
+                  ({{ profile.ratingCount || 0 }})
+                </span>
+              </div>
+
+              <!-- address -->
+              <div class="flex items-start sm:items-center text-gray-600 text-sm sm:text-base">
+                <i class="ri-map-pin-line mr-1 mt-1 sm:mt-0"></i>
+                <span class="break-words">
+                  {{ profile.addressLine1 }},
+                  {{ profile.locality }},
+                  {{ profile.landmark }},
+                  {{ profile.addressCity }},
+                  {{ profile.addressState }},
+                  {{ profile.pincode }}
+                </span>
+              </div>
+
+            </div>
+
+            <!-- STATUS -->
+            <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-3 text-sm text-gray-600">
+
+              <span class="flex items-center justify-center sm:justify-start">
+                <i class="ri-checkbox-circle-fill text-green-600 mr-1"></i>
+                {{ profile.status | titlecase }}
+              </span>
+
+              <span class="flex items-center justify-center sm:justify-start">
+                <i class="ri-time-line mr-1"></i>
+                Member since {{ profile.createdAt | date:'mediumDate' }}
+              </span>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SHARE BUTTON -->
+        <div class="flex justify-center lg:justify-end">
+          <button
+            (click)="copyLink()"
+            class="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
+            <i class="ri-share-line mr-2"></i>
+            Copy Link
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+
+      <!-- LEFT CONTENT -->
+      <div class="lg:col-span-2 space-y-6 lg:space-y-8">
+
+        <!-- ABOUT -->
+        <div class="bg-white border rounded-lg p-4 sm:p-6">
+          <h2 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4">About</h2>
+          <p class="text-gray-700 leading-relaxed text-sm sm:text-base">
+            {{ profile.description || 'No description provided.' }}
+          </p>
+        </div>
+
+        <!-- PORTFOLIO -->
+        @if (profile.portfolioImages?.length) {
+          <div class="bg-white border rounded-lg p-4 sm:p-6">
+
+            <h2 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Portfolio</h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+
+              @for (img of profile.portfolioImages; track img) {
+                <img
+                  [src]="img"
+                  class="rounded-lg aspect-video object-cover w-full" />
+              }
+
+            </div>
+          </div>
+        }
+
+        <!-- REVIEWS -->
+        @if (profile.reviews?.length) {
+          <div class="bg-white border rounded-lg p-4 sm:p-6">
+
+            <h2 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Reviews</h2>
+
+            @for (review of profile.reviews; track review) {
+              <div class="border-b pb-4 mb-4 last:border-0">
+
+                <div class="flex gap-3 sm:gap-4">
+
+                  <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-orange-500 text-white flex items-center justify-center flex-shrink-0">
+                    {{ getInitials(review.reviewerName) }}
+                  </div>
+
+                  <div>
+
+                    <h3 class="font-semibold text-sm sm:text-base">
+                      {{ review.reviewerName }}
+                    </h3>
+
+                    <div class="flex">
+                      @for (filled of getStars(review.rating); track filled) {
+                        <i class="ri-star-fill"
+                           [class.text-yellow-400]="filled"
+                           [class.text-gray-300]="!filled"></i>
+                      }
+                    </div>
+
+                    <p class="text-gray-700 text-sm sm:text-base">
+                      {{ review.comment }}
+                    </p>
+
+                    <p class="text-xs text-gray-500 mt-1">
+                      {{ review.createdAt | date:'mediumDate' }}
+                    </p>
+
+                  </div>
+
+                </div>
+              </div>
+            }
+
+          </div>
+        }
+
+      </div>
+
+      <!-- RIGHT SIDEBAR -->
+      <div class="space-y-6 lg:space-y-8">
+
+        <!-- SERVICES -->
+        @if (profile.services?.length) {
+          <div class="bg-white border rounded-lg p-4 sm:p-6">
+
+            <h2 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
+              Services Offered
+            </h2>
+
+            @for (service of profile.services; track service) {
+              <div class="flex items-center text-gray-700 text-sm sm:text-base">
+                <i class="ri-checkbox-circle-fill text-green-600 mr-2"></i>
+                {{ service }}
+              </div>
+            }
+
+          </div>
+        }
+
+        <!-- CONTACT -->
+        <div class="bg-white border rounded-lg p-4 sm:p-6">
+
+          <h2 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
+            Contact
+          </h2>
+
+          <div class="space-y-2 text-gray-700 text-sm sm:text-base">
+
+            @if (profile.phone) {
+              <p class="flex items-center">
+                <i class="ri-phone-line mr-2"></i>
+                {{ profile.phone }}
+              </p>
+            }
+
+            @if (profile.email) {
+              <p class="flex items-center">
+                <i class="ri-mail-line mr-2"></i>
+                {{ profile.email }}
+              </p>
+            }
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

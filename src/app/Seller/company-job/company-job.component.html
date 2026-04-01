@@ -1,0 +1,79 @@
+<!-- Loader -->
+<div *ngIf="isLoading" class="flex justify-center items-center py-20">
+  <div class="w-12 h-12 border-4 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
+</div>
+
+<!-- Jobs List -->
+<div *ngIf="!isLoading && companyJobs.length > 0" class="max-w-7xl mx-auto px-4">
+  <div class="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-1 gap-6">
+    <div *ngFor="let job of companyJobs" class="bg-white rounded-2xl shadow-md p-5 border border-gray-100">
+      <!-- Header -->
+      <div class="flex justify-between items-start mb-3">
+        <div class="flex flex-col">
+          <h2 class="text-lg font-semibold text-gray-800">{{ job.companyName }}</h2>
+          <p class="text-xs text-gray-500 mt-1">
+            Assigned: {{ job.assignedAt | date:'medium' }}
+          </p>
+        </div>
+        <div class="flex flex-col items-end gap-2">
+          <span 
+            class="text-xs px-4 py-1 rounded-full uppercase tracking-wide"
+            [ngClass]="{
+              'bg-blue-50 text-blue-700': job.status === 'assigned',
+              'bg-yellow-50 text-yellow-700': job.status === 'in_progress',
+              'bg-green-50 text-green-700': job.status === 'completed'
+            }">
+            {{ job.status }}
+          </span>
+
+          <button 
+            class="mt-1 text-xs px-3 py-1 rounded-full bg-gray-100 hover:bg-gray-200"
+            (click)="job.showDetails = !job.showDetails">
+            {{ job.showDetails ? 'Hide Details' : 'View Details' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Job Details -->
+      <div *ngIf="job.showDetails" class="mt-4 space-y-3 border-t border-gray-100 pt-3">
+        <p><b>Slot:</b> {{ job.slotNumber }}</p>
+        <p><b>Customer:</b> {{ job.customerName }} ({{ job.customerEmail }}, {{ job.customerPhone }})</p>
+        <p><b>Lead:</b> {{ job.leadDescription }} <span class="text-green-600">{{ job.leadStatus }}</span></p>
+        <p><b>Location:</b> {{ job.areaName }}, {{ job.cityName }}</p>
+        <p><b>Category:</b> {{ job.categoryName }} → {{ job.subCategoryName }}</p>
+
+        <button *ngIf="job.status !== 'completed'" (click)="completeJob(job)"
+                class="mt-2 bg-green-500 text-white px-3 py-1 rounded-full hover:bg-green-600">
+          Complete Job
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="flex justify-end items-center gap-4 mt-8">
+    <button class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50"
+            [disabled]="pageNumber === 1" (click)="onPageChange(pageNumber - 1)">
+      Prev
+    </button>
+
+    <span class="text-sm text-gray-600">Page {{ pageNumber }} of {{ totalPages }}</span>
+
+    <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+            [disabled]="pageNumber * pageSize >= totalCount" (click)="onPageChange(pageNumber + 1)">
+      Next
+    </button>
+  </div>
+</div>
+
+<!-- No Jobs Message -->
+<div *ngIf="!isLoading && companyJobs.length === 0" class="flex flex-col items-center justify-center py-20 px-4">
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-gray-300 mb-4 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6m4 0v-6a6 6 0 00-12 0v6m0 0h12" />
+  </svg>
+  <h2 class="text-xl font-semibold text-gray-600 mb-2">No jobs found</h2>
+  <p class="text-gray-400 text-sm md:text-base">There are currently no jobs assigned. Please check back later.</p>
+  <button (click)="loadCompanyJobs()" class="mt-6 px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 shadow-md hover:shadow-lg transition">
+    Refresh
+  </button>
+</div>

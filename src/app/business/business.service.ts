@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
-  import { environment } from '../../environments/environment.prod';
+
+
+
+ import { environment } from '../../environments/environment.prod';
 // import { environment } from '../../environments/environment';
+
 import { Branch } from './models/branch.model';
 import { PagedResult } from './models/paged-result.model';
 
@@ -548,9 +552,7 @@ export class SellerService {
   deleteBusinessUser(id: number) {
     return this.http.delete(`${this.apiUrl}/delete-business-members/${id}`);
   }
-  getProviderUsers() {
-    return this.http.get(`${environment.apiBaseUrl}/providerUser/provider-users`);
-  }
+ 
   //lead Assignments
   assignJob(data: any) {
     return this.http.post(`${environment.apiBaseUrl}/providerUser/assignJobToBusinessuser`, data);
@@ -642,4 +644,12 @@ getProviderProfileByEmail(email?: string, phone?: string) {
 //     return this.http.get<any>(`${this.apiUrl}/getJobs?page=${page}&pageSize=${pageSize}`);
 //   }
 
+ // getProviderUsers() {
+  //   return this.http.get(`${environment.apiBaseUrl}/providerUser/provider-users`);
+  // }
+getProviderUsers( page: number, pageSize: number) {
+  return this.http.get<any>(
+    `${environment.apiBaseUrl}/providerUser/provider-users?pageNumber=${page}&pageSize=${pageSize}`
+  );
+}
 }

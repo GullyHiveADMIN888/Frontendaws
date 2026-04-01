@@ -1,197 +1,22 @@
-
-
-// import { Component, OnInit } from '@angular/core';
-// import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-// import { Router, ActivatedRoute } from '@angular/router';
-// import { SellerService, PublicProfile } from '../../seller.service';
-
-// @Component({
-//   selector: 'app-edit-profile',
-//   templateUrl: './edit-profile.component.html',
-//   styleUrls: ['./edit-profile.component.css']
-// })
-// export class EditProfileComponent implements OnInit {
-//   showUserMenu = false;
-//   profileImage: string | ArrayBuffer | null = null;
-//   editForm: FormGroup;
-//   sellerId!: number;
-//   loading = true;
-//   profile!: PublicProfile;
-//   previewImage: string | ArrayBuffer | null = null;
-//  states: any[] = []; // list of states
-//   cities: any[] = [];
-//   selectedStateId!: number;
-// selectedCityId!: number;
-
-
-//   constructor(
-//     private fb: FormBuilder,
-//     private router: Router,
-//     private route: ActivatedRoute,
-//     private sellerService: SellerService
-//   ) {
-    
-// this.editForm = this.fb.group({
-//   firstName: ['', Validators.required],
-//    lastName: [''],
-//   email: ['', [Validators.required, Validators.email]],
-//   phone: ['', Validators.required],
-//   description: [''],
-//   address: [''],   // Street / Line 1
-//   line1: [''],     // optional Line 1
-//   line2: [''],     // optional Line 2
-//   landmark: [''],
-//   locality: [''],
-//   city: ['', Validators.required],
-//   state: ['', Validators.required],
-//   pincode: ['', Validators.required],
-//   website: [''],
-//   linkedin: ['']
-// });
-
-
-//   }
-
-
-
-// ngOnInit(): void {
-//   this.sellerService.getStates().subscribe(states => {
-//     this.states = states;
-
-//     this.route.paramMap.subscribe(params => {
-//       const id = params.get('id');
-//       if (id) {
-//         this.sellerId = +id;
-//         this.loadProfile(this.sellerId);
-//       }
-//     });
-//   });
-// }
-// loadProfile(sellerId: number) {
-//   this.sellerService.getPublicProfile(sellerId).subscribe(data => {
-//     this.profile = data;
-
-//     const names = data.displayName?.split(' ') || [];
-
-//     this.editForm.patchValue({
-//       firstName: names[0] || '',
-//       lastName: names.slice(1).join(' '),
-//       email: data.email,
-//       phone: data.phone,
-//       description: data.description,
-//       line1: data.addressLine1,
-//       line2: data.addressLine2,
-//       locality: data.locality,
-//       landmark: data.landmark,
-//       pincode: data.pincode,
-//       state: data.addressStateId   // ✅ ID
-//     });
-
-//     if (data.addressStateId) {
-//       this.loadCities(data.addressStateId, data.addressCityId);
-//     }
-//   });
-// }
-// loadCities(stateId: number, cityId?: number) {
-//   this.sellerService.getCitiess(stateId).subscribe(cities => {
-//     this.cities = cities;
-
-//     if (cityId) {
-//       this.editForm.patchValue({ city: cityId }); // ✅ ID
-//     }
-//   });
-// }
-
-
-// onStateChange(event: any) {
-//   const stateId = event.target.value;
-//   this.editForm.patchValue({ city: '' }); // reset city
-//   if (stateId) this.loadCities(stateId);
-// }
-
-
-
-
-
-//   toggleUserMenu() {
-//     this.showUserMenu = !this.showUserMenu;
-//   }
-
-
-//   onImageSelected(event: any) {
-//   const file = event.target.files?.[0];
-//   if (file) {
-//     // Show preview
-//     const reader = new FileReader();
-//     reader.onload = () => (this.previewImage = reader.result);
-//     reader.readAsDataURL(file);
-
-//     // Save file to send to backend
-//     this.selectedFile = file;
-//   }
-// }
-// selectedFile: File | null = null;
-
-
-
-
-
-// onSubmit() {
-//   if (this.editForm.invalid) return;
-
-//   const form = this.editForm.value;
-//   const formData = new FormData();
-
-//   formData.append('DisplayName', `${form.firstName} ${form.lastName}`.trim());
-//   formData.append('Email', form.email);
-//   formData.append('Phone', form.phone);
-//   formData.append('Description', form.description || '');
-//   formData.append('AddressLine1', form.line1 || '');
-//   formData.append('AddressLine2', form.line2 || '');
-//   formData.append('Locality', form.locality || '');
-//   formData.append('Landmark', form.landmark || '');
-  
-  
-//   formData.append('City', form.city.toString());   // bigint
-// formData.append('State', form.state.toString()); // bigint
-
-//   formData.append('Pincode', form.pincode || '');
-//   if (this.selectedFile) formData.append('ProfilePicture', this.selectedFile);
-
-//   this.sellerService.updateProfile(this.sellerId, formData).subscribe({
-//     next: () => {
-//       alert('Profile updated successfully!');
-//       this.router.navigate(['/seller/settings']);
-//     },
-//     error: (err) => {
-//       console.error('Update failed', err);
-//       alert('Failed to update profile');
-//     }
-//   });
-// }
-
-
-//  getInitials(name: string): string {
-//     return name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '';
-//   }
-//   cancel() {
-//     this.router.navigate(['/seller/settings']);
-//   }
-// }
-
-
-
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,Output,  EventEmitter, } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { SellerService, PublicProfile } from '../../business.service';
+import { OTPVerificationWithoutIdComponent } from '../../../auth/otp-verification-without-id/otp-verification-without-id.component';
+import { AuthService, SendOtpEmailWithoutUserIdRequest, VerifyOtpEmailWithoutUserIdRequest } from '../../../auth/auth.service';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-edit-profile',
     templateUrl: './edit-profile.component.html',
     styleUrls: ['./edit-profile.component.css'],
-    standalone: false
+     standalone: true,
+      imports: [CommonModule,
+    ReactiveFormsModule,OTPVerificationWithoutIdComponent   
+  ]
 })
+
 export class EditProfileComponent implements OnInit {
   editForm: FormGroup;
   sellerId!: number;
@@ -201,8 +26,9 @@ export class EditProfileComponent implements OnInit {
   states: any[] = [];
   cities: any[] = [];
   errors: any = {};
-
+@Output() onVerified = new EventEmitter<string>();
   constructor(
+    private authService: AuthService,
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
@@ -223,6 +49,7 @@ export class EditProfileComponent implements OnInit {
       pincode: [''],
       website: [''],
       linkedin: [''],
+        otp: ['']
     //  areaName: [''],
      // areaId: ['']
     });
@@ -239,34 +66,42 @@ export class EditProfileComponent implements OnInit {
         }
       });
     });
+      this.editForm.get('phone')?.valueChanges.subscribe(value => {
+    if (value !== this.originalPhone) {
+      this.otpVerified = false;
+    }
+  });
   }
 
-  // loadProfile(sellerId: number) {
-  //   this.sellerService.getPublicProfile(sellerId).subscribe(data => {
-  //     this.profile = data;
-  //     const names = data.displayName?.split(' ') || [];
-  //     this.editForm.patchValue({
-  //       firstName: names[0] || '',
-  //       lastName: names.slice(1).join(' '),
-  //       email: data.email,
-  //       phone: data.phone,
-  //       description: data.description,
-  //       line1: data.addressLine1,
-  //       line2: data.addressLine2,
-  //       locality: data.areaName,
-  //       areaId: data.areaId,
-  //       landmark: data.landmark,
-  //       pincode: data.pincode,
-  //       state: data.addressStateId
-  //     });
-  //     if (data.addressStateId) {
-  //       this.loadCities(data.addressStateId, data.addressCityId);
-  //     }
-  //   });
-  // }
+// loadProfile(sellerId: number) {
+//   this.sellerService.getPublicProfile(sellerId).subscribe(data => {
+//     this.profile = data;
+//    console.log('sdsf', data)
+//     const names = data.displayName?.split(' ') || [];
+
+//     this.editForm.patchValue({
+//       firstName: names[0] || '',
+//       lastName: names.slice(1).join(' '),
+//       email: data.email,
+//       phone: data.phone,
+//       description: data.description,
+//       line1: data.addressLine1,
+//       line2: data.addressLine2,
+//       landmark: data.landmark,
+//       pincode: data.pincode,
+//       state: data.addressStateId
+//     });
+
+//     if (data.addressStateId) {
+//       this.loadCities(data.addressStateId, data.addressCityId, data.areaId);
+//     }
+//   });
+// }
 loadProfile(sellerId: number) {
   this.sellerService.getPublicProfile(sellerId).subscribe(data => {
     this.profile = data;
+
+    this.originalPhone = data.phone; // ✅ IMPORTANT
 
     const names = data.displayName?.split(' ') || [];
 
@@ -288,13 +123,6 @@ loadProfile(sellerId: number) {
     }
   });
 }
-
-  // loadCities(stateId: number, cityId?: number) {
-  //   this.sellerService.getCitiess(stateId).subscribe(cities => {
-  //     this.cities = cities;
-  //     if (cityId) this.editForm.patchValue({ city: cityId });
-  //   });
-  // }
   loadCities(stateId: number, cityId?: number, areaId?: number) {
   this.sellerService.getCitiess(stateId).subscribe(cities => {
     this.cities = cities;
@@ -401,6 +229,14 @@ loadProfile(sellerId: number) {
   }
 
   onSubmit() {
+
+      const phoneChanged = this.editForm.get('phone')?.value !== this.originalPhone;
+
+  if (phoneChanged) {
+    alert('Please verify your mobile number first');
+    return;
+  }
+
      if (!this.validateForm()) {
     //   alert('Please correct the errors in the form');
        return;
@@ -455,7 +291,61 @@ onCityChange(event: any) {
     });
   }
 }
+//otp verification
 
+originalPhone: string = '';
+otpSent: boolean = false;
+otpVerified: boolean = false;
+otp: string = '';
+showOtpModal: boolean = false;
+otpPhone: string = '';
+// showOtpModal: boolean = false;
+// otpPhone: string = '';
+otpSending: boolean = false;
+otpVerifying: boolean = false;
+async sendOtp() {
+  const phone = this.editForm.get('phone')?.value;
+
+  if (!/^\d{10}$/.test(phone)) {
+    alert('Enter valid phone number');
+    return;
+  }
+
+  try {
+    debugger;
+        this.otpPhone = phone;      // ✅ SET FIRST
+    this.showOtpModal = true;   // ✅ THEN OPEN MODAL
+    await this.authService.sendOtp(phone);
+
+    this.otpPhone = phone;      // ✅ SET FIRST
+    this.showOtpModal = true;   // ✅ THEN OPEN MODAL
+
+  } catch (err) {
+    alert('Failed to send OTP');
+  }
+}
+
+verifyOtp() {
+  this.otpVerified = true;
+  this.originalPhone = this.editForm.get('phone')?.value;
+
+  this.showOtpModal = false;
+
+  alert('Mobile number verified successfully');
+}
+onSubmits() {
+  const phoneChanged = this.editForm.get('phone')?.value !== this.originalPhone;
+
+  if (phoneChanged && !this.otpVerified) {
+    alert('Please verify your mobile number first');
+    return;
+  }
+
+  // proceed API call
+}
+closeOtpModal() {
+  this.showOtpModal = false;
+}
 
 }
 

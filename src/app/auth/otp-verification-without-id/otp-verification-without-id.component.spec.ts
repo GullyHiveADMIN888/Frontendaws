@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OtpVerificationWithoutIdComponent } from './otp-verification-without-id.component';
+import { OTPVerificationWithoutIdComponent } from './otp-verification-without-id.component';
 
 describe('OtpVerificationWithoutIdComponent', () => {
-  let component: OtpVerificationWithoutIdComponent;
-  let fixture: ComponentFixture<OtpVerificationWithoutIdComponent>;
+  let component: OTPVerificationWithoutIdComponent;
+  let fixture: ComponentFixture<OTPVerificationWithoutIdComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OtpVerificationWithoutIdComponent]
+      imports: [OTPVerificationWithoutIdComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(OtpVerificationWithoutIdComponent);
+    fixture = TestBed.createComponent(OTPVerificationWithoutIdComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

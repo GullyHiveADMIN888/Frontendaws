@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders ,HttpParams } from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
   import { environment } from '../../environments/environment.prod';
- // import { environment } from '../../environments/environment';
+// import { environment } from '../../environments/environment';
+  import { CompanyJob } from './company-job/models/company.model';
 // --- Dashboard & Stats ---
 export interface SellerStats {
   totalLeads: number;
@@ -45,6 +46,15 @@ export interface Lead {
   offerStatus?: string;
   areaId?: number;
    leadId: number;
+   hasQuote?: boolean;
+    quoteDetails?: {
+  providerName: string;
+  priceMin: number;
+  priceMax: number;
+  message: string;
+  status: string;
+  submittedAt: string;
+}[];
 
 }
 
@@ -60,6 +70,7 @@ export interface DashboardData {
   totalBalance?: number;
   cashableBalance?: number;
   nonCashableBalance?: number;
+  requestCount?:number;
 }
 
 
@@ -207,7 +218,13 @@ export interface WalletTransaction {
 }
 
 
-
+interface PaginatedResponse<T> {
+  success: boolean;
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  data: T[];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -255,16 +272,27 @@ export class SellerService {
   }
 
 
-  getLeads(): Observable<Lead[]> {
-    return this.http
-      .get<{ success: boolean; data: Lead[] }>(
-        `${this.apiUrl}/leads`, // no userId needed
-        { headers: this.getHeaders() } // token carries userId
-      )
-      .pipe(map(res => res.data));
-  }
+  // getLeads(): Observable<Lead[]> {
+  //   return this.http
+  //     .get<{ success: boolean; data: Lead[] }>(
+  //       `${this.apiUrl}/leads`, // no userId needed
+  //       { headers: this.getHeaders() } // token carries userId
+  //     )
+  //     .pipe(map(res => res.data));
+  // }
 
 // 🔹 Buy Lead
+  // 🔹 Buy Lead
+  getLeads(page: number = 1, pageSize: number = 25, status?: string): Observable<any> {
+  let url = `${this.apiUrl}/leads?page=${page}&pageSize=${pageSize}`;
+  
+  // ✅ Add status parameter if provided and not 'all'
+  if (status && status !== 'all') {
+    url += `&status=${status}`;
+  }
+  
+  return this.http.get<any>(url, { headers: this.getHeaders() });
+}
 buyLead(leadId: number): Observable<any> {
   const providerId = Number(localStorage.getItem('userId'));
 
@@ -513,6 +541,20 @@ updateLegalIdentity(providerId: number, formData: FormData) {
   );
 }
 
- 
+ getCompanyJobs(pageNumber: number = 1, pageSize: number = 25): Observable<PaginatedResponse<CompanyJob>> {
+    let params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
 
+    return this.http.get<PaginatedResponse<CompanyJob>>(`${environment.apiBaseUrl}/companyDetails/getCompanyJobs`, { params });
+  }
+getInvitations(page: number = 1, pageSize: number = 25) {
+  return this.http.get<any>(
+    `${environment.apiBaseUrl}/companyDetails/companyInvitations?pageNumber=${page}&pageSize=${pageSize}`
+  );
+}
+  getQuoteAssignments(leadId: number) {
+    return this.http.get(`${this.apiUrl}/${leadId}/quotes`);
+  }
+ 
 }

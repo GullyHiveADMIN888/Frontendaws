@@ -1,4 +1,4 @@
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+<!-- <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
   @for (stat of stats; track stat) {
     <div
       (click)="onCardClick(stat)"
@@ -29,4 +29,47 @@
       </p>
     </div>
   }
+</div> -->
+
+<div class="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-2 mb-4">
+
+  @for (stat of stats; track stat) {
+    <div
+      (click)="onCardClick(stat)"
+      class="bg-white border border-gray-200 rounded-md p-2 cursor-pointer
+             hover:shadow-sm transition-all hover:scale-[1.01]"
+    >
+
+      <!-- icon row -->
+      <div class="flex items-center justify-between mb-1">
+        <div
+          class="w-7 h-7 rounded-md flex items-center justify-center"
+          [ngClass]="stat.color"
+        >
+          <i [class]="stat.icon + ' text-sm'"></i>
+        </div>
+
+        @if (stat.trend === 'up') {
+          <i class="ri-arrow-up-line text-green-600 text-xs"></i>
+        }
+      </div>
+
+      <!-- value -->
+      <h3 class="text-lg font-bold text-gray-900 leading-tight">
+        {{ stat.value }}
+      </h3>
+
+      <!-- label -->
+      <p class="text-xs text-gray-600 truncate">
+        {{ stat.label }}
+      </p>
+
+      <!-- change -->
+      <p class="text-[10px] text-gray-400">
+        {{ stat.change }}
+      </p>
+
+    </div>
+  }
+
 </div>

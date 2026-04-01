@@ -26,144 +26,36 @@
             class="font-medium transition-colors cursor-pointer font-inter text-gray-700 hover:text-orange-600">
             Login
           </button>
-          <a routerLink="/register"
+          <a routerLink="/auth/register"
             class="bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-orange-700 transition-colors whitespace-nowrap cursor-pointer font-inter">Join
           as Provider</a>
         </div>
-        <button class="md:hidden text-gray-900 cursor-pointer">
+        <button (click)="toggleMenu()" class="md:hidden text-gray-900 cursor-pointer">
           <i class="ri-menu-line text-2xl"></i>
         </button>
       </div>
     </div>
+    <!-- Mobile Menu -->
+@if (isMenuOpen) {
+  <div class="md:hidden mt-2 bg-white shadow-lg rounded-lg p-4 space-y-3">
+    <a href="#services"  (click)="isMenuOpen = false" class="block">Services</a>
+    <a href="#how-it-works"  (click)="isMenuOpen = false" class="block">How It Works</a>
+    <a href="#providers"  (click)="isMenuOpen = false" class="block">Providers</a>
+    <a href="#testimonials"  (click)="isMenuOpen = false"  class="block">Reviews</a>
+
+    <button (click)="openLoginModal(); isMenuOpen = false" class="block w-full text-left">
+      Login
+    </button>
+
+    <a routerLink="/auth/register"  (click)="isMenuOpen = false" class="block text-center bg-orange-600 text-white py-2 rounded-lg">
+      Join as Provider
+    </a>
+  </div>
+}
   </nav>
 
   <!-- Login Modal -->
 
-
-  @if (showLoginModal) {
-    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
-      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
-        <button (click)="closeLoginModal()"
-          class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
-          <i class="ri-close-line text-2xl text-gray-600"></i>
-        </button>
-        <div class="text-center mb-8">
-          <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="ri-user-line text-3xl text-orange-600"></i>
-          </div>
-          <h2 class="text-3xl font-bold text-gray-900 font-poppins">Welcome Back</h2>
-          <p class="text-gray-600 font-inter mt-2">Login to your account</p>
-        </div>
-        @if (loginError) {
-          <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p class="text-red-800 font-inter text-sm">{{ loginError }}</p>
-          </div>
-        }
-        <!-- Using reactive form approach -->
-        <form [formGroup]="loginForm" (ngSubmit)="onLoginSubmit($event)" class="space-y-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
-              Email Address
-            </label>
-            <input type="email" formControlName="email"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-              placeholder="your.email@example.com"
-              [class.border-red-500]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" />
-              @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-                <div
-                  class="mt-1 text-sm text-red-600">
-                  @if (loginForm.get('email')?.errors?.['required']) {
-                    <span>Email is required</span>
-                  }
-                  @if (loginForm.get('email')?.errors?.['email']) {
-                    <span>Please enter a valid email</span>
-                  }
-                </div>
-              }
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
-                Password
-              </label>
-              <input type="password" formControlName="password"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
-                placeholder="Enter your password"
-                [class.border-red-500]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" />
-                @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-                  <div
-                    class="mt-1 text-sm text-red-600">
-                    @if (loginForm.get('password')?.errors?.['required']) {
-                      <span>Password is required</span>
-                    }
-                    @if (loginForm.get('password')?.errors?.['minlength']) {
-                      <span>Password must be at least 6 characters</span>
-                    }
-                  </div>
-                }
-              </div>
-        <!--      <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Captcha
-                </label>
-                <div class="flex items-center gap-3">
-                  <img
-                    [src]="captchaUrl"
-                    alt="captcha"
-                    class="w-2/5 h-11 border rounded"
-                    crossorigin="use-credentials"
-                    />
-                    <button
-                      type="button"
-                      (click)="refreshCaptcha()"
-                      class="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300"
-                      >
-                      ↻
-                    </button>
-                    <input
-                      type="text"
-                      formControlName="captcha"
-                      placeholder="Enter captcha"
-                      class="w-3/5 px-4 py-2 border rounded" maxlength="6"
-                      />
-                    </div>
-                    @if (loginForm.get('captcha')?.invalid && loginForm.get('captcha')?.touched) {
-                      <div
-                        class="mt-1 text-sm text-red-600 font-inter">
-                        @if (loginForm.get('captcha')?.errors?.['required']) {
-                          <span>
-                            Captcha is required
-                          </span>
-                        }
-                      </div>
-                    }
-                  </div>-->
-                  <div class="flex items-center justify-between">
-                    <label class="flex items-center cursor-pointer">
-                      <input type="checkbox" formControlName="rememberMe"
-                        class="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500 cursor-pointer" />
-                        <span class="ml-2 text-sm text-gray-600 font-inter">Remember me</span>
-                      </label>
-                      <a href="#" class="text-sm text-orange-600 hover:text-orange-700 font-inter cursor-pointer"
-                        (click)="forgotPassword($event)">
-                        Forgot password?
-                      </a>
-                    </div>
-                    <button type="submit" [disabled]="isLoggingIn || loginForm.invalid"
-                      class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap cursor-pointer font-inter">
-                      {{ isLoggingIn ? 'Logging in...' : 'Login' }}
-                    </button>
-                  </form>
-                  <div class="mt-6 text-center">
-                    <p class="text-sm text-gray-600 font-inter">
-                      Don't have an account?{{' '}}
-                      <a routerLink="/register" class="text-orange-600 hover:text-orange-700 font-semibold cursor-pointer">
-                        Register as Provider
-                      </a>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            }
 
 
             <!-- Hero Section -->
@@ -660,7 +552,7 @@
                                 <div>
                                   <h4 class="font-semibold mb-4 font-inter">For Providers</h4>
                                   <ul class="space-y-3">
-                                    <li><a routerLink="/register"
+                                    <li><a routerLink="/auth/register"
                                       class="text-orange-100 hover:text-white transition-colors cursor-pointer font-inter">Join as
                                     Provider</a></li>
                                     <li><a href="#"
@@ -725,6 +617,99 @@
                               </div>
                             </div>
                           </footer>
+
+               </div>
+                          
+                        @if (showLoginModal) {
+    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
+        <button (click)="closeLoginModal()"
+          class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
+          <i class="ri-close-line text-2xl text-gray-600"></i>
+        </button>
+        <div class="text-center mb-8">
+          <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="ri-user-line text-3xl text-orange-600"></i>
+          </div>
+          <h2 class="text-3xl font-bold text-gray-900 font-poppins">Welcome Back</h2>
+          <p class="text-gray-600 font-inter mt-2">Login to your account</p>
+        </div>
+        @if (loginError) {
+          <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p class="text-red-800 font-inter text-sm">{{ loginError }}</p>
+          </div>
+        }
+        <!-- Using reactive form approach -->
+        <form [formGroup]="loginForm" (ngSubmit)="onLoginSubmit($event)" class="space-y-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
+              Email Address
+            </label>
+            <input type="email" formControlName="email"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+              placeholder="your.email@example.com"
+              [class.border-red-500]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" />
+              @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+                <div
+                  class="mt-1 text-sm text-red-600">
+                  @if (loginForm.get('email')?.errors?.['required']) {
+                    <span>Email is required</span>
+                  }
+                  @if (loginForm.get('email')?.errors?.['email']) {
+                    <span>Please enter a valid email</span>
+                  }
+                </div>
+              }
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2 font-inter">
+                Password
+              </label>
+              <input type="password" formControlName="password"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-inter"
+                placeholder="Enter your password"
+                [class.border-red-500]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" />
+                @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+                  <div
+                    class="mt-1 text-sm text-red-600">
+                    @if (loginForm.get('password')?.errors?.['required']) {
+                      <span>Password is required</span>
+                    }
+                    @if (loginForm.get('password')?.errors?.['minlength']) {
+                      <span>Password must be at least 6 characters</span>
+                    }
+                  </div>
+                }
+              </div>
+      
+                  <div class="flex items-center justify-between">
+                    <label class="flex items-center cursor-pointer">
+                      <input type="checkbox" formControlName="rememberMe"
+                        class="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500 cursor-pointer" />
+                        <span class="ml-2 text-sm text-gray-600 font-inter">Remember me</span>
+                      </label>
+                      <a href="#" class="text-sm text-orange-600 hover:text-orange-700 font-inter cursor-pointer"
+                        (click)="forgotPassword($event)">
+                        Forgot password?
+                      </a>
+                    </div>
+                    <button type="submit" [disabled]="isLoggingIn || loginForm.invalid"
+                      class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap cursor-pointer font-inter">
+                      {{ isLoggingIn ? 'Logging in...' : 'Login' }}
+                    </button>
+                  </form>
+                  <div class="mt-6 text-center">
+                    <p class="text-sm text-gray-600 font-inter">
+                      Don't have an account?{{' '}}
+                      <a routerLink="/auth/register" class="text-orange-600 hover:text-orange-700 font-semibold cursor-pointer">
+                        Register as Provider
+                      </a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+                          }
+
                           <!-- Forgot Password Modal -->
                           @if (showForgotPasswordModal) {
                             <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
@@ -775,7 +760,7 @@
                             </div>
                           }
 
-                        </div>
+                       
 
                         <!-- OTP Modal -->
                         @if (showOtpModals) {

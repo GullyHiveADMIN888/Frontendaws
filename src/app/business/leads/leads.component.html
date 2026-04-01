@@ -6,7 +6,7 @@
   <h1 class="text-3xl font-bold mb-4">Leads</h1>
 
   <!-- FILTERS -->
-  <div class="flex gap-3 mb-4">
+  <!-- <div class="flex gap-3 mb-4">
     @for (s of statuses; track s) {
     <button (click)="setFilter(s.value)" class="px-4 py-2 rounded-lg font-medium" [ngClass]="filterStatus === s.value 
       ? 'bg-orange-600 text-white' 
@@ -14,13 +14,24 @@
       {{ s.label }}
     </button>
     }
-  </div>
+  </div> -->
 
-
+<div class="flex flex-wrap gap-2 sm:gap-3 mb-4 overflow-x-auto">
+  @for (s of statuses; track s) {
+    <button
+      (click)="setFilter(s.value)"
+      class="px-3 sm:px-4 py-2 rounded-lg font-medium whitespace-nowrap text-xs sm:text-sm transition"
+      [ngClass]="filterStatus === s.value 
+        ? 'bg-orange-600 text-white' 
+        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
+      {{ s.label }}
+    </button>
+  }
+</div>
 
   <!-- TOP BAR -->
-  <div class="flex justify-between items-center mb-6">
-
+  <!-- <div class="flex justify-between items-center mb-6"> -->
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
     <!-- LEFT: COUNT -->
     <div class="text-sm text-gray-600">
       Showing
@@ -45,7 +56,8 @@
     @for (lead of leads; track lead.leadId)
     {
     <div class="bg-white border rounded-2xl p-4 sm:p-6 transition hover:shadow-2xl hover:-translate-y-1 duration-300">
-      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+      <!-- <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4"> -->
+        <div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
         <!-- LEFT -->
         <div class="flex-1">
           <!-- Title + Badges -->
@@ -96,23 +108,33 @@
             {{ lead.description }}
           </p>
           <!-- META -->
-          <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 text-sm text-gray-500 mt-4">
-            <span class="flex items-center gap-1">
-              <i class="ri-map-pin-line text-orange-500"></i>
-              {{ lead.location }}
-              @if (lead?.areaName) {
-              <span>({{ lead?.areaName }})</span>
-              }
-            </span>
-            <span class="flex items-center gap-1">
-              <i class="ri-time-line text-orange-500"></i>
-              {{ lead.time }}
-            </span>
-            <span class="flex items-center gap-1">
-              <i class="ri-wallet-3-line text-orange-500"></i>
-              ₹{{ lead.providerPrice || 'Undefined'}}
-            </span>
-          </div>
+       <div class="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-3 text-sm text-gray-500 mt-4">
+
+  <!-- Location -->
+  <span class="flex items-start gap-1 w-full sm:w-auto">
+    <i class="ri-map-pin-line text-orange-500 mt-0.5"></i>
+
+    <span class="break-words">
+      {{ lead.location }}
+      @if (lead?.areaName) {
+        <span> ({{ lead?.areaName }})</span>
+      }
+    </span>
+  </span>
+
+  <!-- Time -->
+  <span class="flex items-center gap-1 w-full sm:w-auto">
+    <i class="ri-time-line text-orange-500"></i>
+    {{ lead.time }}
+  </span>
+
+  <!-- Price -->
+  <span class="flex items-center gap-1 w-full sm:w-auto">
+    <i class="ri-wallet-3-line text-orange-500"></i>
+    ₹{{ lead.providerPrice || 'Undefined' }}
+  </span>
+
+</div>
 
 
 
@@ -184,16 +206,19 @@
           }
         </div>
         <!-- RIGHT -->
-        <div class="flex sm:flex-col items-center sm:items-end justify-between gap-3">
+        <!-- <div class="flex sm:flex-col items-center sm:items-end justify-between gap-3"> -->
+          <div class="flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end gap-3">
           <!-- PRICE CARD -->
-          <div class="bg-orange-50 border border-orange-200 px-4 py-2 rounded-xl text-center">
+          <!-- <div class="bg-orange-50 border border-orange-200 px-4 py-2 rounded-xl text-center"> -->
+            <div class="bg-orange-50 border border-orange-200 px-3 sm:px-4 py-2 rounded-xl text-center w-full sm:w-auto">
             <p class="text-xs text-gray-500">Lead Price</p>
             <p class="text-2xl font-bold text-orange-600">
               ₹{{ lead?.leadPrice || 'N/A' }}
             </p>
           </div>
           <!-- BUTTONS -->
-          <div class="flex sm:flex-col gap-2 w-full sm:w-auto">
+          <!-- <div class="flex sm:flex-col gap-2 w-full sm:w-auto"> -->
+            <div class="grid grid-cols-2 sm:flex sm:flex-col gap-2 w-full sm:w-auto">
             <button *ngIf="canShowQuoteButton(lead)"
               class="flex-1 sm:flex-none px-4 py-2 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition font-medium shadow hover:shadow-lg"
               (click)="handleSendQuote(lead)">
@@ -824,19 +849,7 @@
         <p><strong>Email:</strong> {{selectedEmployee.email}}</p>
 
         <p><strong>Phone:</strong> {{selectedEmployee.phone}}</p>
-<!-- 
-        <p>
-          <strong>Status:</strong>
 
-          <span class="px-2 py-0.5 rounded text-xs" [ngClass]="selectedEmployee.status === 'active'
-            ? 'bg-green-100 text-green-700'
-            : 'bg-gray-200 text-gray-600'">
-
-            {{selectedEmployee.status}}
-
-          </span>
-
-        </p> -->
 
       </div>
 

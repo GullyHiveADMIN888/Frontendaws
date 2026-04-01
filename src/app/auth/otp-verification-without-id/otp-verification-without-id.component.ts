@@ -18,16 +18,17 @@ import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { interval, Subscription } from 'rxjs';
 import { AuthService } from '../auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-otp-verification-without-id',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule,CommonModule],
   template: `
     <div class="otp-verification-container">
       <div class="otp-header">
         <h3>Verify Your Mobile Number</h3>
-        <p class="text-muted">Enter the 6-digit OTP sent to <strong>{{ mobile }}</strong></p>
+        <p class="text-muted">Enter the 6-digit OTP sent to <strong>+91 {{ mobile }}</strong></p>
       </div>
 
       <!-- Manual OTP Inputs - No *ngFor -->

@@ -52,8 +52,6 @@ export interface OtpEmailWithoutUserIdResponse {
 
 @Injectable({ providedIn: 'root' })
 
-
-
 export class AuthService implements CanActivate {
   private apiUrl = `${environment.apiBaseUrl}/auth`;
 
@@ -72,7 +70,8 @@ export class AuthService implements CanActivate {
 
     if (!token) {
       // No token → redirect to login
-      this.router.navigate(['/login']);
+     // this.router.navigate(['/login']);
+     this.router.navigate(['/login'], { replaceUrl: true });
       return false;
     }
 
@@ -116,7 +115,8 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
       Provider_User_Ops_Manager: '/provider_User_Ops_Manager',
     };
 
-    this.router.navigate([routes[role] ?? '/login']);
+   // this.router.navigate([routes[role] ?? '/login']);
+   this.router.navigate([routes[role] ?? '/login'], { replaceUrl: true });
   }
 
 //   redirectByRole(role: string, providerType?: string | null,  businessUserId?: boolean, businessUserRole?: string | null) {
@@ -161,23 +161,44 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
 
   logout() {
     localStorage.clear();
-    this.router.navigate(['/login']);
+  //  this.router.navigate(['/login']);
+  this.router.navigate(['/login'], { replaceUrl: true });
   }
 
-  getRole() {
-    return localStorage.getItem('role');
+  // getRole() {
+  //   return localStorage.getItem('role');
+  // }
+    getRole(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.role;
+    } catch {
+      return null;
+    }
   }
   // getter for userId
   getUserId(): string | null {
     return localStorage.getItem('userId');
   }
 
-  getToken(): string | null {
+  // getToken(): string | null {
+  //   return localStorage.getItem('token');
+  // }
+ getToken(): string | null {
     return localStorage.getItem('token');
   }
+  // isLoggedIn() {
+  //   return !!localStorage.getItem('token');
+  // }
+    isLoggedIn(): boolean {
+    const token = this.getToken();
+    if (!token) return false;
 
-  isLoggedIn() {
-    return !!localStorage.getItem('token');
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.exp * 1000 > Date.now();
   }
   // Service Categories APIs
   getParentCategories(): Observable<any[]> {
@@ -253,6 +274,7 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
     await this.recaptchaVerifier.render();
   }
   async sendOtp(mobile: string): Promise<void> {
+    debugger;
     await this.initRecaptcha();
 
     const phoneNumber = `+91${mobile}`;
@@ -288,15 +310,23 @@ saveAuth(token: string, role: string, name?: string, userId?: string) {
       phone
     });
   }
-  // 🔹 Send Email OTP
+  //  Send Email OTP
   sendEmailOtp(payload: { userId: number; email: string; fullName: string }): Observable<{ token: string }> {
     return this.http.post<{ token: string }>(`${this.apiUrl}/send-email-otp`, payload);
   }
 
-  // 🔹 Verify Email OTP
+  //  Verify Email OTP
   verifyEmailOtp(payload: { otp: string; token: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/verify-email-otp`, payload);
   }
+isWebView(): boolean {
+  const userAgent = navigator.userAgent || '';
 
+  return (
+    userAgent.includes('wv') || 
+    userAgent.includes('WebView') ||
+    userAgent.includes('Android') && userAgent.includes('Version')
+  );
+}
 }
 
