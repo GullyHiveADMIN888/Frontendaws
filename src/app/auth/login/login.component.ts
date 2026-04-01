@@ -194,52 +194,38 @@ passwordError = '';
 
 
 
-// private handleBackButton() {
-
-//   // Push initial state
-//   history.pushState(null, '', location.href);
-
-//   window.addEventListener('popstate', () => {
-
-//     const isLoggedIn = this.authService.isLoggedIn();
-
-//     if (isLoggedIn) {
-//       //  EXIT APP (APK)
-//       (navigator as any).app?.exitApp?.();
-
-//       // Fallback (if exitApp not available)
-//       window.close();
-//     } else {
-//       // Not logged in → stay on login
-//       this.router.navigate(['/auth/login'], { replaceUrl: true });
-//     }
-
-//     // Prevent further back navigation
-//     history.pushState(null, '', location.href);
-//   });
-// }
-
-
-
  
 
-  handleBackButton(): void {
-    const isLoggedIn = localStorage.getItem('token');
+  // handleBackButton(): void {
+  //   const isLoggedIn = localStorage.getItem('token');
 
-    if (isLoggedIn) {
-      // 🚀 EXIT APP (APK)
-      if ((navigator as any).app?.exitApp) {
-        (navigator as any).app.exitApp();
-      } else {
-        // fallback
-        window.close();
-      }
+  //   if (isLoggedIn) {
+  //     // 🚀 EXIT APP (APK)
+  //     if ((navigator as any).app?.exitApp) {
+  //       (navigator as any).app.exitApp();
+  //     } else {
+  //       // fallback
+  //       window.close();
+  //     }
+  //   } else {
+  //     // If somehow not logged in
+  //     this.router.navigate(['/auth/login'], { replaceUrl: true });
+  //   }
+  // }
+handleBackButton(): void {
+  const isLoggedIn = localStorage.getItem('token');
+
+  if (isLoggedIn) {
+    // ✅ Call Android native interface
+    if ((window as any).Android?.exitApp) {
+      (window as any).Android.exitApp();
     } else {
-      // If somehow not logged in
-      this.router.navigate(['/auth/login'], { replaceUrl: true });
+      console.log('Exit not supported in this APK');
     }
+  } else {
+    this.router.navigate(['/auth/login'], { replaceUrl: true });
   }
-
+}
 
 
   private exitApp(): void {
