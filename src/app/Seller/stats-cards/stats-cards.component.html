@@ -1,32 +1,42 @@
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+<div class="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-2 mb-4">
+
   @for (stat of stats; track stat) {
     <div
       (click)="onCardClick(stat)"
-      class="bg-white rounded-lg p-3 pl-5 border border-gray-200 hover:shadow-md transition-all cursor-pointer hover:scale-[1.02]"
-      >
-      <div class="flex items-start justify-between mb-3">
+      class="bg-white border border-gray-200 rounded-md p-2 cursor-pointer
+             hover:shadow-sm transition-all hover:scale-[1.01]"
+    >
+
+      <!-- icon row -->
+      <div class="flex items-center justify-between mb-1">
         <div
-          class="w-10 h-10 rounded-lg flex items-center justify-center"
+          class="w-7 h-7 rounded-md flex items-center justify-center"
           [ngClass]="stat.color"
-          >
-          <i [class]="stat.icon + ' text-lg'"></i>
+        >
+          <i [class]="stat.icon + ' text-sm'"></i>
         </div>
+
         @if (stat.trend === 'up') {
-          <span
-            class="text-green-600 text-xs font-medium flex items-center">
-            <i class="ri-arrow-up-line"></i>
-          </span>
+          <i class="ri-arrow-up-line text-green-600 text-xs"></i>
         }
       </div>
-      <h3 class="text-2xl font-bold text-gray-900 mb-1">
+
+      <!-- value -->
+      <h3 class="text-lg font-bold text-gray-900 leading-tight">
         {{ stat.value }}
       </h3>
-      <p class="text-sm text-gray-600 mb-1">
+
+      <!-- label -->
+      <p class="text-xs text-gray-600 truncate">
         {{ stat.label }}
       </p>
-      <p class="text-xs text-gray-500">
+
+      <!-- change -->
+      <p class="text-[10px] text-gray-400">
         {{ stat.change }}
       </p>
+
     </div>
   }
+
 </div>
