@@ -1,6 +1,7 @@
 
 import { Component, OnInit, Input , Output, EventEmitter } from '@angular/core';
 import { SellerService, Lead } from '../business.service';
+ import { AuthService } from '../../auth/auth.service';
 
 @Component({
     selector: 'app-leads',
@@ -31,14 +32,31 @@ export class LeadsComponent implements OnInit {
 @Output() leadPurchased = new EventEmitter<number>();
 
   @Input() totalBalance: number = 0;
-  constructor(private sellerService: SellerService) { }
+  constructor(private sellerService: SellerService ,  private authService: AuthService ) { }
 
- 
+ isWebView = false;
 ngOnInit(): void {
+   this.isWebView = this.authService.isWebView();
   this.loadLeads(1);
 }
 
+loadMore() {
+  if (this.loading) return;
 
+  if (this.currentPage < this.totalPages) {
+    this.loadLeads(this.currentPage + 1);
+  }
+}
+goBackPage() {
+  if (this.loading) return;
+
+  if (this.currentPage > 1) {
+    this.currentPage--;
+
+    // 🔥 Remove last page data (simulate pagination back)
+    this.leads = this.leads.slice(0, this.leads.length - this.pageSize);
+  }
+}
   filterStatus: 'all' | 'offered' | 'unlocked' | 'committed' | 'quoted' | 'accepted' | 'rejected' = 'all';
 
   statuses = [
@@ -123,18 +141,34 @@ loadLeads(page: number = 1) {
       this.totalLeadss = pagination?.totalCount ?? 0;
       this.pageSize = pagination?.pageSize ?? this.pageSize;
 
-      this.leads = (leadsData || []).map((l: any) => ({
-        ...l,
-        offerStatus: l.offerStatus ?? 'offered',
-        description: l.description || 'No description provided',
-        location: l.location || 'N/A',
-        time: this.timeAgo(l.createdAt),
-        isPurchased: l.isPurchased ?? false,
-        unlockedCount: Number(l.unlockedCount ?? 0),
-        committedCount: Number(l.committedCount ?? 0),
-        hasQuote: l.hasQuote ?? false,
-      }));
+      // this.leads = (leadsData || []).map((l: any) => ({
+      //   ...l,
+      //   offerStatus: l.offerStatus ?? 'offered',
+      //   description: l.description || 'No description provided',
+      //   location: l.location || 'N/A',
+      //   time: this.timeAgo(l.createdAt),
+      //   isPurchased: l.isPurchased ?? false,
+      //   unlockedCount: Number(l.unlockedCount ?? 0),
+      //   committedCount: Number(l.committedCount ?? 0),
+      //   hasQuote: l.hasQuote ?? false,
+      // }));
+const newLeads = (leadsData || []).map((l: any) => ({
+  ...l,
+  offerStatus: l.offerStatus ?? 'offered',
+  description: l.description || 'No description provided',
+  location: l.location || 'N/A',
+  time: this.timeAgo(l.createdAt),
+  isPurchased: l.isPurchased ?? false,
+  unlockedCount: Number(l.unlockedCount ?? 0),
+  committedCount: Number(l.committedCount ?? 0),
+  hasQuote: l.hasQuote ?? false,
+}));
 
+if (this.isWebView && page > 1) {
+  this.leads = [...this.leads, ...newLeads]; // ✅ append
+} else {
+  this.leads = newLeads; // ✅ replace
+}
       this.loading = false;
     },
     error: (err) => {
@@ -146,6 +180,7 @@ loadLeads(page: number = 1) {
   setFilter(offerStatus: any) {
     this.filterStatus = offerStatus;
     this.currentPage = 1;  // Reset to first page
+     this.leads = []; 
     this.loadLeads(1);      // Fetch new data from backend
   }
 
