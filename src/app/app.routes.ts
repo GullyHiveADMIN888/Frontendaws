@@ -87,17 +87,17 @@ export const routes: Routes = [
   // // 🔥 ROOT DECISION POINT
 
   //   // ROOT HANDLER
-  // {
-  //   path: '',
-  //   pathMatch: 'full',
-  //   canActivate: [rootRedirectGuard]
-  // },
-{
+  {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'home',
-    // canActivate: [rootRedirectGuard]
+    canActivate: [rootRedirectGuard]
   },
+// {
+//     path: '',
+//     pathMatch: 'full',
+//     redirectTo: 'home',
+//     // canActivate: [rootRedirectGuard]
+//   },
   // Landing Page (desktop only)
   {
     path: 'home',
