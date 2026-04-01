@@ -193,44 +193,53 @@ passwordError = '';
 
 
 
-  // private handleBackButton(): void {
 
-  //   // re-lock history so it doesn't go back anywhere
-  //   history.pushState(null, '', location.href);
+// private handleBackButton() {
 
-  //   const isWebView = this.authService.isWebView();
+//   // Push initial state
+//   history.pushState(null, '', location.href);
 
-  //   if (isWebView) {
-  //     this.exitApp(); // 🔥 exit immediately
-  //   } else {
-  //     window.history.back();
-  //   }
-  // }
+//   window.addEventListener('popstate', () => {
 
-private handleBackButton() {
+//     const isLoggedIn = this.authService.isLoggedIn();
 
-  // Push initial state
-  history.pushState(null, '', location.href);
+//     if (isLoggedIn) {
+//       //  EXIT APP (APK)
+//       (navigator as any).app?.exitApp?.();
 
-  window.addEventListener('popstate', () => {
+//       // Fallback (if exitApp not available)
+//       window.close();
+//     } else {
+//       // Not logged in → stay on login
+//       this.router.navigate(['/auth/login'], { replaceUrl: true });
+//     }
 
-    const isLoggedIn = this.authService.isLoggedIn();
+//     // Prevent further back navigation
+//     history.pushState(null, '', location.href);
+//   });
+// }
+
+
+
+ 
+
+  handleBackButton(): void {
+    const isLoggedIn = localStorage.getItem('token');
 
     if (isLoggedIn) {
-      // 🔥 EXIT APP (APK)
-      (navigator as any).app?.exitApp?.();
-
-      // Fallback (if exitApp not available)
-      window.close();
+      // 🚀 EXIT APP (APK)
+      if ((navigator as any).app?.exitApp) {
+        (navigator as any).app.exitApp();
+      } else {
+        // fallback
+        window.close();
+      }
     } else {
-      // Not logged in → stay on login
+      // If somehow not logged in
       this.router.navigate(['/auth/login'], { replaceUrl: true });
     }
+  }
 
-    // Prevent further back navigation
-    history.pushState(null, '', location.href);
-  });
-}
 
 
   private exitApp(): void {
@@ -279,6 +288,7 @@ private handleBackButton() {
 
 
   ngOnDestroy(): void {
+     window.removeEventListener('popstate', this.backHandler);
     this.subscription?.unsubscribe();
       this.stopTimer();
 
