@@ -111,11 +111,11 @@ checkScreen() {
   this.isMobile = window.innerWidth < 640;
 }
 loadMore() {
+  if (this.loading) return;
   if (this.currentPage < this.totalPages) {
     this.loadLeads(this.currentPage + 1);
   }
 }
-
 
 loadLeads(page: number = 1) {
   this.loading = true;
@@ -169,6 +169,9 @@ if (this.isMobile && page > 1) {
   setFilter(offerStatus: any) {
     this.filterStatus = offerStatus;
     this.currentPage = 1;  // Reset to first page
+
+      this.leads = [];
+
     this.loadLeads(1);      // Fetch new data from backend
   }
 
