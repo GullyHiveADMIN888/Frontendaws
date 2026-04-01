@@ -6,9 +6,13 @@
       <!-- <h1 class="text-2xl font-bold text-orange-600">GULLYHIVE</h1> -->
           <a routerLink="/" class="flex items-center">
             <img src="assets/gali_logo.png" alt="GullyHive Logo" class="h-10 w-auto mr-2"></a>
-      <a routerLink="/" class="text-sm text-gray-700 hover:text-orange-600">
+      <!-- <a routerLink="/" class="text-sm text-gray-700 hover:text-orange-600">
         ← Back to Home
-      </a>
+      </a> -->
+      <a [routerLink]="isApp ? '/auth/login' : '/'"
+   class="text-sm text-gray-700 hover:text-orange-600">
+  ← {{ isApp ? 'Back to Login' : 'Back to Home' }}
+</a>
     </div>
   </nav>
 
