@@ -3,6 +3,19 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment.prod';
 
+export interface AssignedWorker {
+  member_id: number | null;
+  slot_no: number;
+  role: string;
+  status: string;
+  assigned_at: string;
+  worker_name: string;
+  worker_email: string;
+  worker_phone: string;
+  is_team_lead: boolean;
+  is_primary_contact: boolean;
+}
+
 export interface Job {
   id: number;
   leadId: number;
@@ -36,6 +49,22 @@ export interface Job {
   customerEmail: string | null;
   cityName: string | null;
   providerName: string;
+  // New fields
+  assignmentStatus: 'assigned' | 'unassigned';
+  assignedWorkersCount: number;
+  assignedWorkers: AssignedWorker[];
+}
+
+
+
+export interface WorkerAvailabilitySlot {
+  memberId: number;
+  availabilityDate: string;
+  startTime: string;
+  endTime: string;
+  status: string;
+  currentJobId: number | null;
+  isAvailable: boolean;
 }
 
 export interface Worker {
@@ -49,11 +78,16 @@ export interface Worker {
   displayName: string;
   providerType: string;
   profilePictureUrl: string;
+  memberId: number | null;
+  isAvailable: boolean;
+  availabilityStatus: string;
+  availableSlots: WorkerAvailabilitySlot[];
 }
 
 export interface WorkerSearchResponse {
   success: boolean;
   data: Worker[];
+  jobId?: number;
   message?: string;
 }
 
@@ -73,6 +107,7 @@ export interface JobListRequest {
   page: number;
   pageSize: number;
   jobStatus?: string;
+  assignmentStatus?: string;
   cityId?: number;
   providerId?: number;
   scheduledStartFrom?: string;
@@ -123,6 +158,9 @@ export class OpsManagerJobService {
     if (request.jobStatus) {
       params = params.set('jobStatus', request.jobStatus);
     }
+    if (request.assignmentStatus) {
+      params = params.set('assignmentStatus', request.assignmentStatus);
+    }
     if (request.cityId) {
       params = params.set('cityId', request.cityId.toString());
     }
@@ -159,10 +197,20 @@ export class OpsManagerJobService {
   /**
    * Search workers under current manager
    */
-  searchWorkers(searchTerm: string): Observable<WorkerSearchResponse> {
+  // searchWorkers(searchTerm: string): Observable<WorkerSearchResponse> {
+  //   let params = new HttpParams();
+  //   if (searchTerm) {
+  //     params = params.set('search', searchTerm);
+  //   }
+  //   return this.http.get<WorkerSearchResponse>(`${this.apiUrl}/jobs/workers/search`, { params });
+  // }
+  searchWorkers(searchTerm: string, jobId?: number): Observable<WorkerSearchResponse> {
     let params = new HttpParams();
     if (searchTerm) {
       params = params.set('search', searchTerm);
+    }
+    if (jobId) {
+      params = params.set('jobId', jobId.toString());
     }
     return this.http.get<WorkerSearchResponse>(`${this.apiUrl}/jobs/workers/search`, { params });
   }
@@ -173,6 +221,4 @@ export class OpsManagerJobService {
   assignJob(request: AssignJobRequest): Observable<AssignJobResponse> {
     return this.http.post<AssignJobResponse>(`${this.apiUrl}/jobs/assign`, request);
   }
-
-
 }

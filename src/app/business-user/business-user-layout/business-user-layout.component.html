@@ -4,78 +4,61 @@
 
 
 
-  <a routerLink="/" class="flex items-center">
-    <img src="assets/gali_logo.png" alt="GullyHive Logo" class="h-10 w-auto mr-2">
-  </a>
-
-  <div class="hidden md:flex gap-8">
-    <a routerLink="/provider_User_Ops_Manager/jobs" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
-      [routerLinkActiveOptions]="{ exact: true }" class="text-gray-600 font-medium pb-1">
-      Dashboard
+    <a routerLink="/" class="flex items-center">
+      <img src="assets/gali_logo.png" alt="GullyHive Logo" class="h-10 w-auto mr-2">
     </a>
 
+    <div class="hidden md:flex gap-8">
+      <a routerLink="/provider_User_Ops_Manager" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
+        [routerLinkActiveOptions]="{ exact: true }" class="text-gray-600 font-medium pb-1">
+        Dashboard
+      </a>
 
-    <a routerLink="/provider_User_Ops_Manager/worker-management" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
-    class="text-gray-600 font-medium pb-1">Worker Management</a>
-  
+      <a routerLink="/provider_User_Ops_Manager/jobs" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
+        class="text-gray-600 font-medium pb-1">Jobs</a>
 
 
-  <a routerLink="/provider_User_Ops_Manager/profile" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
-  class="text-gray-600 font-medium pb-1">Profile</a>
+      <a routerLink="/provider_User_Ops_Manager/worker-management"
+        routerLinkActive="text-orange-600 border-b-2 border-orange-600" class="text-gray-600 font-medium pb-1">Worker
+        Management</a>
 
-  <a routerLink="/provider_User_Ops_Manager/help" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
-  class="text-gray-600 font-medium pb-1">Help</a>
-</div>
-
-<!-- User Menu -->
-<div class="relative">
-  <button (click)="toggleUserMenu()" class="flex items-center space-x-3 focus:outline-none">
-  @if (user?.profilePictureUrl) {
-    <img [src]="user?.profilePictureUrl" class="w-10 h-10 rounded-full object-cover" />
-  } @else {
-    <div class="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center">
-      {{ userInitials }}
+      <a routerLink="/provider_User_Ops_Manager/profile" routerLinkActive="text-orange-600 border-b-2 border-orange-600"
+        class="text-gray-600 font-medium pb-1">Profile</a>
     </div>
-  }
 
-  <i class="ri-arrow-down-s-line text-gray-600"></i>
-</button>
+    <!-- User Menu -->
+    <div class="relative">
+      <button (click)="toggleUserMenu()" class="flex items-center space-x-3 focus:outline-none">
+        @if (user?.profilePictureUrl) {
+        <img [src]="user?.profilePictureUrl" class="w-10 h-10 rounded-full object-cover" />
+        } @else {
+        <div class="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center">
+          {{ userInitials }}
+        </div>
+        }
 
-@if (showUserMenu) {
-  <div>
-    <div class="fixed inset-0 z-10" (click)="toggleUserMenu()"></div>
-    <div class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-20">
-      <div class="px-4 py-3 border-b border-gray-200">
-        <p class="text-sm font-semibold text-gray-900">{{ user?.name || 'business-User' }}</p>
-        <p class="text-xs text-gray-500">{{ user?.email || 'businessuser@gmail.com' }}</p>
-      </div>
-      <a [routerLink]="['/business-user/sharableProfile', sellerId]"
-        class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-        <i class="ri-user-line mr-3 text-gray-400"></i> View Public Profile
-      </a>
-      <a routerLink="/business-user/settings" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-        <i class="ri-settings-3-line mr-3 text-gray-400"></i> Settings
-      </a>
-      <a routerLink="/" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-        <i class="ri-arrow-left-right-line mr-3 text-gray-400"></i> Switch to Buyer
-      </a>
-    @if (sellerId) {
-      <a [routerLink]="['/business-user/refer', sellerId]"
-        class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-        <i class="ri-gift-line mr-3 text-gray-400"></i> Refer & Earn
-      </a>
-    }
-    <div class="border-t border-gray-200 mt-2 pt-2">
-      <button (click)="logout()" class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-        <i class="ri-logout-box-line mr-3"></i> Logout
+        <i class="ri-arrow-down-s-line text-gray-600"></i>
       </button>
-    </div>
-  </div>
-</div>
-}
-</div>
 
-</div>
+      @if (showUserMenu) {
+      <div>
+        <div class="fixed inset-0 z-10" (click)="toggleUserMenu()"></div>
+        <div class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-20">
+          <div class="px-4 py-3 border-b border-gray-200">
+            <p class="text-sm font-semibold text-gray-900">{{ user?.name || 'business-User' }}</p>
+            <p class="text-xs text-gray-500">{{ user?.email || 'businessuser@gmail.com' }}</p>
+          </div>
+          <div class="border-t border-gray-200 mt-2 pt-2">
+            <button (click)="logout()" class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+              <i class="ri-logout-box-line mr-3"></i> Logout
+            </button>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+
+  </div>
 </nav>
 
 <!-- PAGE CONTENT LOADS HERE -->

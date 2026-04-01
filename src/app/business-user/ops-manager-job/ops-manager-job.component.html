@@ -26,13 +26,13 @@
 
         <!-- ========== FILTERS SECTION ========== -->
         <div class="bg-white rounded-lg shadow p-4 mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-end">
                 <!-- Search Input -->
-                <div>
+                <div class="col-span-1">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
                     <div class="flex gap-2">
                         <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="onSearch()"
-                            placeholder="Search by job ID, customer, provider..."
+                            placeholder="Search by ID, customer, provider, worker..."
                             class="flex-1 border p-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-500" />
                         <button (click)="onSearch()"
                             class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
@@ -41,14 +41,25 @@
                     </div>
                 </div>
 
-                <!-- Status Filter -->
+                <!-- Job Status Filter -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Job Status</label>
                     <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()"
                         class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-500">
                         <option value="">All Status</option>
                         <option *ngFor="let status of jobStatuses" [value]="status.value">
                             {{ status.label }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Assignment Status Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Assignment Status</label>
+                    <select [(ngModel)]="assignmentStatusFilter" (change)="onAssignmentStatusFilterChange()"
+                        class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <option *ngFor="let option of assignmentStatusOptions" [value]="option.value">
+                            {{ option.label }}
                         </option>
                     </select>
                 </div>
@@ -118,6 +129,12 @@
                                     <span *ngIf="sortBy === 'job_status'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                    (click)="onSortChange('assignment_status')">
+                                    Assignment
+                                    <span *ngIf="sortBy === 'assignment_status'">{{ sortOrder === 'asc' ? '↑' : '↓'
+                                        }}</span>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                                     (click)="onSortChange('city_name')">
                                     City
                                     <span *ngIf="sortBy === 'city_name'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
@@ -151,6 +168,15 @@
                                         {{ getStatusDisplayText(job.jobStatus) }}
                                     </span>
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                        [ngClass]="getAssignmentBadgeClass(job.assignmentStatus)">
+                                        {{ job.assignmentStatus === 'assigned' ? 'Assigned' : 'Unassigned' }}
+                                        <span *ngIf="job.assignedWorkersCount > 0" class="ml-1">
+                                            ({{ job.assignedWorkersCount }})
+                                        </span>
+                                    </span>
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ job.cityName || 'N/A' }}
                                 </td>
@@ -165,14 +191,14 @@
                                 </td>
                             </tr>
                             <tr *ngIf="jobs.length === 0 && !isLoading">
-                                <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                                <td colspan="7" class="px-6 py-8 text-center text-gray-500">
                                     <i class="ri-briefcase-line text-2xl mb-2 block"></i>
                                     <p>No jobs found</p>
                                     <p class="text-sm mt-1">Try adjusting your filters</p>
                                 </td>
                             </tr>
                             <tr *ngIf="isLoading">
-                                <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                                <td colspan="7" class="px-6 py-8 text-center text-gray-500">
                                     <div class="flex justify-center">
                                         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500">
                                         </div>
@@ -253,10 +279,13 @@
 <!-- Job Details Modal -->
 <div *ngIf="showJobModal && selectedJob"
     class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center mt-16 z-[10000]">
-    <div class="bg-white rounded-xl w-[800px] p-6 shadow-xl overflow-y-auto max-h-[90vh]">
+    <div class="bg-white rounded-xl w-[900px] p-6 shadow-xl overflow-y-auto max-h-[90vh]">
         <!-- Modal Header -->
         <div class="flex justify-between items-center mb-4 border-b pb-3">
-            <h3 class="text-xl font-bold text-gray-800">Job Details</h3>
+            <div>
+                <h3 class="text-xl font-bold text-gray-800">Job Details</h3>
+                <p class="text-sm text-gray-500 mt-1">Job ID: #{{ selectedJob.id }}</p>
+            </div>
             <button (click)="closeJobModal()" class="text-gray-400 hover:text-gray-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
@@ -266,11 +295,7 @@
         </div>
 
         <!-- Job Basic Info -->
-        <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="bg-gray-50 p-3 rounded">
-                <p class="text-xs text-gray-500">Job ID</p>
-                <p class="text-lg font-semibold text-gray-800">#{{ selectedJob.id }}</p>
-            </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div class="bg-gray-50 p-3 rounded">
                 <p class="text-xs text-gray-500">Lead ID</p>
                 <p class="text-lg font-semibold text-gray-800">#{{ selectedJob.leadId }}</p>
@@ -283,6 +308,16 @@
                 </span>
             </div>
             <div class="bg-gray-50 p-3 rounded">
+                <p class="text-xs text-gray-500">Assignment</p>
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full mt-1"
+                    [ngClass]="getAssignmentBadgeClass(selectedJob.assignmentStatus)">
+                    {{ selectedJob.assignmentStatus === 'assigned' ? 'Assigned' : 'Unassigned' }}
+                    <span *ngIf="selectedJob.assignedWorkersCount > 0" class="ml-1">
+                        ({{ selectedJob.assignedWorkersCount }})
+                    </span>
+                </span>
+            </div>
+            <div class="bg-gray-50 p-3 rounded">
                 <p class="text-xs text-gray-500">City</p>
                 <p class="font-medium text-gray-800">{{ selectedJob.cityName || 'N/A' }}</p>
             </div>
@@ -291,7 +326,7 @@
         <!-- Customer Information -->
         <div class="mb-4">
             <h4 class="text-md font-semibold text-gray-700 mb-2 border-b pb-1">Customer Information</h4>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <p class="text-xs text-gray-500">Name</p>
                     <p class="text-sm text-gray-800">{{ selectedJob.customerName || 'N/A' }}</p>
@@ -310,7 +345,7 @@
         <!-- Provider Information -->
         <div class="mb-4">
             <h4 class="text-md font-semibold text-gray-700 mb-2 border-b pb-1">Provider Information</h4>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <p class="text-xs text-gray-500">Provider Name</p>
                     <p class="text-sm text-gray-800">{{ selectedJob.providerName || 'N/A' }}</p>
@@ -325,7 +360,7 @@
         <!-- Schedule Information -->
         <div class="mb-4">
             <h4 class="text-md font-semibold text-gray-700 mb-2 border-b pb-1">Schedule Information</h4>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                     <p class="text-xs text-gray-500">Scheduled Start</p>
                     <p class="text-sm text-gray-800">{{ formatDate(selectedJob.scheduledStart) }}</p>
@@ -348,7 +383,7 @@
         <!-- Amount Information -->
         <div class="mb-4">
             <h4 class="text-md font-semibold text-gray-700 mb-2 border-b pb-1">Amount Information</h4>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <p class="text-xs text-gray-500">Base Amount</p>
                     <p class="text-sm font-medium text-gray-800">{{ formatCurrency(selectedJob.baseAmount,
@@ -359,6 +394,89 @@
                     <p class="text-sm font-medium text-gray-800">{{ formatCurrency(selectedJob.finalAmount,
                         selectedJob.currency) }}</p>
                 </div>
+            </div>
+        </div>
+
+        <!-- Assigned Workers Section -->
+        <div class="mb-4" *ngIf="selectedJob?.assignedWorkers && selectedJob.assignedWorkers.length > 0">
+            <h4 class="text-md font-semibold text-gray-700 mb-2 border-b pb-1">
+                Assigned Workers
+                <span class="text-sm text-gray-500">({{ selectedJob.assignedWorkers.length }})</span>
+            </h4>
+            <div class="space-y-3">
+                <div *ngFor="let worker of selectedJob.assignedWorkers"
+                    class="bg-gray-50 rounded-lg p-3 border border-gray-200 hover:shadow-md transition-shadow">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 flex-wrap mb-2">
+                                <!-- Use snake_case property names from backend -->
+                                <span class="font-medium text-gray-900 text-lg">{{ worker.worker_name || 'Unknown'
+                                    }}</span>
+                                <span class="px-2 py-0.5 text-xs rounded-full"
+                                    [ngClass]="worker.is_team_lead ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-600'">
+                                    {{ getRoleDisplayText(worker.role || 'member') }}
+                                </span>
+                                <span class="px-2 py-0.5 text-xs rounded-full"
+                                    [ngClass]="getAssignmentStatusBadgeClass(worker.status || 'assigned')">
+                                    {{ (worker.status || 'assigned') | titlecase }}
+                                </span>
+                                <span *ngIf="worker.is_primary_contact"
+                                    class="px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-800">
+                                    Primary Contact
+                                </span>
+                            </div>
+                            <div class="space-y-1 text-sm text-gray-600">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                    <span>{{ worker.worker_email || '' }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
+                                        </path>
+                                    </svg>
+                                    <span>{{ worker.worker_phone || '' }}</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs text-gray-500">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span>Slot #{{ worker.slot_no || 0 }} • Assigned: {{ formatDate(worker.assigned_at)
+                                        }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
+                                <span class="text-orange-600 font-bold text-lg">
+                                    {{ (worker.worker_name || 'W').charAt(0).toUpperCase() }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Show message when no workers assigned -->
+        <div class="mb-4"
+            *ngIf="selectedJob?.assignmentStatus === 'assigned' && (!selectedJob?.assignedWorkers || selectedJob.assignedWorkers.length === 0)">
+            <h4 class="text-md font-semibold text-gray-700 mb-2 border-b pb-1">Assigned Workers</h4>
+            <div class="bg-yellow-50 rounded-lg p-4 text-center text-yellow-700 border border-yellow-200">
+                <svg class="w-8 h-8 mx-auto mb-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p>No workers assigned yet. Click "Assign Job" to assign workers.</p>
             </div>
         </div>
 
@@ -386,7 +504,7 @@
         <!-- Timestamps -->
         <div class="mb-4">
             <h4 class="text-md font-semibold text-gray-700 mb-2 border-b pb-1">Timestamps</h4>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <p class="text-xs text-gray-500">Created At</p>
                     <p class="text-sm text-gray-800">{{ formatDate(selectedJob.createdAt) }}</p>
