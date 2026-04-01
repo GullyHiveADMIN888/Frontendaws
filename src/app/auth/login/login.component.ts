@@ -194,39 +194,37 @@ passwordError = '';
 
 
 
- 
+// handleBackButton(): void {
+//   const isLoggedIn = localStorage.getItem('token');
 
-  // handleBackButton(): void {
-  //   const isLoggedIn = localStorage.getItem('token');
+//   if (isLoggedIn) {
+//     // ✅ Call Android native interface
+//     if ((window as any).Android?.exitApp) {
+//       (window as any).Android.exitApp();
+//     } else {
+//       console.log('Exit not supported in this APK');
+//     }
+//   } else {
+//     this.router.navigate(['/auth/login'], { replaceUrl: true });
+//   }
+// }
 
-  //   if (isLoggedIn) {
-  //     // 🚀 EXIT APP (APK)
-  //     if ((navigator as any).app?.exitApp) {
-  //       (navigator as any).app.exitApp();
-  //     } else {
-  //       // fallback
-  //       window.close();
-  //     }
-  //   } else {
-  //     // If somehow not logged in
-  //     this.router.navigate(['/auth/login'], { replaceUrl: true });
-  //   }
-  // }
 handleBackButton(): void {
   const isLoggedIn = localStorage.getItem('token');
 
   if (isLoggedIn) {
-    // ✅ Call Android native interface
     if ((window as any).Android?.exitApp) {
-      (window as any).Android.exitApp();
+      (window as any).Android.exitApp(); // 🔥 EXIT APK
     } else {
-      console.log('Exit not supported in this APK');
+      console.log('Android exit not available');
     }
   } else {
     this.router.navigate(['/auth/login'], { replaceUrl: true });
   }
-}
 
+  // 🔥 VERY IMPORTANT: block further back navigation
+  history.pushState(null, '', location.href);
+} 
 
   private exitApp(): void {
     console.log('Exiting APK...');
@@ -277,10 +275,8 @@ handleBackButton(): void {
      window.removeEventListener('popstate', this.backHandler);
     this.subscription?.unsubscribe();
       this.stopTimer();
-
-
-        window.removeEventListener('popstate', this.backHandler);
   }
+  
   private loadRememberedEmail(): void {
     if (isPlatformBrowser(this.platformId)) {
       const savedEmail = localStorage.getItem('rememberedEmail');
