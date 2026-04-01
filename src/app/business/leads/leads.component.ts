@@ -23,9 +23,6 @@ export class LeadsComponent implements OnInit {
   showLeadModal = false;
   totalLeadss: number = 0;
 
-  visibleLeadsCount = 25;
-hasMoreLeads = true;
-
 
   // Send Quote form fields
   quoteAmount: string = '';
@@ -35,14 +32,13 @@ hasMoreLeads = true;
 
   @Input() totalBalance: number = 0;
   constructor(private sellerService: SellerService) { }
-isMobileApp = false;
+
  
 ngOnInit(): void {
-    this.isMobileApp = window.innerWidth < 768 || /Android|iPhone/i.test(navigator.userAgent);
 
-  if (this.isMobileApp) {
-    document.body.classList.add('mobile-app');
-  }
+  this.checkScreen();
+  window.addEventListener('resize', () => this.checkScreen());
+
   this.loadLeads(1);
 }
 
@@ -108,6 +104,19 @@ ngOnInit(): void {
 //     }
 //   });
 // }
+
+
+isMobile = false;
+checkScreen() {
+  this.isMobile = window.innerWidth < 640;
+}
+loadMore() {
+  if (this.currentPage < this.totalPages) {
+    this.loadLeads(this.currentPage + 1);
+  }
+}
+
+
 loadLeads(page: number = 1) {
   this.loading = true;
 
@@ -131,7 +140,7 @@ loadLeads(page: number = 1) {
       this.totalLeadss = pagination?.totalCount ?? 0;
       this.pageSize = pagination?.pageSize ?? this.pageSize;
 
-      this.leads = (leadsData || []).map((l: any) => ({
+    const newLeads = (leadsData || []).map((l: any) => ({
         ...l,
         offerStatus: l.offerStatus ?? 'offered',
         description: l.description || 'No description provided',
@@ -142,7 +151,13 @@ loadLeads(page: number = 1) {
         committedCount: Number(l.committedCount ?? 0),
         hasQuote: l.hasQuote ?? false,
       }));
-
+if (this.isMobile && page > 1) {
+  // 📱 APPEND for mobile "Show More"
+  this.leads = [...this.leads, ...newLeads];
+} else {
+  // 💻 REPLACE for desktop pagination OR first load
+  this.leads = newLeads;
+}
       this.loading = false;
     },
     error: (err) => {
@@ -580,15 +595,4 @@ assignJob(){
 
 }
 
-
-loadMoreLeads() {
-  const next = this.visibleLeadsCount + this.pageSize;
-
-  if (next >= this.leads.length) {
-    this.visibleLeadsCount = this.leads.length;
-    this.hasMoreLeads = false;
-  } else {
-    this.visibleLeadsCount = next;
-  }
-}
 }
