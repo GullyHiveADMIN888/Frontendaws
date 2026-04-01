@@ -23,6 +23,9 @@ export class LeadsComponent implements OnInit {
   showLeadModal = false;
   totalLeadss: number = 0;
 
+  visibleLeadsCount = 25;
+hasMoreLeads = true;
+
 
   // Send Quote form fields
   quoteAmount: string = '';
@@ -572,4 +575,15 @@ assignJob(){
 
 }
 
+
+loadMoreLeads() {
+  const next = this.visibleLeadsCount + this.pageSize;
+
+  if (next >= this.leads.length) {
+    this.visibleLeadsCount = this.leads.length;
+    this.hasMoreLeads = false;
+  } else {
+    this.visibleLeadsCount = next;
+  }
+}
 }
