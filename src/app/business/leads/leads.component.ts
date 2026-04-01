@@ -35,9 +35,14 @@ hasMoreLeads = true;
 
   @Input() totalBalance: number = 0;
   constructor(private sellerService: SellerService) { }
-
+isMobileApp = false;
  
 ngOnInit(): void {
+    this.isMobileApp = window.innerWidth < 768 || /Android|iPhone/i.test(navigator.userAgent);
+
+  if (this.isMobileApp) {
+    document.body.classList.add('mobile-app');
+  }
   this.loadLeads(1);
 }
 
